@@ -18,7 +18,6 @@ import java.awt.image.BufferedImage
 class VisionController {
 
     def imageProcessingService
-    def grailsApplication
 
     /**
      * Read a picture from url
@@ -117,7 +116,7 @@ class VisionController {
 
         if (!request.queryString) return
         def split = request.queryString.split("url=http://")
-        String imageURL = grailsApplication.config.grails.serverURL + "/images/notavailable.jpg"
+        String imageURL =  "/images/notavailable.jpg"
         if (split.size() > 0) {
             imageURL = "http://" + split[1]
         }
@@ -346,7 +345,7 @@ class VisionController {
             responseBufferedImage(bufferedImage)
 
         } catch (Exception e) {
-            BufferedImage bufferedImage = getImageFromURL(grailsApplication.config.grails.serverURL + "/images/notavailable.jpg")
+            BufferedImage bufferedImage = getImageFromURL("/images/notavailable.jpg")
             responseBufferedImage(bufferedImage)
         }
     }
