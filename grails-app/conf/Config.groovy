@@ -88,4 +88,33 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+
+
+    environments {
+         production {
+             root {
+                 info 'appLog',"logfile"
+ //               error  'mail'
+                 additivity = true
+             }
+         }
+         development {
+             root {
+                 info 'appLog',"logfile", 'stdout'
+                 additivity = true
+             }
+         }
+         test {
+             root {
+                 info 'appLog',"logfile", 'stdout'
+                 additivity = true
+             }
+         }
+         perf {
+             root {
+                 info 'appLog',"logfile", 'stdout'
+                 additivity = true
+             }
+         }
+     }
 }

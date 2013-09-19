@@ -13,6 +13,10 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
+    <content url="file://$USER_HOME$/.grails/2.2.4/projects/cytomine-imageserver/plugins/background-thread-1.6">
+      <sourceFolder url="file://$USER_HOME$/.grails/2.2.4/projects/cytomine-imageserver/plugins/background-thread-1.6/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/2.2.4/projects/cytomine-imageserver/plugins/background-thread-1.6/grails-app/services" isTestSource="false" />
+    </content>
     <content url="file://$USER_HOME$/.grails/2.2.4/projects/cytomine-imageserver/plugins/database-migration-1.1">
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.4/projects/cytomine-imageserver/plugins/database-migration-1.1/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/2.2.4/projects/cytomine-imageserver/plugins/database-migration-1.1/grails-app/controllers" isTestSource="false" />

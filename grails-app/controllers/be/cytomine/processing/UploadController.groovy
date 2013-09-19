@@ -44,6 +44,7 @@ class UploadController {
             printParamsInfo(params)
 
             def user = tryAPIAuthentification(request)
+            log.info "user="+user.id
 
             String storageBufferPath = "/tmp/imageserver_buffer"
             String cytomineUrl = "http://localhost:8080"
@@ -54,6 +55,8 @@ class UploadController {
 
             def currentUserId = user.id
             long timestamp = new Date().getTime()
+
+            log.info "init cytomine..."
             Cytomine cytomine = new Cytomine(cytomineUrl, user.publicKey, user.privateKey, "./")
 
             def idStorage = Integer.parseInt(params['idStorage'] + "")
@@ -68,21 +71,30 @@ class UploadController {
             def contentType = params['files[].content_type']
 
 
+            log.info "idStorage=$idStorage"
+            log.info "idProject=$idProject"
+            log.info "filename=$filename"
+            log.info "uploadedFilePath=${uploadedFilePath.absolutePath}"
+            log.info "size=$size"
+            log.info "contentType=$contentType"
 
             if (!uploadedFilePath.exists()) {
                 throw new Exception(uploadedFilePath.absolutePath + " NOT EXIST!")
             }
             //Move file in the buffer dir
+            log.info "move file in buffer dir..."
             def newFile = moveFileTmpDir(uploadedFilePath, storageBufferPath, currentUserId, filename, timestamp)
 
             //Add uploadedfile on Cytomine
             def path = currentUserId + "/" + timestamp.toString() + "/" + newFile.newFilename
+            log.info "create uploaded file on cytomine..."
             def uploadedFile = cytomine.addUploadedFile(filename, path, storageBufferPath.toString(), size, newFile.extension, contentType, [idProject], [idStorage], currentUserId)
-
+            log.info "uploadedFile=$uploadedFile"
             def responseContent = createResponseContent(filename, size, contentType, uploadedFile.toJSON())
 
-
+            log.info "init background service..."
             backgroundService.execute("convertAndDeployImage", {
+                log.info "convert file..."
                 def uploadedFiles = convertImagesService.convertUploadedFile(cytomine, uploadedFile, currentUserId, allowedMime, mimeToConvert, zipMime)
 
 
@@ -99,11 +111,11 @@ class UploadController {
                     }
 
 
-                    if (new_uploadedFile.getInt('status') == cytomine.UploadStatus.TO_DEPLOY) {
+                    if (new_uploadedFile.getInt('status') == Cytomine.UploadStatus.TO_DEPLOY) {
                         abstractImagesCreated << deployImagesService.deployUploadedFile(cytomine, new_uploadedFile, storages)
                     }
 
-                    if (new_uploadedFile.getInt('status') == cytomine.UploadStatus.CONVERTED) {
+                    if (new_uploadedFile.getInt('status') == Cytomine.UploadStatus.CONVERTED) {
                         deployImagesService.copyUploadedFile(cytomine, new_uploadedFile, storages)
                     }
 
@@ -121,6 +133,7 @@ class UploadController {
                     fileSystemService.deleteFile(it.absolutePath)
                 }
                 abstractImagesCreated.each { abstractImage ->
+                    log.info "abstractImage=$abstractImage"
                     cytomine.clearAbstractImageProperties(abstractImage.id)
                     cytomine.populateAbstractImageProperties(abstractImage.id)
                     cytomine.extractUsefulAbstractImageProperties(abstractImage.id)
@@ -131,6 +144,8 @@ class UploadController {
             render response as JSON
 
         } catch (Exception e) {
+            log.error e
+            e.printStackTrace()
             response.status = 400;
             render e
             return
@@ -201,25 +216,25 @@ class UploadController {
 
 
         String content_md5 = (request.getHeader("content-MD5") != null) ? request.getHeader("content-MD5") : ""
-        println "content_md5=" + content_md5
+        //println "content_md5=" + content_md5
         String content_type = (request.getHeader("content-type") != null) ? request.getHeader("content-type") : ""
         content_type = (request.getHeader("Content-Type") != null) ? request.getHeader("Content-Type") : content_type
-        println "content_type=" + content_type
+        //println "content_type=" + content_type
         String date = (request.getHeader("date") != null) ? request.getHeader("date") : ""
-        println "date=" + date
+        //println "date=" + date
         String canonicalHeaders = request.getMethod() + "\n" + content_md5 + "\n" + content_type + "\n" + date + "\n"
-        println "canonicalHeaders=" + canonicalHeaders
+        //println "canonicalHeaders=" + canonicalHeaders
         String canonicalExtensionHeaders = ""
         String queryString = (request.getQueryString() != null) ? "?" + request.getQueryString() : ""
         String path = request.forwardURI //original URI Request
         String canonicalResource = path + queryString
-        println "canonicalResource=" + canonicalResource
+        //println "canonicalResource=" + canonicalResource
         String messageToSign = canonicalHeaders + canonicalExtensionHeaders + canonicalResource
-        println "messageToSign=$messageToSign"
+        //println "messageToSign=$messageToSign"
         String accessKey = authorization.substring(authorization.indexOf(" ") + 1, authorization.indexOf(":"))
-        println "accessKey=" + accessKey
+        //println "accessKey=" + accessKey
         String authorizationSign = authorization.substring(authorization.indexOf(":") + 1)
-        println "authorizationSign=" + authorizationSign
+        //println "authorizationSign=" + authorizationSign
         //TODO: ask user with public key
         //TODO: pubKey = a50f6f5d-1bcb-4cca-ac37-9bbf8581f25e, privKey = 278c5d52-396b-4036-b535-d541652edffa
 
@@ -241,22 +256,22 @@ class UploadController {
         println "PublicKey=${user.get("publicKey")}"
 
         SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1")
-        println "signingKey=" + signingKey
+        //println "signingKey=" + signingKey
         // get an hmac_sha1 Mac instance and initialize with the signing key
         Mac mac = Mac.getInstance("HmacSHA1")
-        println "mac=" + mac
+        //println "mac=" + mac
         mac.init(signingKey)
         // compute the hmac on input data bytes
         byte[] rawHmac = mac.doFinal(new String(messageToSign.getBytes(), "UTF-8").getBytes())
-        println "rawHmac=" + rawHmac.length
+        //println "rawHmac=" + rawHmac.length
         // base64-encode the hmac
         byte[] signatureBytes = Base64.encode(rawHmac)
-        println "signatureBytes=" + signatureBytes.length
+        //println "signatureBytes=" + signatureBytes.length
         def signature = new String(signatureBytes)
-        println "signature=" + signature
+        //println "signature=" + signature
 
-        println "authorizationSign=$authorizationSign"
-        println "signature=$signature"
+        //println "authorizationSign=$authorizationSign"
+        //println "signature=$signature"
         if (authorizationSign == signature) {
             println "AUTH TRUE"
             return ["id": id, "privateKey": user.get("privateKey"), "publicKey": user.get("publicKey")]

@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse
 class SecurityFilters {
     def springSecurityService
 
-    def dependsOn = [APIAuthentificationFilters]
-
     def filters = {
         all(uri:'/**') {
             before = {

@@ -2,7 +2,6 @@ package cytomine.web
 
 import be.cytomine.client.Cytomine
 import be.cytomine.client.models.UploadedFile
-import be.cytomine.security.SecUser
 
 import javax.activation.MimetypesFileTypeMap
 
@@ -28,7 +27,7 @@ class ConvertImagesService {
 
         if (!allMime.contains(uploadedFile.get("ext"))) {
             log.info uploadedFile.get("filename") + " : FORMAT NOT ALLOWED"
-            uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.ERROR_FORMAT,false)
+            uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_FORMAT,false)
             return [uploadedFile]
         }
 
@@ -45,7 +44,7 @@ class ConvertImagesService {
 
         /* List files from the archive */
         def pathsAndExtensions = fileSystemService.getAbsolutePathsAndExtensionsFromPath(destPath)
-        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.UNCOMPRESSED,false)
+        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.UNCOMPRESSED,false)
 
         def specialFiles = handleSpecialFile(cytomine,uploadedFile, currentUserId, pathsAndExtensions)
         if (specialFiles) return specialFiles
@@ -59,7 +58,7 @@ class ConvertImagesService {
 
             UploadedFile converted_uploadedFile = handleSingleFile(new_uploadedFile, currentUserId, mimeToConvert)
 
-            if (converted_uploadedFile != new_uploadedFile && converted_uploadedFile.get("status") == cytomine.UploadStatus.TO_DEPLOY) {
+            if (converted_uploadedFile != new_uploadedFile && converted_uploadedFile.get("status") == Cytomine.UploadStatus.TO_DEPLOY) {
                 uploadedFiles << converted_uploadedFile
             }
         }
@@ -81,12 +80,12 @@ class ConvertImagesService {
         if (!mainUploadedFile) return null //ok, it's not a special file
 
         //create nested file
-        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.TODEPLOY,true)
+        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.TODEPLOY,true)
         uploadedFiles << mainUploadedFile
         pathsAndExtensions.each { it ->
             if (it.extension != MRXS_EXTENSION && it.extension != VMS_EXTENSION) {
                 UploadedFile nestedUploadedFile = createNewUploadedFile(cytomine,uploadedFile, it, currentUserId, "application/octet-stream")
-                uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.CONVERTED,true,mainUploadedFile.id)
+                uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.CONVERTED,true,mainUploadedFile.id)
                 uploadedFiles << nestedUploadedFile
             }
         }
@@ -110,7 +109,7 @@ class ConvertImagesService {
         //Check if file must be converted or not...
         if (!mimeToConvert.contains(uploadedFile.getStr("ext"))) {
             log.info uploadedFile.getStr("filename") + " : TO_DEPLOY"
-            uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.TO_DEPLOY,false,mainUploadedFile.id)
+            uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.TO_DEPLOY,false,uploadedFile.id)
             return uploadedFile
 
         } else {
@@ -140,20 +139,20 @@ class ConvertImagesService {
                             uploadedFile.getList("projects"),
                             uploadedFile.getList("storages"),
                             currentUserId,
-                            cytomine.UploadStatus.TO_DEPLOY)
+                            Cytomine.UploadStatus.TO_DEPLOY)
 
 
-                    uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.CONVERTED,true)
+                    uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.CONVERTED,true)
 
                     return convertUploadedFile
                 } else {
-                    uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.ERROR_CONVERT,false)
+                    uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_CONVERT,false)
                     return uploadedFile
                 }
 
             } catch (Exception e) {
                 e.printStackTrace()
-                uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.ERROR_FORMAT)
+                uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_FORMAT)
                 return uploadedFile
             }
 

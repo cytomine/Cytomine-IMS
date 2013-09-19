@@ -1,13 +1,11 @@
 package cytomine.web
 
 import be.cytomine.client.Cytomine
+import be.cytomine.client.models.AbstractImage
+import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
-import be.cytomine.image.server.Storage
-import be.cytomine.laboratory.Sample
-import be.cytomine.project.Project
-import be.cytomine.security.SecUser
 import grails.converters.JSON
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import utils.ProcUtils
 
 import javax.activation.MimetypesFileTypeMap
 
@@ -29,11 +27,14 @@ class DeployImagesService {
 
         storages.each { storage ->
                 def remoteFile = storage.getStr("basePath") + "/" + uploadedFile.getStr("filename")
-                log.info "REMOTE FILE = " + remoteFile
-
-                remoteCopyService.copy(localFile, remotePath, remoteFile, storage, true)
-
-                new File(localFile).renameTo(new File(remoteFile))
+            log.info "basePath= " + storage.getStr("basePath")
+            log.info "filename= " + uploadedFile.getStr("filename")
+//                remoteCopyService.copy(localFile, remotePath, remoteFile, storage, true)
+            log.info "LOCAL FILE = " + localFile
+            log.info "REMOTE FILE = " + remoteFile
+            def command = "mkdir -p ${new File(remoteFile).parent};mv $localFile $remoteFile"
+            log.info "Command=$command"
+            ProcUtils.executeOnShell(command)
 
                 if(!new File(remoteFile).exists()) {
                     log.error new File(remoteFile).absolutePath + " created = " + new File(remoteFile).exists()
@@ -41,21 +42,18 @@ class DeployImagesService {
                 }
 
         }
-        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,cytomine.UploadStatus.DEPLOYED)
+        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.DEPLOYED)
         return uploadedFile
     }
 
 
     AbstractImage deployUploadedFile(Cytomine cytomine,UploadedFile uploadedFile,  Collection<Storage> storages) {
 
-//        SpringSecurityUtils.reauthenticate currentUser.getUsername(), null
-//        uploadedFile.refresh()
-
         //copy it
         uploadedFile = copyUploadedFile(cytomine,uploadedFile, storages)
 
-        AbstractImage abstractImage = cytomine.addNewImage(uploadedFile)
-
+        AbstractImage abstractImage = cytomine.addNewImage(uploadedFile.id)
+        log.info "addNewImage=$abstractImage"
         return abstractImage
     }
 }
