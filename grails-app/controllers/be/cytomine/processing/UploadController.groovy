@@ -40,6 +40,9 @@ class UploadController {
     def upload = {
 
         try {
+//            response.status = 200
+//            render "ok"
+//            return
 
             printParamsInfo(params)
 
@@ -198,7 +201,7 @@ class UploadController {
         println "tryAPIAuthentification"
         String authorization = request.getHeader("authorization")
         println "authorization=$authorization"
-        if (request.getHeader("date") == null) {
+        if (request.getHeader("dateFull") == null && request.getHeader("date") == null) {
             throw new Exception("Auth failed: no date")
         }
         if (request.getHeader("host") == null) {
@@ -219,8 +222,13 @@ class UploadController {
         //println "content_md5=" + content_md5
         String content_type = (request.getHeader("content-type") != null) ? request.getHeader("content-type") : ""
         content_type = (request.getHeader("Content-Type") != null) ? request.getHeader("Content-Type") : content_type
+        content_type = (request.getHeader("content-type-full") != null) ? request.getHeader("content-type-full") : content_type
+
+
         //println "content_type=" + content_type
         String date = (request.getHeader("date") != null) ? request.getHeader("date") : ""
+        date = (request.getHeader("dateFull") != null) ? request.getHeader("dateFull") : date
+
         //println "date=" + date
         String canonicalHeaders = request.getMethod() + "\n" + content_md5 + "\n" + content_type + "\n" + date + "\n"
         //println "canonicalHeaders=" + canonicalHeaders
@@ -238,6 +246,12 @@ class UploadController {
         //TODO: ask user with public key
         //TODO: pubKey = a50f6f5d-1bcb-4cca-ac37-9bbf8581f25e, privKey = 278c5d52-396b-4036-b535-d541652edffa
 
+        log.info "content_md5=$content_md5"
+        log.info "content_type=$content_type"
+        log.info "date=$date"
+        log.info "queryString=$queryString"
+        log.info "path=$path"
+        log.info "method=${request.getMethod()}"
 
         println "accessKey=$accessKey"
         Cytomine cytomine = new Cytomine("http://localhost:8080", "a50f6f5d-1bcb-4cca-ac37-9bbf8581f25e", "278c5d52-396b-4036-b535-d541652edffa", "./")
@@ -270,8 +284,8 @@ class UploadController {
         def signature = new String(signatureBytes)
         //println "signature=" + signature
 
-        //println "authorizationSign=$authorizationSign"
-        //println "signature=$signature"
+        println "authorizationSign=$authorizationSign"
+        println "signature=$signature"
         if (authorizationSign == signature) {
             println "AUTH TRUE"
             return ["id": id, "privateKey": user.get("privateKey"), "publicKey": user.get("publicKey")]
