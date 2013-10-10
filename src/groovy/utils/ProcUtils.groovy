@@ -20,7 +20,9 @@ class ProcUtils {
                 .start()
         process.inputStream.eachLine { println it }
         process.waitFor();
-        return process.exitValue()
+        int value = process.exitValue()
+        println "Command return value = $value"
+        return value
     }
 
     static def addShellPrefix(String command) {

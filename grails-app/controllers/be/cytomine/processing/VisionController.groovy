@@ -1,12 +1,15 @@
 package be.cytomine.processing
 
 import be.cytomine.processing.image.filters.Colour_Deconvolution
+import be.cytomine.processing.merge.CytomineRGBStackMerge
 import http.HttpClient
 import ij.ImagePlus
 import ij.plugin.ContrastEnhancer
+import ij.plugin.RGBStackMerge
 import ij.process.ImageConverter
 
 import javax.imageio.ImageIO
+import java.awt.Color
 import java.awt.image.BufferedImage
 
 /**
@@ -18,6 +21,65 @@ import java.awt.image.BufferedImage
 class VisionController {
 
     def imageProcessingService
+
+
+    def merge = {
+        def urls = extractParams("url")
+        def colors = extractParams("color")
+        colors = colors.collect{
+            def val = it.split(",").collect{Integer.parseInt(it)}
+            return new Color(val[0],val[1],val[2])
+        }
+
+        def zoomifyParam = params.get('zoomify')
+
+        log.info "Urls=$urls"
+        log.info "Colors=$colors"
+
+        if(!urls.isEmpty()) {
+
+            log.info "urls=$urls"
+
+            ImagePlus[] images = new ImagePlus[urls.size()]
+
+
+            urls.eachWithIndex { url, index ->
+                log.info "load=${url+zoomifyParam}"
+                images[index] = new ImagePlus("Image$index",(java.awt.Image)ImageIO.read(new URL(url+zoomifyParam)))
+            }
+
+            Color[] colorsArray = colors.toArray(new Color[colors.size()])
+            ImagePlus result = CytomineRGBStackMerge.merge(images,colorsArray,false)
+
+            BufferedImage resultImage = result.getBufferedImage()
+
+            responseBufferedImage(resultImage)
+
+        } else {
+            render "url arugment is missing (start with url0=)!"
+            response.status = 400
+        }
+    }
+
+    /**
+     * Extract all args into a list.
+     * argStart0, argStart1, argStart2... => [argStart0,argStart1...]
+     * @param argStart
+     */
+    private def extractParams(String argStart) {
+        def list = []
+        int i=0;
+        String nextUrlParams = params.get(argStart+i)
+        log.info "nextUrlParams=" +nextUrlParams
+
+        while(nextUrlParams!=null) {
+            log.info "nextUrlParams=$nextUrlParams"
+            list << nextUrlParams
+            i++
+            nextUrlParams = params.get(argStart+i)
+        }
+        return list
+    }
 
     /**
      * Read a picture from url
@@ -349,6 +411,5 @@ class VisionController {
             responseBufferedImage(bufferedImage)
         }
     }
-
 
 }

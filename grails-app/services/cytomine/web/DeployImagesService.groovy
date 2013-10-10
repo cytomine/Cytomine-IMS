@@ -19,6 +19,7 @@ class DeployImagesService {
     def imageInstanceService
     def storageAbstractImageService
     def projectService
+    def fileSystemService
 
     static transactional = true
 
@@ -32,7 +33,10 @@ class DeployImagesService {
 //                remoteCopyService.copy(localFile, remotePath, remoteFile, storage, true)
             log.info "LOCAL FILE = " + localFile
             log.info "REMOTE FILE = " + remoteFile
-            def command = "mkdir -p ${new File(remoteFile).parent};mv $localFile $remoteFile"
+
+            fileSystemService.makeLocalDirectory(new File(remoteFile).parent)
+
+            def command = "mv $localFile $remoteFile"
             log.info "Command=$command"
             ProcUtils.executeOnShell(command)
 

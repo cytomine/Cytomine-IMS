@@ -40,17 +40,29 @@ class UploadController {
     def upload = {
 
         try {
-//            response.status = 200
-//            render "ok"
-//            return
 
             printParamsInfo(params)
+                                    //grailsApplication.config.grails.config.locations
+//            String storageBufferPath = "/tmp/imageserver_buffer"
+//            String cytomineUrl = "http://localhost:8080"
+//            String pubKey = "a50f6f5d-1bcb-4cca-ac37-9bbf8581f25e"
+//            String privKey = "278c5d52-396b-4036-b535-d541652edffa"
 
-            def user = tryAPIAuthentification(request)
+            String storageBufferPath = grailsApplication.config.grails.storageBufferPath
+            String cytomineUrl =  params['cytomine']//grailsApplication.config.grails.cytomineUrl
+            String pubKey = grailsApplication.config.grails.imageServerPublicKey
+            String privKey = grailsApplication.config.grails.imageServerPrivateKey
+
+
+            log.info "Upload is made on Cytomine = $cytomineUrl"
+            log.info "We use $pubKey/$privKey to connect"
+            log.info "Image are tmp convert in $storageBufferPath"
+
+
+
+            def user = tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
             log.info "user="+user.id
 
-            String storageBufferPath = "/tmp/imageserver_buffer"
-            String cytomineUrl = "http://localhost:8080"
             def allowedMime = ["svs", "opt", "jp2", "scn"]
             def zipMime = ["zip"]
             def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm"]//, "ndpi"]
@@ -197,7 +209,7 @@ class UploadController {
         return content
     }
 
-    private def tryAPIAuthentification(HttpServletRequest request) {
+    private def tryAPIAuthentification(def cytomineUrl,def ISPubKey, def ISPrivKey, HttpServletRequest request) {
         println "tryAPIAuthentification"
         String authorization = request.getHeader("authorization")
         println "authorization=$authorization"
@@ -254,7 +266,7 @@ class UploadController {
         log.info "method=${request.getMethod()}"
 
         println "accessKey=$accessKey"
-        Cytomine cytomine = new Cytomine("http://localhost:8080", "a50f6f5d-1bcb-4cca-ac37-9bbf8581f25e", "278c5d52-396b-4036-b535-d541652edffa", "./")
+        Cytomine cytomine = new Cytomine(cytomineUrl, ISPubKey,ISPrivKey, "./")
         User user = cytomine.getKeys(accessKey)
         long id = cytomine.getUser(accessKey).id
         if (!user) {

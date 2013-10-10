@@ -1,6 +1,7 @@
 package cytomine.web
 
 import utils.FilesUtils
+import utils.ProcUtils
 
 class FileSystemService {
 
@@ -18,10 +19,20 @@ class FileSystemService {
     }
 
     def makeLocalDirectory(String path) {
-        def mkdirCommand = "mkdir -p " + path
-        def proc = mkdirCommand.execute()
-        proc.waitFor()
-        return proc.exitValue()
+        println "Create path=$path"
+//
+//        def mkdirCommand = "mkdir -p " + path
+//        def proc = mkdirCommand.execute()
+//        proc.waitFor()
+//        int value = proc.exitValue()
+//        mkdirCommand = "chmod 777 -R " + path
+//        proc = mkdirCommand.execute()
+//        proc.waitFor()
+
+        int value = ProcUtils.executeOnShell("mkdir -p " + path)
+        println "Create right=$path"
+        ProcUtils.executeOnShell("chmod 777 -R " + path)
+        return value
     }
 
     def makeRemoteDirectory(String ip, Integer port, String username, String password, String keyFile, String remotePath) {

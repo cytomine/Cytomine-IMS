@@ -2,6 +2,7 @@ package cytomine.web
 
 import be.cytomine.client.Cytomine
 import be.cytomine.client.models.UploadedFile
+import utils.ProcUtils
 
 import javax.activation.MimetypesFileTypeMap
 
@@ -146,6 +147,7 @@ class ConvertImagesService {
 
                     return convertUploadedFile
                 } else {
+                    log.error "Vipsify cannot be done! Not a success!"
                     uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_CONVERT,false)
                     return uploadedFile
                 }
@@ -169,26 +171,28 @@ class ConvertImagesService {
         }
         log.info "vips is in : $executable"
         //2. Create command
-        def convertCommand = """im_vips2tiff "$originalFilenameFullPath" "$convertedFilenameFullPath":jpeg:95,tile:256x256,pyramid,,,,8"""
+        def convertCommand = """$executable im_vips2tiff "$originalFilenameFullPath" "$convertedFilenameFullPath":jpeg:95,tile:256x256,pyramid,,,,8"""
         log.info "$executable $convertCommand"
 
 
-        //3. Execute
-        def ant = new AntBuilder()   // create an antbuilder
-        try {
-        ant.exec(outputproperty:"cmdOut",
-                errorproperty: "cmdErr",
-                resultproperty:"cmdExit",
-                failonerror: "true",
-                executable: executable) {
-            arg(line:convertCommand)
-        }
-        }catch(Exception e) {
-            log.error e
-        }
-        log.info "return code:  ${ant.project.properties.cmdExit}"
-        log.info "stderr:         ${ant.project.properties.cmdErr}"
-        log.info "stdout:        ${ ant.project.properties.cmdOut}"
-        return ant.project.properties.cmdExit == "0"
+
+//
+//        //3. Execute
+//        def ant = new AntBuilder()   // create an antbuilder
+//        try {
+//        ant.exec(outputproperty:"cmdOut",
+//                errorproperty: "cmdErr",
+//                resultproperty:"cmdExit",
+//                failonerror: "true",
+//                executable: executable) {
+//            arg(line:convertCommand)
+//        }
+//        }catch(Exception e) {
+//            log.error e
+//        }
+//        log.info "return code:  ${ant.project.properties.cmdExit}"
+//        log.info "stderr:         ${ant.project.properties.cmdErr}"
+//        log.info "stdout:        ${ ant.project.properties.cmdOut}"
+        return ProcUtils.executeOnShell(convertCommand) == 0
     }
 }
