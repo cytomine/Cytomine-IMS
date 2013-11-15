@@ -165,13 +165,19 @@ class ConvertImagesService {
     private def vipsify(String originalFilenameFullPath, String convertedFilenameFullPath) {
         //1. Look for vips executable
         println new File(originalFilenameFullPath).exists()
-        def executable = "/usr/bin/vips"
+        def executable = "/usr/local/bin/vips"
         if (System.getProperty("os.name").contains("OS X")) {
             executable = "/usr/local/bin/vips"
         }
         log.info "vips is in : $executable"
         //2. Create command
-        def convertCommand = """$executable im_vips2tiff "$originalFilenameFullPath" "$convertedFilenameFullPath":jpeg:95,tile:256x256,pyramid,,,,8"""
+        //def convertCommand = """$executable im_vips2tiff "$originalFilenameFullPath" "$convertedFilenameFullPath":jpeg:95,tile:256x256,pyramid,,,,8"""
+
+
+        //vips tiffsave Utérus_phase_sécrétante_HE.tif test.rif  --tile --pyramid --compression deflate --tile-width 256 --tile-height 256 --bigtiff
+
+        def convertCommand = """$executable tiffsave "$originalFilenameFullPath" "$convertedFilenameFullPath" --tile --pyramid --compression deflate --tile-width 256 --tile-height 256 --bigtiff"""
+
         log.info "$executable $convertCommand"
 
 

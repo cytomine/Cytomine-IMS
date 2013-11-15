@@ -2,47 +2,44 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/java/be/cytomine/processing/merge" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/java/be/cytomine/processing/merge/CytomineRGBStackMerge.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/conf/Config.groovy" afterPath="$PROJECT_DIR$/grails-app/conf/Config.groovy" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/cytomine-imageserver-grailsPlugins.iml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Cytomine-Java-Client.jar" afterPath="$PROJECT_DIR$/lib/Cytomine-Java-Client.jar" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" afterPath="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" afterPath="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy" afterPath="$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/groovy/utils/ProcUtils.groovy" afterPath="$PROJECT_DIR$/src/groovy/utils/ProcUtils.groovy" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy" afterPath="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy" afterPath="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application.properties" afterPath="$PROJECT_DIR$/application.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="d13dc255-b43f-475e-a378-128c90aae950" name="CYTO-618 - Stocker le chemin de l'exec de l'algo dans la DB" comment="" />
     <ignored path="cytomine-imageserver.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$USER_HOME$/.grails/" />
-    <file path="/Dummy.txt" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381308669780" ignored="false" />
-    <file path="/a.dummy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381407434834" ignored="false" />
+    <file path="/Dummy.txt" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384516127727" ignored="false" />
+    <file path="/a.dummy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384516127726" ignored="false" />
     <file path="/VisionController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381400135574" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381398107749" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384516292959" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/scripts/yui-compressor-ant-task/doc/example/build/application.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1355357617006" ignored="false" />
-    <file path="/fragment.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381151951550" ignored="false" />
-    <file path="/UploadController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380696980605" ignored="false" />
+    <file path="/fragment.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384256970075" ignored="false" />
+    <file path="/UploadController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384332192434" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/grails-app/conf/cytomine/web/APIAuthentificationFilters.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380096324224" ignored="false" />
     <file path="/APIAuthentificationFilters.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380095363569" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/conf/UserUrlMappings.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380095472586" ignored="false" />
-    <file path="/UserUrlMappings.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379416326419" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/security/RestUserController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380098068777" ignored="false" />
-    <file path="/RestUserController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380098065398" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/Cytomine.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381139968630" ignored="false" />
-    <file path="/Cytomine.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381139681120" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/conf/UserUrlMappings.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343007108" ignored="false" />
+    <file path="/UserUrlMappings.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384342986871" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/security/RestUserController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384346301188" ignored="false" />
+    <file path="/RestUserController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384344930555" ignored="false" />
+    <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/Cytomine.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384415076210" ignored="false" />
+    <file path="/Cytomine.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384414945247" ignored="false" />
     <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/models/User.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380015132560" ignored="false" />
     <file path="/User.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380015123953" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/Execute.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381398529515" ignored="false" />
-    <file path="/Execute.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381398459394" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/conf/BootStrap.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379418620618" ignored="false" />
-    <file path="/BootStrap.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379418486562" ignored="false" />
+    <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/Execute.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384515355013" ignored="false" />
+    <file path="/Execute.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384515292180" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/conf/BootStrap.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384344012057" ignored="false" />
+    <file path="/BootStrap.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383913705032" ignored="false" />
     <file path="/SecurityFilters.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379422430690" ignored="false" />
-    <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/HttpClient.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379580976647" ignored="false" />
-    <file path="/HttpClient.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379484356125" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/image/RestUploadedFileController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380868348508" ignored="false" />
-    <file path="/RestUploadedFileController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380867692912" ignored="false" />
+    <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/HttpClient.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381837817710" ignored="false" />
+    <file path="/HttpClient.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381837811191" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/image/RestUploadedFileController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383911226616" ignored="false" />
+    <file path="/RestUploadedFileController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1382600179827" ignored="false" />
     <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/models/UploadedFile.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379581568297" ignored="false" />
     <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/models/UploadedImage.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379491938111" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/grails-app/domain/be/cytomine/image/UploadedFile.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379585310372" ignored="false" />
@@ -68,9 +65,9 @@
     <file path="/UrlMappings.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379578000884" ignored="false" />
     <file path="/ProcUtils.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380541088714" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/image/RestAbstractImageGroupController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1379594292776" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/upload/UploadFormView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380698501810" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/upload/UploadFormView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384332101910" ignored="false" />
     <file path="/UploadFormView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380112382957" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/web-app/lib.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381398107749" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/lib.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381826598415" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/grails-app/views/layouts/viewport.gsp" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381406077302" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/security/PermissionService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380094466781" ignored="false" />
     <file path="/PermissionService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380094424353" ignored="false" />
@@ -78,12 +75,12 @@
     <file path="/viewport.gsp" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381405664038" ignored="false" />
     <file path="$PROJECT_DIR$/../../../../equella.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380191149954" ignored="false" />
     <file path="/equella.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380109649523" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/conf/Config.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380112286432" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/conf/Config.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384344604387" ignored="false" />
     <file path="/FileSystemService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380538952362" ignored="false" />
     <file path="/SearchCollection.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380869005933" ignored="false" />
     <file path="$PROJECT_DIR$/../../../../cytomine-client-java/Cytomine-Java-Client/src/be/cytomine/client/collections/SearchCollection.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380869013422" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/BasicInstanceBuilder.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381152456110" ignored="false" />
-    <file path="/BasicInstanceBuilder.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381152449533" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/BasicInstanceBuilder.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343773684" ignored="false" />
+    <file path="/BasicInstanceBuilder.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384334663611" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/security/AnnotationTermSecurityTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380872092202" ignored="false" />
     <file path="/AnnotationTermSecurityTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380872056626" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/dependency/UserAnnotationDependencyTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1380873294755" ignored="false" />
@@ -117,18 +114,128 @@
     <file path="/DataSource.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381386948119" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/models/ImageModel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381407033425" ignored="false" />
     <file path="/ImageModel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381399856140" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/BrowseImageView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381406645056" ignored="false" />
-    <file path="/BrowseImageView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381406640872" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/BrowseImageView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381820925615" ignored="false" />
+    <file path="/BrowseImageView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381820924258" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/templates/explorer/MultiDimensionSpinnerPanel.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381404807322" ignored="false" />
     <file path="/MultiDimensionSpinnerPanel.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381404771330" ignored="false" />
-    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/MultiDimensionPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381409322902" ignored="false" />
-    <file path="/MultiDimensionPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381409030470" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/MultiDimensionPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381736026136" ignored="false" />
+    <file path="/MultiDimensionPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381736025798" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/ExplorerTabs.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381409264772" ignored="false" />
     <file path="/ExplorerTabs.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381409249508" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/controllers/ExplorerController.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381409450715" ignored="false" />
     <file path="/ExplorerController.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381406400457" ignored="false" />
     <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/InformationsPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381407214335" ignored="false" />
     <file path="/InformationsPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381407214335" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/templates/dashboard/Dashboard.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474637978" ignored="false" />
+    <file path="/Dashboard.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474497326" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/templates/dashboard/ProjectInfoContent.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474635381" ignored="false" />
+    <file path="/ProjectInfoContent.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474503759" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/templates/project/ProjectDetail.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474744133" ignored="false" />
+    <file path="/ProjectDetail.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474696485" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/activity/ActivityView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474650825" ignored="false" />
+    <file path="/ActivityView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381474546724" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/utils/geometry/SimplifyGeometryService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381730384053" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/GenericAnnotationTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384256676403" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/css/cytomine-layout.css" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381741202863" ignored="false" />
+    <file path="/cytomine-layout.css" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381741202147" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/LayerSwitcherPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381739947971" ignored="false" />
+    <file path="/LayerSwitcherPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381739936212" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/ontology/OntologyTreeView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381821450220" ignored="false" />
+    <file path="/OntologyTreeView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381821359854" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/AnnotationLayer.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381819891331" ignored="false" />
+    <file path="/AnnotationLayer.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381819883378" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/templates/explorer/OntologyTree.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381757614341" ignored="false" />
+    <file path="/OntologyTree.tpl.html" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381757168244" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/explorer/OntologyPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381757061078" ignored="false" />
+    <file path="$USER_HOME$/.grails/2.2.4/projects/cytomine/plugins/cache-1.0.1/src/java/grails/plugin/cache/Cacheable.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381823200516" ignored="false" />
+    <file path="/Cacheable.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381823199904" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/domain/be/cytomine/command/Command.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381823220419" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/command/CommandService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381823252098" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/domain/be/cytomine/social/SharedAnnotation.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381823263981" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/utils/bootstrap/BootstrapTestDataService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381825310716" ignored="false" />
+    <file path="/BootstrapTestDataService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381825068497" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/utils/database/TableService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381826060845" ignored="false" />
+    <file path="/TableService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381826051607" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/project/ProjectSearchPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381827870113" ignored="false" />
+    <file path="/ProjectSearchPanel.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381827483698" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/views/project/ProjectView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381827816624" ignored="false" />
+    <file path="/ProjectView.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381827802902" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/controllers/AuthController.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381836723607" ignored="false" />
+    <file path="/AuthController.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1381836521120" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/security/LoginController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384253016994" ignored="false" />
+    <file path="/LoginController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384253015807" ignored="false" />
+    <file path="$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/ivydata-7.0.42.properties" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1382528658177" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/UploadedFileTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383911528029" ignored="false" />
+    <file path="/UploadedFileTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383911473219" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/UploadedFileAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383911526740" ignored="false" />
+    <file path="/UploadedFileAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383911518854" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/ImageServerTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383916605891" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/domain/be/cytomine/image/AbstractImage.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383914503919" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/utils/bootstrap/BootstrapProdDataService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383914609989" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/java/be/cytomine/processing/structure/ConfusionMatrix.java" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383914907671" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/CytomineDomain.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383914999803" ignored="false" />
+    <file path="/CytomineDomain.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383914998965" ignored="false" />
+    <file path="/ImageServerTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383915449551" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/AbstractImageTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383915564991" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/processing/ImageFilterService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383915692490" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/ImageGroupTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383917952462" ignored="false" />
+    <file path="/ImageGroupTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383915800572" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/image/multidim/ImageGroupService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383915861681" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/image/ImageInstanceService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384258232893" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/image/RestImageInstanceController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383915965253" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/ImageInstanceAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383916031027" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/ImageInstanceTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383916078281" ignored="false" />
+    <file path="/ImageInstanceTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383916071660" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/utils/ParamsService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384258321951" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/server/resolvers/Resolver.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383916589631" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/processing/ProcessingController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383918510043" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/image/ImageProcessingService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383918617242" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/domain/be/cytomine/image/server/ImageServer.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383918672564" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/Infos.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1383918794315" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/lib/DataTables-1.9.0/media/js/jquery.dataTables.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384250975431" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/ProjectAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384251505019" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/project/ProjectService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384415390875" ignored="false" />
+    <file path="/ProjectAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384251492427" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/ProjectTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343701927" ignored="false" />
+    <file path="/ProjectService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384415342140" ignored="false" />
+    <file path="/ProjectTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384251463990" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/ontology/PropertyService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384251620548" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/RelationTermAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384251661601" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/ontology/ReviewedAnnotationService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384251784064" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/SearchTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384252031280" ignored="false" />
+    <file path="/SearchTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384252026581" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/SearchAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384254111732" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/image/server/StorageService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384252282085" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/UserAnnotationAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384252872312" ignored="false" />
+    <file path="/Config.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384253473855" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/AnnotationDomainAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384256593433" ignored="false" />
+    <file path="/GenericAnnotationTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384256673215" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/utils/ReportService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384262209293" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/ontology/RestUserAnnotationController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384260888985" ignored="false" />
+    <file path="/ReportService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384262206991" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/ontology/RestAlgoAnnotationController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384257063183" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/controllers/be/cytomine/api/ontology/RestReviewedAnnotationController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384257051382" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/api/UrlApi.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384260635449" ignored="false" />
+    <file path="/RestUserAnnotationController.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384260873094" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/web-app/application/utils/CustomModal.js" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384325163075" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/AnnotationDomain.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384338657688" ignored="false" />
+    <file path="/AnnotationDomain.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384338624289" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/domain/be/cytomine/security/SecUser.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384346608970" ignored="false" />
+    <file path="/SecUser.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384346566975" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/src/groovy/be/cytomine/test/http/UserAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384345350989" ignored="false" />
+    <file path="/UserAPI.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343095701" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/UserTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384346259041" ignored="false" />
+    <file path="/UserTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384345985750" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/JobTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343682913" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/ReviewedAnnotationListingTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343714286" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/ReviewedAnnotationTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343723941" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/UserAnnotationListingTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343740171" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/test/functional/be/cytomine/dependency/ProjectDependencyTests.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384343748847" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/security/CASLdapUserDetailsService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384504315895" ignored="false" />
+    <file path="/CASLdapUserDetailsService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384344675788" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/domain/be/cytomine/security/User.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384346604060" ignored="false" />
+    <file path="$PROJECT_DIR$/../cytomine-web/grails-app/services/be/cytomine/utils/ModelService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384346637848" ignored="false" />
+    <file path="/ModelService.groovy" changelist="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" time="1384346637520" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -189,30 +296,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="VisionController.groovy" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy">
+      <file leaf-file-name="UploadController.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="44" column="47" selection-start="1029" selection-end="1029" vertical-scroll-proportion="0.46296296">
-              <folding>
-                <element signature="e#32#96#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CytomineRGBStackMerge.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/be/cytomine/processing/merge/CytomineRGBStackMerge.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="81" selection-start="658" selection-end="658" vertical-scroll-proportion="0.0">
+            <state line="313" column="11" selection-start="13409" selection-end="13409" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UrlMappings.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy">
+      <file leaf-file-name="VisionController.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="105" selection-start="252" selection-end="252" vertical-scroll-proportion="0.0">
+            <state line="325" column="59" selection-start="12138" selection-end="12138" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ImageProcessingService.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageProcessingService.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="68" column="26" selection-start="2502" selection-end="2502" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Cytomine.class" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/lib/Cytomine-Java-Client.jar!/be/cytomine/client/Cytomine.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="234" column="50" selection-start="17839" selection-end="17839" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DeployImagesService.groovy" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="26" column="53" selection-start="737" selection-end="737" vertical-scroll-proportion="0.99293286">
               <folding />
             </state>
           </provider>
@@ -236,22 +359,22 @@
         <option value="$PROJECT_DIR$/grails-app/conf/cytomine/web/SecurityFilters.groovy" />
         <option value="$PROJECT_DIR$/grails-app/conf/BuildConfig.groovy" />
         <option value="$PROJECT_DIR$/grails-app/conf/Config.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" />
         <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy" />
         <option value="$PROJECT_DIR$/src/groovy/utils/ProcUtils.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy" />
         <option value="$PROJECT_DIR$/src/java/CytomineRGBStackMerge.java" />
         <option value="$PROJECT_DIR$/src/java/be/cytomine/processing/merge/CytomineRGBStackMerge.java" />
         <option value="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="172" />
-    <option name="y" value="87" />
-    <option name="width" value="1660" />
-    <option name="height" value="1010" />
+    <option name="x" value="-1712" />
+    <option name="y" value="119" />
+    <option name="width" value="1142" />
+    <option name="height" value="690" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -279,6 +402,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -408,28 +532,6 @@
               <option name="myItemId" value="Cytomine-Java-Client.jar" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Cytomine-Java-Client.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -513,13 +615,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver-grailsPlugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+              <option name="myItemId" value="cytomine-processing" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails-app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="conf" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spring" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -531,7 +644,7 @@
     <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="options.lastSelected" value="appearance" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../cytomine-web" />
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="GoToClass.includeJavaFiles" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
@@ -539,9 +652,9 @@
     <property name="restartRequiresConfirmation" value="true" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -558,15 +671,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Grails.Grails:cytomine-imageserver">
-    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy">
-      <module name="" />
-      <setting name="path" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="file://$PROJECT_DIR$" />
-      <setting name="debug" value="false" />
-      <method />
-    </configuration>
     <configuration default="true" type="GrailsRunConfigurationType" factoryName="Grails">
       <module name="" />
       <setting name="vmparams" value="" />
@@ -574,6 +678,15 @@
       <setting name="depsClasspath" value="true" />
       <setting name="passParentEnv" value="true" />
       <setting name="launchBrowser" value="true" />
+      <method />
+    </configuration>
+    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy">
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="file://$PROJECT_DIR$" />
+      <setting name="debug" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -674,8 +787,8 @@
     </option>
   </component>
   <component name="ToolWindowManager">
-    <frame x="172" y="87" width="1660" height="1010" extended-state="0" />
-    <editor active="false" />
+    <frame x="-1712" y="119" width="1142" height="690" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -683,20 +796,20 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.41722974" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Grails View" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.30669144" sideWeight="0.5877193" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4122807" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3859489" sideWeight="0.5827703" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31230927" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32786885" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.326572" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32765532" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298122" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -765,79 +878,14 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/cytomine/web/SecurityFilters.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="24" selection-start="21" selection-end="21" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/Cytomine-Java-Client.jar!/be/cytomine/client/models/Model.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="0" selection-start="2109" selection-end="2109" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/Cytomine-Java-Client.jar!/be/cytomine/client/Cytomine.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="234" column="28" selection-start="18034" selection-end="18034" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageProcessingService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="50" selection-start="589" selection-end="589" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/Utils/grails-2.2.4/lib/org.apache.tomcat/tomcat-catalina/jars/tomcat-catalina-7.0.39-sources.jar!/org/apache/catalina/core/StandardWrapperValve.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="221" column="0" selection-start="9405" selection-end="9405" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/spring/resources.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="28" selection-start="151" selection-end="151" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/BuildConfig.groovy">
       <provider selected="true" editor-type-id="text-editor">
         <state line="45" column="18" selection-start="1721" selection-end="1738" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="166" column="35" selection-start="7328" selection-end="7328" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="41" selection-start="591" selection-end="591" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/groovy/utils/ProcUtils.groovy">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="0" selection-start="91" selection-end="91" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/Config.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="55" selection-start="928" selection-end="928" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="27" selection-start="1429" selection-end="1429" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="33" selection-start="3115" selection-end="3115" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/be/cytomine/processing/merge/CytomineRGBStackMerge.java">
@@ -847,19 +895,82 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.42.jar!/javax/servlet/http/Cookie.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="25" selection-start="1418" selection-end="1427" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/Config.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="55" selection-start="928" selection-end="928" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/DataSource.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="49" selection-start="325" selection-end="325" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/Utils/grails-2.2.4/lib/org.apache.tomcat/tomcat-servlet-api/jars/tomcat-servlet-api-7.0.39-sources.jar!/javax/servlet/http/Cookie.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="58" selection-start="1581" selection-end="1581" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="105" selection-start="252" selection-end="252" vertical-scroll-proportion="0.0">
+        <state line="13" column="105" selection-start="252" selection-end="252" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/spring/resources.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="28" selection-start="151" selection-end="151" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="8" selection-start="601" selection-end="601" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="8" selection-start="459" selection-end="459" vertical-scroll-proportion="-1.9117647">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/Cytomine-Java-Client.jar!/be/cytomine/client/Cytomine.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="234" column="50" selection-start="17839" selection-end="17839" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="47" selection-start="1029" selection-end="1029" vertical-scroll-proportion="0.46296296">
-          <folding>
-            <element signature="e#32#96#0" expanded="true" />
-          </folding>
+        <state line="325" column="59" selection-start="12138" selection-end="12138" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageProcessingService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="26" selection-start="2502" selection-end="2502" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="313" column="11" selection-start="13409" selection-end="13409" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="53" selection-start="737" selection-end="737" vertical-scroll-proportion="0.99293286">
+          <folding />
         </state>
       </provider>
     </entry>
@@ -871,7 +982,7 @@
           <value>
             <GrailsSettings>
               <option name="buildConfigCrc" value="2008302052" />
-              <option name="pluginDependenciesCrc" value="-919302079" />
+              <option name="pluginDependenciesCrc" value="-1749536665" />
               <option name="properties">
                 <map>
                   <entry key="grails.global.plugins.dir" value="$USER_HOME$/.grails/2.2.4/global-plugins" />

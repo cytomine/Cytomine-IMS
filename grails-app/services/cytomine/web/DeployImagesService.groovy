@@ -52,12 +52,14 @@ class DeployImagesService {
 
 
     AbstractImage deployUploadedFile(Cytomine cytomine,UploadedFile uploadedFile,  Collection<Storage> storages) {
-
+        log.info "deployUploadedFile"
         //copy it
         uploadedFile = copyUploadedFile(cytomine,uploadedFile, storages)
-
+        log.info "###############################################"
+        log.info "############ADD IMAGE################"
+        log.info "###############################################"
         AbstractImage abstractImage = cytomine.addNewImage(uploadedFile.id)
-        log.info "addNewImage=$abstractImage"
+
         return abstractImage
     }
 }

@@ -5,8 +5,10 @@ import be.cytomine.client.models.AbstractImage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.client.models.User
 import grails.converters.JSON
+import org.apache.http.cookie.Cookie
 import org.springframework.security.crypto.codec.Base64
 import utils.FilesUtils
+import utils.ProcUtils
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -29,12 +31,33 @@ class UploadController {
 
     def test = {
         println "test"
+        String pubKey = grailsApplication.config.grails.imageServerPublicKey
+        String privKey = grailsApplication.config.grails.imageServerPrivateKey
+        Cytomine cytomine = new Cytomine("http://beta.cytomine.be", pubKey, privKey, "./")
+        List<Cookie> cookies = cytomine.retrieveAuthCookie("/j_spring_security_check", "j_username=johndoe&j_password=test");
+        println cookies
 
-        if (tryAPIAuthentification(request)) {
-            println "CYTOMINE LOGGIN OK"
-        } else {
-            println "CYTOMINE LOGGIN NOK"
-        }
+        Cookie cook = cookies.first()
+
+        println cook
+                 //bHJvbGx1czoxMzgzMTM4NjkxMzE1OjhjNTE1NjQ4NWI0N2M0N2ZhMTUwZGZiMjRhNGU5ZGY3
+                 //grails_remember_me
+
+        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("grails_remember_me","bHJvbGx1czoxMzgzMTM4NjkxMzE1OjhjNTE1NjQ4NWI0N2M0N2ZhMTUwZGZiMjRhNGU5ZGY3")
+        cookie.setDomain("beta.cytomine.be")
+        cookie.setPath("/")
+        //javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(cook.name,cook.value)
+
+        response.addCookie(cookie)
+
+        javax.servlet.http.Cookie cookie2 = new javax.servlet.http.Cookie(cook.name,cook.value)
+        cookie2.setDomain("beta.cytomine.be")
+        cookie2.setPath("/")
+        cookie2.
+        response.addCookie(cookie2)
+
+        render '<img src="http://beta.cytomine.be/api/image/84215199/thumb.png" alt="out_final_52_36__overlap_..." style="max-height:260px; max-width:248px !important;">'
+
     }
 
     def upload = {
@@ -109,9 +132,9 @@ class UploadController {
 
             log.info "init background service..."
             backgroundService.execute("convertAndDeployImage", {
-                log.info "convert file..."
+                log.info "convert file...uploadedFile=$uploadedFile"
                 def uploadedFiles = convertImagesService.convertUploadedFile(cytomine, uploadedFile, currentUserId, allowedMime, mimeToConvert, zipMime)
-
+                log.info "uploadedFiles=$uploadedFiles"
 
                 Collection<AbstractImage> abstractImagesCreated = []
                 Collection<UploadedFile> deployedFiles = []
@@ -122,6 +145,7 @@ class UploadController {
 
                     def storages = []
                     uploadedFile.getList("storages").each {
+                        log.info "get storage $it with cytomine: $cytomineUrl ${user.publicKey} ${user.privateKey}"
                         storages << cytomine.getStorage(it)
                     }
 
@@ -194,7 +218,11 @@ class UploadController {
 
         println "SRC=" + uploadedFilePath.absolutePath
         println "DEST=" + new File(pathFile).absolutePath
-        uploadedFilePath.renameTo(new File(pathFile))
+        //uploadedFilePath.renameTo(new File(pathFile))
+        def command = "mv ${uploadedFilePath.absolutePath} ${new File(pathFile).absolutePath}"
+        log.info "Command=$command"
+        ProcUtils.executeOnShell(command)
+
         println "File created: " + new File(pathFile).exists()
         return [newFilename: newFilename, extension: extension]
     }
@@ -235,7 +263,9 @@ class UploadController {
         String content_type = (request.getHeader("content-type") != null) ? request.getHeader("content-type") : ""
         content_type = (request.getHeader("Content-Type") != null) ? request.getHeader("Content-Type") : content_type
         content_type = (request.getHeader("content-type-full") != null) ? request.getHeader("content-type-full") : content_type
-
+        if(content_type=="null") {
+            content_type =""
+        }
 
         //println "content_type=" + content_type
         String date = (request.getHeader("date") != null) ? request.getHeader("date") : ""
@@ -266,13 +296,24 @@ class UploadController {
         log.info "method=${request.getMethod()}"
 
         println "accessKey=$accessKey"
+
+        println "Connection Cytomine: $cytomineUrl $ISPubKey $ISPrivKey"
+
         Cytomine cytomine = new Cytomine(cytomineUrl, ISPubKey,ISPrivKey, "./")
+
+        println "cytomine.getKeys($accessKey)"
+
         User user = cytomine.getKeys(accessKey)
-        long id = cytomine.getUser(accessKey).id
-        if (!user) {
+
+        println "cytomine.getUser($accessKey)"
+
+        def retrieveUser = cytomine.getUser(accessKey)
+        if (!user || retrieveUser?.id==null) {
             println "User not found with key $accessKey!"
-            throw new Exception("Auth failed: User not found with key $accessKey!")
+            throw new Exception("Auth failed: User not found with key $accessKey! May be ImageServer user is not an admin!")
         }
+
+        long id = retrieveUser.id
 
         //TODO: get its private key
         String key = user.get("privateKey")
