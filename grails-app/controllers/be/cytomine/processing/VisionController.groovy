@@ -1,5 +1,6 @@
 package be.cytomine.processing
 
+import be.cytomine.client.Cytomine
 import be.cytomine.processing.image.filters.Colour_Deconvolution
 import be.cytomine.processing.merge.CytomineRGBStackMerge
 import http.HttpClient
@@ -97,6 +98,7 @@ class VisionController {
         return ImageIO.read(inputStream)
     }
 
+
     /**
      * Response an image as a HTTP response
      * @param bufferedImage Image
@@ -177,11 +179,14 @@ class VisionController {
     def process = {
 
         if (!request.queryString) return
-        def split = request.queryString.split("url=http://")
+        def split = request.queryString.split("url=")
+        Boolean cytomineAuthenticationRequired = params.boolean('cytomine_auth')
         String imageURL =  "/images/notavailable.jpg"
         if (split.size() > 0) {
-            imageURL = "http://" + split[1]
+            imageURL = split[1]
         }
+
+        println "cytomineAuthenticationRequired : $cytomineAuthenticationRequired"
 
         /*log.info "URL " + params.url
         log.info "METHOD " + params.method
@@ -190,7 +195,17 @@ class VisionController {
 
         try {
             /* Create Buffered Image  From URL */
-            BufferedImage bufferedImage = getImageFromURL(imageURL)
+            BufferedImage bufferedImage
+            if (cytomineAuthenticationRequired) {
+                String cytomineHost = params.host
+                String cytominePublicKey = params.public_key
+                String cytominePrivateKey = params.private_key
+                Cytomine cytomine = new Cytomine((String)params.host,cytominePublicKey, cytominePrivateKey, "/tmp")
+                String fullURL = cytomine.host + cytomine.basePath + imageURL;
+                bufferedImage = cytomine.downloadPictureInBufferedImage(fullURL)
+            } else {
+                bufferedImage = getImageFromURL(imageURL)
+            }
 
             /* Process the BufferedImage */
 
@@ -407,6 +422,7 @@ class VisionController {
             responseBufferedImage(bufferedImage)
 
         } catch (Exception e) {
+            e.printStackTrace()
             BufferedImage bufferedImage = getImageFromURL("/images/notavailable.jpg")
             responseBufferedImage(bufferedImage)
         }

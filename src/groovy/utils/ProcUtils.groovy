@@ -18,6 +18,7 @@ class ProcUtils {
                 .directory(workingDir)
                 .redirectErrorStream(true)
                 .start()
+
         process.inputStream.eachLine { println it }
         process.waitFor();
         int value = process.exitValue()

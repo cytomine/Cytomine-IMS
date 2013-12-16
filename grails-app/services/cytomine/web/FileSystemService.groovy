@@ -31,7 +31,7 @@ class FileSystemService {
 
         int value = ProcUtils.executeOnShell("mkdir -p " + path)
         println "Create right=$path"
-        ProcUtils.executeOnShell("chmod 777 -R " + path)
+        ProcUtils.executeOnShell("chmod -R 777 " + path)
         return value
     }
 

@@ -17,6 +17,35 @@
         <sourceRoots />
       </configuration>
     </facet>
+    <facet type="web" name="Web">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/src/templates/war/web.xml" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/src/templates/war" relative="/WEB-INF" />
+        </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/java" />
+          <root url="file://$MODULE_DIR$/grails-app/utils" />
+          <root url="file://$MODULE_DIR$/src/groovy" />
+          <root url="file://$MODULE_DIR$/grails-app/i18n" />
+          <root url="file://$MODULE_DIR$/grails-app/controllers" />
+          <root url="file://$MODULE_DIR$/grails-app/domain" />
+          <root url="file://$MODULE_DIR$/grails-app/services" />
+          <root url="file://$MODULE_DIR$/grails-app/taglib" />
+        </sourceRoots>
+      </configuration>
+    </facet>
+    <facet type="hibernate" name="Hibernate">
+      <configuration>
+        <datasource-map>
+          <unit-entry name="Gorm" />
+          <unit-entry name="sessionFactory" />
+        </datasource-map>
+        <naming-strategy-map />
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
@@ -33,18 +62,25 @@
       <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="grails-2.1.1" level="application" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (cytomine-imageserver)">
         <CLASSES>
           <root url="file://$MODULE_DIR$/lib" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.eclipse.jdt.core.compiler/ecj/jars/ecj-3.7.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.liquibase/liquibase-core/jars/liquibase-core-2.0.5.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-ehcache/jars/hibernate-ehcache-3.6.10.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.ehcache/ehcache-core/jars/ehcache-core-2.4.6.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/dom4j/dom4j/jars/dom4j-1.6.1.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/antlr/antlr/jars/antlr-2.7.7.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.validation/validation-api/jars/validation-api-1.0.0.GA.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-validator/jars/hibernate-validator-4.1.0.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-commons-annotations/jars/hibernate-commons-annotations-3.2.0.Final.jar!/" />
+          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-core/jars/hibernate-core-3.6.10.Final.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.42.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-juli/jars/tomcat-embed-logging-juli-7.0.42.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-catalina-ant/jars/tomcat-catalina-ant-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.eclipse.jdt.core.compiler/ecj/jars/ecj-3.7.2.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-log4j/jars/tomcat-embed-logging-log4j-7.0.42.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.42.jar!/" />
           <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-annotations-api/jars/tomcat-annotations-api-7.0.42.jar!/" />
@@ -60,8 +96,13 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="grails-2.2.4" level="application" />
+    <orderEntry type="library" name="grails-2.2.1" level="application" />
     <orderEntry type="module" module-name="cytomine-imageserver-grailsPlugins" />
+    <orderEntry type="library" name="grails-2.2.4" level="application" />
+    <orderEntry type="library" name="grails-2.2.4" level="application" />
+    <orderEntry type="library" name="grails-2.2.4" level="application" />
+    <orderEntry type="library" name="grails-2.2.4" level="application" />
+    <orderEntry type="library" name="grails-2.2.4" level="application" />
   </component>
 </module>
 

@@ -81,7 +81,8 @@ class ConvertImagesService {
         if (!mainUploadedFile) return null //ok, it's not a special file
 
         //create nested file
-        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.TODEPLOY,true)
+
+        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.TO_DEPLOY,true)
         uploadedFiles << mainUploadedFile
         pathsAndExtensions.each { it ->
             if (it.extension != MRXS_EXTENSION && it.extension != VMS_EXTENSION) {
@@ -126,7 +127,18 @@ class ConvertImagesService {
 
             try {
 
-                Boolean success = vipsify(originalFilenameFullPath, convertedFilenameFullPath)
+
+                Boolean success = false
+                if (uploadedFile.getStr("ext") == "bif") { //bad use STATIC STRING FOR FORMAT
+                    String bif2tifFilename = originalFilenameFullPath.replaceAll(".bif", ".tif")
+                    String layer2bif2tifFilename = originalFilenameFullPath.replaceAll(".bif", "_layer2.tif")
+                    rename(originalFilenameFullPath, bif2tifFilename)
+                    success = extractLayer(bif2tifFilename, layer2bif2tifFilename, 2)
+                    rename(bif2tifFilename, originalFilenameFullPath)
+                    success = convert(layer2bif2tifFilename, convertedFilenameFullPath)
+                } else {
+                    success = vipsify(originalFilenameFullPath, convertedFilenameFullPath)
+                }
 
                 if (success) {
 
@@ -162,43 +174,50 @@ class ConvertImagesService {
 
     }
 
-    private def vipsify(String originalFilenameFullPath, String convertedFilenameFullPath) {
+    private def convert(String source, String target) {
+        def command = """convert $source -define tiff:tile-geometry=256x256 -compress jpeg 'ptif:$target'"""
+        log.info "$command"
+        return ProcUtils.executeOnShell(command) == 0
+
+    }
+
+    private def rename(String source, String target) {
+        def executable = "mv"
+        def command = """$executable $source $target"""
+        log.info "$command"
+        return ProcUtils.executeOnShell(command) == 0
+    }
+    
+    private def extractLayer(String source, String target, Integer layer) {
         //1. Look for vips executable
-        println new File(originalFilenameFullPath).exists()
+        println new File(source).exists()
+        def executable = "convert"
+        if (System.getProperty("os.name").contains("OS X")) {
+            executable = "/usr/local/bin/convert"
+        }
+        log.info "convert is in : $executable"
+
+        def command = """$executable $source[$layer] $target"""
+
+        log.info "$command"
+
+
+        return ProcUtils.executeOnShell(command) == 0
+    }
+
+    private def vipsify(String source, String target) {
+        //1. Look for vips executable
+        println new File(source).exists()
         def executable = "/usr/local/bin/vips"
         if (System.getProperty("os.name").contains("OS X")) {
             executable = "/usr/local/bin/vips"
         }
         log.info "vips is in : $executable"
-        //2. Create command
-        //def convertCommand = """$executable im_vips2tiff "$originalFilenameFullPath" "$convertedFilenameFullPath":jpeg:95,tile:256x256,pyramid,,,,8"""
 
-
-        //vips tiffsave Utérus_phase_sécrétante_HE.tif test.rif  --tile --pyramid --compression deflate --tile-width 256 --tile-height 256 --bigtiff
-
-        def convertCommand = """$executable tiffsave "$originalFilenameFullPath" "$convertedFilenameFullPath" --tile --pyramid --compression deflate --tile-width 256 --tile-height 256 --bigtiff"""
+        def convertCommand = """$executable tiffsave "$source" "$target" --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256 --bigtiff"""
 
         log.info "$executable $convertCommand"
 
-
-
-//
-//        //3. Execute
-//        def ant = new AntBuilder()   // create an antbuilder
-//        try {
-//        ant.exec(outputproperty:"cmdOut",
-//                errorproperty: "cmdErr",
-//                resultproperty:"cmdExit",
-//                failonerror: "true",
-//                executable: executable) {
-//            arg(line:convertCommand)
-//        }
-//        }catch(Exception e) {
-//            log.error e
-//        }
-//        log.info "return code:  ${ant.project.properties.cmdExit}"
-//        log.info "stderr:         ${ant.project.properties.cmdErr}"
-//        log.info "stdout:        ${ ant.project.properties.cmdOut}"
         return ProcUtils.executeOnShell(convertCommand) == 0
     }
 }

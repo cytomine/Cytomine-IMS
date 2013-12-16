@@ -67,7 +67,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
+        grails.serverURL = "http://image.cytomine.be"
     }
 }
 
@@ -120,3 +120,30 @@ log4j = {
          }
      }
 }
+
+grails.storageBufferPath="/tmp/imageserver_buffer"
+grails.imageServerPublicKey="0cd1892a-6ad4-4f45-afea-972e028aea51"
+grails.imageServerPrivateKey="9a7121c3-37ab-46aa-9429-712d9cdc31be"
+// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
+
+/* remove this line 
+// GSP settings
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside null
+                scriptlet = 'none' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        filteringCodecForContentType {
+            //'text/html' = 'html'
+        }
+    }
+}
+remove this line */
