@@ -28,8 +28,8 @@ class VisionController {
         def urls = extractParams("url")
         def colors = extractParams("color")
         colors = colors.collect{
-            def val = it.split(",").collect{Integer.parseInt(it)}
-            return new Color(val[0],val[1],val[2])
+            int intValue = Integer.parseInt(it,16);
+            return new Color( intValue );
         }
 
         def zoomifyParam = params.get('zoomify')
