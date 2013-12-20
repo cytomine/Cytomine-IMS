@@ -122,8 +122,8 @@ log4j = {
 }
 
 grails.storageBufferPath="/tmp/imageserver_buffer"
-grails.imageServerPublicKey="0cd1892a-6ad4-4f45-afea-972e028aea51"
-grails.imageServerPrivateKey="9a7121c3-37ab-46aa-9429-712d9cdc31be"
+grails.imageServerPublicKey="5f76a8e5-68a5-408e-8ce7-35648b650f3c"
+grails.imageServerPrivateKey="168ed492-ece7-4947-8ed1-b8b8bb5e7325"
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
 /* remove this line 

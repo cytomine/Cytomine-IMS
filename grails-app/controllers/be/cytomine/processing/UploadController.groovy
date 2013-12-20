@@ -91,11 +91,11 @@ class UploadController {
             def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm", "ndpi", "mrxs", "vms", "svs", "opt", "jp2", "scn", "bif"]
 
 
-            def currentUserId = user.id
+            long currentUserId = user.id
             long timestamp = new Date().getTime()
 
             log.info "init cytomine..."
-            Cytomine cytomine = new Cytomine(cytomineUrl, user.publicKey, user.privateKey, "./")
+            Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey, "./")
 
             def idStorage = Integer.parseInt(params['idStorage'] + "")
             def idProject = null
@@ -103,10 +103,10 @@ class UploadController {
                 idProject = Integer.parseInt(params['idProject'] + "")
             } catch (Exception e) {
             }
-            def filename = params['files[].name']
-            def uploadedFilePath = new File(params['files[].path'])
+            String filename = (String) params['files[].name']
+            def uploadedFilePath = new File((String) params['files[].path'])
             def size = uploadedFilePath.size()
-            def contentType = params['files[].content_type']
+            String contentType = params['files[].content_type']
 
 
             log.info "idStorage=$idStorage"
@@ -122,11 +122,22 @@ class UploadController {
             //Move file in the buffer dir
             log.info "move file in buffer dir..."
             def newFile = moveFileTmpDir(uploadedFilePath, storageBufferPath, currentUserId, filename, timestamp)
+            String extension = newFile.extension
 
             //Add uploadedfile on Cytomine
-            def path = currentUserId + "/" + timestamp.toString() + "/" + newFile.newFilename
+            String path = currentUserId + "/" + timestamp.toString() + "/" + newFile.newFilename
             log.info "create uploaded file on cytomine..."
-            def uploadedFile = cytomine.addUploadedFile(filename, path, storageBufferPath.toString(), size, newFile.extension, contentType, [idProject], [idStorage], currentUserId)
+
+            def uploadedFile = cytomine.addUploadedFile(
+                    filename,
+                    path,
+                    storageBufferPath.toString(),
+                    size,
+                    extension,
+                    contentType,
+                    [idProject],
+                    [idStorage],
+                    currentUserId)
             log.info "uploadedFile=$uploadedFile"
             def responseContent = createResponseContent(filename, size, contentType, uploadedFile.toJSON())
 
