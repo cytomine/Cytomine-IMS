@@ -3,7 +3,7 @@ class BootStrap {
     def imageServerService
 
     def init = { servletContext ->
-        imageServerService.start()
+        //imageServerService.start()
     }
     def destroy = {
     }

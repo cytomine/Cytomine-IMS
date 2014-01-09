@@ -1,8 +1,8 @@
 dataSource {
     pooled = true
-    driverClassName = "org.postgresql.Driver"
-    username = "postgres"
-    dialect = org.hibernatespatial.postgis.PostgisDialect
+//    driverClassName = "org.postgresql.Driver"
+//    username = "postgres"
+//    dialect = org.hibernatespatial.postgis.PostgisDialect
 }
 hibernate {
     cache.use_second_level_cache = true

@@ -5,6 +5,8 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.dependency.resolver = "maven"
+grails.project.fork = [ test: false, run: false, war: false, console: false ]
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -39,7 +41,10 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
+
+        build ':tomcat:7.0.47'
+        runtime ':hibernate:3.6.10.6'
+
         runtime ":jquery:1.8.0"
         runtime ":resources:1.1.6"
 
@@ -50,7 +55,7 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        build ":tomcat:$grailsVersion"
+
 
         runtime ":database-migration:1.1"
 

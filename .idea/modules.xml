@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cytomine-imageserver.iml" filepath="$PROJECT_DIR$/cytomine-imageserver.iml" />
       <module fileurl="file://$PROJECT_DIR$/cytomine-imageserver-grailsPlugins.iml" filepath="$PROJECT_DIR$/cytomine-imageserver-grailsPlugins.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cytomine-imageserver-grailsPlugins.iml" filepath="$PROJECT_DIR$/cytomine-imageserver-grailsPlugins.iml" />
     </modules>
   </component>
 </project>

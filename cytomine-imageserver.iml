@@ -68,37 +68,33 @@
       <library name="Grails User Library (cytomine-imageserver)">
         <CLASSES>
           <root url="file://$MODULE_DIR$/lib" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.eclipse.jdt.core.compiler/ecj/jars/ecj-3.7.2.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.liquibase/liquibase-core/jars/liquibase-core-2.0.5.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-ehcache/jars/hibernate-ehcache-3.6.10.Final.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/net.sf.ehcache/ehcache-core/jars/ehcache-core-2.4.6.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/dom4j/dom4j/jars/dom4j-1.6.1.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/antlr/antlr/jars/antlr-2.7.7.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/javax.validation/validation-api/jars/validation-api-1.0.0.GA.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-validator/jars/hibernate-validator-4.1.0.Final.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-commons-annotations/jars/hibernate-commons-annotations-3.2.0.Final.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.hibernate/hibernate-core/jars/hibernate-core-3.6.10.Final.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-juli/jars/tomcat-embed-logging-juli-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-annotations-api/jars/tomcat-annotations-api-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-catalina/jars/tomcat-catalina-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-servlet-api/jars/tomcat-servlet-api-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-api/jars/tomcat-api-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-util/jars/tomcat-util-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-juli/jars/tomcat-juli-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-coyote/jars/tomcat-coyote-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat/tomcat-catalina-ant/jars/tomcat-catalina-ant-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-log4j/jars/tomcat-embed-logging-log4j-7.0.42.jar!/" />
-          <root url="jar://$USER_HOME$/.grails/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.42.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/liquibase/liquibase-core/2.0.5/liquibase-core-2.0.5.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-commons-annotations/3.2.0.Final/hibernate-commons-annotations-3.2.0.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/springframework/spring-orm/3.2.5.RELEASE/spring-orm-3.2.5.RELEASE.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-ehcache/3.6.10.Final/hibernate-ehcache-3.6.10.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-entitymanager/3.6.10.Final/hibernate-entitymanager-3.6.10.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/grails/grails-datastore-gorm-hibernate-core/2.0.6.RELEASE/grails-datastore-gorm-hibernate-core-2.0.6.RELEASE.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/grails/grails-datastore-web/2.0.6.RELEASE/grails-datastore-web-2.0.6.RELEASE.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/grails/grails-datastore-gorm-plugin-support/2.0.6.RELEASE/grails-datastore-gorm-plugin-support-2.0.6.RELEASE.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-validator/4.1.0.Final/hibernate-validator-4.1.0.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/net/sf/ehcache/ehcache-core/2.4.6/ehcache-core-2.4.6.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/3.6.10.Final/hibernate-core-3.6.10.Final.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/grails/grails-datastore-gorm-hibernate/2.0.6.RELEASE/grails-datastore-gorm-hibernate-2.0.6.RELEASE.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/tomcat/embed/tomcat-embed-core/7.0.47/tomcat-embed-core-7.0.47.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/jdt/core/compiler/ecj/3.7.2/ecj-3.7.2.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/tomcat/embed/tomcat-embed-jasper/7.0.47/tomcat-embed-jasper-7.0.47.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/tomcat/tomcat-catalina-ant/7.0.47/tomcat-catalina-ant-7.0.47.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="grails-2.2.1" level="application" />
+    <orderEntry type="library" name="grails-2.3.4" level="application" />
     <orderEntry type="module" module-name="cytomine-imageserver-grailsPlugins" />
-    <orderEntry type="library" name="grails-2.2.4" level="application" />
   </component>
 </module>
 
