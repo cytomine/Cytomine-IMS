@@ -48,8 +48,18 @@ environments {
     production {
         dataSource {
             dbCreate = "update"
-            url="jdbc:postgresql://10.19.5.32:5432/cytomine_image_server"
-            password = "postgres"
+            url = "jdbc:h2:prodDB;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            pooled = true
+            properties {
+                maxActive = -1
+                minEvictableIdleTimeMillis=1800000
+                timeBetweenEvictionRunsMillis=1800000
+                numTestsPerEvictionRun=3
+                testOnBorrow=true
+                testWhileIdle=true
+                testOnReturn=true
+                validationQuery="SELECT 1"
+            }
         }
     }
 }

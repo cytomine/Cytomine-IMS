@@ -28,6 +28,7 @@ class UploadController {
     def deployImagesService
     def imagePropertiesService
     def backgroundService
+    def cytomineCoreService
 
     def test = {
         println "test"
@@ -83,12 +84,12 @@ class UploadController {
 
 
 
-            def user = tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
+            def user = cytomineCoreService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
             log.info "user="+user.id
 
-            def allowedMime = ["jp2", "svs"]
+            def allowedMime = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms"]
             def zipMime = ["zip"]
-            def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm", "ndpi", "mrxs", "vms", "scn", "bif", "bmp"]
+            def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm", "bif", "bmp"]
 
 
             long currentUserId = user.id
@@ -145,6 +146,7 @@ class UploadController {
             backgroundService.execute("convertAndDeployImage", {
                 log.info "convert file...uploadedFile=$uploadedFile"
                 def uploadedFiles = convertImagesService.convertUploadedFile(cytomine, uploadedFile, currentUserId, allowedMime, mimeToConvert, zipMime)
+
                 log.info "uploadedFiles=$uploadedFiles"
 
                 Collection<AbstractImage> abstractImagesCreated = []
@@ -175,11 +177,18 @@ class UploadController {
                 //delete main uploaded file
                 if (!deployedFiles.contains(uploadedFile)) {
                     log.info "delete ${uploadedFile.absolutePath}"
+
                     fileSystemService.deleteFile(uploadedFile.absolutePath)
                 }
                 //delete nested uploaded file
                 deployedFiles.each {
                     log.info "delete local files"
+                    def storages = []
+                    it.getList("storages").each {
+                        log.info "get storage $it with cytomine: $cytomineUrl ${user.publicKey} ${user.privateKey}"
+                        storages << cytomine.getStorage(it)
+                    }
+                    deployImagesService.copyUploadedFile(cytomine, it, storages)
                     fileSystemService.deleteFile(it.absolutePath)
                 }
                 abstractImagesCreated.each { abstractImage ->
@@ -248,115 +257,6 @@ class UploadController {
         return content
     }
 
-    private def tryAPIAuthentification(def cytomineUrl,def ISPubKey, def ISPrivKey, HttpServletRequest request) {
-        println "tryAPIAuthentification"
-        String authorization = request.getHeader("authorization")
-        println "authorization=$authorization"
-        if (request.getHeader("dateFull") == null && request.getHeader("date") == null) {
-            throw new Exception("Auth failed: no date")
-        }
-        if (request.getHeader("host") == null) {
-            throw new Exception("Auth failed: no host")
-        }
-        if (authorization == null) {
-            throw new Exception("Auth failed: no authorization")
-        }
-        if (!authorization.startsWith("CYTOMINE") || !authorization.indexOf(" ") == -1 || !authorization.indexOf(":") == -1) {
-            throw new Exception("Auth failed: bad authorization")
-        }
-        request.getHeaderNames().each {
-            println it + "=" + request.getHeader(it)
-        }
 
-
-        String content_md5 = (request.getHeader("content-MD5") != null) ? request.getHeader("content-MD5") : ""
-        //println "content_md5=" + content_md5
-        String content_type = (request.getHeader("content-type") != null) ? request.getHeader("content-type") : ""
-        content_type = (request.getHeader("Content-Type") != null) ? request.getHeader("Content-Type") : content_type
-        content_type = (request.getHeader("content-type-full") != null) ? request.getHeader("content-type-full") : content_type
-        if(content_type=="null") {
-            content_type =""
-        }
-
-        //println "content_type=" + content_type
-        String date = (request.getHeader("date") != null) ? request.getHeader("date") : ""
-        date = (request.getHeader("dateFull") != null) ? request.getHeader("dateFull") : date
-
-        //println "date=" + date
-        String canonicalHeaders = request.getMethod() + "\n" + content_md5 + "\n" + content_type + "\n" + date + "\n"
-        //println "canonicalHeaders=" + canonicalHeaders
-        String canonicalExtensionHeaders = ""
-        String queryString = (request.getQueryString() != null) ? "?" + request.getQueryString() : ""
-        String path = request.forwardURI //original URI Request
-        String canonicalResource = path + queryString
-        //println "canonicalResource=" + canonicalResource
-        String messageToSign = canonicalHeaders + canonicalExtensionHeaders + canonicalResource
-        //println "messageToSign=$messageToSign"
-        String accessKey = authorization.substring(authorization.indexOf(" ") + 1, authorization.indexOf(":"))
-        //println "accessKey=" + accessKey
-        String authorizationSign = authorization.substring(authorization.indexOf(":") + 1)
-        //println "authorizationSign=" + authorizationSign
-        //TODO: ask user with public key
-        //TODO: pubKey = a50f6f5d-1bcb-4cca-ac37-9bbf8581f25e, privKey = 278c5d52-396b-4036-b535-d541652edffa
-
-        log.info "content_md5=$content_md5"
-        log.info "content_type=$content_type"
-        log.info "date=$date"
-        log.info "queryString=$queryString"
-        log.info "path=$path"
-        log.info "method=${request.getMethod()}"
-
-        println "accessKey=$accessKey"
-
-        println "Connection Cytomine: $cytomineUrl $ISPubKey $ISPrivKey"
-
-        Cytomine cytomine = new Cytomine(cytomineUrl, ISPubKey,ISPrivKey, "./")
-
-        println "cytomine.getKeys($accessKey)"
-
-        User user = cytomine.getKeys(accessKey)
-
-        println "cytomine.getUser($accessKey)"
-
-        def retrieveUser = cytomine.getUser(accessKey)
-        if (!user || retrieveUser?.id==null) {
-            println "User not found with key $accessKey!"
-            throw new Exception("Auth failed: User not found with key $accessKey! May be ImageServer user is not an admin!")
-        }
-
-        long id = retrieveUser.id
-
-        //TODO: get its private key
-        String key = user.get("privateKey")
-
-
-        println "Privatekey=${user.get("privateKey")}"
-        println "PublicKey=${user.get("publicKey")}"
-
-        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1")
-        //println "signingKey=" + signingKey
-        // get an hmac_sha1 Mac instance and initialize with the signing key
-        Mac mac = Mac.getInstance("HmacSHA1")
-        //println "mac=" + mac
-        mac.init(signingKey)
-        // compute the hmac on input data bytes
-        byte[] rawHmac = mac.doFinal(new String(messageToSign.getBytes(), "UTF-8").getBytes())
-        //println "rawHmac=" + rawHmac.length
-        // base64-encode the hmac
-        byte[] signatureBytes = Base64.encode(rawHmac)
-        //println "signatureBytes=" + signatureBytes.length
-        def signature = new String(signatureBytes)
-        //println "signature=" + signature
-
-        println "authorizationSign=$authorizationSign"
-        println "signature=$signature"
-        if (authorizationSign == signature) {
-            println "AUTH TRUE"
-            return ["id": id, "privateKey": user.get("privateKey"), "publicKey": user.get("publicKey")]
-        } else {
-            println "AUTH FALSE"
-            throw new Exception("Auth failed")
-        }
-    }
 
 }

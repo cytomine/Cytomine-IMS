@@ -75,6 +75,7 @@ class ConvertImagesService {
         pathsAndExtensions.each { it ->
             if (it.extension == MRXS_EXTENSION || it.extension == VMS_EXTENSION) {
                 mainUploadedFile = createNewUploadedFile(cytomine,uploadedFile, it, currentUserId, null)
+                mainUploadedFile = cytomine.editUploadedFile(mainUploadedFile.id,Cytomine.UploadStatus.TO_DEPLOY,true,mainUploadedFile.id)
             }
         }
 
@@ -103,7 +104,7 @@ class ConvertImagesService {
             contentType = mimeTypesMap.getContentType(absolutePath)
         }
 
-        return cytomine.addUploadedFile(filename,filename,parentUploadedFile.getStr("path"),new File(absolutePath).size(),extension,contentType,parentUploadedFile.getList("projects"),parentUploadedFile.getList("storages"),currentUserId)
+        return cytomine.addUploadedFile(parentUploadedFile.getStr("originalFilename"),filename,parentUploadedFile.getStr("path"),new File(absolutePath).size(),extension,contentType,parentUploadedFile.getList("projects"),parentUploadedFile.getList("storages"),currentUserId)
     }
 
     private UploadedFile handleSingleFile(Cytomine cytomine,UploadedFile uploadedFile, def currentUserId, def mimeToConvert) {
@@ -212,12 +213,23 @@ class ConvertImagesService {
         if (System.getProperty("os.name").contains("OS X")) {
             executable = "/usr/local/bin/vips"
         }
+        def intermediateFile = target.replace(".tif",".tmp.tif")
+
         log.info "vips is in : $executable"
 
-        def convertCommand = """$executable tiffsave "$source" "$target" --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256 --bigtiff"""
+        def extractBandCommand = """$executable extract_band $source $intermediateFile[bigtiff,compression=lzw] 0 --n 3"""
+        def rmIntermediatefile = """rm $intermediateFile"""
+        def pyramidCommand = """$executable tiffsave "$intermediateFile" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
 
-        log.info "$executable $convertCommand"
+        boolean success = true
 
-        return ProcUtils.executeOnShell(convertCommand) == 0
+        log.info "$extractBandCommand"
+        success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
+        log.info "$pyramidCommand"
+        success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
+        log.info "$rmIntermediatefile"
+        success &= (ProcUtils.executeOnShell(rmIntermediatefile) == 0)
+
+        return success
     }
 }

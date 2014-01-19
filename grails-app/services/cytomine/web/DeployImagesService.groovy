@@ -25,7 +25,7 @@ class DeployImagesService {
 
     UploadedFile copyUploadedFile(Cytomine cytomine,UploadedFile uploadedFile, Collection<Storage> storages) {
         def localFile = uploadedFile.get("path") + "/" + uploadedFile.get("filename")
-
+        println "localFile=$localFile"
         storages.each { storage ->
                 def remoteFile = storage.getStr("basePath") + "/" + uploadedFile.getStr("filename")
             log.info "basePath= " + storage.getStr("basePath")
@@ -36,7 +36,7 @@ class DeployImagesService {
 
             fileSystemService.makeLocalDirectory(new File(remoteFile).parent)
 
-            def command = "mv $localFile $remoteFile"
+            def command = """mv "$localFile" "$remoteFile" """
             log.info "Command=$command"
             ProcUtils.executeOnShell(command)
 
