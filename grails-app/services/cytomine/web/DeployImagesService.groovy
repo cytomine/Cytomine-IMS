@@ -14,11 +14,6 @@ import javax.activation.MimetypesFileTypeMap
  */
 class DeployImagesService {
 
-    def remoteCopyService
-    def cytomineService
-    def imageInstanceService
-    def storageAbstractImageService
-    def projectService
     def fileSystemService
 
     static transactional = true

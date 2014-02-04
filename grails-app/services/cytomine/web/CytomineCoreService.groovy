@@ -10,19 +10,28 @@ import javax.servlet.http.HttpServletRequest
 
 class CytomineCoreService {
     public def tryAPIAuthentification(def cytomineUrl,def ISPubKey, def ISPrivKey, HttpServletRequest request) {
+
         println "tryAPIAuthentification"
+        println "cytomineUrl=$cytomineUrl"
+        println "ISPubKey=$ISPubKey"
+        println "ISPrivKey=$ISPrivKey"
+
         String authorization = request.getHeader("authorization")
         println "authorization=$authorization"
         if (request.getHeader("dateFull") == null && request.getHeader("date") == null) {
+            println "Auth failed: no date"
             throw new Exception("Auth failed: no date")
         }
         if (request.getHeader("host") == null) {
+            println "Auth failed: no host"
             throw new Exception("Auth failed: no host")
         }
         if (authorization == null) {
+            println "Auth failed: no authorization"
             throw new Exception("Auth failed: no authorization")
         }
         if (!authorization.startsWith("CYTOMINE") || !authorization.indexOf(" ") == -1 || !authorization.indexOf(":") == -1) {
+            println "Auth failed: bad authorization"
             throw new Exception("Auth failed: bad authorization")
         }
         request.getHeaderNames().each {
@@ -43,7 +52,8 @@ class CytomineCoreService {
         String date = (request.getHeader("date") != null) ? request.getHeader("date") : ""
         date = (request.getHeader("dateFull") != null) ? request.getHeader("dateFull") : date
 
-        //println "date=" + date
+        println "finalDate=" + date
+        println "forwardURI=" + request.forwardURI
         String canonicalHeaders = request.getMethod() + "\n" + content_md5 + "\n" + content_type + "\n" + date + "\n"
         //println "canonicalHeaders=" + canonicalHeaders
         String canonicalExtensionHeaders = ""

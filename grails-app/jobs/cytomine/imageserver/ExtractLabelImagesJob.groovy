@@ -15,7 +15,6 @@ import java.awt.image.BufferedImageFilter
 class ExtractLabelImagesJob {
 
     def grailsApplication
-    def cytomineCoreService
 
     static triggers = {
         simple repeatInterval: 5000l // execute job once in 5 seconds
@@ -25,11 +24,10 @@ class ExtractLabelImagesJob {
         return
         String cytomineUrl = "http://localhost:8080/"
         String pubKey = grailsApplication.config.grails.imageServerPublicKey
-        println pubKe y
         String privKey = grailsApplication.config.grails.imageServerPrivateKey
-        println privKey
+
         Cytomine cytomine = new Cytomine(cytomineUrl, pubKey, privKey, "./", false)
-        String storage = "/Users/stevben/cytomine_storage/37/"
+        String storage = "/Users/stevben/cytomine_storage/29/"
         ImageInstanceCollection imageInstanceCollection =  cytomine.getImageInstances(cytomine.getProjects().get(0).id)
         for(int i=0;i<imageInstanceCollection.size();i++) {
             ImageInstance imageInstance = imageInstanceCollection.get(i)
@@ -42,12 +40,13 @@ class ExtractLabelImagesJob {
                     OpenSlide openSlide = new OpenSlide(slideFile)
                     openSlide.getAssociatedImages().each {
                         println it.key
-                        AssociatedImage associatedImage = it.value
+                        /*AssociatedImage associatedImage = it.value
                         String outFilename = imageInstance.get("originalFilename")
                         outFilename = outFilename.replace(" ", "_").replace("/", "_")
                         String fullOutFilename = "/Users/stevben/Desktop/"+outFilename+"_"+it.key+".png"
                         println fullOutFilename
-                        ImageIO.write(associatedImage.toBufferedImage(), "png", new File(fullOutFilename))
+                        ImageIO.write(associatedImage.toBufferedImage(), "png", new File(fullOutFilename))*/
+
                     }
 
                     /*println openSlide.getLevelWidth(0)

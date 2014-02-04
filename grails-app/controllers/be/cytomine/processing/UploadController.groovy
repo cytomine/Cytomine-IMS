@@ -87,9 +87,9 @@ class UploadController {
             def user = cytomineCoreService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
             log.info "user="+user.id
 
-            def allowedMime = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms"]
+            def allowedMime = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms", "bif"]
             def zipMime = ["zip"]
-            def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm", "bif", "bmp"]
+            def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm",  "bmp"]
 
 
             long currentUserId = user.id

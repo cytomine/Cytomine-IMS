@@ -2,15 +2,43 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="15389141-2e1d-4fb6-ab0c-1fa3b07aa483" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/conf/BuildConfig.groovy" afterPath="$PROJECT_DIR$/grails-app/conf/BuildConfig.groovy" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" afterPath="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/conf/DataSource.groovy" afterPath="$PROJECT_DIR$/grails-app/conf/DataSource.groovy" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-antlr.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-apache-bcel.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-apache-bsf.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-apache-log4j.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-apache-oro.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-apache-regexp.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-apache-resolver.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-apache-xalan2.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-commons-logging.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-commons-net.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-jai.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-javamail.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-jdepend.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-jmf.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-jsch.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-junit.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-junit4.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-launcher.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-netrexx.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-nodeps.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-starteam.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-stylebook.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-swing.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-testutil.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-trax.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant-weblogic.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/ant.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/openslide.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineService.groovy" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/grails-app/controllers/be/cytomine/ImageController.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Cytomine-client-java.jar" afterPath="$PROJECT_DIR$/lib/Cytomine-client-java.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineCoreService.groovy" afterPath="$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineCoreService.groovy" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" afterPath="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/jobs/cytomine/imageserver/ExtractLabelImagesJob.groovy" afterPath="$PROJECT_DIR$/grails-app/jobs/cytomine/imageserver/ExtractLabelImagesJob.groovy" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy" afterPath="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy" afterPath="$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application.properties" afterPath="$PROJECT_DIR$/application.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cytomine-imageserver.iml" afterPath="$PROJECT_DIR$/cytomine-imageserver.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="d13dc255-b43f-475e-a378-128c90aae950" name="CYTO-618 - Stocker le chemin de l'exec de l'algo dans la DB" comment="" />
@@ -76,100 +104,7 @@
     <favorites_list name="cytomine-imageserver" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="CytomineCoreService.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineCoreService.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="3" selection-start="405" selection-end="405" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1830">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LociController.groovy" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/acquisition/LociController.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="21" selection-start="337" selection-end="337" vertical-scroll-proportion="0.30092594" vertical-offset="0" max-vertical-offset="648">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DeployImagesService.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="50" column="6" selection-start="1917" selection-end="1917" vertical-scroll-proportion="0.0" vertical-offset="750" max-vertical-offset="1065">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ZipService.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ZipService.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="8" selection-start="102" selection-end="102" vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="525">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ExtractLabelImagesJob.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/jobs/cytomine/imageserver/ExtractLabelImagesJob.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="8" selection-start="585" selection-end="585" vertical-scroll-proportion="0.0" vertical-offset="31" max-vertical-offset="1080">
-              <folding>
-                <element signature="e#30#64#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ImageServerService.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageServerService.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="6" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="420">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Cytomine.class" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/lib/Cytomine-client-java.jar!/be/cytomine/client/Cytomine.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="267" column="50" selection-start="19226" selection-end="19226" vertical-scroll-proportion="0.0" vertical-offset="4005" max-vertical-offset="5160">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ProjectCollection.class" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/lib/Cytomine-client-java.jar!/be/cytomine/client/collections/ProjectCollection.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="13" selection-start="173" selection-end="173" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="300">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VisionController.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="294" column="52" selection-start="10681" selection-end="10681" vertical-scroll-proportion="0.0" vertical-offset="4410" max-vertical-offset="6555">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Colour_Deconvolution.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/be/cytomine/processing/image/filters/Colour_Deconvolution.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="75" column="37" selection-start="3523" selection-end="3523" vertical-scroll-proportion="0.0" vertical-offset="1125" max-vertical-offset="10875">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -181,7 +116,6 @@
       <list>
         <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/ImagePropertiesService.groovy" />
         <option value="$PROJECT_DIR$/application.properties" />
-        <option value="$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy" />
         <option value="$USER_HOME$/.grails/2.2.4/projects/cytomine-imageserver/plugins/database-migration-1.1/dependencies.groovy" />
         <option value="$PROJECT_DIR$/grails-app/conf/cytomine/web/SecurityFilters.groovy" />
         <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy" />
@@ -193,13 +127,16 @@
         <option value="$PROJECT_DIR$/grails-app/conf/BootStrap.groovy" />
         <option value="$PROJECT_DIR$/grails-app/conf/Config.groovy" />
         <option value="$PROJECT_DIR$/grails-app/conf/DataSource.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" />
         <option value="$PROJECT_DIR$/grails-app/conf/BuildConfig.groovy" />
         <option value="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/AssociatedImageController.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" />
         <option value="$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy" />
         <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineCoreService.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy" />
         <option value="$PROJECT_DIR$/grails-app/jobs/cytomine/imageserver/ExtractLabelImagesJob.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineService.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/be/cytomine/ImageController.groovy" />
       </list>
     </option>
   </component>
@@ -236,7 +173,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -255,133 +191,10 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="grails-app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="grails-app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="services" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="web" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="grails-app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jobs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="grails-app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-imageserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine-processing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="grails-app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cytomine" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="acquisition" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -421,6 +234,15 @@
     </key>
   </component>
   <component name="RunManager" selected="Grails.Grails:cytomine-imageserver">
+    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy">
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="file://$PROJECT_DIR$" />
+      <setting name="debug" value="false" />
+      <method />
+    </configuration>
     <configuration default="true" type="GrailsRunConfigurationType" factoryName="Grails" singleton="true">
       <module name="" />
       <setting name="vmparams" value="" />
@@ -429,15 +251,6 @@
       <setting name="passParentEnv" value="true" />
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <setting name="launchBrowser" value="true" />
-      <method />
-    </configuration>
-    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy">
-      <module name="" />
-      <setting name="path" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="file://$PROJECT_DIR$" />
-      <setting name="debug" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -449,38 +262,6 @@
       <method />
     </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug" singleton="true">
-      <method />
-    </configuration>
-    <configuration default="true" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="myFilePath" />
-      <option name="GLUE" />
-      <option name="myNameFilter" />
-      <option name="myGeneratedName" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
@@ -509,6 +290,38 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
+    <configuration default="true" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="myFilePath" />
+      <option name="GLUE" />
+      <option name="myNameFilter" />
+      <option name="myGeneratedName" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -638,12 +451,33 @@
       <workItem from="1390136838070" duration="3756000" />
       <workItem from="1390147852300" duration="463000" />
       <workItem from="1390148452435" duration="929000" />
-      <workItem from="1390167970969" duration="345000" />
+      <workItem from="1390167970969" duration="443000" />
+      <workItem from="1390169940419" duration="25000" />
+      <workItem from="1390176014709" duration="947000" />
+      <workItem from="1390307500589" duration="1595000" />
+      <workItem from="1390396671424" duration="97000" />
+      <workItem from="1390513052513" duration="286000" />
+      <workItem from="1390513611693" duration="62000" />
+      <workItem from="1390514805090" duration="1295000" />
+      <workItem from="1390600815796" duration="5740000" />
+      <workItem from="1390743086283" duration="27000" />
+      <workItem from="1390769525882" duration="834000" />
+      <workItem from="1390810895232" duration="165000" />
+      <workItem from="1390821651618" duration="781000" />
+      <workItem from="1390831459354" duration="97000" />
+      <workItem from="1390925655756" duration="1207000" />
+      <workItem from="1391077241736" duration="1157000" />
+      <workItem from="1391089313993" duration="3000" />
+      <workItem from="1391091121505" duration="2554000" />
+      <workItem from="1391177171964" duration="342000" />
+      <workItem from="1391202260515" duration="2174000" />
+      <workItem from="1391523232169" duration="3063000" />
+      <workItem from="1391549812336" duration="3550000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39315000" />
+    <option name="totallyTimeSpent" value="65414000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -666,43 +500,43 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1440" height="837" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="22" width="1440" height="837" extended-state="7" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32824427" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32824427" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32885906" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32751676" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4147651" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Grails View" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32885906" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32751676" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4147651" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41365463" sideWeight="0.49928468" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32824427" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27968526" sideWeight="0.8197279" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4176707" sideWeight="0.6666667" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32824427" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Grails View" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32885906" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
+      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.50429183" sideWeight="0.8197279" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41744965" sideWeight="0.6666667" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41499332" sideWeight="0.49928468" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32614213" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32885906" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32262382" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -724,39 +558,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="214" column="64" selection-start="9231" selection-end="9231" vertical-scroll-proportion="0.0" vertical-offset="3210" max-vertical-offset="3600">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/DataSource.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="30" selection-start="1524" selection-end="1524" vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="1065" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="56" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="240" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="87" column="20" selection-start="3226" selection-end="3226" vertical-scroll-proportion="0.0" vertical-offset="1305" max-vertical-offset="5520">
-          <folding>
-            <element signature="e#32#66#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="45" selection-start="6537" selection-end="6537" vertical-scroll-proportion="0.0" vertical-offset="2130" max-vertical-offset="3375">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
       <provider selected="true" editor-type-id="text-editor">
         <state line="10" column="0" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="150" max-vertical-offset="240" />
@@ -769,11 +570,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="64" selection-start="3750" selection-end="3750" vertical-scroll-proportion="0.0" vertical-offset="1485" max-vertical-offset="5520">
-          <folding>
-            <element signature="e#32#66#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="99" column="64" selection-start="3750" selection-end="3750" vertical-scroll-proportion="0.0" vertical-offset="1485" max-vertical-offset="5520" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/DataSource.groovy">
@@ -788,9 +585,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="8" selection-start="459" selection-end="459" vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="3435">
-          <folding />
-        </state>
+        <state line="24" column="8" selection-start="459" selection-end="459" vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="3435" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
@@ -805,11 +600,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="314" column="46" selection-start="13313" selection-end="13313" vertical-scroll-proportion="0.0" vertical-offset="4710" max-vertical-offset="5520">
-          <folding>
-            <element signature="e#32#66#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="314" column="46" selection-start="13313" selection-end="13313" vertical-scroll-proportion="0.0" vertical-offset="4710" max-vertical-offset="5520" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/Config.groovy">
@@ -829,11 +620,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="314" column="46" selection-start="13313" selection-end="13313" vertical-scroll-proportion="0.0" vertical-offset="4710" max-vertical-offset="5520">
-          <folding>
-            <element signature="e#32#66#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="314" column="46" selection-start="13313" selection-end="13313" vertical-scroll-proportion="0.0" vertical-offset="4710" max-vertical-offset="5520" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/Config.groovy">
@@ -858,11 +645,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="128" column="108" selection-start="5071" selection-end="5071" vertical-scroll-proportion="0.0" vertical-offset="1920" max-vertical-offset="5355">
-          <folding>
-            <element signature="e#32#66#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="128" column="108" selection-start="5071" selection-end="5071" vertical-scroll-proportion="0.0" vertical-offset="1920" max-vertical-offset="5355" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/BuildConfig.groovy">
@@ -905,31 +688,6 @@
         <state line="7" column="28" selection-start="151" selection-end="151" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="8" selection-start="601" selection-end="601" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageProcessingService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="26" selection-start="2502" selection-end="2502" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="36" selection-start="252" selection-end="252" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/Config.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="124" column="22" selection-start="4617" selection-end="4617" vertical-scroll-proportion="0.0" vertical-offset="1615" max-vertical-offset="2355" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="56" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="240" />
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/lib/Cytomine-client-java.jar!/be/cytomine/client/models/UploadedFile.class">
       <provider selected="true" editor-type-id="text-editor">
         <state line="6" column="13" selection-start="168" selection-end="168" vertical-scroll-proportion="0.13863216" vertical-offset="0" max-vertical-offset="541" />
@@ -940,98 +698,150 @@
         <state line="28" column="14" selection-start="917" selection-end="917" vertical-scroll-proportion="0.0" vertical-offset="325" max-vertical-offset="1065" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="147" column="64" selection-start="5875" selection-end="5875" vertical-scroll-proportion="0.28257456" vertical-offset="2025" max-vertical-offset="4020">
-          <folding>
-            <element signature="e#32#66#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="6" selection-start="1917" selection-end="1917" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="960">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/conf/BuildConfig.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="7" selection-start="1902" selection-end="1902" vertical-scroll-proportion="0.0" vertical-offset="371" max-vertical-offset="1065">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ZipService.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="8" selection-start="102" selection-end="102" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="525">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/Cytomine-client-java.jar!/be/cytomine/client/Cytomine.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="267" column="50" selection-start="19226" selection-end="19226" vertical-scroll-proportion="0.0" vertical-offset="4005" max-vertical-offset="5160">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/Cytomine-client-java.jar!/be/cytomine/client/collections/ProjectCollection.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="13" selection-start="173" selection-end="173" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="300">
-          <folding />
-        </state>
+        <state line="52" column="7" selection-start="1902" selection-end="1902" vertical-scroll-proportion="0.0" vertical-offset="371" max-vertical-offset="1065" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/VisionController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="294" column="52" selection-start="10681" selection-end="10681" vertical-scroll-proportion="0.0" vertical-offset="4410" max-vertical-offset="6555">
-          <folding />
-        </state>
+        <state line="294" column="52" selection-start="10681" selection-end="10681" vertical-scroll-proportion="0.0" vertical-offset="4410" max-vertical-offset="6555" />
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/Cytomine-client-java.jar!/be/cytomine/client/collections/ProjectCollection.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="13" selection-start="173" selection-end="173" vertical-scroll-proportion="0.129683" vertical-offset="0" max-vertical-offset="694" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/be/cytomine/processing/image/filters/Colour_Deconvolution.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="75" column="37" selection-start="3523" selection-end="3523" vertical-scroll-proportion="0.0" vertical-offset="810" max-vertical-offset="10650">
-          <folding />
-        </state>
+        <state line="75" column="37" selection-start="3523" selection-end="3523" vertical-scroll-proportion="0.0" vertical-offset="810" max-vertical-offset="10650" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy">
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/Config.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="7" selection-start="4800" selection-end="4800" vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="3615">
-          <folding />
-        </state>
+        <state line="127" column="12" selection-start="4749" selection-end="4749" vertical-scroll-proportion="0.3846154" vertical-offset="1755" max-vertical-offset="2355" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/jobs/cytomine/imageserver/ExtractLabelImagesJob.groovy">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jce.jar!/javax/crypto/spec/SecretKeySpec.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="8" selection-start="585" selection-end="585" vertical-scroll-proportion="0.0" vertical-offset="31" max-vertical-offset="1080">
-          <folding>
-            <element signature="e#30#64#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="11" column="11" selection-start="385" selection-end="385" vertical-scroll-proportion="0.33139536" vertical-offset="36" max-vertical-offset="435" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageServerService.groovy">
+    <entry file="jar://$PROJECT_DIR$/lib/Cytomine-client-java.jar!/be/cytomine/client/Cytomine.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="420">
-          <folding />
-        </state>
+        <state line="21" column="11" selection-start="722" selection-end="722" vertical-scroll-proportion="0.35597825" vertical-offset="169" max-vertical-offset="5145" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineCoreService.groovy">
+    <entry file="jar://$PROJECT_DIR$/lib/openslide.jar!/org/openslide/AssociatedImage.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="3" selection-start="405" selection-end="405" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1830">
+        <state line="6" column="13" selection-start="156" selection-end="156" vertical-scroll-proportion="-3.0" vertical-offset="0" max-vertical-offset="390" />
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/openslide.jar!/org/openslide/OpenSlide.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="19" selection-start="162" selection-end="162" vertical-scroll-proportion="-2.423913" vertical-offset="967" max-vertical-offset="1335" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="56" selection-start="153" selection-end="153" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="240">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/acquisition/LociController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="21" selection-start="337" selection-end="337" vertical-scroll-proportion="0.30092594" vertical-offset="0" max-vertical-offset="648">
+        <state line="5" column="6" selection-start="78" selection-end="78" vertical-scroll-proportion="0.1953125" vertical-offset="0" max-vertical-offset="384">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ZipService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="8" selection-start="102" selection-end="102" vertical-scroll-proportion="0.2948403" vertical-offset="0" max-vertical-offset="525">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageServerService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="6" selection-start="120" selection-end="120" vertical-scroll-proportion="0.14742015" vertical-offset="0" max-vertical-offset="420">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ImageProcessingService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="6" selection-start="319" selection-end="319" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="450">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/FileSystemService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="8" selection-start="601" selection-end="601" vertical-scroll-proportion="0.03685504" vertical-offset="270" max-vertical-offset="1170">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/ConvertImagesService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="108" column="7" selection-start="4800" selection-end="4800" vertical-scroll-proportion="0.040106952" vertical-offset="1545" max-vertical-offset="3555">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/processing/UploadController.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="99" column="18" selection-start="3734" selection-end="3734" vertical-scroll-proportion="11.918367" vertical-offset="1889" max-vertical-offset="3840">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/UrlMappings.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="25" selection-start="372" selection-end="372" vertical-scroll-proportion="0.0" vertical-offset="81" max-vertical-offset="465">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/jobs/cytomine/imageserver/ExtractLabelImagesJob.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="31" selection-start="548" selection-end="548" vertical-scroll-proportion="0.0" vertical-offset="14" max-vertical-offset="930">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/be/cytomine/ImageController.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="15" selection-start="380" selection-end="380" vertical-scroll-proportion="0.625" vertical-offset="0" max-vertical-offset="1455">
+          <folding>
+            <element signature="e#21#55#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="35" selection-start="133" selection-end="133" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="315">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/DeployImagesService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="8" selection-start="714" selection-end="714" vertical-scroll-proportion="0.0" vertical-offset="478" max-vertical-offset="885">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/services/cytomine/web/CytomineCoreService.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="15" selection-start="2094" selection-end="2094" vertical-scroll-proportion="-2.3906634" vertical-offset="1663" max-vertical-offset="2070">
+          <folding>
+            <element signature="e#22#56#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
