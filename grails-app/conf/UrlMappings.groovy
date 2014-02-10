@@ -14,12 +14,16 @@ class UrlMappings {
             action = [POST:"upload"]
         }
 
-        "/api/image/$id/associated" (controller:"image") {
+        "/api/abstractimage/$id/associated" (controller:"abstractImage") {
             action = [GET:"associated"]
         }
 
-        "/api/image/$id/associated/$label" (controller:"image") {
+        "/api/abstractimage/$id/associated/$label" (controller:"abstractImage") {
             action = [GET:"label"]
+        }
+
+        "/api/abstractimage/$id/download" (controller:"abstractImage") {
+            action = [GET:"download"]
         }
 	}
 }

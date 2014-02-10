@@ -145,6 +145,7 @@ class UploadController {
             log.info "init background service..."
             backgroundService.execute("convertAndDeployImage", {
                 log.info "convert file...uploadedFile=$uploadedFile"
+
                 def uploadedFiles = convertImagesService.convertUploadedFile(cytomine, uploadedFile, currentUserId, allowedMime, mimeToConvert, zipMime)
 
                 log.info "uploadedFiles=$uploadedFiles"
@@ -152,16 +153,14 @@ class UploadController {
                 Collection<AbstractImage> abstractImagesCreated = []
                 Collection<UploadedFile> deployedFiles = []
 
+                def storages = []
+                uploadedFile.getList("storages").each {
+                    log.info "get storage $it with cytomine: $cytomineUrl ${user.publicKey} ${user.privateKey}"
+                    storages << cytomine.getStorage(it)
+                }
+
                 uploadedFiles.each {
                     UploadedFile new_uploadedFile = (UploadedFile) it
-
-
-                    def storages = []
-                    uploadedFile.getList("storages").each {
-                        log.info "get storage $it with cytomine: $cytomineUrl ${user.publicKey} ${user.privateKey}"
-                        storages << cytomine.getStorage(it)
-                    }
-
 
                     if (new_uploadedFile.getInt('status') == Cytomine.UploadStatus.TO_DEPLOY) {
                         abstractImagesCreated << deployImagesService.deployUploadedFile(cytomine, new_uploadedFile, storages)
@@ -175,19 +174,19 @@ class UploadController {
                 }
 
                 //delete main uploaded file
-                if (!deployedFiles.contains(uploadedFile)) {
+                //if (!deployedFiles.contains(uploadedFile)) {
                     log.info "delete ${uploadedFile.absolutePath}"
-
+                    deployImagesService.copyUploadedFile(cytomine, uploadedFile, storages)
                     fileSystemService.deleteFile(uploadedFile.absolutePath)
-                }
+                //}
                 //delete nested uploaded file
                 deployedFiles.each {
                     log.info "delete local files"
-                    def storages = []
+                    /*def storages = []
                     it.getList("storages").each {
                         log.info "get storage $it with cytomine: $cytomineUrl ${user.publicKey} ${user.privateKey}"
                         storages << cytomine.getStorage(it)
-                    }
+                    }*/
                     deployImagesService.copyUploadedFile(cytomine, it, storages)
                     fileSystemService.deleteFile(it.absolutePath)
                 }

@@ -8,11 +8,18 @@ import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
 
 import javax.imageio.ImageIO
+import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 
-class ImageController {
+class AbstractImageController {
 
     def cytomineService
+
+    protected def responseFile(File file) {
+        response.setHeader "Content-disposition", "attachment; filename=\"${file.getName()}\"";
+        response.outputStream << file.newInputStream();
+        response.outputStream.flush();
+    }
 
     protected def responseBufferedImage(BufferedImage bufferedImage) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -51,14 +58,49 @@ class ImageController {
         }
     }
 
+    def download() {
+        Cytomine cytomine = cytomineService.getCytomine()
+        Long id = params.long("id")
+        println "donwload $id"
+        AbstractImage abstractImage = cytomine.getAbstractImage(id)
+        String fullPath = abstractImage.getAt("fullPath")
+        responseFile(new File(fullPath))
+    }
+
+    private BufferedImage resizeImage(BufferedImage image, int width, int height) {
+        int type=0;
+        type = image.getType() == 0? BufferedImage.TYPE_INT_ARGB : image.getType();
+        BufferedImage resizedImage = new BufferedImage(width, height,type);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(image, 0, 0, width, height, null);
+        g.dispose();
+        return resizedImage;
+    }
+
+    private BufferedImage rotate90ToRight( BufferedImage inputImage ){
+        int width = inputImage.getWidth();
+        int height = inputImage.getHeight();
+        BufferedImage returnImage = new BufferedImage( height, width , inputImage.getType()  );
+
+        for( int x = 0; x < width; x++ ) {
+            for( int y = 0; y < height; y++ ) {
+                returnImage.setRGB( height - y - 1, x, inputImage.getRGB( x, y  )  );
+            }
+        }
+        return returnImage;
+    }
+
     def label() {
         Cytomine cytomine = cytomineService.getCytomine()
 
         Long id = params.long("id")
+        Integer maxWidth = params.int("maxWidth")
         String label = params.label
 
-        AbstractImage abstractImage = cytomine.getImage(id)
+        AbstractImage abstractImage = cytomine.getAbstractImage(id)
         String fullPath = abstractImage.getAt("fullPath")
+        String mime = abstractImage.getAt("mime")
+        String[] mimeToRotate = ["scn", "mrxs"]
 
         File slideFile = new File(fullPath)
         if (slideFile.canRead()) {
@@ -66,9 +108,20 @@ class ImageController {
             openSlide.getAssociatedImages().each {
                 if (it.key == label) {
                     AssociatedImage associatedImage = it.value
-                    responseBufferedImage(associatedImage.toBufferedImage())
+                    BufferedImage bufferedImage = associatedImage.toBufferedImage()
+                    if (mimeToRotate.contains(mime)) {
+                        bufferedImage = rotate90ToRight(bufferedImage)
+                    }
+                    if (maxWidth && bufferedImage.width > maxWidth) {
+                        int w = maxWidth
+                        int h = bufferedImage.height / (bufferedImage.width / maxWidth)
+                        bufferedImage = resizeImage(bufferedImage, w, h)
+                    }
+                    responseBufferedImage(bufferedImage)
                 }
             }
+            //label does not exists
+            println "label $label does not exist for $fullPath"
         }
     }
 
@@ -77,7 +130,7 @@ class ImageController {
 
         Long id = params.long("id")
 
-        AbstractImage abstractImage = cytomine.getImage(id)
+        AbstractImage abstractImage = cytomine.getAbstractImage(id)
         String fullPath = abstractImage.getAt("fullPath")
 
         File slideFile = new File(fullPath)
