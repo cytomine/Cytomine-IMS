@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage
 class AbstractImageController {
 
     def cytomineService
+    def imageProcessingService
 
     protected def responseFile(File file) {
         response.setHeader "Content-disposition", "attachment; filename=\"${file.getName()}\"";
@@ -67,28 +68,6 @@ class AbstractImageController {
         responseFile(new File(fullPath))
     }
 
-    private BufferedImage resizeImage(BufferedImage image, int width, int height) {
-        int type=0;
-        type = image.getType() == 0? BufferedImage.TYPE_INT_ARGB : image.getType();
-        BufferedImage resizedImage = new BufferedImage(width, height,type);
-        Graphics2D g = resizedImage.createGraphics();
-        g.drawImage(image, 0, 0, width, height, null);
-        g.dispose();
-        return resizedImage;
-    }
-
-    private BufferedImage rotate90ToRight( BufferedImage inputImage ){
-        int width = inputImage.getWidth();
-        int height = inputImage.getHeight();
-        BufferedImage returnImage = new BufferedImage( height, width , inputImage.getType()  );
-
-        for( int x = 0; x < width; x++ ) {
-            for( int y = 0; y < height; y++ ) {
-                returnImage.setRGB( height - y - 1, x, inputImage.getRGB( x, y  )  );
-            }
-        }
-        return returnImage;
-    }
 
     def label() {
         Cytomine cytomine = cytomineService.getCytomine()
@@ -110,12 +89,12 @@ class AbstractImageController {
                     AssociatedImage associatedImage = it.value
                     BufferedImage bufferedImage = associatedImage.toBufferedImage()
                     if (mimeToRotate.contains(mime)) {
-                        bufferedImage = rotate90ToRight(bufferedImage)
+                        bufferedImage = imageProcessingService.rotate90ToRight(bufferedImage)
                     }
                     if (maxWidth && bufferedImage.width > maxWidth) {
                         int w = maxWidth
                         int h = bufferedImage.height / (bufferedImage.width / maxWidth)
-                        bufferedImage = resizeImage(bufferedImage, w, h)
+                        bufferedImage = imageProcessingService.resizeImage(bufferedImage, w, h)
                     }
                     responseBufferedImage(bufferedImage)
                 }
