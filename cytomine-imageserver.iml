@@ -96,8 +96,8 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="grails-2.3.4" level="application" />
     <orderEntry type="module" module-name="cytomine-imageserver-grailsPlugins" />
+    <orderEntry type="library" name="grails-2.3.5" level="application" />
   </component>
 </module>
 
