@@ -60,9 +60,8 @@ class AbstractImageController {
     }
 
     def download() {
-        Cytomine cytomine = cytomineService.getCytomine()
+        Cytomine cytomine = cytomineService.getCytomine(params.cytomineUrl)
         Long id = params.long("id")
-        println "donwload $id"
         AbstractImage abstractImage = cytomine.getAbstractImage(id)
         String fullPath = abstractImage.getAt("fullPath")
         responseFile(new File(fullPath))
@@ -70,7 +69,7 @@ class AbstractImageController {
 
 
     def label() {
-        Cytomine cytomine = cytomineService.getCytomine()
+        Cytomine cytomine = cytomineService.getCytomine(params.cytomineUrl)
 
         Long id = params.long("id")
         Integer maxWidth = params.int("maxWidth")
@@ -105,7 +104,7 @@ class AbstractImageController {
     }
 
     def associated() {
-        Cytomine cytomine = cytomineService.getCytomine()
+        Cytomine cytomine = cytomineService.getCytomine(params.cytomineUrl)
 
         Long id = params.long("id")
 

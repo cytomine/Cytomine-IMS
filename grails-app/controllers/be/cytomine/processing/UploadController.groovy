@@ -151,7 +151,6 @@ class UploadController {
                 log.info "uploadedFiles=$uploadedFiles"
 
                 Collection<AbstractImage> abstractImagesCreated = []
-                Collection<UploadedFile> deployedFiles = []
 
                 def storages = []
                 uploadedFile.getList("storages").each {
@@ -159,37 +158,36 @@ class UploadController {
                     storages << cytomine.getStorage(it)
                 }
 
+                //delete main uploaded file
+
+                log.info "delete ${uploadedFile.absolutePath}"
+                deployImagesService.copyUploadedFile(cytomine, uploadedFile, storages)
+                fileSystemService.deleteFile(uploadedFile.absolutePath)
+
+                //delete nested uploaded file
                 uploadedFiles.each {
-                    UploadedFile new_uploadedFile = (UploadedFile) it
-
-                    if (new_uploadedFile.getInt('status') == Cytomine.UploadStatus.TO_DEPLOY) {
-                        abstractImagesCreated << deployImagesService.deployUploadedFile(cytomine, new_uploadedFile, storages)
-                    }
-
-                    if (new_uploadedFile.getInt('status') == Cytomine.UploadStatus.CONVERTED) {
-                        deployImagesService.copyUploadedFile(cytomine, new_uploadedFile, storages)
-                    }
-
-                    deployedFiles << new_uploadedFile
+                    log.info "copy local files"
+                    deployImagesService.copyUploadedFile(cytomine, it, storages)
                 }
 
-                //delete main uploaded file
-                //if (!deployedFiles.contains(uploadedFile)) {
-                    log.info "delete ${uploadedFile.absolutePath}"
-                    deployImagesService.copyUploadedFile(cytomine, uploadedFile, storages)
-                    fileSystemService.deleteFile(uploadedFile.absolutePath)
-                //}
+                uploadedFiles.each {
+                    if (it.getInt('status') == Cytomine.UploadStatus.TO_DEPLOY) {
+                        abstractImagesCreated << deployImagesService.deployUploadedFile(cytomine, it, storages)
+                    }
+
+                    if (it.getInt('status') == Cytomine.UploadStatus.CONVERTED) {
+                        deployImagesService.copyUploadedFile(cytomine, it, storages)
+                    }
+                }
+
                 //delete nested uploaded file
-                deployedFiles.each {
+                uploadedFiles.each {
                     log.info "delete local files"
-                    /*def storages = []
-                    it.getList("storages").each {
-                        log.info "get storage $it with cytomine: $cytomineUrl ${user.publicKey} ${user.privateKey}"
-                        storages << cytomine.getStorage(it)
-                    }*/
-                    deployImagesService.copyUploadedFile(cytomine, it, storages)
                     fileSystemService.deleteFile(it.absolutePath)
                 }
+
+
+
                 /*abstractImagesCreated.each { abstractImage ->
                     log.info "abstractImage=$abstractImage"
                     cytomine.clearAbstractImageProperties(abstractImage.id)
