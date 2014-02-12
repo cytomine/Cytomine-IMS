@@ -190,12 +190,12 @@ class UploadController {
                     deployImagesService.copyUploadedFile(cytomine, it, storages)
                     fileSystemService.deleteFile(it.absolutePath)
                 }
-                abstractImagesCreated.each { abstractImage ->
+                /*abstractImagesCreated.each { abstractImage ->
                     log.info "abstractImage=$abstractImage"
                     cytomine.clearAbstractImageProperties(abstractImage.id)
                     cytomine.populateAbstractImageProperties(abstractImage.id)
                     cytomine.extractUsefulAbstractImageProperties(abstractImage.id)
-                }
+                }*/
 
             })
             def response = [responseContent]
@@ -235,8 +235,6 @@ class UploadController {
         fileSystemService.makeLocalDirectory(fullDestPath)
         assert new File(fullDestPath).exists()
 
-        println "SRC=" + uploadedFilePath.absolutePath
-        println "DEST=" + new File(pathFile).absolutePath
         //uploadedFilePath.renameTo(new File(pathFile))
         def command = "mv ${uploadedFilePath.absolutePath} ${new File(pathFile).absolutePath}"
         log.info "Command=$command"

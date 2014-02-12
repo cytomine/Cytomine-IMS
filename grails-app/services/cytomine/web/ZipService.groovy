@@ -7,8 +7,9 @@ class ZipService {
     def fileSystemService
 
     def uncompress(String absolutePath) {
+        long timestamp = new Date().getTime()
         String parentPath = new File(absolutePath).getParent()
-        String destPath = parentPath.endsWith("/") ?  parentPath :  parentPath
+        String destPath = parentPath.endsWith("/") ?  parentPath : parentPath + "/" + timestamp.toString()
 
         /* Create and temporary directory which will contains the archive content */
         fileSystemService.makeLocalDirectory(destPath)
