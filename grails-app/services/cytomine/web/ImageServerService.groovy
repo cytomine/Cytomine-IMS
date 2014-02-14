@@ -1,7 +1,7 @@
 package cytomine.web
 
-import net.jr.fastcgi.impl.FastCGIHandler
-import net.jr.fastcgi.impl.FastCGIHandlerFactory
+//import net.jr.fastcgi.impl.FastCGIHandler
+//import net.jr.fastcgi.impl.FastCGIHandlerFactory
 
 class ImageServerService {
 
