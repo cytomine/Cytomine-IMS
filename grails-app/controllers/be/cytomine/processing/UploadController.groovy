@@ -99,11 +99,15 @@ class UploadController {
             Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey, "./")
 
             def idStorage = Integer.parseInt(params['idStorage'] + "")
-            def idProject = null
-            try {
-                idProject = Integer.parseInt(params['idProject'] + "")
-            } catch (Exception e) {
+            def projects = []
+            if (params['idProject']) {
+                try {
+                    projects << Integer.parseInt(params['idProject'] + "")
+                } catch (Exception e) {
+                }
             }
+
+
             String filename = (String) params['files[].name']
             def uploadedFilePath = new File((String) params['files[].path'])
             def size = uploadedFilePath.size()
@@ -111,7 +115,7 @@ class UploadController {
 
 
             log.info "idStorage=$idStorage"
-            log.info "idProject=$idProject"
+            log.info "projects=$projects"
             log.info "filename=$filename"
             log.info "uploadedFilePath=${uploadedFilePath.absolutePath}"
             log.info "size=$size"
@@ -136,7 +140,7 @@ class UploadController {
                     size,
                     extension,
                     contentType,
-                    [idProject],
+                    projects,
                     [idStorage],
                     currentUserId)
             log.info "uploadedFile=$uploadedFile"

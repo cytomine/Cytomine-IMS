@@ -11,8 +11,8 @@ PID=$!
 
 grails -Dserver.port=9080 run-app
 
-#if [[ $? -gt 128 ]]
-#then
-#	echo "kill $PID"
-#    kill $PID
-#fi
+if [[ $? -gt 128 ]]
+then
+	echo "kill $PID"
+    kill $PID
+fi
