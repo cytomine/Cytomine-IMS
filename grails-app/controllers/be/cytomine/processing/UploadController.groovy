@@ -125,13 +125,17 @@ class UploadController {
                 throw new Exception(uploadedFilePath.absolutePath + " NOT EXIST!")
             }
             //Move file in the buffer dir
-            log.info "move file in buffer dir..."
+            log.info '\n\n****************************************'
+            log.info "1. move file in buffer dir..."
+            log.info '****************************************'
             def newFile = moveFileTmpDir(uploadedFilePath, storageBufferPath, currentUserId, filename, timestamp)
             String extension = newFile.extension
 
             //Add uploadedfile on Cytomine
             String path = currentUserId + "/" + timestamp.toString() + "/" + newFile.newFilename
-            log.info "create uploaded file on cytomine..."
+            log.info '\n\n****************************************'
+            log.info "2. create uploaded file on cytomine..."
+            log.info '****************************************'
 
             def uploadedFile = cytomine.addUploadedFile(
                     filename,
@@ -148,8 +152,11 @@ class UploadController {
 
             log.info "init background service..."
             backgroundService.execute("convertAndDeployImage", {
-                log.info "convert file...uploadedFile=$uploadedFile"
 
+
+                log.info '\n\n****************************************'
+                log.info "3. convert file...uploadedFile=$uploadedFile"
+                log.info '****************************************'
                 def uploadedFiles = convertImagesService.convertUploadedFile(cytomine, uploadedFile, currentUserId, allowedMime, mimeToConvert, zipMime)
 
                 log.info "uploadedFiles=$uploadedFiles"
@@ -165,16 +172,30 @@ class UploadController {
                 //delete main uploaded file
 
                 log.info "delete ${uploadedFile.absolutePath}"
+                log.info '\n\n****************************************'
+                log.info "4. copyUploadedFile"
+                log.info '****************************************'
                 deployImagesService.copyUploadedFile(cytomine, uploadedFile, storages)
+
+                log.info '\n\n****************************************'
+                log.info "5. deletefile"
+                log.info '****************************************'
                 fileSystemService.deleteFile(uploadedFile.absolutePath)
 
                 //delete nested uploaded file
+                log.info '\n\n****************************************'
+                log.info "6. copyUploadedFile (subfiles)"
+                log.info '****************************************'
                 uploadedFiles.each {
                     log.info "copy local files"
                     deployImagesService.copyUploadedFile(cytomine, it, storages)
                 }
 
+                log.info '\n\n****************************************'
+                log.info "7. deployUploadedFile/copyUploadedFile (subfiles)"
+                log.info '****************************************'
                 uploadedFiles.each {
+                    log.info "uploadedFiles status " + it.getInt('status')
                     if (it.getInt('status') == Cytomine.UploadStatus.TO_DEPLOY) {
                         abstractImagesCreated << deployImagesService.deployUploadedFile(cytomine, it, storages)
                     }
@@ -184,6 +205,9 @@ class UploadController {
                     }
                 }
 
+                log.info '\n\n****************************************'
+                log.info "9. deleteFile (subfiles)"
+                log.info '****************************************'
                 //delete nested uploaded file
                 uploadedFiles.each {
                     log.info "delete local files"

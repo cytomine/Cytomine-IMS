@@ -223,12 +223,27 @@ class ConvertImagesService {
 
         boolean success = true
 
+       // Thread.sleep(600000)
+
         log.info "$extractBandCommand"
         success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
+
+        if(!success) {
+            success = true
+            log.info "$extractBandCommand"
+            extractBandCommand = """$executable extract_band $source $intermediateFile[bigtiff,compression=lzw] 0 --n 1"""
+            success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
+        }
+
         log.info "$pyramidCommand"
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
         log.info "$rmIntermediatefile"
         success &= (ProcUtils.executeOnShell(rmIntermediatefile) == 0)
+
+
+
+
+
 
         return success
     }
