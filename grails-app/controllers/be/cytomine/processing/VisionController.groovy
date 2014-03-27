@@ -24,8 +24,8 @@ class VisionController {
 
     def merge () {
 
-        def urls = params.url.split(',')
-        def colors = params.url.split('color')
+        def urls = extractParams("url")
+        def colors = extractParams("color")
         colors = colors.collect{
             int intValue = Integer.parseInt(it,16);
             return new Color( intValue );
@@ -59,6 +59,26 @@ class VisionController {
             render "url arugment is missing (start with url0=)!"
             response.status = 400
         }
+    }
+
+    /**
+     * Extract all args into a list.
+     * argStart0, argStart1, argStart2... => [argStart0,argStart1...]
+     * @param argStart
+     */
+    private def extractParams(String argStart) {
+        def list = []
+        int i=0;
+        String nextUrlParams = params.get(argStart+i)
+        log.info "nextUrlParams=" +nextUrlParams
+
+        while(nextUrlParams!=null) {
+            log.info "nextUrlParams=$nextUrlParams"
+            list << nextUrlParams
+            i++
+            nextUrlParams = params.get(argStart+i)
+        }
+        return list
     }
 
     /**
