@@ -4,10 +4,7 @@ import be.cytomine.client.Cytomine
 import be.cytomine.client.models.AbstractImage
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
-import grails.converters.JSON
 import utils.ProcUtils
-
-import javax.activation.MimetypesFileTypeMap
 
 /**
  * TODOSTEVEBEN: Doc + refactoring + security?
@@ -18,27 +15,21 @@ class DeployImagesService {
 
     static transactional = true
 
-    UploadedFile copyUploadedFile(Cytomine cytomine,UploadedFile uploadedFile, Collection<Storage> storages) {
+    UploadedFile copyUploadedFile(Cytomine cytomine, UploadedFile uploadedFile, Collection<Storage> storages) {
         def localFile = uploadedFile.get("path") + "/" + uploadedFile.get("filename")
-        println "localFile=$localFile"
+
         storages.each { storage ->
-                def remoteFile = storage.getStr("basePath") + "/" + uploadedFile.getStr("filename")
-            log.info "basePath= " + storage.getStr("basePath")
-            log.info "filename= " + uploadedFile.getStr("filename")
-//                remoteCopyService.copy(localFile, remotePath, remoteFile, storage, true)
-            log.info "LOCAL FILE = " + localFile
-            log.info "REMOTE FILE = " + remoteFile
+            def destFilename = storage.getStr("basePath") + "/" + uploadedFile.getStr("filename")
+            fileSystemService.makeLocalDirectory(new File(destFilename).parent)
 
-            fileSystemService.makeLocalDirectory(new File(remoteFile).parent)
-
-            def command = """mv "$localFile" "$remoteFile" """
+            def command = """mv "$localFile" "$destFilename" """
             log.info "Command=$command"
             ProcUtils.executeOnShell(command)
 
-                if(!new File(remoteFile).exists()) {
-                    log.error new File(remoteFile).absolutePath + " created = " + new File(remoteFile).exists()
-                    throw new Exception(new File(remoteFile).absolutePath + " is not created! ")
-                }
+            if(!new File(destFilename).exists()) {
+                log.error new File(destFilename).absolutePath + " created = " + new File(destFilename).exists()
+                throw new Exception(new File(destFilename).absolutePath + " is not created! ")
+            }
 
         }
         uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.DEPLOYED)

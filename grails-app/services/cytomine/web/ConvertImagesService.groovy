@@ -133,10 +133,10 @@ class ConvertImagesService {
                 if (uploadedFile.getStr("ext") == "bif") { //bad use STATIC STRING FOR FORMAT
                     String bif2tifFilename = originalFilenameFullPath.replaceAll(".bif", ".tif")
                     String layer2bif2tifFilename = originalFilenameFullPath.replaceAll(".bif", "_layer2.tif")
-                    rename(originalFilenameFullPath, bif2tifFilename)
+                    fileSystemService.rename(originalFilenameFullPath, bif2tifFilename)
                     success = extractLayer(bif2tifFilename, layer2bif2tifFilename, 2)
-                    rename(bif2tifFilename, originalFilenameFullPath)
-                    success = convert(layer2bif2tifFilename, convertedFilenameFullPath)
+                    fileSystemService.rename(bif2tifFilename, originalFilenameFullPath)
+                    success &= convert(layer2bif2tifFilename, convertedFilenameFullPath)
                 } else {
                     success = vipsify(originalFilenameFullPath, convertedFilenameFullPath)
                 }
@@ -180,13 +180,6 @@ class ConvertImagesService {
         log.info "$command"
         return ProcUtils.executeOnShell(command) == 0
 
-    }
-
-    private def rename(String source, String target) {
-        def executable = "mv"
-        def command = """$executable $source $target"""
-        log.info "$command"
-        return ProcUtils.executeOnShell(command) == 0
     }
     
     private def extractLayer(String source, String target, Integer layer) {

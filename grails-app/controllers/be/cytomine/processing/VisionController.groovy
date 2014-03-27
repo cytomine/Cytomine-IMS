@@ -1,16 +1,14 @@
 package be.cytomine.processing
 
-import be.cytomine.client.Cytomine
 import be.cytomine.processing.image.filters.Colour_Deconvolution
 import be.cytomine.processing.merge.CytomineRGBStackMerge
 import http.HttpClient
 import ij.ImagePlus
 import ij.plugin.ContrastEnhancer
-import ij.plugin.RGBStackMerge
 import ij.process.ImageConverter
 
 import javax.imageio.ImageIO
-import java.awt.Color
+import java.awt.*
 import java.awt.image.BufferedImage
 
 /**
@@ -24,9 +22,10 @@ class VisionController {
     def imageProcessingService
 
 
-    def merge = {
-        def urls = extractParams("url")
-        def colors = extractParams("color")
+    def merge () {
+
+        def urls = params.url.split(',')
+        def colors = params.url.split('color')
         colors = colors.collect{
             int intValue = Integer.parseInt(it,16);
             return new Color( intValue );
@@ -60,26 +59,6 @@ class VisionController {
             render "url arugment is missing (start with url0=)!"
             response.status = 400
         }
-    }
-
-    /**
-     * Extract all args into a list.
-     * argStart0, argStart1, argStart2... => [argStart0,argStart1...]
-     * @param argStart
-     */
-    private def extractParams(String argStart) {
-        def list = []
-        int i=0;
-        String nextUrlParams = params.get(argStart+i)
-        log.info "nextUrlParams=" +nextUrlParams
-
-        while(nextUrlParams!=null) {
-            log.info "nextUrlParams=$nextUrlParams"
-            list << nextUrlParams
-            i++
-            nextUrlParams = params.get(argStart+i)
-        }
-        return list
     }
 
     /**
@@ -176,7 +155,7 @@ class VisionController {
 
     }
 
-    def process = {
+    def process () {
 
         if (!request.queryString) return
         def split = request.queryString.split("url=")
@@ -196,16 +175,7 @@ class VisionController {
         try {
             /* Create Buffered Image  From URL */
             BufferedImage bufferedImage
-            if (cytomineAuthenticationRequired) {
-                String cytomineHost = params.host
-                String cytominePublicKey = params.public_key
-                String cytominePrivateKey = params.private_key
-                Cytomine cytomine = new Cytomine((String)params.host,cytominePublicKey, cytominePrivateKey, "/tmp")
-                String fullURL = cytomine.host + cytomine.basePath + imageURL;
-                bufferedImage = cytomine.downloadPictureInBufferedImage(fullURL)
-            } else {
-                bufferedImage = getImageFromURL(imageURL)
-            }
+            bufferedImage = getImageFromURL(imageURL)
 
             /* Process the BufferedImage */
 

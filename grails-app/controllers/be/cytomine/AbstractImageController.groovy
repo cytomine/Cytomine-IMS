@@ -2,13 +2,11 @@ package be.cytomine
 
 import be.cytomine.client.Cytomine
 import be.cytomine.client.models.AbstractImage
-import be.cytomine.client.models.ImageInstance
 import grails.converters.JSON
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
 
 import javax.imageio.ImageIO
-import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 
 class AbstractImageController {
@@ -68,6 +66,7 @@ class AbstractImageController {
     }
 
 
+    //put into service
     def label() {
         Cytomine cytomine = cytomineService.getCytomine(params.cytomineUrl)
 
@@ -103,6 +102,7 @@ class AbstractImageController {
         }
     }
 
+    //put into service
     def associated() {
         Cytomine cytomine = cytomineService.getCytomine(params.cytomineUrl)
 

@@ -20,47 +20,10 @@ class FileSystemService {
 
     def makeLocalDirectory(String path) {
         println "Create path=$path"
-//
-//        def mkdirCommand = "mkdir -p " + path
-//        def proc = mkdirCommand.execute()
-//        proc.waitFor()
-//        int value = proc.exitValue()
-//        mkdirCommand = "chmod 777 -R " + path
-//        proc = mkdirCommand.execute()
-//        proc.waitFor()
-
         int value = ProcUtils.executeOnShell("mkdir -p " + path)
         println "Create right=$path"
         ProcUtils.executeOnShell("chmod -R 777 " + path)
         return value
-    }
-
-    def makeRemoteDirectory(String ip, Integer port, String username, String password, String keyFile, String remotePath) {
-        def ant = new AntBuilder()
-        if (password != null) {
-            ant.sshexec(
-                    host:ip,
-                    port:port,
-                    username:username,
-                    password : password,
-                    command:"mkdir -p " + remotePath,
-                    trust: true,
-                    verbose: true
-            )
-        } else if (keyFile != null) {
-            ant.sshexec(
-                    host:ip,
-                    port:port,
-                    username:username,
-                    keyFile : keyFile,
-                    command:"mkdir -p " + remotePath,
-                    trust: true,
-                    verbose: true
-            )
-        } else{
-            log.error "cannot make directory $remotePath on remove host with user $username"
-        }
-
     }
 
     def deleteFile(String path) {
@@ -69,5 +32,12 @@ class FileSystemService {
         def proc = deleteCommand.execute()
         proc.waitFor()
         return proc.exitValue()
+    }
+
+    def rename(String source, String target) {
+        def executable = "mv"
+        def command = """$executable $source $target"""
+        log.info "$command"
+        return ProcUtils.executeOnShell(command) == 0
     }
 }

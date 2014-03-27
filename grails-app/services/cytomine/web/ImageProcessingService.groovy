@@ -1,22 +1,13 @@
 package cytomine.web
 
 import be.cytomine.processing.image.filters.Auto_Threshold
-import com.vividsolutions.jts.geom.Coordinate
 import ij.ImagePlus
-import ij.gui.PolygonRoi
-import ij.gui.Roi
-import ij.gui.Wand
 import ij.process.ImageConverter
-import ij.process.ImageProcessor
 
-import java.awt.Graphics2D
+import java.awt.*
 import java.awt.image.BufferedImage
 
 class ImageProcessingService {
-
-    private static final int BLACK = 0
-    private static final int WHITE = 255
-
 
     static transactional = false
 
