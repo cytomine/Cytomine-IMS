@@ -1,4 +1,4 @@
-package be.cytomine.upload
+package be.cytomine.storage
 
 import be.cytomine.client.Cytomine
 import be.cytomine.client.models.AbstractImage

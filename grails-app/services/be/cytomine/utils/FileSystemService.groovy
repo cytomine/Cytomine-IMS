@@ -1,4 +1,4 @@
-package cytomine.web
+package be.cytomine.utils
 
 import utils.FilesUtils
 import utils.ProcUtils
