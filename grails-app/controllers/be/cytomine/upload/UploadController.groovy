@@ -1,4 +1,4 @@
-package be.cytomine.processing
+package be.cytomine.upload
 
 import be.cytomine.client.Cytomine
 import be.cytomine.client.models.AbstractImage

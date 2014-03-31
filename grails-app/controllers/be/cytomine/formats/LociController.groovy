@@ -1,4 +1,4 @@
-package be.cytomine.processing
+package be.cytomine.formats
 
 import loci.common.services.DependencyException
 import loci.common.services.ServiceException
