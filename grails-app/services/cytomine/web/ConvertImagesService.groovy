@@ -15,14 +15,16 @@ class ConvertImagesService {
     def fileSystemService
     def grailsApplication
 
-
+    private def allowedMime = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms", "bif", "zvi"]
+    private def zipMime = ["zip"]
+    private def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm",  "bmp"]
 
     static String MRXS_EXTENSION = "mrxs"
     static String VMS_EXTENSION = "vms"
 
     static transactional = true
 
-    def convertUploadedFile(Cytomine cytomine,UploadedFile uploadedFile, def currentUserId,def allowedMime,def mimeToConvert,def zipMime) {
+    def convertUploadedFile(Cytomine cytomine,UploadedFile uploadedFile) {
         //Check if file mime is allowed
         def allMime = allowedMime.plus(mimeToConvert).plus(zipMime)
 
@@ -33,13 +35,13 @@ class ConvertImagesService {
         }
 
         if (zipMime.contains(uploadedFile.get("ext"))) {
-            return handleCompressedFile(cytomine,uploadedFile, currentUserId,mimeToConvert)
+            return handleCompressedFile(cytomine,uploadedFile)
         } else {
-            return handleSingleFile(cytomine,uploadedFile, currentUserId,mimeToConvert)
+            return handleSingleFile(cytomine, uploadedFile)
         }
     }
 
-    private def handleCompressedFile(Cytomine cytomine,UploadedFile uploadedFile, def currentUserId, def mimeToConvert) {
+    private def handleCompressedFile(Cytomine cytomine,UploadedFile uploadedFile) {
         /* Unzip the archive within the target */
         String destPath = zipService.uncompress(uploadedFile.getAbsolutePath())
 
@@ -47,19 +49,19 @@ class ConvertImagesService {
         def pathsAndExtensions = fileSystemService.getAbsolutePathsAndExtensionsFromPath(destPath)
         uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.UNCOMPRESSED,false)
 
-        def specialFiles = handleSpecialFile(cytomine,uploadedFile, currentUserId, pathsAndExtensions)
+        def specialFiles = handleSpecialFile(cytomine,uploadedFile,  pathsAndExtensions)
         if (specialFiles) return specialFiles
 
         //it looks like we have a set of "single file"
         def uploadedFiles = []
         pathsAndExtensions.each { it ->
-
-            UploadedFile new_uploadedFile = createNewUploadedFile(uploadedFile, it, currentUserId, null)
+            println it
+            UploadedFile new_uploadedFile = createNewUploadedFile(cytomine, uploadedFile, it, null)
             uploadedFiles << new_uploadedFile
 
-            UploadedFile converted_uploadedFile = handleSingleFile(new_uploadedFile, currentUserId, mimeToConvert)
+            UploadedFile converted_uploadedFile = handleSingleFile(cytomine, new_uploadedFile)
 
-            if (converted_uploadedFile != new_uploadedFile && converted_uploadedFile.get("status") == Cytomine.UploadStatus.TO_DEPLOY) {
+            if (converted_uploadedFile != new_uploadedFile) {
                 uploadedFiles << converted_uploadedFile
             }
         }
@@ -67,14 +69,14 @@ class ConvertImagesService {
         return uploadedFiles
     }
 
-    private def handleSpecialFile(Cytomine cytomine,UploadedFile uploadedFile, def currentUserId, def pathsAndExtensions) {
+    private def handleSpecialFile(Cytomine cytomine,UploadedFile uploadedFile,  def pathsAndExtensions) {
 
         UploadedFile mainUploadedFile = null //mrxs or vms file
         def uploadedFiles = [] //nested files
 
         pathsAndExtensions.each { it ->
             if (it.extension == MRXS_EXTENSION || it.extension == VMS_EXTENSION) {
-                mainUploadedFile = createNewUploadedFile(cytomine,uploadedFile, it, currentUserId, null)
+                mainUploadedFile = createNewUploadedFile(cytomine,uploadedFile, it,  null)
                 mainUploadedFile = cytomine.editUploadedFile(mainUploadedFile.id,Cytomine.UploadStatus.TO_DEPLOY,true,mainUploadedFile.id)
             }
         }
@@ -87,7 +89,7 @@ class ConvertImagesService {
         uploadedFiles << mainUploadedFile
         pathsAndExtensions.each { it ->
             if (it.extension != MRXS_EXTENSION && it.extension != VMS_EXTENSION) {
-                UploadedFile nestedUploadedFile = createNewUploadedFile(cytomine,uploadedFile, it, currentUserId, "application/octet-stream")
+                UploadedFile nestedUploadedFile = createNewUploadedFile(cytomine,uploadedFile, it,  "application/octet-stream")
                 uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.CONVERTED,true,mainUploadedFile.id)
                 uploadedFiles << nestedUploadedFile
             }
@@ -95,7 +97,8 @@ class ConvertImagesService {
         return uploadedFiles
     }
 
-    private UploadedFile createNewUploadedFile(Cytomine cytomine,UploadedFile parentUploadedFile, def pathAndExtension, def currentUserId, String contentType){
+    private UploadedFile createNewUploadedFile(Cytomine cytomine, def parentUploadedFile, def pathAndExtension, def contentType){
+
         String absolutePath = pathAndExtension.absolutePath
         String extension = pathAndExtension.extension
         String filename = absolutePath.substring(parentUploadedFile.getStr("path").length(), absolutePath.length())
@@ -104,10 +107,19 @@ class ConvertImagesService {
             contentType = mimeTypesMap.getContentType(absolutePath)
         }
 
-        return cytomine.addUploadedFile(parentUploadedFile.getStr("originalFilename"),filename,parentUploadedFile.getStr("path"),new File(absolutePath).size(),extension,contentType,parentUploadedFile.getList("projects"),parentUploadedFile.getList("storages"),currentUserId)
+        return cytomine.addUploadedFile(
+                new File(filename).getName(),
+                filename,
+                parentUploadedFile.getStr("path"),
+                new File(absolutePath).size(),
+                extension,
+                contentType,
+                parentUploadedFile.getList("projects"),
+                parentUploadedFile.getList("storages"),
+                parentUploadedFile.getLong("user"))
     }
 
-    private UploadedFile handleSingleFile(Cytomine cytomine,UploadedFile uploadedFile, def currentUserId, def mimeToConvert) {
+    private UploadedFile handleSingleFile(Cytomine cytomine, UploadedFile uploadedFile) {
 
         //Check if file must be converted or not...
         if (!mimeToConvert.contains(uploadedFile.getStr("ext"))) {
@@ -152,11 +164,11 @@ class ConvertImagesService {
                             "image/tiff",
                             uploadedFile.getList("projects"),
                             uploadedFile.getList("storages"),
-                            currentUserId,
+                            uploadedFile.getLong("user"),
                             Cytomine.UploadStatus.TO_DEPLOY)
 
-
-                    uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.CONVERTED,true)
+                    log.info "set uploaded parent file to UNCOMPRESSED"
+                    cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.CONVERTED,true)
 
                     return convertUploadedFile
                 } else {

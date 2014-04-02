@@ -22,7 +22,7 @@ class UrlMappings {
             action = [GET:"associatedImage"]
         }
 
-        "/api/abstractimage/$id/download" (controller:"image") {
+        "/api/abstractimage/$id/download" (controller:"storage") {
             action = [GET:"download"]
         }
 	}

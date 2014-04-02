@@ -5,9 +5,8 @@ import be.cytomine.ImageController
 class ImageProxyController extends ImageController {
 
     /**
-     * Get Image Tile
-     * @param id
-     * @param params
+     * Image Proxy method
+     * @param url to fetch and return as image
      */
     def index() {
         responseImageFromUrl(params.url)

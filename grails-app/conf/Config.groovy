@@ -65,15 +65,13 @@ grails.hibernate.cache.queries = false
 
 environments {
     development {
-        grails.logging.jul.usebridge = true
+        "grails.logging.jul.usebridge = true"
     }
     production {
         grails.logging.jul.usebridge = false
         grails.serverURL = "http://image.cytomine.be"
     }
 }
-
-// log4j configuration
 log4j = {
     // Example of changing the log pattern for the default console appender:
     //
@@ -82,45 +80,45 @@ log4j = {
     //}
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
-           'org.codehaus.groovy.grails.web.pages',          // GSP
-           'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-           'org.codehaus.groovy.grails.commons',            // core / classloading
-           'org.codehaus.groovy.grails.plugins',            // plugins
-           'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-           'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate'
+            'org.codehaus.groovy.grails.web.pages',          // GSP
+            'org.codehaus.groovy.grails.web.sitemesh',       // layouts
+            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+            'org.codehaus.groovy.grails.web.mapping',        // URL mapping
+            'org.codehaus.groovy.grails.commons',            // core / classloading
+            'org.codehaus.groovy.grails.plugins',            // plugins
+            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
+            'org.springframework',
+            'org.hibernate',
+            'net.sf.ehcache.hibernate'
 
 
     environments {
-         production {
-             root {
-                 info 'appLog',"logfile"
- //               error  'mail'
-                 additivity = true
-             }
-         }
-         development {
-             root {
-                 info 'appLog',"logfile", 'stdout'
-                 additivity = true
-             }
-         }
-         test {
-             root {
-                 info 'appLog',"logfile", 'stdout'
-                 additivity = true
-             }
-         }
-         perf {
-             root {
-                 info 'appLog',"logfile", 'stdout'
-                 additivity = true
-             }
-         }
-     }
+        production {
+            root {
+                info 'appLog',"logfile"
+//               error  'mail'
+                additivity = true
+            }
+        }
+        development {
+            root {
+                info 'appLog',"logfile", 'stdout'
+                additivity = true
+            }
+        }
+        test {
+            root {
+                info 'appLog',"logfile", 'stdout'
+                additivity = true
+            }
+        }
+        perf {
+            root {
+                info 'appLog',"logfile", 'stdout'
+                additivity = true
+            }
+        }
+    }
 }
 
 grails.storageBufferPath="/tmp/imageserver_buffer"

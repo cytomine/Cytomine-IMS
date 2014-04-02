@@ -1,7 +1,5 @@
 package be.cytomine
 
-import be.cytomine.client.Cytomine
-import be.cytomine.client.models.AbstractImage
 import http.HttpClient
 
 import javax.imageio.ImageIO
@@ -11,8 +9,6 @@ import java.awt.image.BufferedImage
  * Implement generics methods for handling imaging data in controllers
  */
 class ImageController {
-
-    def cytomineService
 
     /**
      * Read a picture from url

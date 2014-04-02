@@ -14,7 +14,6 @@ import utils.ProcUtils
  */
 class UploadController {
 
-    def fileSystemService
     def convertImagesService
     def deployImagesService
     def backgroundService
@@ -29,21 +28,11 @@ class UploadController {
             String pubKey = grailsApplication.config.grails.imageServerPublicKey
             String privKey = grailsApplication.config.grails.imageServerPrivateKey
 
-
             log.info "Upload is made on Cytomine = $cytomineUrl"
             log.info "We use $pubKey/$privKey to connect"
             log.info "Image are tmp convert in $storageBufferPath"
 
-
-
             def user = cytomineService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
-            log.info "user="+user.id
-
-            def allowedMime = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms", "bif", "zvi"]
-            def zipMime = ["zip"]
-            def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm",  "bmp"]
-
-
             long currentUserId = user.id
             long timestamp = new Date().getTime()
 
@@ -59,12 +48,10 @@ class UploadController {
                 }
             }
 
-
             String filename = (String) params['files[].name']
             def uploadedFilePath = new File((String) params['files[].path'])
             def size = uploadedFilePath.size()
             String contentType = params['files[].content_type']
-
 
             log.info "idStorage=$idStorage"
             log.info "projects=$projects"
@@ -76,108 +63,37 @@ class UploadController {
             if (!uploadedFilePath.exists()) {
                 throw new Exception(uploadedFilePath.absolutePath + " NOT EXIST!")
             }
-            //Move file in the buffer dir
-            log.info '\n\n****************************************'
-            log.info "1. move file in buffer dir..."
-            log.info '****************************************'
-            def newFile = moveFileTmpDir(uploadedFilePath, storageBufferPath, currentUserId, filename, timestamp)
-            String extension = newFile.extension
 
-            //Add uploadedfile on Cytomine
-            String path = currentUserId + "/" + timestamp.toString() + "/" + newFile.newFilename
-            log.info '\n\n****************************************'
-            log.info "2. create uploaded file on cytomine..."
-            log.info '****************************************'
+            log.info "Create an uploadedFile instance and copy it to its storages"
+            String extension = FilesUtils.getExtensionFromFilename(filename).toLowerCase()
+            String destPath = timestamp.toString() + "/" + FilesUtils.correctFileName(filename)
 
+            def storage = cytomine.getStorage(idStorage)
             def uploadedFile = cytomine.addUploadedFile(
                     filename,
-                    path,
-                    storageBufferPath.toString(),
+                    destPath,
+                    storage.getStr("basePath"),
                     size,
                     extension,
                     contentType,
                     projects,
                     [idStorage],
                     currentUserId)
-            log.info "uploadedFile=$uploadedFile"
-            def responseContent = createResponseContent(filename, size, contentType, uploadedFile.toJSON())
+            deployImagesService.copyUploadedFile(cytomine, uploadedFilePath.absolutePath, uploadedFile, [storage])
 
-            log.info "init background service..."
+            log.info "Execute convert & deploy into background"
             backgroundService.execute("convertAndDeployImage", {
-
-
-                log.info '\n\n****************************************'
-                log.info "3. convert file...uploadedFile=$uploadedFile"
-                log.info '****************************************'
-                def uploadedFiles = convertImagesService.convertUploadedFile(cytomine, uploadedFile, currentUserId, allowedMime, mimeToConvert, zipMime)
-
-                log.info "uploadedFiles=$uploadedFiles"
-
-                Collection<AbstractImage> abstractImagesCreated = []
-
-                def storages = []
-                uploadedFile.getList("storages").each {
-                    log.info "get storage $it with cytomine: $cytomineUrl ${user.publicKey} ${user.privateKey}"
-                    storages << cytomine.getStorage(it)
-                }
-
-                //delete main uploaded file
-
-                log.info "delete ${uploadedFile.absolutePath}"
-                log.info '\n\n****************************************'
-                log.info "4. copyUploadedFile"
-                log.info '****************************************'
-                deployImagesService.copyUploadedFile(cytomine, uploadedFile, storages)
-
-                log.info '\n\n****************************************'
-                log.info "5. deletefile"
-                log.info '****************************************'
-                fileSystemService.deleteFile(uploadedFile.absolutePath)
-
-                //delete nested uploaded file
-                log.info '\n\n****************************************'
-                log.info "6. copyUploadedFile (subfiles)"
-                log.info '****************************************'
-                uploadedFiles.each {
-                    log.info "copy local files"
-                    deployImagesService.copyUploadedFile(cytomine, it, storages)
-                }
-
-                log.info '\n\n****************************************'
-                log.info "7. deployUploadedFile/copyUploadedFile (subfiles)"
-                log.info '****************************************'
-                uploadedFiles.each {
-                    log.info "uploadedFiles status " + it.getInt('status')
+                def convertedUploadedFiles = convertImagesService.convertUploadedFile(cytomine, uploadedFile)
+                convertedUploadedFiles.each {
                     if (it.getInt('status') == Cytomine.UploadStatus.TO_DEPLOY) {
-                        abstractImagesCreated << deployImagesService.deployUploadedFile(cytomine, it, storages)
-                    }
-
-                    if (it.getInt('status') == Cytomine.UploadStatus.CONVERTED) {
-                        deployImagesService.copyUploadedFile(cytomine, it, storages)
+                        log.info "create abstract image for $it"
+                        cytomine.addNewImage(it.id)
                     }
                 }
-
-                log.info '\n\n****************************************'
-                log.info "9. deleteFile (subfiles)"
-                log.info '****************************************'
-                //delete nested uploaded file
-                uploadedFiles.each {
-                    log.info "delete local files"
-                    fileSystemService.deleteFile(it.absolutePath)
-                }
-
-
-
-                /*abstractImagesCreated.each { abstractImage ->
-                    log.info "abstractImage=$abstractImage"
-                    cytomine.clearAbstractImageProperties(abstractImage.id)
-                    cytomine.populateAbstractImageProperties(abstractImage.id)
-                    cytomine.extractUsefulAbstractImageProperties(abstractImage.id)
-                }*/
-
             })
-            def response = [responseContent]
-            render response as JSON
+
+            def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON())]
+            render responseContent as JSON
 
         } catch (Exception e) {
             log.error e
@@ -188,26 +104,7 @@ class UploadController {
         }
     }
 
-    private def moveFileTmpDir(def uploadedFilePath, def storageBufferPath, def currentUserId, def filename, def timestamp) {
 
-        //compute path/filename info
-        String fullDestPath = storageBufferPath + "/" + currentUserId + "/" + timestamp.toString()
-        String newFilename = FilesUtils.correctFileName(filename)
-        String pathFile = fullDestPath + "/" + newFilename
-        String extension = FilesUtils.getExtensionFromFilename(filename).toLowerCase()
-
-        //create dir and transfer file
-        fileSystemService.makeLocalDirectory(fullDestPath)
-        assert new File(fullDestPath).exists()
-
-        //uploadedFilePath.renameTo(new File(pathFile))
-        def command = "mv ${uploadedFilePath.absolutePath} ${new File(pathFile).absolutePath}"
-        log.info "Command=$command"
-        ProcUtils.executeOnShell(command)
-
-        println "File created: " + new File(pathFile).exists()
-        return [newFilename: newFilename, extension: extension]
-    }
 
     private def createResponseContent(def filename, def size, def contentType, def uploadedFileJSON) {
         def content = [:]

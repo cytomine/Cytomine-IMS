@@ -4,6 +4,7 @@ import be.cytomine.client.Cytomine
 import be.cytomine.client.models.AbstractImage
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
+import utils.FilesUtils
 import utils.ProcUtils
 
 /**
@@ -15,11 +16,12 @@ class DeployImagesService {
 
     static transactional = true
 
-    UploadedFile copyUploadedFile(Cytomine cytomine, UploadedFile uploadedFile, Collection<Storage> storages) {
-        def localFile = uploadedFile.get("path") + "/" + uploadedFile.get("filename")
+    //could be removed and use an standard MV function by passing two directories...
+    UploadedFile copyUploadedFile(Cytomine cytomine, String uploadedFilePath, uploadedFile, Collection<Storage> storages) {
+        def localFile = uploadedFilePath
 
         storages.each { storage ->
-            def destFilename = storage.getStr("basePath") + "/" + uploadedFile.getStr("filename")
+            def destFilename = storage.getStr("basePath") + File.separator + uploadedFile.getStr("filename")
             fileSystemService.makeLocalDirectory(new File(destFilename).parent)
 
             def command = """mv "$localFile" "$destFilename" """
@@ -34,18 +36,5 @@ class DeployImagesService {
         }
         uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.DEPLOYED)
         return uploadedFile
-    }
-
-
-    AbstractImage deployUploadedFile(Cytomine cytomine,UploadedFile uploadedFile,  Collection<Storage> storages) {
-        log.info "deployUploadedFile"
-        //copy it
-        uploadedFile = copyUploadedFile(cytomine,uploadedFile, storages)
-        log.info "###############################################"
-        log.info "############ADD IMAGE################"
-        log.info "###############################################"
-        AbstractImage abstractImage = cytomine.addNewImage(uploadedFile.id)
-
-        return abstractImage
     }
 }
