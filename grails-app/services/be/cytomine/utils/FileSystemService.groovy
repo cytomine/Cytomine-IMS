@@ -26,14 +26,6 @@ class FileSystemService {
         return value
     }
 
-    def deleteFile(String path) {
-        def deleteCommand = "rm " + path
-        log.info deleteCommand
-        def proc = deleteCommand.execute()
-        proc.waitFor()
-        return proc.exitValue()
-    }
-
     def rename(String source, String target) {
         def executable = "mv"
         def command = """$executable $source $target"""

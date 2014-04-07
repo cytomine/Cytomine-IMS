@@ -30,7 +30,7 @@ class OpenslideService {
             }
         }
         if (associatedBufferedImage) return associatedBufferedImage
-        else println "label $label does not exist for $fullPath" //label does not exists
+        else log.error "label $label does not exist for $fullPath"
     }
 
 }
