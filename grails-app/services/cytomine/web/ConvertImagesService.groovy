@@ -13,11 +13,10 @@ class ConvertImagesService {
 
     def zipService
     def fileSystemService
-    def grailsApplication
 
-    private def allowedMime = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms", "bif", "zvi"]
-    private def zipMime = ["zip"]
-    private def mimeToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm",  "bmp"]
+    private def rawFormatsAccepted = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms", "bif", "zvi"]
+    private def archiveFormatsAccepted = ["zip"]
+    private def formatsToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm",  "bmp"]
 
     static String MRXS_EXTENSION = "mrxs"
     static String VMS_EXTENSION = "vms"
@@ -26,7 +25,7 @@ class ConvertImagesService {
 
     def convertUploadedFile(Cytomine cytomine,UploadedFile uploadedFile) {
         //Check if file mime is allowed
-        def allMime = allowedMime.plus(mimeToConvert).plus(zipMime)
+        def allMime = rawFormatsAccepted.plus(formatsToConvert).plus(archiveFormatsAccepted)
 
         if (!allMime.contains(uploadedFile.get("ext"))) {
             log.info uploadedFile.get("filename") + " : FORMAT NOT ALLOWED"
@@ -34,7 +33,7 @@ class ConvertImagesService {
             return [uploadedFile]
         }
 
-        if (zipMime.contains(uploadedFile.get("ext"))) {
+        if (archiveFormatsAccepted.contains(uploadedFile.get("ext"))) {
             return handleCompressedFile(cytomine,uploadedFile)
         } else {
             return handleSingleFile(cytomine, uploadedFile)
@@ -119,72 +118,94 @@ class ConvertImagesService {
                 parentUploadedFile.getLong("user"))
     }
 
+    private boolean specialCheckVentana_TIFF(UploadedFile uploadedFile) {
+        //check extension
+        if (uploadedFile.get("ext") != "tif" && uploadedFile.get("ext") != "tiff") return false
+
+        //try tiffinfo
+        String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
+
+        String tiffinfo = "tiffinfo $originalFilenameFullPath".execute().text
+        println tiffinfo
+        return tiffinfo.contains("<iScan")
+
+    }
+
     private UploadedFile handleSingleFile(Cytomine cytomine, UploadedFile uploadedFile) {
 
         //Check if file must be converted or not...
-        if (!mimeToConvert.contains(uploadedFile.getStr("ext"))) {
+        if (!formatsToConvert.contains(uploadedFile.getStr("ext"))) {
             log.info uploadedFile.getStr("filename") + " : TO_DEPLOY"
             uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.TO_DEPLOY,false,uploadedFile.id)
             return uploadedFile
+        }
 
-        } else {
-            log.info "convert $uploadedFile"
-            //..if yes. Convert it
-            String convertFileName = uploadedFile.getStr("filename")
-            convertFileName = convertFileName[0 .. (convertFileName.size() - uploadedFile.getStr("ext").size() - 2)]
-            convertFileName = convertFileName + "_converted.tif"
+        boolean convertSuccessfull = true
+        String convertFileName = uploadedFile.getStr("filename")
+        convertFileName = convertFileName[0 .. (convertFileName.size() - uploadedFile.getStr("ext").size() - 2)]
+        convertFileName = convertFileName + "_converted.tif"
+        String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
+        String convertedFilenameFullPath = [ uploadedFile.getStr("path"), convertFileName].join(File.separator)
+        try {
+            if (specialCheckVentana_TIFF(uploadedFile)) { //special check for TIFF file from ventana
+                log.info "ventana TIFF detected"
+                String biggestLayerFilename = uploadedFile.getStr("filename")
+                biggestLayerFilename = biggestLayerFilename[0 .. (biggestLayerFilename.size() - uploadedFile.getStr("ext").size() - 2)]
+                biggestLayerFilename = biggestLayerFilename + "_biggest_layer.tif"
 
-            String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
-            String convertedFilenameFullPath = [ uploadedFile.getStr("path"), convertFileName].join(File.separator)
 
+                String biggestFilenameFullPath = [ uploadedFile.getStr("path"), biggestLayerFilename].join(File.separator)
 
-            try {
+                //1. Extract the biggest layer
+                // vips im_vips2tiff 11GH076256_A2_CD3_100.tif:2 output_image.tif:deflate,,flat,,,,8
+                def command = """vips im_vips2tiff $originalFilenameFullPath:2 $biggestFilenameFullPath:deflate,,flat,,,,8"""
+                log.info "$command"
+                convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
 
+                //2. Pyramid
+                // vips tiffsave output_image.tif output_image_compress.tif --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256
+                command = """vips tiffsave $biggestFilenameFullPath $convertedFilenameFullPath --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256"""
+                log.info "$command"
+                convertSuccessfull &= ProcUtils.executeOnShell(command)  == 0
 
-                Boolean success = false
-                if (uploadedFile.getStr("ext") == "bif") { //bad use STATIC STRING FOR FORMAT
-                    String bif2tifFilename = originalFilenameFullPath.replaceAll(".bif", ".tif")
-                    String layer2bif2tifFilename = originalFilenameFullPath.replaceAll(".bif", "_layer2.tif")
-                    fileSystemService.rename(originalFilenameFullPath, bif2tifFilename)
-                    success = extractLayer(bif2tifFilename, layer2bif2tifFilename, 2)
-                    fileSystemService.rename(bif2tifFilename, originalFilenameFullPath)
-                    success &= convert(layer2bif2tifFilename, convertedFilenameFullPath)
-                } else {
-                    success = vipsify(originalFilenameFullPath, convertedFilenameFullPath)
-                }
+                //3. Rm intermadiate file
+                command = """rm $biggestFilenameFullPath"""
+                convertSuccessfull &= ProcUtils.executeOnShell(command)  == 0
 
-                if (success) {
+            } else {
+                log.info "standard vips convert  $uploadedFile"
 
-                    UploadedFile convertUploadedFile = cytomine.addUploadedFile(
-                            uploadedFile.getStr("originalFilename"),
-                            convertFileName,
-                            uploadedFile.getStr("path"),
-                            new File(convertedFilenameFullPath).size(),
-                            "tiff",
-                            "image/tiff",
-                            uploadedFile.getList("projects"),
-                            uploadedFile.getList("storages"),
-                            uploadedFile.getLong("user"),
-                            Cytomine.UploadStatus.TO_DEPLOY)
+                convertSuccessfull = vipsify(originalFilenameFullPath, convertedFilenameFullPath)
+            }
+            if (convertSuccessfull) {
 
-                    log.info "set uploaded parent file to UNCOMPRESSED"
-                    cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.CONVERTED,true)
+                UploadedFile convertUploadedFile = cytomine.addUploadedFile(
+                        uploadedFile.getStr("originalFilename"),
+                        convertFileName,
+                        uploadedFile.getStr("path"),
+                        new File(convertedFilenameFullPath).size(),
+                        "tiff",
+                        "image/tiff",
+                        uploadedFile.getList("projects"),
+                        uploadedFile.getList("storages"),
+                        uploadedFile.getLong("user"),
+                        Cytomine.UploadStatus.TO_DEPLOY)
 
-                    return convertUploadedFile
-                } else {
-                    log.error "Vipsify cannot be done! Not a success!"
-                    uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_CONVERT,false)
-                    return uploadedFile
-                }
+                log.info "set uploaded parent file to UNCOMPRESSED"
+                cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.CONVERTED,true)
 
-            } catch (Exception e) {
-                e.printStackTrace()
-                uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_FORMAT)
+                return convertUploadedFile
+            } else {
+                log.error "Vipsify cannot be done! Not a success!"
+                uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_CONVERT,false)
                 return uploadedFile
             }
 
+        } catch (Exception e) {
+            e.printStackTrace()
+            uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.ERROR_FORMAT)
+            return uploadedFile
         }
-
     }
 
     private def convert(String source, String target) {
@@ -193,7 +214,7 @@ class ConvertImagesService {
         return ProcUtils.executeOnShell(command) == 0
 
     }
-    
+
     private def extractLayer(String source, String target, Integer layer) {
         //1. Look for vips executable
         println new File(source).exists()
@@ -228,7 +249,7 @@ class ConvertImagesService {
 
         boolean success = true
 
-       // Thread.sleep(600000)
+        // Thread.sleep(600000)
 
         log.info "$extractBandCommand"
         success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
