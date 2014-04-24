@@ -5,7 +5,9 @@ package be.cytomine.formats.digitalpathology
  */
 class SakuraSVSlideFormat extends OpenSlideCompatibleSingleFileFormat {
 
-    public String getExtension() {
-        return "svs"
+    public SakuraSVSlideFormat () {
+        extensions = ["svslide"]
+        vendor = "sakura"
     }
+
 }

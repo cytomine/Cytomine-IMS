@@ -14,7 +14,7 @@ class ConvertImagesService {
     def zipService
     def fileSystemService
 
-    private def rawFormatsAccepted = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms", "bif", "zvi"]
+    private def rawFormatsAccepted = ["jp2", "svs", "scn", "mrxs", "ndpi", "vms", "bif", "zvi", "svslide"]
     private def archiveFormatsAccepted = ["zip"]
     private def formatsToConvert = ["jpg", "jpeg", "png", "tiff", "tif", "pgm",  "bmp"]
 
@@ -208,30 +208,6 @@ class ConvertImagesService {
         }
     }
 
-    private def convert(String source, String target) {
-        def command = """convert $source -define tiff:tile-geometry=256x256 -compress jpeg 'ptif:$target'"""
-        log.info "$command"
-        return ProcUtils.executeOnShell(command) == 0
-
-    }
-
-    private def extractLayer(String source, String target, Integer layer) {
-        //1. Look for vips executable
-        println new File(source).exists()
-        def executable = "convert"
-        if (System.getProperty("os.name").contains("OS X")) {
-            executable = "/usr/local/bin/convert"
-        }
-        log.info "convert is in : $executable"
-
-        def command = """$executable $source[$layer] $target"""
-
-        log.info "$command"
-
-
-        return ProcUtils.executeOnShell(command) == 0
-    }
-
     private def vipsify(String source, String target) {
         //1. Look for vips executable
         println new File(source).exists()
@@ -249,8 +225,6 @@ class ConvertImagesService {
 
         boolean success = true
 
-        // Thread.sleep(600000)
-
         log.info "$extractBandCommand"
         success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
 
@@ -265,10 +239,6 @@ class ConvertImagesService {
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
         log.info "$rmIntermediatefile"
         success &= (ProcUtils.executeOnShell(rmIntermediatefile) == 0)
-
-
-
-
 
 
         return success

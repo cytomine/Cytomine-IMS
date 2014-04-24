@@ -5,7 +5,8 @@ package be.cytomine.formats.digitalpathology
  */
 class HamamatsuNDPIFormat extends OpenSlideCompatibleSingleFileFormat {
 
-    public String getExtension() {
-        return "ndpi"
+    public HamamatsuNDPIFormat() {
+        extensions = ["ndpi"]
+        vendor = "hamamatsu"
     }
 }

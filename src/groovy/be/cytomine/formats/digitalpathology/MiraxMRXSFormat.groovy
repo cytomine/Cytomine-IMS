@@ -5,14 +5,9 @@ package be.cytomine.formats.digitalpathology
  */
 class MiraxMRXSFormat extends OpenSlideCompatibleMultipleFileFormat {
 
-    private final String EXTENSION = "mrxs"
-    private final String VENDOR = "mirax"
-
-    public String getExtension() {
-        return EXTENSION
+    public MiraxMRXSFormat() {
+        extensions = ["mrxs"]
+        vendor = "mirax"
     }
 
-    protected String getVendor() {
-        return VENDOR
-    }
 }
