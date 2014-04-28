@@ -9,16 +9,6 @@ import org.springframework.util.StringUtils
  */
 class TIFFFormat extends CytomineFormat {
 
-
-    private enum TIFF_KIND {
-        UNDEFINED,
-        SINGLE_PLANE,
-        MULTI_PLANE,
-        VENTANA
-    }
-
-    private int type = TIFF_KIND.UNDEFINED
-
     public TIFFFormat() {
         extensions = ["tif", "tiff"]
     }
@@ -29,15 +19,15 @@ class TIFFFormat extends CytomineFormat {
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
         if (tiffinfo.contains("<iScan")) { //ventana
-            type = TIFF_KIND.VENTANA
+            //type = TIFF_KIND.VENTANA
         }
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
 
         if (nbTiffDirectory == 1) { //single layer tiff, we ne need to create a pyramid version
-            type = TIFF_KIND.SINGLE_PLANE
+            //type = TIFF_KIND.SINGLE_PLANE
         } else if (nbTiffDirectory > 1) { //pyramid or multi-page
             //how to determine the kind of tiff?
-            type = TIFF_KIND.MULTI_PLANE
+            //type = TIFF_KIND.MULTI_PLANE
         }
 
         return (tiffinfo.contains("Not a TIFF"))

@@ -19,11 +19,9 @@ import be.cytomine.formats.standard.TIFFFormat
  */
 public class CytomineFormatIdentifier {
 
-    public UploadedFile uploadedFile
-
-    public CytomineFormat getFormat() {
+    static public getAvailableImageFormats() {
         //check the extension and or content in order to identify the right CytomineFormat
-        def imageFormats = [
+        return [
                 //openslide compatibles formats
                 new MiraxMRXSFormat(),
                 new AperioSVSFormat(),
@@ -39,6 +37,11 @@ public class CytomineFormatIdentifier {
                 new PNGFormat(),
                 new BMPFormat()
         ]
+    }
+
+    static public CytomineFormat getFormat(UploadedFile uploadedFile) {
+
+        def imageFormats = getAvailableImageFormats()
 
         imageFormats.each {
             it.uploadedFile = uploadedFile
@@ -47,8 +50,6 @@ public class CytomineFormatIdentifier {
         CytomineFormat detectedFormat = imageFormats.find {
             it.detect()
         }
-
-        println "Format detected : $detectedFormat.extension"
 
         return detectedFormat
     }

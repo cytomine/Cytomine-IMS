@@ -12,8 +12,11 @@ abstract class CommonFormat extends CytomineFormat {
 
     public boolean detect() {
         String imageAbsolutePath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
-        String identify = "identify -verbose $imageAbsolutePath".execute().text
-        return identify.contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
+        String command = "identify -verbose $imageAbsolutePath"
+        def proc = command.execute()
+        proc.waitFor()
+        String stdout = proc.in.text
+        return stdout.contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
     }
 
     public UploadedFile[] handle() {
