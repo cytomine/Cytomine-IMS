@@ -12,7 +12,10 @@ import be.cytomine.formats.standard.JPEG2000Format
 import be.cytomine.formats.standard.JPEGFormat
 import be.cytomine.formats.standard.PGMFormat
 import be.cytomine.formats.standard.PNGFormat
+import be.cytomine.formats.standard.PlanarTIFFFormat
+import be.cytomine.formats.standard.PyramidalTIFFFormat
 import be.cytomine.formats.standard.TIFFFormat
+import be.cytomine.formats.standard.VentanaTIFFFormat
 
 /**
  * Created by stevben on 22/04/14.
@@ -30,7 +33,9 @@ public class CytomineFormatIdentifier {
                 new LeicaSCNFormat(),
                 new SakuraSVSlideFormat(),
                 //common formats
-                new TIFFFormat(),
+                new PlanarTIFFFormat(),
+                new PyramidalTIFFFormat(),
+                new VentanaTIFFFormat(),
                 new JPEG2000Format(),
                 new JPEGFormat(),
                 new PGMFormat(),

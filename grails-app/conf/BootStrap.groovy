@@ -1,10 +1,11 @@
 class BootStrap {
 
-    def imageServerService
+    def grailsApplication
 
     def init = { servletContext ->
-        //imageServerService.start()
+
     }
+
     def destroy = {
     }
 }
