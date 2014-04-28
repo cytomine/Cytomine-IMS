@@ -5,6 +5,8 @@ import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.digitalpathology.AperioSVSFormat
 import be.cytomine.formats.digitalpathology.HamamatsuNDPIFormat
 import be.cytomine.formats.digitalpathology.HamamatsuVMSFormat
+import be.cytomine.formats.digitalpathology.LeicaSCNFormat
+import be.cytomine.formats.digitalpathology.MiraxMRXSFormat
 import be.cytomine.formats.standard.JPEGFormat
 import be.cytomine.formats.standard.PNGFormat
 import be.cytomine.formats.standard.PlanarTIFFFormat
@@ -94,5 +96,15 @@ class CytomineFormatSpec {
     void "test aperioSVSJ2KFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("JP2K-33003-1.svs")
         checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
+    }
+
+    void "test leicaSCNFormat"() {
+        def uploadedFile = createUploadedFileFromImagePath("Leica-1.scn")
+        checkCorrectDetect(uploadedFile, LeicaSCNFormat.class)
+    }
+
+    void "test miraxMRXSFormat"() {
+        def uploadedFile = createUploadedFileFromImagePath("CMU-1-Saved-1_16.mrxs/CMU-1-Saved-1_16.mrxs")
+        checkCorrectDetect(uploadedFile, MiraxMRXSFormat.class)
     }
 }

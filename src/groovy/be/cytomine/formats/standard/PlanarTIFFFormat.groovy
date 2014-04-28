@@ -11,6 +11,7 @@ class PlanarTIFFFormat extends  TIFFFormat {
             "Not a TIFF",
             "<iScan",
             "Make: Hamamatsu",
+            "Leica",
             "ImageDescription: Aperio Image Library"
     ]
 
@@ -21,16 +22,12 @@ class PlanarTIFFFormat extends  TIFFFormat {
 
         boolean notTiff = false
         excludeDescription.each {
-            if (tiffinfo.contains(it)) notTiff |= true
+            notTiff |= tiffinfo.contains(it)
         }
         if (notTiff) return false
 
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
 
-        if (nbTiffDirectory == 1) { //single layer tiff, we ne need to create a pyramid version
-            return true
-        } else if (nbTiffDirectory > 1) { //pyramid or multi-page
-            return false //not sufficient probably
-        }
+        return (nbTiffDirectory == 1) //single layer tiff, we ne need to create a pyramid version
     }
 }

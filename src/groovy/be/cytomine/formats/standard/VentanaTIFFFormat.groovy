@@ -10,6 +10,7 @@ class VentanaTIFFFormat extends TIFFFormat {
     private excludeDescription = [
             "Not a TIFF",
             "Make: Hamamatsu",
+            "Leica",
             "ImageDescription: Aperio Image Library"
     ]
 
@@ -19,7 +20,7 @@ class VentanaTIFFFormat extends TIFFFormat {
 
         boolean notTiff = false
         excludeDescription.each {
-            if (tiffinfo.contains(it)) notTiff |= true
+            notTiff |= tiffinfo.contains(it)
         }
         if (notTiff) return false
 
