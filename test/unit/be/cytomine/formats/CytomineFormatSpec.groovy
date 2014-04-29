@@ -24,7 +24,7 @@ class CytomineFormatSpec {
     def grailsApplication
 
     private UploadedFile createUploadedFileFromImagePath(def imageFilename) {
-        String imageRepository = '/Users/stevben/Cytomine/Slides'
+        String imageRepository = '/opt/cytomine/testdata'
         File file = new File([imageRepository, imageFilename].join(File.separator))
         UploadedFile uploadedFile = null
         if (file.canRead()) {
