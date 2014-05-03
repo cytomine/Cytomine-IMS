@@ -15,7 +15,7 @@ abstract class OpenSlideFormat extends CytomineFormat {
         File slideFile = new File(imageAbsolutePath)
         if (slideFile.canRead()) {
             try {
-            return OpenSlide.detectVendor(slideFile) == vendor
+                return OpenSlide.detectVendor(slideFile) == vendor
             } catch (java.io.IOException e) {
                 //Not a file that OpenSlide can recognize
                 return false
