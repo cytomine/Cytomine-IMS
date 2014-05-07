@@ -7,7 +7,7 @@ import grails.converters.JSON
 
 import java.awt.image.BufferedImage
 
-class OpenslideController extends ImageController{
+class OpenSlideController extends ImageController{
 
     def cytomineService
     def imageProcessingService

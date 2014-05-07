@@ -14,11 +14,11 @@ class UrlMappings {
             action = [POST:"storage"]
         }
 
-        "/api/abstractimage/$id/associated" (controller:"openslide") {
+        "/api/abstractimage/$id/associated" (controller:"openSlide") {
             action = [GET:"associated"]
         }
 
-        "/api/abstractimage/$id/associated/$label" (controller:"openslide") {
+        "/api/abstractimage/$id/associated/$label" (controller:"openSlide") {
             action = [GET:"associatedImage"]
         }
 
