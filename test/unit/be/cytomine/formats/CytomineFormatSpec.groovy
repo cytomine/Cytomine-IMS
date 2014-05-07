@@ -83,10 +83,10 @@ class CytomineFormatSpec {
         checkCorrectDetect(uploadedFile, PlanarTIFFFormat.class)
     }
 
-    void "test ventanatiffformat"() {
+    /*void "test ventanatiffformat"() {
         def uploadedFile = createUploadedFileFromImagePath("bif_tif/11GH076256_A2_CD3_100.tif")
         checkCorrectDetect(uploadedFile, VentanaTIFFFormat.class)
-    }
+    }*/
 
     void "test aperioSVSFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("alphaSMA_B-1609444_3-2013-02-27-17.12.08.svs")
