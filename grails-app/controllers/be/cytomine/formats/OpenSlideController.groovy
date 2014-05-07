@@ -4,8 +4,6 @@ import be.cytomine.client.Cytomine
 import be.cytomine.client.models.AbstractImage
 import be.cytomine.ImageController
 import grails.converters.JSON
-import org.openslide.AssociatedImage
-import org.openslide.OpenSlide
 
 import java.awt.image.BufferedImage
 
@@ -13,7 +11,7 @@ class OpenslideController extends ImageController{
 
     def cytomineService
     def imageProcessingService
-    def openslideService
+    def openSlideService
 
     /**
      * Return the labels of all the associated images (e.g. macro, label, ...) contained in a virtual slide
@@ -30,7 +28,7 @@ class OpenslideController extends ImageController{
         String fullPath = abstractImage.getAt("fullPath")
 
         //get the labels associated using Openslide library
-        def labels = openslideService.getAssociatedImages(fullPath)
+        def labels = openSlideService.getAssociatedImages(fullPath)
 
         render labels as JSON
     }
@@ -50,7 +48,7 @@ class OpenslideController extends ImageController{
         String fullPath = abstractImage.getAt("fullPath")
         String mime = abstractImage.getAt("mime")
 
-        BufferedImage associatedImage = openslideService.getAssociatedImage(fullPath, label)
+        BufferedImage associatedImage = openSlideService.getAssociatedImage(fullPath, label)
 
         //rotate if necessary
         String[] mimeToRotate = ["scn", "mrxs"] //the mime formats which requires a rotation

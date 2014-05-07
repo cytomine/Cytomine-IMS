@@ -5,7 +5,7 @@ import org.openslide.OpenSlide
 
 import java.awt.image.BufferedImage
 
-class OpenslideService {
+class OpenSlideService {
 
    public String getAssociatedImages(String fullPath) {
         File slideFile = new File(fullPath)
