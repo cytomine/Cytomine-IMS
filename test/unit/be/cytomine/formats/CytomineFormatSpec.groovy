@@ -89,7 +89,7 @@ class CytomineFormatSpec {
         checkCorrectDetect(uploadedFile, VentanaTIFFFormat.class)
     }*/
 
-    void "test aperioSVSFormat"() {
+    /*void "test aperioSVSFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("alphaSMA_B-1609444_3-2013-02-27-17.12.08.svs")
         checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
     }
@@ -97,7 +97,7 @@ class CytomineFormatSpec {
     void "test aperioSVSJ2KFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("JP2K-33003-1.svs")
         checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
-    }
+    }*/
 
     /*void "test leicaSCNFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("Leica-1.scn")
