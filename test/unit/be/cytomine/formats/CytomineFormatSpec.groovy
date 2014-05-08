@@ -66,10 +66,10 @@ class CytomineFormatSpec {
         checkCorrectDetect(uploadedFile, PNGFormat.class)
     }
 
-    /*void "test ndpiformat"() {
+    void "test ndpiformat"() {
         def uploadedFile = createUploadedFileFromImagePath("CMU-1.ndpi")
         checkCorrectDetect(uploadedFile, HamamatsuNDPIFormat.class)
-    }*/
+    }
 
     void "test vmsformat"() {
         def uploadedFile = createUploadedFileFromImagePath("CMU-1.vms/CMU-1-40x_-_2010-01-12_13.24.05.vms")
@@ -82,12 +82,12 @@ class CytomineFormatSpec {
     }
 
 
-    /*void "test ventanatiffformat"() {
+    void "test ventanatiffformat"() {
         def uploadedFile = createUploadedFileFromImagePath("bif_tif/11GH076256_A2_CD3_100.tif")
         checkCorrectDetect(uploadedFile, VentanaTIFFFormat.class)
-    }*/
+    }
 
-    /*void "test aperioSVSFormat"() {
+    void "test aperioSVSFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("alphaSMA_B-1609444_3-2013-02-27-17.12.08.svs")
         checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
     }
@@ -95,12 +95,12 @@ class CytomineFormatSpec {
     void "test aperioSVSJ2KFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("JP2K-33003-1.svs")
         checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
-    }*/
+    }
 
-    /*void "test leicaSCNFormat"() {
+    void "test leicaSCNFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("Leica-1.scn")
         checkCorrectDetect(uploadedFile, LeicaSCNFormat.class)
-    }*/
+    }
 
     void "test miraxMRXSFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("CMU-1-Saved-1_16.mrxs/CMU-1-Saved-1_16.mrxs")
