@@ -1,6 +1,6 @@
 package be.cytomine.formats.digitalpathology
 
-import be.cytomine.client.models.UploadedFile
+import be.cytomine.formats.DataFormat
 
 
 /**
@@ -8,9 +8,5 @@ import be.cytomine.client.models.UploadedFile
  */
 abstract class OpenSlideCompatibleMultipleFileFormat extends OpenSlideFormat {
 
-    UploadedFile[] handle() {
-        //1. unzip
-        //2. return new uploadedFiles
-    }
-
+    DataFormat[] dataFormats
 }

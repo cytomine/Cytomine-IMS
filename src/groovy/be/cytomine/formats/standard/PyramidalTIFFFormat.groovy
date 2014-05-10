@@ -16,8 +16,8 @@ class PyramidalTIFFFormat  extends TIFFFormat {
     ]
 
     public boolean detect() {
-        String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
-        String tiffinfo = "tiffinfo $originalFilenameFullPath".execute().text
+
+        String tiffinfo = "tiffinfo $uploadedFilePath".execute().text
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
         boolean notTiff = false
@@ -31,4 +31,10 @@ class PyramidalTIFFFormat  extends TIFFFormat {
         return (nbTiffDirectory > 1)  //pyramid or multi-page, sufficient ?
 
     }
+
+    String convert() {
+       return null //already a pyramid
+    }
+
+
 }

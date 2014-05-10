@@ -1,18 +1,17 @@
 package be.cytomine.formats.digitalpathology
 
-import be.cytomine.formats.CytomineFormat
+import be.cytomine.formats.ImageFormat
 import org.openslide.OpenSlide
 
 /**
  * Created by stevben on 22/04/14.
  */
-abstract class OpenSlideFormat extends CytomineFormat {
+abstract class OpenSlideFormat extends ImageFormat {
 
     protected String vendor = null
 
     boolean detect() {
-        String imageAbsolutePath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
-        File slideFile = new File(imageAbsolutePath)
+        File slideFile = new File(uploadedFilePath)
         if (slideFile.canRead()) {
             try {
                 return OpenSlide.detectVendor(slideFile) == vendor
@@ -24,6 +23,10 @@ abstract class OpenSlideFormat extends CytomineFormat {
             //throw ERROR reading file
         }
 
+    }
+
+    String convert() {
+        return null //nothing to do, the format is understood by IIP+OpenSlide natively
     }
 
 }

@@ -15,7 +15,7 @@ class HamamatsuNDPIFormat extends OpenSlideCompatibleSingleFileFormat {
     boolean detect() {
         if (!super.detect()) return false //not an hamamatsu format
 
-        return !new OpenSlide(new File(uploadedFile.getAbsolutePath())).properties.keySet().contains("hamamatsu.MapFile")
+        return !new OpenSlide(new File(uploadedFilePath)).properties.keySet().contains("hamamatsu.MapFile")
 
 
 

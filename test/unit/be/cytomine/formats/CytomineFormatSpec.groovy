@@ -10,7 +10,7 @@ import be.cytomine.formats.digitalpathology.MiraxMRXSFormat
 import be.cytomine.formats.standard.JPEGFormat
 import be.cytomine.formats.standard.PNGFormat
 import be.cytomine.formats.standard.PlanarTIFFFormat
-import be.cytomine.formats.standard.VentanaTIFFFormat
+import be.cytomine.formats.digitalpathology.VentanaTIFFFormat
 import grails.test.mixin.TestFor
 
 
@@ -21,26 +21,19 @@ import grails.test.mixin.TestFor
 @TestFor(ImageController)
 class CytomineFormatSpec {
 
-    private UploadedFile createUploadedFileFromImagePath(def imageFilename) {
+    private String createUploadedFileFromImagePath(def imageFilename) {
         String imageRepository = '/opt/cytomine/testdata'
-        File file = new File([imageRepository, imageFilename].join(File.separator))
-        UploadedFile uploadedFile = null
-        if (file.canRead()) {
-            uploadedFile = new UploadedFile()
-            uploadedFile.set("path", imageRepository)
-            uploadedFile.set("filename", imageFilename) //for test only
-        }
-
-        assert(file != null)
-
+        String uploadedFile = [imageRepository, imageFilename].join(File.separator)
+        println uploadedFile
+        assert new File(uploadedFile).exists()
         return uploadedFile
     }
 
 
-    private checkCorrectDetect(UploadedFile uploadedFile, Class expectedClass){
-        def imageFormats = CytomineFormatIdentifier.getAvailableImageFormats()
+    private checkCorrectDetect(String uploadedFile, Class expectedClass){
+        def imageFormats = FormatIdentifier.getAvailableImageFormats()
         imageFormats.each {
-            it.uploadedFile = uploadedFile
+            it.uploadedFilePath = uploadedFile
             if (it.class ==  expectedClass) {
                 assert(it.detect())
             } else {
@@ -51,8 +44,7 @@ class CytomineFormatSpec {
 
     void "test jpegdetect"() {
         def uploadedFile = createUploadedFileFromImagePath("384.jpg")
-        CytomineFormat cytomineFormat = CytomineFormatIdentifier.getFormat(uploadedFile)
-        assert(cytomineFormat instanceof JPEGFormat)
+        checkCorrectDetect(uploadedFile, JPEGFormat.class)
     }
 
 

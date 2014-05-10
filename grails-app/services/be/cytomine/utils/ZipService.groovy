@@ -1,6 +1,7 @@
 package be.cytomine.utils
 
 import utils.FilesUtils
+import utils.ProcUtils
 
 class ZipService {
 

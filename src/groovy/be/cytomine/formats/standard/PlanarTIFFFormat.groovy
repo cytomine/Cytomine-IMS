@@ -5,7 +5,7 @@ import org.springframework.util.StringUtils
 /**
  * Created by stevben on 28/04/14.
  */
-class PlanarTIFFFormat extends  TIFFFormat {
+class PlanarTIFFFormat extends TIFFFormat {
 
     private excludeDescription = [
             "Not a TIFF",
@@ -16,8 +16,7 @@ class PlanarTIFFFormat extends  TIFFFormat {
     ]
 
     public boolean detect() {
-        String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
-        String tiffinfo = "tiffinfo $originalFilenameFullPath".execute().text
+        String tiffinfo = "tiffinfo $uploadedFilePath".execute().text
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
         boolean notTiff = false

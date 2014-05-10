@@ -15,8 +15,7 @@ class JPEGFormat extends CommonFormat {
     boolean detect() {
         boolean isJPEG = super.detect()
         if (isJPEG) { //check if not MRXS (fake JPEG)
-            String imageAbsolutePath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
-            File slideFile = new File(imageAbsolutePath)
+            File slideFile = new File(uploadedFilePath)
             if (slideFile.canRead()) {
                 try {
                     return !OpenSlide.detectVendor(slideFile)

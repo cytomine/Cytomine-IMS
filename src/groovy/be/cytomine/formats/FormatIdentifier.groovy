@@ -1,6 +1,7 @@
 package be.cytomine.formats
 
 import be.cytomine.client.models.UploadedFile
+import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.digitalpathology.AperioSVSFormat
 import be.cytomine.formats.digitalpathology.HamamatsuNDPIFormat
 import be.cytomine.formats.digitalpathology.HamamatsuVMSFormat
@@ -14,16 +15,21 @@ import be.cytomine.formats.standard.PGMFormat
 import be.cytomine.formats.standard.PNGFormat
 import be.cytomine.formats.standard.PlanarTIFFFormat
 import be.cytomine.formats.standard.PyramidalTIFFFormat
-import be.cytomine.formats.standard.TIFFFormat
-import be.cytomine.formats.standard.VentanaTIFFFormat
+import be.cytomine.formats.digitalpathology.VentanaTIFFFormat
 
 /**
  * Created by stevben on 22/04/14.
  */
-public class CytomineFormatIdentifier {
+public class FormatIdentifier {
+
+    static public getAvailableArchiveFormats() {
+        return [
+                new ZipFormat()
+        ]
+    }
 
     static public getAvailableImageFormats() {
-        //check the extension and or content in order to identify the right CytomineFormat
+        //check the extension and or content in order to identify the right Format
         return [
                 //openslide compatibles formats
                 new MiraxMRXSFormat(),
@@ -44,15 +50,41 @@ public class CytomineFormatIdentifier {
         ]
     }
 
-    static public CytomineFormat getFormat(UploadedFile uploadedFile) {
+    static public Format[] getFormat(UploadedFile uploadedFile) {
 
+        String uploadedFilePath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
+
+        def archiveFormats = getAvailableArchiveFormats()
+
+        archiveFormats.each {
+            it.uploadedFilePath = uploadedFilePath
+        }
+
+        ArchiveFormat detectedArchiveFormat = archiveFormats.find {
+            it.detect()
+        }
+
+        if (detectedArchiveFormat) { //extract
+            /*def extractedFiles = detectedArchiveFormat.extract()
+            def extractUploadedFiles = []
+            extractedFiles.each {
+
+            }*/
+        } else {
+            return getImageFormat(uploadedFile)
+        }
+
+
+    }
+
+    static private ImageFormat getImageFormat(String uploadedFile) {
         def imageFormats = getAvailableImageFormats()
 
         imageFormats.each {
-            it.uploadedFile = uploadedFile
+            it.uploadedFilePath = uploadedFile
         }
 
-        CytomineFormat detectedFormat = imageFormats.find {
+        ImageFormat detectedFormat = imageFormats.find {
             it.detect()
         }
 
