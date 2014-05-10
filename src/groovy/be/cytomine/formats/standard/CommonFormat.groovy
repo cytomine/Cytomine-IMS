@@ -1,6 +1,7 @@
 package be.cytomine.formats.standard
 
 import be.cytomine.formats.ImageFormat
+import utils.FilesUtils
 import utils.ProcUtils
 
 /**
@@ -19,11 +20,10 @@ abstract class CommonFormat extends ImageFormat {
     }
 
     String convert() {
-        /*String convertFileName = uploadedFilePath.getStr("filename")
-        convertFileName = convertFileName[0 .. (convertFileName.size() - uploadedFilePath.getStr("ext").size() - 2)]
-        convertFileName = convertFileName + "_converted.tif"
-        String originalFilenameFullPath = [ uploadedFilePath.getStr("path"), uploadedFilePath.getStr("filename")].join(File.separator)
-        String convertedFilenameFullPath = [ uploadedFilePath.getStr("path"), convertFileName].join(File.separator)
+        String ext = FilesUtils.getExtensionFromFilename(uploadedFilePath).toLowerCase()
+        String source = uploadedFilePath
+        String target = uploadedFilePath.replace(".$ext", "_converted.$ext")
+        String intermediate = target.replace(".$ext",".tmp.$ext")
 
         //1. Look for vips executable
 
@@ -31,12 +31,10 @@ abstract class CommonFormat extends ImageFormat {
         if (System.getProperty("os.name").contains("OS X")) {
             executable = "/usr/local/bin/vips"
         }
-        def intermediateFile = convertedFilenameFullPath.replace(".tif",".tmp.tif")
 
-
-        def extractBandCommand = """$executable extract_band $originalFilenameFullPath $intermediateFile[bigtiff,compression=lzw] 0 --n 3"""
-        def rmIntermediatefile = """rm $intermediateFile"""
-        def pyramidCommand = """$executable tiffsave "$intermediateFile" "$convertedFilenameFullPath" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
+        def extractBandCommand = """$executable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
+        def rmIntermediatefile = """rm $intermediate"""
+        def pyramidCommand = """$executable tiffsave "$intermediate" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
 
         boolean success = true
 
@@ -44,7 +42,7 @@ abstract class CommonFormat extends ImageFormat {
 
         if(!success) {
             success = true
-            extractBandCommand = """$executable extract_band $originalFilenameFullPath $intermediateFile[bigtiff,compression=lzw] 0 --n 1"""
+            extractBandCommand = """$executable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 1"""
             success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
         }
 
@@ -52,7 +50,7 @@ abstract class CommonFormat extends ImageFormat {
         success &= (ProcUtils.executeOnShell(rmIntermediatefile) == 0)
 
         if (success) {
-            return convertedFilenameFullPath
-        }    */
+            return target
+        }
     }
 }

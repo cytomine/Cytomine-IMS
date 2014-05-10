@@ -22,7 +22,7 @@ class ZipFormat extends ArchiveFormat {
     public String[] extract() {
         long timestamp = new Date().getTime()
         String parentPath = new File(uploadedFilePath).getParent()
-        String destPath = parentPath.endsWith("/") ?  parentPath : parentPath + "/" + timestamp.toString()
+        String destPath = ["/tmp", timestamp].join(File.separator)
 
         /* Create and temporary directory which will contains the archive content */
         println "Create path=$destPath"

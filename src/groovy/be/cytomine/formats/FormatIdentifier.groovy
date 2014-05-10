@@ -16,6 +16,7 @@ import be.cytomine.formats.standard.PNGFormat
 import be.cytomine.formats.standard.PlanarTIFFFormat
 import be.cytomine.formats.standard.PyramidalTIFFFormat
 import be.cytomine.formats.digitalpathology.VentanaTIFFFormat
+import utils.FilesUtils
 
 /**
  * Created by stevben on 22/04/14.
@@ -28,14 +29,20 @@ public class FormatIdentifier {
         ]
     }
 
-    static public getAvailableImageFormats() {
+    static public getAvailableMultipleImageFormats() {
+        return [
+                //openslide compatibles formats
+                new HamamatsuVMSFormat(),
+                new MiraxMRXSFormat(),
+        ]
+    }
+
+    static public getAvailableSingleFileImageFormats() {
         //check the extension and or content in order to identify the right Format
         return [
                 //openslide compatibles formats
-                new MiraxMRXSFormat(),
                 new AperioSVSFormat(),
                 new HamamatsuNDPIFormat(),
-                new HamamatsuVMSFormat(),
                 new LeicaSCNFormat(),
                 new SakuraSVSlideFormat(),
                 //common formats
@@ -50,7 +57,7 @@ public class FormatIdentifier {
         ]
     }
 
-    static public Format[] getFormat(UploadedFile uploadedFile) {
+    static public ImageFormat[] getImageFormats(UploadedFile uploadedFile) {
 
         String uploadedFilePath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
 
@@ -64,21 +71,44 @@ public class FormatIdentifier {
             it.detect()
         }
 
-        if (detectedArchiveFormat) { //extract
-            /*def extractedFiles = detectedArchiveFormat.extract()
-            def extractUploadedFiles = []
-            extractedFiles.each {
+        if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
+            def extractedFiles = detectedArchiveFormat.extract()
 
-            }*/
+            //multiple single image or a single image composed of multiple files ?
+            //if (extractedFiles.size() > 1) {
+            def multipleFileImageFormats = getAvailableMultipleImageFormats()
+            def imageFormats = []
+
+            //look for multiple files image formats (e.g mrxs & vms)
+            extractedFiles.each {  extractedFile ->
+                String ext = FilesUtils.getExtensionFromFilename(extractedFile).toLowerCase()
+                multipleFileImageFormats.each { imageFormat ->
+                    if (imageFormat.extensions.contains(ext)) {
+                        imageFormat.uploadedFilePath = extractedFile
+                        if (imageFormat.detect()) imageFormats << imageFormat
+                    }
+                }
+            }
+
+            //multiple single files (jpeg1, jpeg2, ...) ?
+            if (imageFormats.size() == 0) { //obviously, we did not detect multiple files image formats
+                extractedFiles.each {  extractedFile ->
+                    ImageFormat imageFormat = getImageFormat(extractedFile)
+                    if (imageFormat) imageFormats << imageFormat
+
+                }
+            }
+            return imageFormats
+
         } else {
-            return getImageFormat(uploadedFile)
+            return [getImageFormat(uploadedFilePath)]
         }
 
 
     }
 
     static private ImageFormat getImageFormat(String uploadedFile) {
-        def imageFormats = getAvailableImageFormats()
+        def imageFormats = getAvailableSingleFileImageFormats()
 
         imageFormats.each {
             it.uploadedFilePath = uploadedFile
