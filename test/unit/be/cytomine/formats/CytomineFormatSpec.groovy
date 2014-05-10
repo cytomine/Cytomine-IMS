@@ -2,6 +2,7 @@ package be.cytomine.formats
 
 import be.cytomine.ImageController
 import be.cytomine.client.models.UploadedFile
+import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.digitalpathology.AperioSVSFormat
 import be.cytomine.formats.digitalpathology.HamamatsuNDPIFormat
 import be.cytomine.formats.digitalpathology.HamamatsuVMSFormat
@@ -97,5 +98,10 @@ class CytomineFormatSpec {
     void "test miraxMRXSFormat"() {
         def uploadedFile = createUploadedFileFromImagePath("CMU-1-Saved-1_16.mrxs/CMU-1-Saved-1_16.mrxs")
         checkCorrectDetect(uploadedFile, MiraxMRXSFormat.class)
+    }
+
+    void "void zipFormat"() {
+        def uploadedFile = createUploadedFileFromImagePath("499-488.zip")
+        checkCorrectDetect(uploadedFile, ZipFormat.class)
     }
 }
