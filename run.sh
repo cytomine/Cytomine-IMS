@@ -1,4 +1,5 @@
 #!/bin/bash
+gvm use grails 2.3.8
 if [[ "$OSTYPE" == "darwin"* ]]; then
 PROGRAM="./fcgi-bin/os_x/iipsrv.fcgi --bind 127.0.0.1:9000"
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then

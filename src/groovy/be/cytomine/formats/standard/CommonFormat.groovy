@@ -19,18 +19,20 @@ abstract class CommonFormat extends ImageFormat {
         return stdout.contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
     }
 
-    String convert() {
+    String convert(String workingPath) {
         String ext = FilesUtils.getExtensionFromFilename(uploadedFilePath).toLowerCase()
         String source = uploadedFilePath
-        String target = uploadedFilePath.replace(".$ext", "_converted.$ext")
-        String intermediate = target.replace(".$ext",".tmp.$ext")
+        String target = [workingPath, new File(uploadedFilePath).getName()].join(File.separator).replace(".$ext", "_converted.tif")
+        String intermediate = target.replace("_converted.tif","_tmp.tif")
+
+        println "ext : $ext"
+        println "source : $source"
+        println "target : $target"
+        println "intermediate : $intermediate"
 
         //1. Look for vips executable
 
-        def executable = "/usr/local/bin/vips"
-        if (System.getProperty("os.name").contains("OS X")) {
-            executable = "/usr/local/bin/vips"
-        }
+        def executable = "`which vips`"
 
         def extractBandCommand = """$executable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
         def rmIntermediatefile = """rm $intermediate"""

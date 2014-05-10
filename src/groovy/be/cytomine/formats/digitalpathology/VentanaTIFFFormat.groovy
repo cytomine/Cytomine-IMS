@@ -30,22 +30,24 @@ class VentanaTIFFFormat extends TIFFFormat {
 
     }
 
-    public String convert() {
+    String convert(String workingPath) {
         boolean convertSuccessfull = true
 
         String ext = FilesUtils.getExtensionFromFilename(uploadedFilePath).toLowerCase()
         String source = uploadedFilePath
-        String target = uploadedFilePath.replace(".$ext", "_converted.$ext")
-        String intermediate = target.replace(".$ext",".tmp.$ext")
+        String target = uploadedFilePath.replace(".$ext", "_converted.tif")
+        String intermediate = target.replace(".$ext",".tmp.tif")
+
+        def executable = "`which vips`"
 
         //1. Extract the biggest layer
         // vips im_vips2tiff 11GH076256_A2_CD3_100.tif:2 output_image.tif:deflate,,flat,,,,8
-        def command = """vips im_vips2tiff $source:2 $intermediate:deflate,,flat,,,,8"""
+        def command = """$executable im_vips2tiff $source:2 $intermediate:deflate,,flat,,,,8"""
         convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
 
         //2. Pyramid
         // vips tiffsave output_image.tif output_image_compress.tif --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256
-        command = """vips tiffsave $intermediate $target --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256"""
+        command = """$executable tiffsave $intermediate $target --tile --pyramid --compression jpeg --tile-width 256 --tile-height 256"""
         convertSuccessfull &= ProcUtils.executeOnShell(command)  == 0
 
         //3. Rm intermediate file

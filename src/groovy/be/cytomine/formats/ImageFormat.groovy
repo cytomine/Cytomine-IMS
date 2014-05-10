@@ -5,6 +5,6 @@ package be.cytomine.formats
  */
 abstract class ImageFormat extends Format {
 
-    abstract public String convert()
+    abstract public String convert(String workingPath)
 
 }
