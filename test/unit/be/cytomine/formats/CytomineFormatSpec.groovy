@@ -14,6 +14,7 @@ import be.cytomine.formats.standard.PlanarTIFFFormat
 import be.cytomine.formats.digitalpathology.VentanaTIFFFormat
 import be.cytomine.formats.standard.PyramidalTIFFFormat
 import grails.test.mixin.TestFor
+import utils.ProcUtils
 
 
 /**
@@ -22,6 +23,19 @@ import grails.test.mixin.TestFor
 
 @TestFor(ImageController)
 class CytomineFormatSpec {
+
+    private static String getFilenameForTest(def imageFilename, String imageRepository = '/opt/cytomine/testdata') {
+        String source = createFullPathFromFilename(imageFilename, imageRepository)
+        String target = ["/tmp", new Date().getTime(), imageFilename].join(File.separator)
+        String targetDir = new File(target).getParent()
+        def command = "mkdir -p $targetDir"
+        ProcUtils.executeOnShell(command)
+        command = "cp -r $source $target"
+        println command
+        ProcUtils.executeOnShell(command)
+        assert(new File(target).exists())
+        return target
+    }
 
     private static String createFullPathFromFilename(def imageFilename, String imageRepository = '/opt/cytomine/testdata') {
         String uploadedFile = [imageRepository, imageFilename].join(File.separator)
@@ -115,12 +129,12 @@ class CytomineFormatSpec {
     }
 
     void "test zipFormat"() {
-        def uploadedFile = createFullPathFromFilename("499-488.zip")
+        def uploadedFile = getFilenameForTest("499-488.zip")
         checkCorrectDetect(uploadedFile, ZipFormat.class)
     }
 
     void "test zipFormatMultipleSingleImages"() {
-        String uploadedFile = createUploadedFileFromImagePath("499-488.zip")
+        String uploadedFile = getFilenameForTest("499-488.zip")
         ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
         assert(imageFormats.size() == 2)
         imageFormats.each { imageFormat ->
@@ -129,25 +143,25 @@ class CytomineFormatSpec {
     }
 
     void "test zipMRXSDetect"() {
-        String uploadedFile = createUploadedFileFromImagePath("CMU-1-Saved-1_16.mrxs.zip")
+        String uploadedFile = getFilenameForTest("CMU-1-Saved-1_16.mrxs.zip")
         ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
         assert imageFormats.size() == 1
         assert imageFormats[0].class == MiraxMRXSFormat
     }
 
     void "test zipVMSDetect"() {
-        String uploadedFile = createUploadedFileFromImagePath("CMU-1.vms.zip")
+        String uploadedFile = getFilenameForTest("CMU-1.vms.zip")
         ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
         assert imageFormats.size() == 1
         assert imageFormats[0].class == HamamatsuVMSFormat
     }
 
     void "test convertJPEG"() {
-        JPEGFormat jpegFormat = new JPEGFormat(absoluteFilePath: createFullPathFromFilename("384.jpg"))
+        JPEGFormat jpegFormat = new JPEGFormat(absoluteFilePath: getFilenameForTest("384.jpg"))
         String convertedFilename = jpegFormat.convert("/tmp")
         assert(convertedFilename)
         println convertedFilename
-        String uploadedFile = createUploadedFileFromImagePath(convertedFilename, "/")
+        String uploadedFile = getFilenameForTest(convertedFilename, "/")
         ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
         assert imageFormats.size() == 1
         assert imageFormats[0].class == PyramidalTIFFFormat
