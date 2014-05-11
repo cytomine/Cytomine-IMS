@@ -12,7 +12,7 @@ abstract class CommonFormat extends ImageFormat {
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
     public boolean detect() {
-        String command = "identify -verbose $uploadedFilePath"
+        String command = "identify -verbose $absoluteFilePath"
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text
@@ -20,10 +20,10 @@ abstract class CommonFormat extends ImageFormat {
     }
 
     String convert(String workingPath) {
-        String ext = FilesUtils.getExtensionFromFilename(uploadedFilePath).toLowerCase()
-        String source = uploadedFilePath
-        String target = [workingPath, new File(uploadedFilePath).getName()].join(File.separator).replace(".$ext", "_converted.tif")
-        String intermediate = target.replace("_converted.tif","_tmp.tif")
+        String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
+        String source = absoluteFilePath
+        String target = [new File(absoluteFilePath).getParent(), "_converted.tif"].join(File.separator)
+        String intermediate = [new File(absoluteFilePath).getParent(), "_tmp.tif"].join(File.separator)
 
         println "ext : $ext"
         println "source : $source"

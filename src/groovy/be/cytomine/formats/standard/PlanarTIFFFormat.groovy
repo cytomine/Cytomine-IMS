@@ -16,7 +16,7 @@ class PlanarTIFFFormat extends TIFFFormat {
     ]
 
     public boolean detect() {
-        String tiffinfo = "tiffinfo $uploadedFilePath".execute().text
+        String tiffinfo = "tiffinfo $absoluteFilePath".execute().text
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
         boolean notTiff = false

@@ -14,7 +14,7 @@ class HamamatsuVMSFormat extends OpenSlideCompatibleMultipleFileFormat {
 
     boolean detect() {
         try {
-            return new OpenSlide(new File(uploadedFilePath)).properties.keySet().contains("hamamatsu.MapFile")
+            return new OpenSlide(new File(absoluteFilePath)).properties.keySet().contains("hamamatsu.MapFile")
         } catch (java.io.IOException e) {
             //Not a file that OpenSlide can recognize
             return false

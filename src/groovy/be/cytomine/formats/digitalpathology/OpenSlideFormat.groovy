@@ -11,7 +11,7 @@ abstract class OpenSlideFormat extends ImageFormat {
     protected String vendor = null
 
     boolean detect() {
-        File slideFile = new File(uploadedFilePath)
+        File slideFile = new File(absoluteFilePath)
         if (slideFile.canRead()) {
             try {
                 return OpenSlide.detectVendor(slideFile) == vendor
@@ -25,7 +25,7 @@ abstract class OpenSlideFormat extends ImageFormat {
 
     }
 
-    String convert() {
+    String convert(String workingPath) {
         return null //nothing to do, the format is understood by IIP+OpenSlide natively
     }
 

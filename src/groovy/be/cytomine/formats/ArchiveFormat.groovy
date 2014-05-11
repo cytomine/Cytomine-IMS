@@ -5,5 +5,5 @@ package be.cytomine.formats
  */
 abstract class ArchiveFormat extends Format {
 
-    abstract public String[] extract()
+    abstract public String[] extract(String destPath)
 }

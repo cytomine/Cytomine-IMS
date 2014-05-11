@@ -1,6 +1,5 @@
 package be.cytomine.formats
 
-import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.digitalpathology.AperioSVSFormat
 import be.cytomine.formats.digitalpathology.HamamatsuNDPIFormat
@@ -57,14 +56,12 @@ public class FormatIdentifier {
         ]
     }
 
-    static public ImageFormat[] getImageFormats(UploadedFile uploadedFile) {
-
-        String uploadedFilePath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
+    static public ImageFormat[] getImageFormats(String uploadedFilePath) {
 
         def archiveFormats = getAvailableArchiveFormats()
 
         archiveFormats.each {
-            it.uploadedFilePath = uploadedFilePath
+            it.absoluteFilePath = uploadedFilePath
         }
 
         ArchiveFormat detectedArchiveFormat = archiveFormats.find {
@@ -72,7 +69,7 @@ public class FormatIdentifier {
         }
 
         if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
-            def extractedFiles = detectedArchiveFormat.extract()
+            def extractedFiles = detectedArchiveFormat.extract(new File(uploadedFilePath).getParent())
 
             //multiple single image or a single image composed of multiple files ?
             //if (extractedFiles.size() > 1) {
@@ -84,7 +81,7 @@ public class FormatIdentifier {
                 String ext = FilesUtils.getExtensionFromFilename(extractedFile).toLowerCase()
                 multipleFileImageFormats.each { imageFormat ->
                     if (imageFormat.extensions.contains(ext)) {
-                        imageFormat.uploadedFilePath = extractedFile
+                        imageFormat.absoluteFilePath = extractedFile
                         if (imageFormat.detect()) imageFormats << imageFormat
                     }
                 }
@@ -95,7 +92,6 @@ public class FormatIdentifier {
                 extractedFiles.each {  extractedFile ->
                     ImageFormat imageFormat = getImageFormat(extractedFile)
                     if (imageFormat) imageFormats << imageFormat
-
                 }
             }
             return imageFormats
@@ -111,7 +107,7 @@ public class FormatIdentifier {
         def imageFormats = getAvailableSingleFileImageFormats()
 
         imageFormats.each {
-            it.uploadedFilePath = uploadedFile
+            it.absoluteFilePath = uploadedFile
         }
 
         ImageFormat detectedFormat = imageFormats.find {

@@ -1,7 +1,6 @@
 package be.cytomine.formats.digitalpathology
 
 import be.cytomine.formats.standard.TIFFFormat
-import utils.FilesUtils
 import utils.ProcUtils
 
 /**
@@ -17,7 +16,7 @@ class VentanaTIFFFormat extends TIFFFormat {
     ]
 
     public boolean detect() {
-        String tiffinfo = "tiffinfo $uploadedFilePath".execute().text
+        String tiffinfo = "tiffinfo $absoluteFilePath".execute().text
 
         boolean notTiff = false
         excludeDescription.each {
@@ -33,10 +32,9 @@ class VentanaTIFFFormat extends TIFFFormat {
     String convert(String workingPath) {
         boolean convertSuccessfull = true
 
-        String ext = FilesUtils.getExtensionFromFilename(uploadedFilePath).toLowerCase()
-        String source = uploadedFilePath
-        String target = uploadedFilePath.replace(".$ext", "_converted.tif")
-        String intermediate = target.replace(".$ext",".tmp.tif")
+        String source = absoluteFilePath
+        String target = [new File(absoluteFilePath).getParent(), "_converted.tif"].join(File.separator)
+        String intermediate = [new File(absoluteFilePath).getParent(), "_tmp.tif"].join(File.separator)
 
         def executable = "`which vips`"
 

@@ -12,17 +12,17 @@ class ZipFormat extends ArchiveFormat {
     def DESCRIPTION_EXPECTED = "Zip archive data"
 
     public boolean detect() {
-        String command = "file  $uploadedFilePath"
+        String command = "file  $absoluteFilePath"
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text
         return stdout.contains(DESCRIPTION_EXPECTED)
     }
 
-    public String[] extract() {
-        long timestamp = new Date().getTime()
-        String parentPath = new File(uploadedFilePath).getParent()
-        String destPath = ["/tmp", timestamp].join(File.separator)
+    public String[] extract(String destPath) {
+                /*        long timestamp = new Date().getTime()
+        String parentPath = new File(absoluteFilePath).getParent()
+        String destPath = ["/tmp", timestamp].join(File.separator)*/
 
         /* Create and temporary directory which will contains the archive content */
         println "Create path=$destPath"
@@ -31,11 +31,11 @@ class ZipFormat extends ArchiveFormat {
         ProcUtils.executeOnShell("chmod -R 777 " + destPath)
 
         /* Get extension of filename in order to choose the uncompressor */
-        String ext = FilesUtils.getExtensionFromFilename(uploadedFilePath).toLowerCase()
+        String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         /* Unzip */
         if (ext == 'zip') {
             def ant = new AntBuilder()
-            ant.unzip(src : uploadedFilePath,
+            ant.unzip(src : absoluteFilePath,
                     dest : destPath,
                     overwrite : false)
         }

@@ -7,7 +7,7 @@ abstract class Format {
 
     protected String[] extensions = null
 
-    public String uploadedFilePath
+    public String absoluteFilePath
 
     abstract public boolean detect()
 
