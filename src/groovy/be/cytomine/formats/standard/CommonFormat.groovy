@@ -32,7 +32,7 @@ abstract class CommonFormat extends ImageFormat {
 
         //1. Look for vips executable
 
-        def executable = "`which vips`"
+        def executable = "/usr/local/bin/vips"
 
         def extractBandCommand = """$executable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
         def rmIntermediatefile = """rm $intermediate"""
