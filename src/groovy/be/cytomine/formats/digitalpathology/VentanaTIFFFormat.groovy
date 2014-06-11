@@ -17,7 +17,7 @@ class VentanaTIFFFormat extends TIFFFormat {
     ]
 
     public boolean detect() {
-        def tiffinfoExecutable = Holders.config.tiffinfo
+        def tiffinfoExecutable = Holders.config.grails.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
 
         boolean notTiff = false
@@ -38,7 +38,7 @@ class VentanaTIFFFormat extends TIFFFormat {
         String target = [new File(absoluteFilePath).getParent(), "_converted.tif"].join(File.separator)
         String intermediate = [new File(absoluteFilePath).getParent(), "_tmp.tif"].join(File.separator)
 
-        def vipsExecutable = Holders.config.vips
+        def vipsExecutable = Holders.config.grails.vips
 
         //1. Extract the biggest layer
         // vips im_vips2tiff 11GH076256_A2_CD3_100.tif:2 output_image.tif:deflate,,flat,,,,8

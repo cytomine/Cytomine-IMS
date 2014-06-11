@@ -13,7 +13,7 @@ abstract class CommonFormat extends ImageFormat {
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
     public boolean detect() {
-        def identifyExecutable = Holders.config.identify
+        def identifyExecutable = Holders.config.grails.identify
         String command = "$identifyExecutable -verbose $absoluteFilePath"
         def proc = command.execute()
         proc.waitFor()
@@ -34,7 +34,7 @@ abstract class CommonFormat extends ImageFormat {
 
         //1. Look for vips executable
 
-        def vipsExecutable = Holders.config.vips
+        def vipsExecutable = Holders.config.grails.vips
 
         def extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
         def rmIntermediatefile = """rm $intermediate"""

@@ -126,7 +126,7 @@ grails.imageServerPrivateKey="70f35a45-c317-405a-8056-353db3d2bf56"
 grails.imageServerPublicKey="4a5c7004-b6f8-4705-a118-c15d5c90dcdb"
 
 //image manipulation executable
-grails.vips = "vips"
+grails.vips = "/usr/local/bin/vips"
 grails.tiffinfo = "tiffinfo"
 grails.identify = "identify"
 
