@@ -1,5 +1,6 @@
 package be.cytomine.formats.standard
 
+import grails.util.Holders
 import org.springframework.util.StringUtils
 
 /**
@@ -16,8 +17,8 @@ class PyramidalTIFFFormat  extends TIFFFormat {
     ]
 
     public boolean detect() {
-
-        String tiffinfo = "tiffinfo $absoluteFilePath".execute().text
+        def tiffinfoExecutable = Holders.config.tiffinfo
+        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
         boolean notTiff = false

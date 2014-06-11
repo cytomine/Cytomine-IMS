@@ -1,6 +1,7 @@
 package be.cytomine.formats.standard
 
 import be.cytomine.formats.ImageFormat
+import grails.util.Holders
 import utils.FilesUtils
 import utils.ProcUtils
 
@@ -12,7 +13,8 @@ abstract class CommonFormat extends ImageFormat {
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
     public boolean detect() {
-        String command = "identify -verbose $absoluteFilePath"
+        def identifyExecutable = Holders.config.identify
+        String command = "$identifyExecutable -verbose $absoluteFilePath"
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text
@@ -32,11 +34,11 @@ abstract class CommonFormat extends ImageFormat {
 
         //1. Look for vips executable
 
-        def executable = "/usr/local/bin/vips"
+        def vipsExecutable = Holders.config.vips
 
-        def extractBandCommand = """$executable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
+        def extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
         def rmIntermediatefile = """rm $intermediate"""
-        def pyramidCommand = """$executable tiffsave "$intermediate" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
+        def pyramidCommand = """$vipsExecutable tiffsave "$intermediate" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
 
         boolean success = true
 
@@ -44,7 +46,7 @@ abstract class CommonFormat extends ImageFormat {
 
         if(!success) {
             success = true
-            extractBandCommand = """$executable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 1"""
+            extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 1"""
             success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
         }
 
