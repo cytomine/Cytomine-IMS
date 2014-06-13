@@ -1,6 +1,8 @@
 package be.cytomine.storage
 
 import be.cytomine.client.Cytomine
+import be.cytomine.client.models.AbstractImage
+import be.cytomine.client.models.Storage
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
 import grails.converters.JSON
@@ -48,6 +50,25 @@ class UploadController {
                 }
             }
 
+            def properties = [:]
+            def keys = []
+            def values = []
+            log.info "keys=" + params["keys"]
+            log.info "values=" + params["values"]
+            if(params["keys"]!=null && params["keys"]!="") {
+                keys = params["keys"].split(",")
+                values = params["values"].split(",")
+            }
+            if(keys.size()!=values.size()) {
+                throw new Exception("Key.size <> Value.size!");
+            }
+            keys.eachWithIndex { key, index ->
+                properties[key]=values[index];
+            }
+
+            boolean isSync = params.boolean('sync')
+            log.info "sync="+isSync
+
             String filename = (String) params['files[].name']
             def uploadedFilePath = new File((String) params['files[].path'])
             def size = uploadedFilePath.size()
@@ -83,55 +104,36 @@ class UploadController {
             deployImagesService.copyUploadedFile(cytomine, uploadedFilePath.absolutePath, uploadedFile, [storage])
 
 
+            String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
 
-            log.info "Execute convert & deploy into background"
-            backgroundService.execute("convertAndDeployImage", {
-                String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join(File.separator)
+            ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(
+                    originalFilenameFullPath
+            )
 
-                ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(
-                        originalFilenameFullPath
-                )
+            println "imageFormats $imageFormats"
+            if (imageFormats.size() == 0) { //not a file that we can recognize
+                //todo: response error message
+                return
+            }
 
-                println "imageFormats $imageFormats"
-                if (imageFormats.size() == 0) { //not a file that we can recognize
-                    //todo: response error message
-                    return
-                }
-
-                //start to convert into pyramid format, if necessary
-                def imageFormatsToDeploy = []
-                imageFormats.each { imageFormat ->
-                    String convertedImageFilename = imageFormat.convert(storageBufferPath)
-                    if (!convertedImageFilename) { //not necessary to convert it
-                        imageFormatsToDeploy << imageFormat
-                    } else {
-                        FormatIdentifier.getImageFormats(convertedImageFilename).each { convertedImageFormat ->
-                            imageFormatsToDeploy << convertedImageFormat
-                        }
-                    }
-                }
-
-                println "convertedImageFormats $imageFormatsToDeploy"
-                imageFormatsToDeploy.each {
-
-                    File f = new File(it.absoluteFilePath)
-                    def _uploadedFile = cytomine.addUploadedFile(
-                            filename,
-                            ((String)it.absoluteFilePath).replace(storage.getStr("basePath"), ""),
-                            storage.getStr("basePath"),
-                            f.size(),
-                            FilesUtils.getExtensionFromFilename(it.absoluteFilePath).toLowerCase(),
-                            contentType,
-                            projects,
-                            [idStorage],
-                            currentUserId)
-                    cytomine.addNewImage(_uploadedFile.id)
-
-                }
-            })
-
-            def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON())]
+            def images = []
+            if(isSync) {
+                log.info "Execute convert & deploy NOT in background (sync=true!)"
+                def imageFormatsToDeploy = convertImage(imageFormats,storageBufferPath)
+                images = createImage(cytomine,imageFormatsToDeploy,filename,storage,contentType,projects,idStorage,currentUserId,properties)
+                log.info "image sync = $images"
+            } else {
+                log.info "Execute convert & deploy into background"
+                backgroundService.execute("convertAndDeployImage", {
+                    def imageFormatsToDeploy = convertImage(imageFormats,storageBufferPath)
+                    images = createImage(cytomine,imageFormatsToDeploy,filename,storage,contentType,projects,idStorage,currentUserId,properties)
+                    log.info "image async = $images"
+                })
+            }
+            def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(),images)]
             render responseContent as JSON
+
+
 
         } catch (Exception e) {
             log.error e
@@ -142,15 +144,63 @@ class UploadController {
         }
     }
 
+    private def convertImage(ImageFormat[] imageFormats,String storageBufferPath) {
+        //start to convert into pyramid format, if necessary
+        def imageFormatsToDeploy = []
+        imageFormats.each { imageFormat ->
+            String convertedImageFilename = imageFormat.convert(storageBufferPath)
+            if (!convertedImageFilename) { //not necessary to convert it
+                imageFormatsToDeploy << imageFormat
+            } else {
+                FormatIdentifier.getImageFormats(convertedImageFilename).each { convertedImageFormat ->
+                    imageFormatsToDeploy << convertedImageFormat
+                }
+            }
+        }
+        return imageFormatsToDeploy
+    }
 
 
-    private def createResponseContent(def filename, def size, def contentType, def uploadedFileJSON) {
+    private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, def projects, def idStorage, def currentUserId, def properties) {
+        println "convertedImageFormats $imageFormatsToDeploy"
+        def images = []
+        imageFormatsToDeploy.each {
+
+            File f = new File(it.absoluteFilePath)
+            def _uploadedFile = cytomine.addUploadedFile(
+                    filename,
+                    ((String)it.absoluteFilePath).replace(storage.getStr("basePath"), ""),
+                    storage.getStr("basePath"),
+                    f.size(),
+                    FilesUtils.getExtensionFromFilename(it.absoluteFilePath).toLowerCase(),
+                    contentType,
+                    projects,
+                    [idStorage],
+                    currentUserId)
+            def image = cytomine.addNewImage(_uploadedFile.id)
+
+            properties.each {
+                println it.key
+                println it.value
+                cytomine.addDomainProperties(image.getStr("class"),image.getLong("id"),it.key.toString(),it.value.toString())
+            }
+
+            images << image
+
+        }
+        return images
+    }
+
+
+
+    private def createResponseContent(def filename, def size, def contentType, def uploadedFileJSON, def images) {
         def content = [:]
         content.status = 200;
         content.name = filename
         content.size = size
         content.type = contentType
         content.uploadFile = uploadedFileJSON
+        content.images = images
         return content
     }
 
