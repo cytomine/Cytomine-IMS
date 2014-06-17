@@ -98,6 +98,7 @@ class UploadController {
                     size,
                     extension,
                     contentType,
+                    "mime",
                     projects,
                     [idStorage],
                     currentUserId)
@@ -174,6 +175,7 @@ class UploadController {
                     f.size(),
                     FilesUtils.getExtensionFromFilename(it.absoluteFilePath).toLowerCase(),
                     contentType,
+                    "mime",
                     projects,
                     [idStorage],
                     currentUserId)
