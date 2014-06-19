@@ -4,6 +4,8 @@ import be.cytomine.formats.ArchiveFormat
 import utils.FilesUtils
 import utils.ProcUtils
 
+import java.awt.image.BufferedImage
+
 /**
  * Created by stevben on 23/04/14.
  */
@@ -50,5 +52,9 @@ class ZipFormat extends ArchiveFormat {
         return pathsAndExtensions
     }
 
+
+    public BufferedImage associated(String label) { //should be abstract
+        return null
+    }
 
 }

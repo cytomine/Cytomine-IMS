@@ -4,6 +4,11 @@ package be.cytomine.formats.standard
  */
 class JPEG2000Format extends CommonFormat {
 
+    public JPEG2000Format() {
+        extensions = ["jp2"]
+        mimeType = "image/jp2"
+    }
+
     public boolean detect() {
         ""
     }

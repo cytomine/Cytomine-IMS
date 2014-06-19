@@ -1,6 +1,6 @@
 package be.cytomine.processing
 
-import be.cytomine.ImageController
+import be.cytomine.image.ImageUtilsController
 import be.cytomine.processing.image.filters.Colour_Deconvolution
 import be.cytomine.processing.merge.CytomineRGBStackMerge
 import ij.ImagePlus
@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage
  * Date: 1/06/11
  * Time: 13:44
  */
-class VisionController extends ImageController {
+class VisionController extends ImageUtilsController {
 
     def imageProcessingService
 

@@ -1,9 +1,12 @@
 package cytomine.web
 
 import be.cytomine.processing.image.filters.Auto_Threshold
+import grails.util.Holders
 import ij.ImagePlus
 import ij.process.ImageConverter
+import utils.ProcUtils
 
+import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.image.BufferedImage
 
@@ -31,6 +34,7 @@ class ImageProcessingService {
         return resizedImage;
     }
 
+    //deprecated
     public BufferedImage rotate90ToRight( BufferedImage inputImage ){
         int width = inputImage.getWidth();
         int height = inputImage.getHeight();
@@ -43,6 +47,8 @@ class ImageProcessingService {
         }
         return returnImage;
     }
+
+
 
 
 }

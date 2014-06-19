@@ -1,7 +1,6 @@
 package be.cytomine.storage
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.models.AbstractImage
 import be.cytomine.client.models.Storage
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
@@ -14,9 +13,8 @@ import utils.FilesUtils
  * Date: 16/09/13
  * Time: 12:25
  */
-class UploadController {
+class StorageController {
 
-    def convertImagesService
     def deployImagesService
     def backgroundService
     def cytomineService
@@ -90,7 +88,9 @@ class UploadController {
             String destPath = timestamp.toString() + "/" + FilesUtils.correctFileName(filename)
 
 
+
             def storage = cytomine.getStorage(idStorage)
+            log.info "storage.getStr(basePath) : " + storage.getStr("basePath")
             def uploadedFile = cytomine.addUploadedFile(
                     filename,
                     destPath,
@@ -98,7 +98,7 @@ class UploadController {
                     size,
                     extension,
                     contentType,
-                    "mime",
+                    null,
                     projects,
                     [idStorage],
                     currentUserId)
@@ -121,13 +121,13 @@ class UploadController {
             if(isSync) {
                 log.info "Execute convert & deploy NOT in background (sync=true!)"
                 def imageFormatsToDeploy = convertImage(imageFormats,storageBufferPath)
-                images = createImage(cytomine,imageFormatsToDeploy,filename,storage,contentType,projects,idStorage,currentUserId,properties)
+                images = createImage(cytomine,imageFormatsToDeploy,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile.id)
                 log.info "image sync = $images"
             } else {
                 log.info "Execute convert & deploy into background"
                 backgroundService.execute("convertAndDeployImage", {
                     def imageFormatsToDeploy = convertImage(imageFormats,storageBufferPath)
-                    images = createImage(cytomine,imageFormatsToDeploy,filename,storage,contentType,projects,idStorage,currentUserId,properties)
+                    images = createImage(cytomine,imageFormatsToDeploy,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile.id)
                     log.info "image async = $images"
                 })
             }
@@ -162,12 +162,13 @@ class UploadController {
     }
 
 
-    private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, def projects, def idStorage, def currentUserId, def properties) {
+    private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, def projects, def idStorage, def currentUserId, def properties, long idParent) {
         println "convertedImageFormats $imageFormatsToDeploy"
         def images = []
         imageFormatsToDeploy.each {
 
             File f = new File(it.absoluteFilePath)
+
             def _uploadedFile = cytomine.addUploadedFile(
                     filename,
                     ((String)it.absoluteFilePath).replace(storage.getStr("basePath"), ""),
@@ -175,10 +176,12 @@ class UploadController {
                     f.size(),
                     FilesUtils.getExtensionFromFilename(it.absoluteFilePath).toLowerCase(),
                     contentType,
-                    "mime",
+                    it.mimeType,
                     projects,
                     [idStorage],
-                    currentUserId)
+                    currentUserId,
+                    -1l,
+                    idParent)
             def image = cytomine.addNewImage(_uploadedFile.id)
 
             properties.each {
@@ -193,6 +196,17 @@ class UploadController {
         return images
     }
 
+
+    private def responseFile(File file) {
+        response.setHeader "Content-disposition", "attachment; filename=\"${file.getName()}\"";
+        response.outputStream << file.newInputStream();
+        response.outputStream.flush();
+    }
+
+    def download() {
+        String fif = params.get("fif")
+        responseFile(new File(fif))
+    }
 
 
     private def createResponseContent(def filename, def size, def contentType, def uploadedFileJSON, def images) {

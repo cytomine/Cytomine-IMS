@@ -1,12 +1,19 @@
 package be.cytomine.formats.standard
 
+import be.cytomine.formats.digitalpathology.OpenSlideSingleFileFormat
 import grails.util.Holders
 import org.springframework.util.StringUtils
+import java.awt.image.BufferedImage
 
 /**
  * Created by stevben on 28/04/14.
  */
-class PyramidalTIFFFormat  extends TIFFFormat {
+class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
+
+    public PyramidalTIFFFormat () {
+        extensions = ["tif", "tiff"]
+        mimeType = "image/tiff"
+    }
 
     private excludeDescription = [
             "Not a TIFF",
@@ -36,6 +43,23 @@ class PyramidalTIFFFormat  extends TIFFFormat {
     String convert() {
        return null //already a pyramid
     }
+
+
+
+    public BufferedImage associated(String label) { //should be abstract
+        if (label == "macro") {
+            return thumb(256)
+        }
+    }
+
+    BufferedImage thumb(int maxSize) {
+        def tiffinfoExecutable = Holders.config.grails.tiffinfo
+        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
+        int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
+        getTIFFSubImage(numberOfTIFFDirectories - 1)
+    }
+
+
 
 
 }

@@ -1,6 +1,6 @@
 package be.cytomine.formats
 
-import be.cytomine.ImageController
+import be.cytomine.image.ImageUtilsController
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.digitalpathology.AperioSVSFormat
@@ -21,7 +21,7 @@ import utils.ProcUtils
  * Created by stevben on 23/04/14.
  */
 
-@TestFor(ImageController)
+@TestFor(ImageUtilsController)
 class CytomineFormatSpec {
 
     private static String getFilenameForTest(def imageFilename, String imageRepository = '/opt/cytomine/testdata') {

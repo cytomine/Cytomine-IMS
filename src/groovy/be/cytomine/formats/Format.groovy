@@ -5,10 +5,9 @@ package be.cytomine.formats
  */
 abstract class Format {
 
-    protected String[] extensions = null
-
     public String absoluteFilePath
 
     abstract public boolean detect()
+
 
 }

@@ -5,11 +5,16 @@ import org.openslide.OpenSlide
 /**
  * Created by stevben on 22/04/14.
  */
-class HamamatsuNDPIFormat extends OpenSlideCompatibleSingleFileFormat {
+class HamamatsuNDPIFormat extends OpenSlideSingleFileFormat {
 
     public HamamatsuNDPIFormat() {
         extensions = ["ndpi"]
         vendor = "hamamatsu"
+        mimeType = "openslide/ndpi"
+        widthProperty = "openslide.level[0].width"
+        heightProperty = "openslide.level[0].height"
+        resolutionProperty = "openslide.mpp-x"
+        magnificiationProperty = "hamamatsu.SourceLens"
     }
 
     boolean detect() {

@@ -1,4 +1,4 @@
-package be.cytomine
+package be.cytomine.image
 
 import http.HttpClient
 
@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage
 /**
  * Implement generics methods for handling imaging data in controllers
  */
-class ImageController {
+class ImageUtilsController {
 
     /**
      * Read a picture from url

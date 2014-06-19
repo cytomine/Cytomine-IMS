@@ -1,8 +1,6 @@
 package be.cytomine.image
 
-import be.cytomine.ImageController
-
-class ImageProxyController extends ImageController {
+class ImageProxyController extends ImageUtilsController {
 
     /**
      * Image Proxy method

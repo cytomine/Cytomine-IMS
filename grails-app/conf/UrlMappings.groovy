@@ -10,20 +10,31 @@ class UrlMappings {
 		"/"(view:"/index")
 		"500"(view:'/error')
 
-        "/storage"(controller:"upload"){
-            action = [POST:"storage"]
+        "/upload"(controller:"storage"){
+            action = [POST:"upload"]
         }
 
-        "/api/abstractimage/$id/associated" (controller:"openSlide") {
+        "/download"(controller:"storage"){
+            action = [GET : "download"]
+        }
+
+
+        "/image/associated" (controller:"image") {
             action = [GET:"associated"]
         }
 
-        "/api/abstractimage/$id/associated/$label" (controller:"openSlide") {
-            action = [GET:"associatedImage"]
+        "/image/nested" (controller:"image") {
+            action = [GET:"nested"]
         }
 
-        "/api/abstractimage/$id/download" (controller:"storage") {
-            action = [GET:"download"]
+        "/image/properties" (controller:"image") {
+            action = [GET:"properties"]
         }
+
+        "/image/thumb.$format" (controller:"image") {
+            action = [GET:"thumb"]
+        }
+
+
 	}
 }

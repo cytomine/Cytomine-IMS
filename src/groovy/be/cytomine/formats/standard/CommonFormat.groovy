@@ -5,6 +5,9 @@ import grails.util.Holders
 import utils.FilesUtils
 import utils.ProcUtils
 
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
 /**
  * Created by stevben on 22/04/14.
  */
@@ -56,5 +59,13 @@ abstract class CommonFormat extends ImageFormat {
         if (success) {
             return target
         }
+    }
+
+    public BufferedImage associated(String label) { //should be abstract
+        return ImageIO.read(new File(absoluteFilePath))
+    }
+
+    public BufferedImage thumb(int maxSize) {
+        return ImageIO.read(new File(absoluteFilePath))
     }
 }
