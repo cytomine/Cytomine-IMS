@@ -1,5 +1,10 @@
 package be.cytomine.image
 
+<<<<<<< Updated upstream
+=======
+import be.cytomine.ImageUtilsController
+
+>>>>>>> Stashed changes
 class ImageProxyController extends ImageUtilsController {
 
     /**

@@ -1,6 +1,10 @@
 package be.cytomine.formats
 
+<<<<<<< Updated upstream
 import be.cytomine.image.ImageUtilsController
+=======
+import be.cytomine.ImageUtilsController
+>>>>>>> Stashed changes
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.digitalpathology.AperioSVSFormat

@@ -12,6 +12,7 @@ abstract class TIFFFormat extends CommonFormat {
     public TIFFFormat() {
         extensions = ["tif", "tiff"]
         mimeType = "image/tiff"
+<<<<<<< Updated upstream
     }
 
     def properties() {
@@ -48,6 +49,8 @@ abstract class TIFFFormat extends CommonFormat {
 
     BufferedImage thumb(int maxSize) {
         getTIFFSubImage(0)
+=======
+>>>>>>> Stashed changes
     }
 
 }

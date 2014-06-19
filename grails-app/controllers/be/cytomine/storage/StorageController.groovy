@@ -101,7 +101,8 @@ class StorageController {
                     null,
                     projects,
                     [idStorage],
-                    currentUserId)
+                    currentUserId,
+                    null)
             deployImagesService.copyUploadedFile(cytomine, uploadedFilePath.absolutePath, uploadedFile, [storage])
 
 
@@ -131,6 +132,7 @@ class StorageController {
                     log.info "image async = $images"
                 })
             }
+
             def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(),images)]
             render responseContent as JSON
 

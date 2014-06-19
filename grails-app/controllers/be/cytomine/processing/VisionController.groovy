@@ -1,6 +1,10 @@
 package be.cytomine.processing
 
+<<<<<<< Updated upstream
 import be.cytomine.image.ImageUtilsController
+=======
+import be.cytomine.ImageUtilsController
+>>>>>>> Stashed changes
 import be.cytomine.processing.image.filters.Colour_Deconvolution
 import be.cytomine.processing.merge.CytomineRGBStackMerge
 import ij.ImagePlus
