@@ -101,7 +101,8 @@ class UploadController {
                     "mime",
                     projects,
                     [idStorage],
-                    currentUserId)
+                    currentUserId,
+                    null)
             deployImagesService.copyUploadedFile(cytomine, uploadedFilePath.absolutePath, uploadedFile, [storage])
 
 
@@ -131,6 +132,7 @@ class UploadController {
                     log.info "image async = $images"
                 })
             }
+
             def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(),images)]
             render responseContent as JSON
 
@@ -178,7 +180,8 @@ class UploadController {
                     "mime",
                     projects,
                     [idStorage],
-                    currentUserId)
+                    currentUserId,
+                    null)
             def image = cytomine.addNewImage(_uploadedFile.id)
 
             properties.each {
