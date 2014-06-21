@@ -22,10 +22,10 @@ class UploadController {
 
         try {
 
-            String storageBufferPath = grailsApplication.config.grails.storageBufferPath
+            String storageBufferPath = grailsApplication.config.cytomine.storageBufferPath
             String cytomineUrl =  params['cytomine']//grailsApplication.config.grails.cytomineUrl
-            String pubKey = grailsApplication.config.grails.imageServerPublicKey
-            String privKey = grailsApplication.config.grails.imageServerPrivateKey
+            String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
+            String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
 
             log.info "Upload is made on Cytomine = $cytomineUrl"
             log.info "We use $pubKey/$privKey to connect"

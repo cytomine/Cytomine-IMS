@@ -6,7 +6,7 @@ package be.cytomine.formats
 abstract class Format {
 
     public String[] extensions = null
-    public String mimeType = nulls
+    public String mimeType = null
     public String absoluteFilePath
 
     abstract public boolean detect()

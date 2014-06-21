@@ -51,7 +51,7 @@ abstract class OpenSlideFormat extends ImageFormat {
 
     public def properties() {
         File slideFile = new File(absoluteFilePath)
-        def properties = []
+        def properties = [[key : "mimeType", value : mimeType]]
         if (slideFile.canRead()) {
             OpenSlide openSlide = new OpenSlide(slideFile)
             openSlide.getProperties().each {

@@ -24,7 +24,7 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
     ]
 
     public boolean detect() {
-        def tiffinfoExecutable = Holders.config.grails.tiffinfo
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
@@ -53,7 +53,7 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
     }
 
     BufferedImage thumb(int maxSize) {
-        def tiffinfoExecutable = Holders.config.grails.tiffinfo
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
         getTIFFSubImage(numberOfTIFFDirectories - 1)

@@ -2,6 +2,7 @@ package be.cytomine.formats.standard
 
 import grails.util.Holders
 
+import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
 /**
@@ -12,13 +13,12 @@ abstract class TIFFFormat extends CommonFormat {
     public TIFFFormat() {
         extensions = ["tif", "tiff"]
         mimeType = "image/tiff"
-<<<<<<< Updated upstream
     }
 
     def properties() {
-        def tiffinfoExecutable = Holders.config.grails.tiffinfo
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        def properties = []
+        def properties = [[key : "mimeType", value : mimeType]]
         int maxWidth = 0
         int maxHeight = 0
         tiffinfo.tokenize( '\n' ).findAll {
@@ -36,21 +36,6 @@ abstract class TIFFFormat extends CommonFormat {
         properties << [ key : "cytomine.magnification", value : null ]
         return properties
 
-    }
-
-    BufferedImage associated(String label) {
-        if (label == "macro") {
-            return thumb(256)
-        }
-        if (label == "preview") {
-            return thumb(1024)
-        }
-    }
-
-    BufferedImage thumb(int maxSize) {
-        getTIFFSubImage(0)
-=======
->>>>>>> Stashed changes
     }
 
 }

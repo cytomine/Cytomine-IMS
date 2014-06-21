@@ -33,7 +33,7 @@ abstract class ImageFormat extends Format {
 
     public def properties() {
         BufferedImage bufferedImage = ImageIO.read(new File(absoluteFilePath))
-        def properties = []
+        def properties = [[key : "mimeType", value : mimeType]]
         properties << [ key : "cytomine.width", value : bufferedImage.getWidth() ]
         properties << [ key : "cytomine.height", value : bufferedImage.getHeight() ]
         properties << [ key : "cytomine.resolution", value : null ]
@@ -41,40 +41,38 @@ abstract class ImageFormat extends Format {
         return properties
     }
 
+    String cropURL(def params) {
+        def iipURL = Holders.config.cytomine.iipImageServer
+        String fif = params.fif
+        int topLeftX = params.int('topLeftX')
+        int topLeftY = params.int('topLeftY')
+        int width = params.int('height')
+        int height = params.int('height')
+        int imageWidth = params.int('imageWidth')
+        int imageHeight = params.int('imageHeight')
+        def x = (topLeftX == 0) ? 0 : 1/(imageWidth / topLeftX)
+        def y = ((imageHeight - topLeftY) == 0) ? 0 : 1/(imageHeight / (imageHeight - topLeftY))
+        def w = (width == 0) ? 0 : 1/(imageWidth / width)
+        def h = (height == 0) ? 0 : 1/(imageHeight / height)
 
-
-    //useless
-    /*
-    def iipmetadata() {
-        LinkedList<String> args = new LinkedList<String>()
-        args.add("FIF" + ARGS_EQUAL +  absoluteFilePath)
-        args.add("obj" + ARGS_EQUAL +  "IIP,1.0")
-        args.add("obj" + ARGS_EQUAL +  "Max-size")
-        args.add("obj" + ARGS_EQUAL +  "Tile-size")
-        args.add("obj" + ARGS_EQUAL +  "Resolution-number")
-        def url = "http://localhost:8081/fcgi-bin/iipsrv.fcgi?" + args.join(ARGS_DELIMITER)
-        def iipmetadata = new URL(url).text
-        def metadata = [:]
-        println iipmetadata
-        iipmetadata.split("\n").each {
-            def _metadata = it.split(":")
-            def key = _metadata[0]
-            def value = _metadata[1]
-            if (key == 'Max-size') {
-                metadata.width = value.split(' ')[0]
-                metadata.height = value.split(' ')[1]
+        if (params.int('scale')) {
+            int scale = params.int('scale')
+            if (height > scale) {
+                int hei = Math.round(imageHeight / Math.ceil(height / scale))
+                return "FIF=$fif&RGN=$x,$y,$w,$h&HEI=$hei&CVT=jpeg"
+            } else if (width > scale) {
+                int wid = Math.round(imageWidth / Math.ceil(width / scale))
+                return "FIF=$fif&RGN=$x,$y,$w,$h&WID=$wid&CVT=jpeg"
             }
-            if (key == 'Tile-size') {
-                metadata.tile_size_w = value.split(' ')[0]
-                metadata.tile_size_h = value.split(' ')[1]
-            }
-            if (key == 'Resolution-number') {
-                metadata.resolution_number = value
-            }
+        } else {
+            return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
         }
-        metadata
-    }  */
+    }
 
+    static String tileURL(fif, params) {
+        def iipURL = Holders.config.cytomine.iipImageServer
+        return "$iipURL?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
+    }
 
     protected BufferedImage rotate90ToRight( BufferedImage inputImage ){
         int width = inputImage.getWidth();
@@ -98,7 +96,7 @@ abstract class ImageFormat extends Format {
         String targetPath = target.absolutePath
 
         println "target=" + target.getPath()
-        def vipsExecutable = Holders.config.grails.vips
+        def vipsExecutable = Holders.config.cytomine.vips
         def command = """$vipsExecutable im_copy $source:$index $targetPath"""
         convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
 

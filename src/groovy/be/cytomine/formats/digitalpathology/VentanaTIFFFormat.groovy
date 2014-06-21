@@ -30,7 +30,7 @@ class VentanaTIFFFormat extends TIFFFormat {
     ]
 
     public boolean detect() {
-        def tiffinfoExecutable = Holders.config.grails.tiffinfo
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
 
         boolean notTiff = false
@@ -50,7 +50,7 @@ class VentanaTIFFFormat extends TIFFFormat {
         String source = absoluteFilePath
         String target = [new File(absoluteFilePath).getParent(), "_converted.tif"].join(File.separator)
 
-        def vipsExecutable = Holders.config.grails.vips
+        def vipsExecutable = Holders.config.cytomine.vips
         def command = """$vipsExecutable im_vips2tiff $source:2 $target:jpeg:95,tile:256x256,pyramid,,,,8"""
         convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
 
@@ -71,9 +71,9 @@ class VentanaTIFFFormat extends TIFFFormat {
 
     public def properties() {
         File slideFile = new File(absoluteFilePath)
-        def properties = []
+        def properties = [[key : "mimeType", value : mimeType]]
         if (slideFile.canRead()) {
-            def tiffinfoExecutable = Holders.config.grails.tiffinfo
+            def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
             String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
 
             //description
@@ -158,7 +158,7 @@ class VentanaTIFFFormat extends TIFFFormat {
     }
 
     BufferedImage thumb(int maxSize) {
-        def tiffinfoExecutable = Holders.config.grails.tiffinfo
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
         getTIFFSubImage(numberOfTIFFDirectories - 2 - 1) /* - 2 because we have macro & roi as two first directories.

@@ -74,33 +74,14 @@ class ImageUtilsController {
      * @param url Image url
      */
     protected def responseImageFromUrl(String url) {
-        withFormat {
-            png {
-                if (request.method == 'HEAD') {
-                    render(text: "", contentType: "image/png")
-                }
-                else {
-                    HttpClient client = new HttpClient()
-                    client.timeout = 60000;
-                    client.connect(url, "", "")
-                    byte[] imageData = client.getData()
-                    //IIP Send JPEG, so we have to convert to PNG
-                    InputStream input = new ByteArrayInputStream(imageData);
-                    BufferedImage bufferedImage = ImageIO.read(input);
-                    def out = new ByteArrayOutputStream()
-                    ImageIO.write(bufferedImage, "PNG", out)
-                    response.contentType = "image/png"
-                    response.getOutputStream() << out.toByteArray()
-                }
-            }
-            jpg {
-                if (request.method == 'HEAD') {
-                    render(text: "", contentType: "image/jpeg")
-
-                }
-                redirect(url: url)
-            }
-        }
+        println "responseImageFromUrl $url"
+        URL source = new URL(url)
+        URLConnection connection = source.openConnection()
+        response.contentType = 'image/jpeg'
+        // Set the content length
+        response.setHeader("Content-Length", connection.contentLength.toString())
+        // Get the input stream from the connection
+        response.outputStream << connection.getInputStream()
 
     }
 

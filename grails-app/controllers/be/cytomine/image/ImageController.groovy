@@ -10,12 +10,11 @@ class ImageController extends ImageUtilsController {
 
     def thumb() {
         String fif = params.fif
-        int maxSize = params.int('maxSize')
+        int maxSize = params.int('maxSize', 256)
         ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(fif)
         println imageFormats
         assert(imageFormats.size() == 1)
         BufferedImage bufferedImage = imageFormats.first().thumb(maxSize)
-        println "bufferedImage = " + bufferedImage
         if (bufferedImage) {
             responseBufferedImage(bufferedImage)
         } else {
@@ -29,7 +28,6 @@ class ImageController extends ImageUtilsController {
         ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(fif)
         assert(imageFormats.size() == 1)
         BufferedImage bufferedImage = imageFormats.first().associated(label)
-        println bufferedImage
         if (bufferedImage) {
             responseBufferedImage(bufferedImage)
         } else {
@@ -54,12 +52,24 @@ class ImageController extends ImageUtilsController {
         render imageFormats.first().properties() as JSON
     }
 
-    def roi() {
-        def url = "http://localhost:8081/fcgi-bin/iipsrv.fcgi?"
-        params.each {
-            url += "$it.key=$it.value&"
-        }
-        responseImageFromUrl(url)
+    def crop() {
+        String fif = params.fif
+        ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(fif)
+        println imageFormats
+        assert(imageFormats.size() == 1)
+        String cropURL = imageFormats.first().cropURL(params)
+        responseImageFromUrl(cropURL)
+    }
+
+    def tile() {
+        String fif = params.zoomify
+        /*remove the "/" at the end of the path injected by openlayers (OL2).
+          I Did not find the way to avoid it from OL2 (BS)
+         */
+        fif = fif.substring(0, fif.length()-1)
+        String tileURL = ImageFormat.tileURL(fif, params)
+        responseImageFromUrl(tileURL)
+
     }
 
 

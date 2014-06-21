@@ -52,9 +52,4 @@ class ZipFormat extends ArchiveFormat {
         return pathsAndExtensions
     }
 
-
-    public BufferedImage associated(String label) { //should be abstract
-        return null
-    }
-
 }

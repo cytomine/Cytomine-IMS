@@ -13,8 +13,8 @@ class CytomineService {
     def grailsApplication
 
     def getCytomine(String cytomineUrl) {
-        String publicKey = grailsApplication.config.grails.imageServerPublicKey
-        String privateKey = grailsApplication.config.grails.imageServerPrivateKey
+        String publicKey = grailsApplication.config.cytomine.imageServerPublicKey
+        String privateKey = grailsApplication.config.cytomine.imageServerPrivateKey
         return new Cytomine(cytomineUrl, publicKey, privateKey, "./", false)
     }
 

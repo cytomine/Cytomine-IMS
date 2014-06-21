@@ -17,7 +17,7 @@ class PlanarTIFFFormat extends TIFFFormat {
     ]
 
     public boolean detect() {
-        def tiffinfoExecutable = Holders.config.grails.tiffinfo
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 

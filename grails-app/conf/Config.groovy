@@ -121,14 +121,16 @@ log4j = {
     }
 }
 
-grails.storageBufferPath="/tmp/imageserver_buffer"
-grails.imageServerPrivateKey="70f35a45-c317-405a-8056-353db3d2bf56"
-grails.imageServerPublicKey="4a5c7004-b6f8-4705-a118-c15d5c90dcdb"
+cytomine.storageBufferPath="/tmp/imageserver_buffer"
+cytomine.iipImageServer="http://localhost:8081/fcgi-bin/iipsrv.fcgi" //default path for iip image server
+cytomine.imageServerPrivateKey="70f35a45-c317-405a-8056-353db3d2bf56"
+cytomine.imageServerPublicKey="4a5c7004-b6f8-4705-a118-c15d5c90dcdb"
 
 //image manipulation executable
-grails.vips = "/usr/local/bin/vips"
-grails.tiffinfo = "tiffinfo"
-grails.identify = "identify"
+cytomine.vips = "/usr/local/bin/vips"
+cytomine.tiffinfo = "tiffinfo"
+cytomine.identify = "identify"
+
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 

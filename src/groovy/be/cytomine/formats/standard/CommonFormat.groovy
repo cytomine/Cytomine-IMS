@@ -16,7 +16,7 @@ abstract class CommonFormat extends ImageFormat {
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
     public boolean detect() {
-        def identifyExecutable = Holders.config.grails.identify
+        def identifyExecutable = Holders.config.cytomine.identify
         String command = "$identifyExecutable -verbose $absoluteFilePath"
         def proc = command.execute()
         proc.waitFor()
@@ -37,7 +37,7 @@ abstract class CommonFormat extends ImageFormat {
 
         //1. Look for vips executable
 
-        def vipsExecutable = Holders.config.grails.vips
+        def vipsExecutable = Holders.config.cytomine.vips
 
         def extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
         def rmIntermediatefile = """rm $intermediate"""
@@ -62,10 +62,19 @@ abstract class CommonFormat extends ImageFormat {
     }
 
     public BufferedImage associated(String label) { //should be abstract
-        return ImageIO.read(new File(absoluteFilePath))
+        if (label == "macro" || label == "preview") {
+            thumb(256)
+        } else if (label == "preview") {
+            thumb(1024)
+        }
     }
 
     public BufferedImage thumb(int maxSize) {
-        return ImageIO.read(new File(absoluteFilePath))
+        File thumbnailFile = File.createTempFile("thumbnail", ".jpg")
+        def thumbnail_command = """vipsthumbnail $absoluteFilePath --interpolator bicubic --vips-concurrency=8 -o $thumbnailFile.absolutePath"""
+        println thumbnail_command
+        def proc = thumbnail_command.execute()
+        proc.waitFor()
+        return ImageIO.read(thumbnailFile)
     }
 }
