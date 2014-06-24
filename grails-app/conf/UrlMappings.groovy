@@ -19,11 +19,11 @@ class UrlMappings {
         }
 
 
-        "/image/associated" (controller:"image") {
+        "/image/associated.$format" (controller:"image") {
             action = [GET:"associated"]
         }
 
-        "/image/nested" (controller:"image") {
+        "/image/nested.$format" (controller:"image") {
             action = [GET:"nested"]
         }
 
@@ -33,6 +33,10 @@ class UrlMappings {
 
         "/image/thumb.$format" (controller:"image") {
             action = [GET:"thumb"]
+        }
+
+        "/image/crop.$format" (controller:"image") {
+            action = [GET:"crop"]
         }
 
 

@@ -26,6 +26,12 @@ class ImageUtilsController {
         return ImageIO.read(inputStream)
     }
 
+    protected responseFile(File file) {
+        response.setHeader "Content-disposition", "attachment; filename=\"${file.getName()}\"";
+        response.outputStream << file.newInputStream();
+        response.outputStream.flush();
+    }
+
 
     /**
      * Response an image as a HTTP response
@@ -74,7 +80,6 @@ class ImageUtilsController {
      * @param url Image url
      */
     protected def responseImageFromUrl(String url) {
-        println "responseImageFromUrl $url"
         URL source = new URL(url)
         URLConnection connection = source.openConnection()
         response.contentType = 'image/jpeg'

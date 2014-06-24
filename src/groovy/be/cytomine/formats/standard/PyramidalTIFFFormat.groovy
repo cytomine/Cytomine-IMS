@@ -36,7 +36,25 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
 
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
 
-        return (nbTiffDirectory > 1)  //pyramid or multi-page, sufficient ?
+        //pyramid or multi-page, sufficient ?
+        if (nbTiffDirectory > 1) return true
+        else if (nbTiffDirectory == 1) { //check if very small tiff
+            //get width & height from tiffinfo...
+            int maxWidth = 0
+            int maxHeight = 0
+            tiffinfo.tokenize( '\n' ).findAll {
+                it.contains 'Image Width:'
+            }.each {
+                def tokens = it.tokenize(" ")
+                int width = Integer.parseInt(tokens.get(2))
+                int height = Integer.parseInt(tokens.get(5))
+                maxWidth = Math.max(maxWidth, width)
+                maxHeight = Math.max(maxHeight, height)
+            }
+
+            return (maxWidth < 256 && maxHeight < 256)
+        }
+
 
     }
 

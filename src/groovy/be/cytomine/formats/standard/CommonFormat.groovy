@@ -27,7 +27,7 @@ abstract class CommonFormat extends ImageFormat {
     String convert(String workingPath) {
         String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         String source = absoluteFilePath
-        String target = [new File(absoluteFilePath).getParent(), "_converted.tif"].join(File.separator)
+        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
         String intermediate = [new File(absoluteFilePath).getParent(), "_tmp.tif"].join(File.separator)
 
         println "ext : $ext"
@@ -39,22 +39,22 @@ abstract class CommonFormat extends ImageFormat {
 
         def vipsExecutable = Holders.config.cytomine.vips
 
-        def extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
-        def rmIntermediatefile = """rm $intermediate"""
-        def pyramidCommand = """$vipsExecutable tiffsave "$intermediate" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
+        //def extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
+        //def rmIntermediatefile = """rm $intermediate"""
+        def pyramidCommand = """$vipsExecutable tiffsave "$source" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
 
         boolean success = true
 
-        success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
+        //success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
 
-        if(!success) {
+        /*if(!success) {
             success = true
             extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 1"""
             success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
-        }
+        }*/
 
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
-        success &= (ProcUtils.executeOnShell(rmIntermediatefile) == 0)
+        //success &= (ProcUtils.executeOnShell(rmIntermediatefile) == 0)
 
         if (success) {
             return target

@@ -15,8 +15,10 @@ abstract class OpenSlideFormat extends ImageFormat {
     protected String vendor = null
 
     boolean detect() {
+        println "detect $absoluteFilePath"
         File slideFile = new File(absoluteFilePath)
         if (slideFile.canRead()) {
+            println "can read $absoluteFilePath " +  OpenSlide.detectVendor(slideFile)
             try {
                 return OpenSlide.detectVendor(slideFile) == vendor
             } catch (java.io.IOException e) {
@@ -59,14 +61,15 @@ abstract class OpenSlideFormat extends ImageFormat {
             }
         }
 
+        println properties
         if (widthProperty)
-            properties << [ key : "cytomine.width", value : properties.find { it.key == widthProperty}?.value ]
+            properties << [ key : "cytomine.width", value : Integer.parseInt(properties.find { it.key == widthProperty}?.value) ]
         if (heightProperty)
-            properties << [ key : "cytomine.height", value : properties.find { it.key == heightProperty}?.value ]
+            properties << [ key : "cytomine.height", value : Integer.parseInt(properties.find { it.key == heightProperty}?.value) ]
         if (resolutionProperty)
-            properties << [ key : "cytomine.resolution", value : properties.find { it.key == resolutionProperty}?.value ]
-        if (resolutionProperty)
-            properties << [ key : "cytomine.magnification", value : properties.find { it.key == magnificiationProperty}?.value ]
+            properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value) ]
+        if (magnificiationProperty)
+            properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value).intValue() ]
 
         return properties
     }

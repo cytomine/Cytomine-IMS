@@ -10,9 +10,7 @@ class OpenSlideService {
    public String getAssociatedImages(String fullPath) {
         File slideFile = new File(fullPath)
         if (slideFile.canRead()) {
-            println fullPath
             OpenSlide openSlide = new OpenSlide(slideFile)
-            println "detectVendor " + openSlide.detectVendor()
             return openSlide.getAssociatedImages().collect { it.key }
         } else return []
     }

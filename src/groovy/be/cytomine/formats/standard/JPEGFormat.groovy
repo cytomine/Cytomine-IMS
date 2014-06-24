@@ -10,6 +10,7 @@ class JPEGFormat extends CommonFormat {
     public JPEGFormat () {
         extensions = ["jpg", "jpeg"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "Format: JPEG (Joint Photographic Experts Group JFIF format)"
+        mimeType = "image/jpeg"
     }
 
     boolean detect() {

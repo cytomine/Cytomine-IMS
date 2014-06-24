@@ -8,5 +8,6 @@ class PGMFormat extends CommonFormat {
     public PGMFormat () {
         extensions = ["pgm"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "Format: PGM (Portable graymap format"
+        mimeType = "image/pgm"
     }
 }

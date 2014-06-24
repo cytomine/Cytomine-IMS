@@ -1,8 +1,6 @@
 package be.cytomine.processing
 
-
-import be.cytomine.ImageUtilsController
-
+import be.cytomine.image.ImageUtilsController
 import be.cytomine.processing.image.filters.Colour_Deconvolution
 import be.cytomine.processing.merge.CytomineRGBStackMerge
 import ij.ImagePlus

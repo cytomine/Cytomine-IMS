@@ -46,7 +46,7 @@ abstract class ImageFormat extends Format {
         String fif = params.fif
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
-        int width = params.int('height')
+        int width = params.int('width')
         int height = params.int('height')
         int imageWidth = params.int('imageWidth')
         int imageHeight = params.int('imageHeight')
@@ -55,7 +55,7 @@ abstract class ImageFormat extends Format {
         def w = (width == 0) ? 0 : 1/(imageWidth / width)
         def h = (height == 0) ? 0 : 1/(imageHeight / height)
 
-        if (params.int('scale')) {
+        /*if (params.int('scale')) {
             int scale = params.int('scale')
             if (height > scale) {
                 int hei = Math.round(imageHeight / Math.ceil(height / scale))
@@ -64,9 +64,9 @@ abstract class ImageFormat extends Format {
                 int wid = Math.round(imageWidth / Math.ceil(width / scale))
                 return "FIF=$fif&RGN=$x,$y,$w,$h&WID=$wid&CVT=jpeg"
             }
-        } else {
+        } else {*/
             return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
-        }
+        //}
     }
 
     static String tileURL(fif, params) {

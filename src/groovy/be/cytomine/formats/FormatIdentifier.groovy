@@ -56,7 +56,7 @@ public class FormatIdentifier {
         ]
     }
 
-    static public ImageFormat[] getImageFormats(String uploadedFilePath) {
+    static public def getImageFormats(String uploadedFilePath) {
 
         def archiveFormats = getAvailableArchiveFormats()
 
@@ -82,7 +82,9 @@ public class FormatIdentifier {
                 multipleFileImageFormats.each { imageFormat ->
                     if (imageFormat.extensions.contains(ext)) {
                         imageFormat.absoluteFilePath = extractedFile
-                        if (imageFormat.detect()) imageFormats << imageFormat
+                        if (imageFormat.detect()) imageFormats << [
+                                absoluteFilePath : imageFormat.absoluteFilePath,
+                                imageFormat : imageFormat]
                     }
                 }
             }
@@ -91,29 +93,43 @@ public class FormatIdentifier {
             if (imageFormats.size() == 0) { //obviously, we did not detect multiple files image formats
                 extractedFiles.each {  extractedFile ->
                     ImageFormat imageFormat = getImageFormat(extractedFile)
-                    if (imageFormat) imageFormats << imageFormat
+                    if (imageFormat) imageFormats << [
+                            absoluteFilePath : imageFormat.absoluteFilePath,
+                            imageFormat : imageFormat]
                 }
             }
             return imageFormats
 
         } else {
-            return [getImageFormat(uploadedFilePath)]
+            return [[uploadedFilePath : uploadedFilePath, imageFormat : getImageFormat(uploadedFilePath)]]
         }
 
 
     }
 
-    static private ImageFormat getImageFormat(String uploadedFile) {
-        def imageFormats = getAvailableSingleFileImageFormats()
+    static public ImageFormat getImageFormatByMimeType(String uploadedFile, String mimeType) {
+        def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
 
         imageFormats.each {
             it.absoluteFilePath = uploadedFile
         }
 
-        ImageFormat detectedFormat = imageFormats.find {
+        return imageFormats.find {
+            it.mimeType == mimeType
+        }
+
+    }
+
+    static public ImageFormat getImageFormat(String uploadedFile) {
+        def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
+
+        imageFormats.each {
+            it.absoluteFilePath = uploadedFile
+        }
+
+        return imageFormats.find {
             it.detect()
         }
 
-        return detectedFormat
     }
 }

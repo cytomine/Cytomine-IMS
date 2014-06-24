@@ -48,7 +48,7 @@ class VentanaTIFFFormat extends TIFFFormat {
         boolean convertSuccessfull = true
 
         String source = absoluteFilePath
-        String target = [new File(absoluteFilePath).getParent(), "_converted.tif"].join(File.separator)
+        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
 
         def vipsExecutable = Holders.config.cytomine.vips
         def command = """$vipsExecutable im_vips2tiff $source:2 $target:jpeg:95,tile:256x256,pyramid,,,,8"""

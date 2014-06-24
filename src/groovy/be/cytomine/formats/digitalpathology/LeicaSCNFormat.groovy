@@ -11,6 +11,10 @@ class LeicaSCNFormat  extends OpenSlideSingleFileFormat {
         extensions = ["scn"]
         vendor = "leica"
         mimeType = "openslide/scn"
+        widthProperty = "openslide.level[0].width"
+        heightProperty = "openslide.level[0].height"
+        resolutionProperty = "openslide.mpp-x"
+        magnificiationProperty = "leica.objective"
     }
 
 

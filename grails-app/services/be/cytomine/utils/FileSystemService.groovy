@@ -19,9 +19,7 @@ class FileSystemService {
     }
 
     def makeLocalDirectory(String path) {
-        println "Create path=$path"
         int value = ProcUtils.executeOnShell("mkdir -p " + path)
-        println "Create right=$path"
         ProcUtils.executeOnShell("chmod -R 777 " + path)
         return value
     }

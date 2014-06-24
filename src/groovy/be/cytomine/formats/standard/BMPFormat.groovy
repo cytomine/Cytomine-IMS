@@ -8,5 +8,6 @@ class BMPFormat extends CommonFormat {
     public BMPFormat() {
         extensions = ["bmp"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "Format: BMP (Microsoft Windows bitmap image)"
+        mimeType = "image/bmp"
     }
 }

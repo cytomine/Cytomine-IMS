@@ -11,6 +11,10 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
         extensions = ["mrxs"]
         vendor = "mirax"
         mimeType = "openslide/mrxs"
+        widthProperty = "openslide.level[0].width"
+        heightProperty = "openslide.level[0].height"
+        resolutionProperty = "openslide.mpp-x"
+        magnificiationProperty = "mirax.GENERAL.OBJECTIVE_MAGNIFICATION"
     }
 
     BufferedImage associated(String label) {
