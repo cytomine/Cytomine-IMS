@@ -70,8 +70,9 @@ abstract class CommonFormat extends ImageFormat {
     }
 
     public BufferedImage thumb(int maxSize) {
+        def vipsThumbnailExecutable = Holders.config.cytomine.vipsthumbnail
         File thumbnailFile = File.createTempFile("thumbnail", ".jpg")
-        def thumbnail_command = """vipsthumbnail $absoluteFilePath --interpolator bicubic --vips-concurrency=8 -o $thumbnailFile.absolutePath"""
+        def thumbnail_command = """$vipsThumbnailExecutable $absoluteFilePath --interpolator bicubic --vips-concurrency=8 -o $thumbnailFile.absolutePath"""
         println thumbnail_command
         def proc = thumbnail_command.execute()
         proc.waitFor()
