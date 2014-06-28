@@ -2,7 +2,6 @@ package be.cytomine.formats
 
 import be.cytomine.image.ImageUtilsController
 
-import be.cytomine.ImageUtilsController
 
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.archive.ZipFormat
@@ -138,25 +137,25 @@ class CytomineFormatSpec {
 
     void "test zipFormatMultipleSingleImages"() {
         String uploadedFile = getFilenameForTest("499-488.zip")
-        ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
-        assert(imageFormats.size() == 2)
-        imageFormats.each { imageFormat ->
-            assert(imageFormat.class == JPEGFormat)
+        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+        assert(detectedFiles.size() == 2)
+        detectedFiles.each { it ->
+            assert(it.imageFormat.class == JPEGFormat)
         }
     }
 
     void "test zipMRXSDetect"() {
         String uploadedFile = getFilenameForTest("CMU-1-Saved-1_16.mrxs.zip")
-        ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
-        assert imageFormats.size() == 1
-        assert imageFormats[0].class == MiraxMRXSFormat
+        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+        assert detectedFiles.size() == 1
+        assert detectedFiles[0].imageFormat.class == MiraxMRXSFormat
     }
 
     void "test zipVMSDetect"() {
         String uploadedFile = getFilenameForTest("CMU-1.vms.zip")
-        ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
-        assert imageFormats.size() == 1
-        assert imageFormats[0].class == HamamatsuVMSFormat
+        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+        assert detectedFiles.size() == 1
+        assert detectedFiles[0].imageFormat.class == HamamatsuVMSFormat
     }
 
     void "test convertJPEG"() {
@@ -165,8 +164,8 @@ class CytomineFormatSpec {
         assert(convertedFilename)
         println convertedFilename
         String uploadedFile = getFilenameForTest(convertedFilename, "/")
-        ImageFormat[] imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
-        assert imageFormats.size() == 1
-        assert imageFormats[0].class == PyramidalTIFFFormat
+        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+        assert detectedFiles.size() == 1
+        assert detectedFiles[0].imageFormat.class == PyramidalTIFFFormat
     }
 }

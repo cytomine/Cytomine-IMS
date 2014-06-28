@@ -8,5 +8,6 @@ class PNGFormat extends CommonFormat {
     public PNGFormat() {
         extensions = ["png"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "Format: PNG (Portable Network Graphics)"
+        mimeType = "image/png"
     }
 }

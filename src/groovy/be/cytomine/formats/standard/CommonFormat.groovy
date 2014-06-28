@@ -36,25 +36,14 @@ abstract class CommonFormat extends ImageFormat {
         println "intermediate : $intermediate"
 
         //1. Look for vips executable
-
         def vipsExecutable = Holders.config.cytomine.vips
 
-        //def extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 3"""
-        //def rmIntermediatefile = """rm $intermediate"""
+        //2. Pyramid command
         def pyramidCommand = """$vipsExecutable tiffsave "$source" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
 
         boolean success = true
 
-        //success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
-
-        /*if(!success) {
-            success = true
-            extractBandCommand = """$vipsExecutable extract_band $source $intermediate[bigtiff,compression=lzw] 0 --n 1"""
-            success &= (ProcUtils.executeOnShell(extractBandCommand) == 0)
-        }*/
-
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
-        //success &= (ProcUtils.executeOnShell(rmIntermediatefile) == 0)
 
         if (success) {
             return target
@@ -72,7 +61,7 @@ abstract class CommonFormat extends ImageFormat {
     public BufferedImage thumb(int maxSize) {
         def vipsThumbnailExecutable = Holders.config.cytomine.vipsthumbnail
         File thumbnailFile = File.createTempFile("thumbnail", ".jpg")
-        def thumbnail_command = """$vipsThumbnailExecutable $absoluteFilePath --interpolator bicubic --vips-concurrency=8 -o $thumbnailFile.absolutePath"""
+        def thumbnail_command = """$vipsThumbnailExecutable $absoluteFilePath --size 512 --interpolator bicubic --vips-concurrency=8 -o $thumbnailFile.absolutePath"""
         println thumbnail_command
         def proc = thumbnail_command.execute()
         proc.waitFor()

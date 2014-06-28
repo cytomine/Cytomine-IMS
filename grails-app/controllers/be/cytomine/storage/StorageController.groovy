@@ -7,6 +7,7 @@ import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
 import grails.converters.JSON
 import org.apache.commons.io.FilenameUtils
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 import utils.FilesUtils
 
 /**
@@ -180,7 +181,7 @@ class StorageController {
 
         File f = new File(imageFormat.absoluteFilePath)
         def parentUploadedFile = null
-        if (parentImageFormat &&  imageFormatsToDeploy.parent?.uploadedFilePath != uploadedFile.absolutePath) {
+        if (parentImageFormat &&  imageFormatsToDeploy.parent?.uploadedFilePath != parentImageFormat.absoluteFilePath) {
             parentUploadedFile = cytomine.addUploadedFile(
                     (String) filename,
                     (String) ((String)parentImageFormat.absoluteFilePath).replace(storage.getStr("basePath"), ""),
@@ -193,8 +194,12 @@ class StorageController {
                     [idStorage],
                     currentUserId,
                     -1l,
-                    null,
+                    uploadedFile.id,
                     null)
+        } else {
+            //put correct mime_type in uploadedFile
+            uploadedFile.set('mimeType', parentImageFormat.mimeType)
+            cytomine.updateModel(uploadedFile)
         }
 
         UploadedFile finalParent = (parentUploadedFile) == null ? uploadedFile : parentUploadedFile
