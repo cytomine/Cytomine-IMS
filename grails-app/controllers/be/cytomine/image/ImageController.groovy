@@ -6,25 +6,14 @@ import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
 import ij.ImagePlus
-import org.restapidoc.annotation.RestApi
-import org.restapidoc.annotation.RestApiMethod
-import org.restapidoc.annotation.RestApiParam
-import org.restapidoc.annotation.RestApiParams
-import org.restapidoc.pojo.RestApiParamType
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
-@RestApi(name = "images services", description = "Methods for requests images")
 class ImageController extends ImageUtilsController {
 
     def imageProcessingService
 
-    @RestApiMethod(description="Get the thumb of an image")
-    @RestApiParams(params=[
-    @RestApiParam(name="fif", type="string", paramType = RestApiParamType.QUERY, description = "The absolute path of the full image"),
-    @RestApiParam(name="maxSize", type="long", paramType = RestApiParamType.QUERY, description = "The maximum widh or height of the thumb")
-    ])
     def thumb() {
         String fif = params.fif
         int maxSize = params.int('maxSize', 256)
