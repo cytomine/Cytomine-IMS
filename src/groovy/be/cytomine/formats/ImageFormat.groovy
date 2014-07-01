@@ -69,7 +69,7 @@ abstract class ImageFormat extends Format {
         //}
     }
 
-    static String tileURL(fif, params) {
+    public String tileURL(fif, params) {
         def iipURL = Holders.config.cytomine.iipImageServer
         return "$iipURL?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
     }

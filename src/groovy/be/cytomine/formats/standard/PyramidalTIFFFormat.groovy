@@ -12,7 +12,7 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
 
     public PyramidalTIFFFormat () {
         extensions = ["tif", "tiff"]
-        mimeType = "image/tiff"
+        mimeType = "image/pyrtiff"
     }
 
     private excludeDescription = [
@@ -74,7 +74,8 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
-        getTIFFSubImage(numberOfTIFFDirectories - 1)
+        int bestLevel = Math.round(maxSize / 256) + 1 //the smallest level is smaller than 256 (widht & height)
+        getTIFFSubImage(numberOfTIFFDirectories - bestLevel)
     }
 
 

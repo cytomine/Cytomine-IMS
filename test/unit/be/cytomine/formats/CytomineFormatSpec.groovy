@@ -26,27 +26,28 @@ import utils.ProcUtils
 @TestFor(ImageUtilsController)
 class CytomineFormatSpec {
 
-    private static String getFilenameForTest(def imageFilename, String imageRepository = '/opt/cytomine/testdata') {
+    final static String IMAGES_REPOSITORY_PATH = '/opt/cytomine/testdata'
+
+    private static String getFilenameForTest(def imageFilename, String imageRepository = IMAGES_REPOSITORY_PATH) {
         String source = createFullPathFromFilename(imageFilename, imageRepository)
         String target = ["/tmp", new Date().getTime(), imageFilename].join(File.separator)
         String targetDir = new File(target).getParent()
         def command = "mkdir -p $targetDir"
         ProcUtils.executeOnShell(command)
         command = "cp -r $source $target"
-        println command
         ProcUtils.executeOnShell(command)
         assert(new File(target).exists())
         return target
     }
 
-    private static String createFullPathFromFilename(def imageFilename, String imageRepository = '/opt/cytomine/testdata') {
+    private static String createFullPathFromFilename(def imageFilename, String imageRepository = IMAGES_REPOSITORY_PATH) {
         String uploadedFile = [imageRepository, imageFilename].join(File.separator)
         println uploadedFile
         assert new File(uploadedFile).exists()
         return uploadedFile
     }
 
-    private static UploadedFile createUploadedFileFromImagePath(def imageFilename, def imageRepository = '/opt/cytomine/testdata') {
+    private static UploadedFile createUploadedFileFromImagePath(def imageFilename, def imageRepository = IMAGES_REPOSITORY_PATH) {
         File file = new File([imageRepository, imageFilename].join(File.separator))
         UploadedFile uploadedFile = null
         if (file.canRead()) {
@@ -149,13 +150,14 @@ class CytomineFormatSpec {
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
         assert detectedFiles.size() == 1
         assert detectedFiles[0].imageFormat.class == MiraxMRXSFormat
+        assert(new File(uploadedFile).delete()) //clean tmp file (only mrxs file is cleaned, not nested...)
     }
 
     void "test zipVMSDetect"() {
         String uploadedFile = getFilenameForTest("CMU-1.vms.zip")
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
         assert detectedFiles.size() == 1
-        assert detectedFiles[0].imageFormat.class == HamamatsuVMSFormat
+        assert detectedFiles[0].imageFormat.class == HamamatsuVMSFormat //clean tmp file (only vms file is cleaned, not nested...)
     }
 
     void "test convertJPEG"() {
@@ -167,5 +169,7 @@ class CytomineFormatSpec {
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
         assert detectedFiles.size() == 1
         assert detectedFiles[0].imageFormat.class == PyramidalTIFFFormat
+        assert(new File(uploadedFile).delete()) //clean tmp file
+        assert(new File(convertedFilename).delete()) //clean tmp file
     }
 }

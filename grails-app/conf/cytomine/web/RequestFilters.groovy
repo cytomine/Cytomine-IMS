@@ -17,6 +17,12 @@ class RequestFilters {
         all(uri:'/**') {
             before = {
                 request.currentTime = System.currentTimeMillis()
+                log.info  request.getRequestURI()
+                log.info  request.getRequestURL()
+                log.info  request.getContextPath()
+                log.info  request.getPathInfo()
+                log.info  request.getServletPath()
+                log.info params
                 log.info controllerName+"."+actionName
             }
             after = {}
