@@ -128,8 +128,8 @@ cytomine.imageServerPublicKey="4a5c7004-b6f8-4705-a118-c15d5c90dcdb"
 
 //image manipulation executable
 cytomine.vips = "/usr/local/bin/vips"
-cytomine.tiffinfo = "/usr/local/bin/tiffinfo"
-cytomine.identify = "/usr/local/bin/identify"
+cytomine.tiffinfo = "tiffinfo"
+cytomine.identify = "identify"
 cytomine.vipsthumbnail = "/usr/local/bin/vipsthumbnail"
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
