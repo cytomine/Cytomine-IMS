@@ -18,7 +18,7 @@ class ImageController extends ImageUtilsController {
         String fif = params.fif
         int maxSize = params.int('maxSize', 256)
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(mimeType)
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         BufferedImage bufferedImage = imageFormat.thumb(maxSize)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
@@ -32,7 +32,7 @@ class ImageController extends ImageUtilsController {
         String fif = params.fif
         String label = params.label
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(mimeType)
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         BufferedImage bufferedImage = imageFormat.associated(label)
         if (bufferedImage) {
             responseBufferedImage(bufferedImage)
@@ -45,21 +45,21 @@ class ImageController extends ImageUtilsController {
     def associated() {
         String fif = params.fif
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(mimeType)
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         render imageFormat.associated() as JSON
     }
 
     def properties() {
         String fif = params.fif
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(mimeType)
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         render imageFormat.properties() as JSON
     }
 
     def crop() {
         String fif = params.fif
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(mimeType)
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         String cropURL = imageFormat.cropURL(params)
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
 
@@ -98,7 +98,7 @@ class ImageController extends ImageUtilsController {
          */
         fif = fif.substring(0, fif.length()-1)
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(mimeType)
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         //todo, use mimetype to have imageFormat identification
         String tileURL = imageFormat.tileURL(fif, params)
         responseImageFromUrl(tileURL)

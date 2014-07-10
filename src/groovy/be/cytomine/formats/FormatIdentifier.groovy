@@ -107,12 +107,15 @@ public class FormatIdentifier {
 
     }
 
-    static public ImageFormat getImageFormatByMimeType( String mimeType) {
+    static public ImageFormat getImageFormatByMimeType(String fif, String mimeType) {
         def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
 
-        return imageFormats.find {
+        ImageFormat imageFormat =  imageFormats.find {
             it.mimeType == mimeType
         }
+
+        imageFormat.absoluteFilePath = fif
+        return imageFormat
 
     }
 
