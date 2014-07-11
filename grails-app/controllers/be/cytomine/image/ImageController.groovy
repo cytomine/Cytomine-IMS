@@ -32,8 +32,10 @@ class ImageController extends ImageUtilsController {
         String fif = params.fif
         String label = params.label
         String mimeType = params.mimeType
+        int maxSize = params.int('maxSize', 512)
         ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         BufferedImage bufferedImage = imageFormat.associated(label)
+        bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
             responseBufferedImage(bufferedImage)
         } else {
