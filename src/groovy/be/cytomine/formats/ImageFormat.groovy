@@ -22,6 +22,7 @@ abstract class ImageFormat extends Format {
     public String heightProperty = "height"
     public String resolutionProperty = "resolution"
     public String magnificiationProperty = "magnificiation"
+    public String iipURL = Holders.config.cytomine.iipImageServer
 
     abstract public String convert(String workingPath)
     abstract BufferedImage associated(String label)
@@ -42,7 +43,6 @@ abstract class ImageFormat extends Format {
     }
 
     String cropURL(def params) {
-        def iipURL = Holders.config.cytomine.iipImageServer
         String fif = params.fif
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
@@ -70,7 +70,6 @@ abstract class ImageFormat extends Format {
     }
 
     public String tileURL(fif, params) {
-        def iipURL = Holders.config.cytomine.iipImageServer
         return "$iipURL?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
     }
 
