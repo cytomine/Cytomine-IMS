@@ -5,6 +5,7 @@ import be.cytomine.formats.digitalpathology.AperioSVSFormat
 import be.cytomine.formats.digitalpathology.HamamatsuNDPIFormat
 import be.cytomine.formats.digitalpathology.HamamatsuVMSFormat
 import be.cytomine.formats.digitalpathology.LeicaSCNFormat
+import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
 import be.cytomine.formats.digitalpathology.SakuraSVSlideFormat
 import be.cytomine.formats.digitalpathology.MiraxMRXSFormat
 import be.cytomine.formats.standard.BMPFormat
@@ -44,6 +45,7 @@ public class FormatIdentifier {
                 new HamamatsuNDPIFormat(),
                 new LeicaSCNFormat(),
                 new SakuraSVSlideFormat(),
+                new PhilipsTIFFFormat(),
                 //common formats
                 new PlanarTIFFFormat(),
                 new PyramidalTIFFFormat(),
@@ -103,8 +105,6 @@ public class FormatIdentifier {
         } else {
             return [[uploadedFilePath : uploadedFilePath, imageFormat : getImageFormat(uploadedFilePath)]]
         }
-
-
     }
 
     static public ImageFormat getImageFormatByMimeType(String fif, String mimeType) {

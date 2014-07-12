@@ -128,6 +128,8 @@ class StorageController {
                     originalFilenameFullPath
             )
 
+            println "imageFormats = $imageFormats"
+
             if (imageFormats.size() == 0) { //not a file that we can recognize
                 //todo: response error message
                 return

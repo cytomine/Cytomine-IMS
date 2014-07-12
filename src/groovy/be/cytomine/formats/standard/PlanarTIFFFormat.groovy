@@ -13,7 +13,8 @@ class PlanarTIFFFormat extends TIFFFormat {
             "<iScan",
             "Make: Hamamatsu",
             "Leica",
-            "ImageDescription: Aperio Image Library"
+            "ImageDescription: Aperio Image Library",
+            "PHILIPS"
     ]
 
     public boolean detect() {

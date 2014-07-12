@@ -26,7 +26,8 @@ class VentanaTIFFFormat extends TIFFFormat {
             "Not a TIFF",
             "Make: Hamamatsu",
             "Leica",
-            "ImageDescription: Aperio Image Library"
+            "ImageDescription: Aperio Image Library",
+            "PHILIPS"
     ]
 
     public boolean detect() {

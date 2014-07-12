@@ -97,6 +97,7 @@ abstract class ImageFormat extends Format {
         println "target=" + target.getPath()
         def vipsExecutable = Holders.config.cytomine.vips
         def command = """$vipsExecutable im_copy $source:$index $targetPath"""
+        println command
         convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
 
         BufferedImage labelImage = null

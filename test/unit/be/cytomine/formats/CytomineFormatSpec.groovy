@@ -1,5 +1,6 @@
 package be.cytomine.formats
 
+import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
 import be.cytomine.image.ImageUtilsController
 
 
@@ -129,6 +130,11 @@ class CytomineFormatSpec {
     void "test miraxMRXSFormat"() {
         def uploadedFile = createFullPathFromFilename("CMU-1-Saved-1_16.mrxs/CMU-1-Saved-1_16.mrxs")
         checkCorrectDetect(uploadedFile, MiraxMRXSFormat.class)
+    }
+
+    void "test philipsTIFFFormat"() {
+        def uploadedFile = createFullPathFromFilename("PhilipsTest02.tiff")
+        checkCorrectDetect(uploadedFile, PhilipsTIFFFormat.class)
     }
 
     void "test zipFormat"() {

@@ -20,7 +20,8 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
             "<iScan",
             "Hamamatsu",
             "Aperio",
-            "Leica"
+            "Leica",
+            "PHILIPS"
     ]
 
     public boolean detect() {

@@ -28,7 +28,7 @@ class ImageController extends ImageUtilsController {
     ])
     def thumb() {
         String fif = params.fif
-        int maxSize = params.int('maxSize', 256)
+        int maxSize = params.int('maxSize', 512)
         String mimeType = params.mimeType
         ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         BufferedImage bufferedImage = imageFormat.thumb(maxSize)
