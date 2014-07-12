@@ -7,6 +7,11 @@ import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
 import grails.converters.JSON
 import org.apache.commons.io.FilenameUtils
+import org.restapidoc.annotation.RestApi
+import org.restapidoc.annotation.RestApiMethod
+import org.restapidoc.annotation.RestApiParam
+import org.restapidoc.annotation.RestApiParams
+import org.restapidoc.pojo.RestApiParamType
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import utils.FilesUtils
 
@@ -16,12 +21,23 @@ import utils.FilesUtils
  * Date: 16/09/13
  * Time: 12:25
  */
+@RestApi(name = "upload services", description = "Methods for uploading images")
 class StorageController {
 
     def deployImagesService
     def backgroundService
     def cytomineService
 
+    @RestApiMethod(description="Method for uploading an image")
+    @RestApiParams(params=[
+    @RestApiParam(name="files[]", type="data", paramType = RestApiParamType.QUERY, description = "The files content (Multipart)"),
+    @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = "The url of Cytomine"),
+    @RestApiParam(name="idStorage", type="int", paramType = RestApiParamType.QUERY, description = "The id of the targeted storage"),
+    @RestApiParam(name="sync", type="boolean", paramType = RestApiParamType.QUERY, description = "Indicates if operations are done synchronously or not (false by default)", required = false),
+    @RestApiParam(name="idProject", type="int", paramType = RestApiParamType.QUERY, description = " The id of the targeted project", required = false),
+    @RestApiParam(name="keys", type="String", paramType = RestApiParamType.QUERY, description = "The keys of the properties you want to link with your files (e.g. : key1,key2, ...)", required = false),
+    @RestApiParam(name="keys", type="String", paramType = RestApiParamType.QUERY, description = "The values of the properties you want to link with your files (e.g. : key1,key2, ...)", required = false)
+    ])
     def upload () {
 
         try {
@@ -153,6 +169,7 @@ class StorageController {
         }
     }
 
+    //todo : move into service
     private def convertImage(def filesToDeploy,String storageBufferPath) {
         //start to convert into pyramid format, if necessary
         def imageFormatsToDeploy = []
@@ -172,7 +189,7 @@ class StorageController {
         return imageFormatsToDeploy
     }
 
-
+    //todo : move into service
     private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, List projects, long idStorage, long currentUserId, def properties, UploadedFile uploadedFile) {
         println "createImage $imageFormatsToDeploy"
 
@@ -228,7 +245,7 @@ class StorageController {
         return image
     }
 
-
+    //todo : move into service
     private def createResponseContent(def filename, def size, def contentType, def uploadedFileJSON, def images) {
         def content = [:]
         content.status = 200;
