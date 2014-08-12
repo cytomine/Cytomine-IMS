@@ -16,6 +16,7 @@ import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
+import java.text.DecimalFormat
 
 class ImageProcessingService {
 
@@ -226,6 +227,55 @@ class ImageProcessingService {
 
     }
 
+    public BufferedImage drawScaleBar(BufferedImage image, Double resolution) {
+
+        double ratio = (image.getWidth()/10)/100
+        Double length = 100*ratio
+        Double realSize = length * resolution
+
+
+        int scaleBarSize = length
+        DecimalFormat f = new DecimalFormat("##.00");
+        String textUp = f.format(realSize) + " µm"
+        String textBelow = ""
+        int space = scaleBarSize/10
+        int boxSizeWidth = scaleBarSize + (space*2)
+        int boxSizeHeight = scaleBarSize * 0.75
+
+        //draw white rectangle in the bottom-left of the screen
+        Graphics2D graphBox = image.createGraphics();
+        graphBox.setColor(Color.WHITE);
+        graphBox.fillRect(0, image.getHeight()-boxSizeHeight, boxSizeWidth, boxSizeHeight);
+        graphBox.dispose();
+
+        //draw the scale bar
+        Graphics2D graphScaleBar = image.createGraphics();
+        graphScaleBar.setColor(Color.BLACK);
+
+        int xStartBar = space;
+        int xStopBar = scaleBarSize+space;
+        int yStartBar = image.getHeight()-Math.floor(boxSizeHeight/2).intValue()
+        int yStopBar = yStartBar
+
+        //draw the main line of the scale bar
+        graphScaleBar.drawLine(xStartBar,yStartBar,xStopBar,yStopBar);
+        //draw the two vertical line
+        graphScaleBar.drawLine(xStartBar,yStartBar-(Math.floor(scaleBarSize/4).intValue()),xStartBar,yStopBar+(Math.floor(scaleBarSize/4).intValue()));
+        graphScaleBar.drawLine(xStopBar,yStartBar-(Math.floor(scaleBarSize/4).intValue()),xStopBar,yStopBar+(Math.floor(scaleBarSize/4).intValue()));
+
+        graphScaleBar.dispose();
+
+        //draw text
+        int textSize = 8*ratio
+        Graphics2D graphText = image.createGraphics();
+        graphText.setColor(Color.BLACK);
+        graphText.setFont(new Font( "SansSerif", Font.BOLD, textSize ));
+        graphText.drawString(textUp, xStartBar+5, yStartBar-5)
+        graphText.drawString(textBelow, xStartBar+5, yStartBar+(5+textSize))
+        graphText.dispose();
+        return image
+    }
+
 
     public BufferedImage createMask(BufferedImage bufferedImage, Geometry geometry, def params, boolean withAlpha) {
         int topLeftX = params.int('topLeftX')
@@ -248,10 +298,23 @@ class ImageProcessingService {
     }
     public BufferedImage createCropWithDraw(BufferedImage bufferedImage, Geometry geometry, def params) {
         //AbstractImage image, BufferedImage window, LineString lineString, Color color, int x, int y, double x_ratio, double y_ratio
+//        int topLeftX = params.int('topLeftX')-200
+//        int topLeftY = params.int('topLeftY')+200
+//        int width = params.int('width')+400
+//        int height = params.int('height')+400
+
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         int width = params.int('width')
         int height = params.int('height')
+
+        if(params.double('increaseArea')) {
+            width = params.int('width')*params.double("increaseArea")
+            height = params.int('height')*params.double("increaseArea")
+            topLeftX = params.int('topLeftX')-((width-params.int('width'))/2)
+            topLeftY = params.int('topLeftY')+((height-params.int('height'))/2)
+        }
+
         int imageWidth = params.int('imageWidth')
         int imageHeight = params.int('imageHeight')
         double x_ratio = bufferedImage.getWidth() / width

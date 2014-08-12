@@ -108,10 +108,35 @@ class ImageController extends ImageUtilsController {
         String fif = params.fif
         String mimeType = params.mimeType
         ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+
+//        def savedTopX = params.topLeftX
+//        def savedTopY = params.topLeftY
+//        def savedWidth = params.double('width')
+//        def savedHeight = params.double('height')
+//
+//        println "**********************"
+//        println params.increaseArea
+//
+//        if(params.double('increaseArea')) {
+//            params.width = params.int('width')*params.double("increaseArea")
+//            params.height =   params.int('height')*params.double("increaseArea")
+//            params.topLeftX = params.int('topLeftX')-((params.double('width')-savedWidth)/2)
+//            params.topLeftY = params.int('topLeftY')+((params.double('height')-savedHeight)/2)
+//        }
+
         String cropURL = imageFormat.cropURL(params)
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
 
-        if (params.draw) {
+//        params.topLeftX = savedTopX
+//        params.topLeftY = savedTopY
+//        params.width = savedWidth
+//        params.height = savedHeight
+//
+        println "drawScaleBar=${params.boolean('drawScaleBar')}"
+        if(params.boolean('drawScaleBar')) {
+            Double resolution = params.double('resolution')
+            bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution)
+        } else if (params.draw) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createCropWithDraw(bufferedImage, geometry, params)
