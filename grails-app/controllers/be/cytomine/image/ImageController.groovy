@@ -109,33 +109,49 @@ class ImageController extends ImageUtilsController {
         String mimeType = params.mimeType
         ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
 
-//        def savedTopX = params.topLeftX
-//        def savedTopY = params.topLeftY
-//        def savedWidth = params.double('width')
-//        def savedHeight = params.double('height')
-//
-//        println "**********************"
-//        println params.increaseArea
-//
-//        if(params.double('increaseArea')) {
-//            params.width = params.int('width')*params.double("increaseArea")
-//            params.height =   params.int('height')*params.double("increaseArea")
-//            params.topLeftX = params.int('topLeftX')-((params.double('width')-savedWidth)/2)
-//            params.topLeftY = params.int('topLeftY')+((params.double('height')-savedHeight)/2)
-//        }
+        def savedTopX = params.topLeftX
+        def savedTopY = params.topLeftY
+        def savedWidth = params.double('width')
+        def savedHeight = params.double('height')
+
+        if(params.double('increaseArea')) {
+            params.width = params.int('width')*params.double("increaseArea")
+            params.height =   params.int('height')*params.double("increaseArea")
+            params.topLeftX = params.int('topLeftX')-((params.double('width')-savedWidth)/2)
+            params.topLeftY = params.int('topLeftY')+((params.double('height')-savedHeight)/2)
+        }
 
         String cropURL = imageFormat.cropURL(params)
+        log.info "cropURL=$cropURL"
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
 
-//        params.topLeftX = savedTopX
-//        params.topLeftY = savedTopY
-//        params.width = savedWidth
-//        params.height = savedHeight
+        params.topLeftX = savedTopX
+        params.topLeftY = savedTopY
+        params.width = savedWidth
+        params.height = savedHeight
+
+        println "params.topLeftX=${params.topLeftX}"
+        println "params.width=${params.width}"
+        println "params.topLeftY=${params.topLeftY}"
+        println "params.height=${params.height}"
 //
-        println "drawScaleBar=${params.boolean('drawScaleBar')}"
         if(params.boolean('drawScaleBar')) {
-            Double resolution = params.double('resolution')
-            bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution)
+            double proport1 = params.double('width')/params.double('height')
+            double porpert2 = (double)bufferedImage.getWidth()/(double)bufferedImage.getHeight()
+            println "params.int('width')=${params.int('width')}"
+            println "proport1=${proport1}"
+            println "proport2=${porpert2}"
+            println "real('width')=${bufferedImage.getWidth()}"
+//            if(proport1==porpert2) {
+                //If the crop mage has been resized, the image may be "cut" (how to know that?).
+                //(we may have oldWidth/oldHeight <> newWidth/newHeight)
+                //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
+                //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
+                //but if the image is cut , its not possible to compute the good width size
+                double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
+                Double resolution = params.double('resolution')
+                bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth)
+//            }
         } else if (params.draw) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)

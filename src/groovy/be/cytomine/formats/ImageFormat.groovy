@@ -65,6 +65,7 @@ abstract class ImageFormat extends Format {
                 return "FIF=$fif&RGN=$x,$y,$w,$h&WID=$wid&CVT=jpeg"
             }
         } else {*/
+
             return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
         //}
     }

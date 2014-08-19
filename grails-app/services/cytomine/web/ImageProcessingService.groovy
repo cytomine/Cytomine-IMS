@@ -227,14 +227,19 @@ class ImageProcessingService {
 
     }
 
-    public BufferedImage drawScaleBar(BufferedImage image, Double resolution) {
+    public BufferedImage drawScaleBar(BufferedImage image, Double resolution, Double ratioWith) {
 
-        double ratio = (image.getWidth()/10)/100
-        Double length = 100*ratio
-        Double realSize = length * resolution
+        log.info "ratioWith=$ratioWith"
+        log.info "resolution=$resolution"
 
+        double scaleBarSize = ((double)image.getWidth()/10d) //scale bar will be 1/10 of the picture
 
-        int scaleBarSize = length
+        log.info "scaleBarSize=$scaleBarSize"
+
+        Double realSize = (scaleBarSize / ratioWith) * resolution
+
+        log.info "realSize=$realSize"
+
         DecimalFormat f = new DecimalFormat("##.00");
         String textUp = f.format(realSize) + " µm"
         String textBelow = ""
@@ -266,7 +271,7 @@ class ImageProcessingService {
         graphScaleBar.dispose();
 
         //draw text
-        int textSize = 8*ratio
+        int textSize = 8*(scaleBarSize/100)
         Graphics2D graphText = image.createGraphics();
         graphText.setColor(Color.BLACK);
         graphText.setFont(new Font( "SansSerif", Font.BOLD, textSize ));
