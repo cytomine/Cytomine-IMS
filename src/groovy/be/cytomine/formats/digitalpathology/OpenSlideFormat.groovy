@@ -46,6 +46,7 @@ abstract class OpenSlideFormat extends ImageFormat {
                     associatedBufferedImage = associatedImage.toBufferedImage()
                 }
             }
+            openSlide.close()
         }
         if (associatedBufferedImage) return associatedBufferedImage
         else return null
@@ -59,9 +60,9 @@ abstract class OpenSlideFormat extends ImageFormat {
             openSlide.getProperties().each {
                 properties << [ key : it.key, value  : it.value]
             }
+            openSlide.close()
         }
 
-        println properties
         if (widthProperty)
             properties << [ key : "cytomine.width", value : Integer.parseInt(properties.find { it.key == widthProperty}?.value) ]
         if (heightProperty)
@@ -76,7 +77,10 @@ abstract class OpenSlideFormat extends ImageFormat {
 
     public BufferedImage thumb(int maxSize) {
         OpenSlide openSlide = new OpenSlide(new File(absoluteFilePath))
-        return openSlide.createThumbnailImage(maxSize)
+        BufferedImage thumbnail = openSlide.createThumbnailImage(maxSize)
+        openSlide.close()
+        return thumbnail
+
     }
 
 

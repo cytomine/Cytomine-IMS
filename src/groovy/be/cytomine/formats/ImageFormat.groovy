@@ -71,7 +71,8 @@ abstract class ImageFormat extends Format {
     }
 
     public String tileURL(fif, params) {
-        return "$iipURL?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
+        //return "$iipURL?zoomify=$params.zoomify"
+        return "$iipURL?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg&mimeType=$params.mimeType"
     }
 
     protected BufferedImage rotate90ToRight( BufferedImage inputImage ){

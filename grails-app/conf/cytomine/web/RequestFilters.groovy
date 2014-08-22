@@ -16,18 +16,18 @@ class RequestFilters {
         //all(uri:'/api/**') {
         all(uri:'/**') {
             before = {
-                request.currentTime = System.currentTimeMillis()
+                /*request.currentTime = System.currentTimeMillis()
                 log.info  request.getRequestURI()
                 log.info  request.getRequestURL()
                 log.info  request.getContextPath()
                 log.info  request.getPathInfo()
                 log.info  request.getServletPath()
                 log.info params
-                log.info controllerName+"."+actionName
+                log.info controllerName+"."+actionName*/
             }
             after = {}
             afterView = {
-                log.info controllerName+"."+actionName + " Request took ${System.currentTimeMillis()-request.currentTime}ms"
+                //log.info controllerName+"."+actionName + " Request took ${System.currentTimeMillis()-request.currentTime}ms"
             }
         }
     }

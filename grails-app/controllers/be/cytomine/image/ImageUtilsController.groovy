@@ -23,13 +23,18 @@ class ImageUtilsController {
             e.printStackTrace()
         }
         InputStream inputStream = new ByteArrayInputStream(out.toByteArray())
-        return ImageIO.read(inputStream)
+        BufferedImage bufferedImage = ImageIO.read(inputStream)
+        inputStream.close()
+        out.close()
+        return bufferedImage
     }
 
     protected responseFile(File file) {
-        response.setHeader "Content-disposition", "attachment; filename=\"${file.getName()}\"";
-        response.outputStream << file.newInputStream();
-        response.outputStream.flush();
+        BufferedInputStream bufferedInputStream = file.newInputStream()
+        response.setHeader "Content-disposition", "attachment; filename=\"${file.getName()}\""
+        response.outputStream << bufferedInputStream
+        response.outputStream.flush()
+        bufferedInputStream.close()
     }
 
 
@@ -72,6 +77,7 @@ class ImageUtilsController {
                 }
             }
         }
+        baos.close()
     }
 
 
@@ -87,7 +93,6 @@ class ImageUtilsController {
         response.setHeader("Content-Length", connection.contentLength.toString())
         // Get the input stream from the connection
         response.outputStream << connection.getInputStream()
-
     }
 
 

@@ -6,11 +6,11 @@ class SecurityFilters {
     def filters = {
         all(uri:'/**') {
             before = {
-                println "Before security"
+                //println "Before security"
                 //tryAPIAuthentification(request,response)
             }
             after = {
-                println "After security"
+                //println "After security"
 
             }
             afterView = {

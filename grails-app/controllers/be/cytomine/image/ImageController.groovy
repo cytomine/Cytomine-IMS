@@ -5,7 +5,9 @@ import be.cytomine.formats.ImageFormat
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
+import ij.IJ
 import ij.ImagePlus
+import ij.plugin.Macro_Runner
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
@@ -14,11 +16,13 @@ import org.restapidoc.pojo.RestApiParamType
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
+import java.awt.image.BufferedImageFilter
 
 @RestApi(name = "image services", description = "Methods for images (thumb, tile, property, ...)")
 class ImageController extends ImageUtilsController {
 
     def imageProcessingService
+    def tileService
 
     @RestApiMethod(description="Get the thumb of an image", extensions = ["jpg","png"])
     @RestApiParams(params=[
@@ -190,17 +194,7 @@ class ImageController extends ImageUtilsController {
     @RestApiParam(name="y", type="int", paramType = RestApiParamType.QUERY, description = "The Y index (see zoomify format)")
     ])
     def tile() {
-        String fif = params.zoomify
-        /*remove the "/" at the end of the path injected by openlayers (OL2).
-          I Did not find the way to avoid it from OL2 (BS)
-         */
-        fif = fif.substring(0, fif.length()-1)
-        String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        //todo, use mimetype to have imageFormat identification
-        String tileURL = imageFormat.tileURL(fif, params)
-        responseImageFromUrl(tileURL)
-
+        responseImageFromUrl(tileService.getTileUrl(params))
     }
 
     @RestApiMethod(description="Download an image", extensions = ["jpg","png"])

@@ -3,6 +3,7 @@ package be.cytomine.processing
 import be.cytomine.image.ImageUtilsController
 import be.cytomine.processing.image.filters.Colour_Deconvolution
 import be.cytomine.processing.merge.CytomineRGBStackMerge
+import ij.IJ
 import ij.ImagePlus
 import ij.plugin.ContrastEnhancer
 import ij.process.ImageConverter
@@ -323,6 +324,32 @@ class VisionController extends ImageUtilsController {
             BufferedImage bufferedImage = getImageFromURL("/images/notavailable.jpg")
             responseBufferedImage(bufferedImage)
         }
+    }
+
+    def tileService
+
+    def ij() {
+        String tileURL = tileService.getTileUrl(params)
+        BufferedImage tile = getImageFromURL(tileURL)
+        BufferedImage newTile = null
+
+        assert(tile)
+        if (params.macro == "ec") {
+            ImagePlus imp = new ImagePlus("", tile)
+            //IJ.run(imp,"Enhance Contrast", "saturated=0.35");
+            IJ.run(imp, "Make Binary", "")
+            //IJ.run(imp, "Analyze Particles...", "size=50-Infinity circularity=0.00-1.00 show=Masks display record slice")
+            /*IJ.run(imp,"Smooth", "")
+            IJ.run(imp,"Find Edges", "")
+            IJ.run(imp,"Add...", "value=25")
+            IJ.run(imp,"Gaussian Blur...", "radius=2")
+            IJ.run(imp,"Median...", "radius=1")
+            IJ.run(imp,"Unsharp Mask...", "gaussian=2 mask=0.60")*/
+            newTile = imp.getBufferedImage()
+        } else {
+            newTile = tile
+        }
+        responseBufferedImage(newTile)
     }
 
 }
