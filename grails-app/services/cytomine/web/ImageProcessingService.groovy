@@ -227,13 +227,15 @@ class ImageProcessingService {
 
     }
 
-    public BufferedImage drawScaleBar(BufferedImage image, Double resolution, Double ratioWith) {
+    public BufferedImage drawScaleBar(BufferedImage image, Double resolution, Double ratioWith, Double magnification) {
 
         log.info "ratioWith=$ratioWith"
         log.info "resolution=$resolution"
 
-        double scaleBarSize = ((double)image.getWidth()/10d) //scale bar will be 1/10 of the picture
-
+        double scaleBarSize = 100d//((double)image.getWidth()/12.5d) //scale bar will be 1/10 of the picture
+        int sclaBarXPosition = 20
+        int sclaBarYPosition = 20	    
+			
         log.info "scaleBarSize=$scaleBarSize"
 
         Double realSize = (scaleBarSize / ratioWith) * resolution
@@ -242,41 +244,43 @@ class ImageProcessingService {
 
         DecimalFormat f = new DecimalFormat("##.00");
         String textUp = f.format(realSize) + " µm"
-        String textBelow = ""
+        String textBelow = f.format(magnification) + " X"
         int space = scaleBarSize/10
         int boxSizeWidth = scaleBarSize + (space*2)
-        int boxSizeHeight = scaleBarSize * 0.75
+        int boxSizeHeight = scaleBarSize * 0.5
 
         //draw white rectangle in the bottom-left of the screen
         Graphics2D graphBox = image.createGraphics();
         graphBox.setColor(Color.WHITE);
-        graphBox.fillRect(0, image.getHeight()-boxSizeHeight, boxSizeWidth, boxSizeHeight);
+        graphBox.fillRect(sclaBarXPosition, image.getHeight()-boxSizeHeight - sclaBarYPosition, boxSizeWidth, boxSizeHeight);
         graphBox.dispose();
 
         //draw the scale bar
         Graphics2D graphScaleBar = image.createGraphics();
         graphScaleBar.setColor(Color.BLACK);
 
-        int xStartBar = space;
-        int xStopBar = scaleBarSize+space;
-        int yStartBar = image.getHeight()-Math.floor(boxSizeHeight/2).intValue()
+        int xStartBar = sclaBarXPosition + space;
+        int xStopBar = sclaBarXPosition + scaleBarSize + space;
+        int yStartBar = image.getHeight() - Math.floor(boxSizeHeight/2).intValue() - sclaBarYPosition
         int yStopBar = yStartBar
-
+		
+		graphScaleBar.setStroke(new BasicStroke(2));
         //draw the main line of the scale bar
-        graphScaleBar.drawLine(xStartBar,yStartBar,xStopBar,yStopBar);
+        graphScaleBar.drawLine( xStartBar,yStartBar, xStopBar,yStopBar);
         //draw the two vertical line
-        graphScaleBar.drawLine(xStartBar,yStartBar-(Math.floor(scaleBarSize/4).intValue()),xStartBar,yStopBar+(Math.floor(scaleBarSize/4).intValue()));
-        graphScaleBar.drawLine(xStopBar,yStartBar-(Math.floor(scaleBarSize/4).intValue()),xStopBar,yStopBar+(Math.floor(scaleBarSize/4).intValue()));
+        graphScaleBar.drawLine(xStartBar,yStartBar-(Math.floor(scaleBarSize/6).intValue()),xStartBar,yStopBar+(Math.floor(scaleBarSize/6).intValue()));
+        graphScaleBar.drawLine(xStopBar,yStartBar-(Math.floor(scaleBarSize/6).intValue()),xStopBar,yStopBar+(Math.floor(scaleBarSize/6).intValue()));
 
         graphScaleBar.dispose();
 
         //draw text
-        int textSize = 8*(scaleBarSize/100)
+        int textSize = 9//8*(scaleBarSize/100)
+		int textXPosition =  xStartBar + (xStopBar - xStartBar)/2 - 25
         Graphics2D graphText = image.createGraphics();
         graphText.setColor(Color.BLACK);
-        graphText.setFont(new Font( "SansSerif", Font.BOLD, textSize ));
-        graphText.drawString(textUp, xStartBar+5, yStartBar-5)
-        graphText.drawString(textBelow, xStartBar+5, yStartBar+(5+textSize))
+        graphText.setFont(new Font( "Monaco", Font.BOLD, textSize ));
+        graphText.drawString(textUp, textXPosition, yStartBar-5)
+        graphText.drawString(textBelow, textXPosition, yStartBar+(5+textSize))
         graphText.dispose();
         return image
     }

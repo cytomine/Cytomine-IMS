@@ -139,24 +139,7 @@ class ImageController extends ImageUtilsController {
         println "params.topLeftY=${params.topLeftY}"
         println "params.height=${params.height}"
 //
-        if(params.boolean('drawScaleBar')) {
-            double proport1 = params.double('width')/params.double('height')
-            double porpert2 = (double)bufferedImage.getWidth()/(double)bufferedImage.getHeight()
-            println "params.int('width')=${params.int('width')}"
-            println "proport1=${proport1}"
-            println "proport2=${porpert2}"
-            println "real('width')=${bufferedImage.getWidth()}"
-//            if(proport1==porpert2) {
-                //If the crop mage has been resized, the image may be "cut" (how to know that?).
-                //(we may have oldWidth/oldHeight <> newWidth/newHeight)
-                //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
-                //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
-                //but if the image is cut , its not possible to compute the good width size
-                double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
-                Double resolution = params.double('resolution')
-                bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth)
-//            }
-        } else if (params.draw) {
+       if (params.draw) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createCropWithDraw(bufferedImage, geometry, params)
@@ -179,6 +162,26 @@ class ImageController extends ImageUtilsController {
             int maxHeight = bufferedImage.width / Math.pow(2, zoom)
             bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxWidth, maxHeight)
         }
+		
+        if(params.boolean('drawScaleBar')) {
+            double proport1 = params.double('width')/params.double('height')
+            double porpert2 = (double)bufferedImage.getWidth()/(double)bufferedImage.getHeight()
+            println "params.int('width')=${params.int('width')}"
+            println "proport1=${proport1}"
+            println "proport2=${porpert2}"
+            println "real('width')=${bufferedImage.getWidth()}"
+//            if(proport1==porpert2) {
+                //If the crop mage has been resized, the image may be "cut" (how to know that?).
+                //(we may have oldWidth/oldHeight <> newWidth/newHeight)
+                //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
+                //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
+                //but if the image is cut , its not possible to compute the good width size
+                double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
+                Double resolution = params.double('resolution')
+                Double magnification = params.double('magnification')					
+                bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth, magnification)
+//            }
+        } 
         responseBufferedImage(bufferedImage)
     }
 
