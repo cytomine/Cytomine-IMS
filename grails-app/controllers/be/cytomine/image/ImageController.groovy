@@ -158,8 +158,8 @@ class ImageController extends ImageUtilsController {
             bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         } else if (params.zoom) {
             int zoom = params.int('zoom', 0)
-            int maxWidth = bufferedImage.width / Math.pow(2, zoom)
-            int maxHeight = bufferedImage.width / Math.pow(2, zoom)
+            int maxWidth = savedWidth / Math.pow(2, zoom)
+            int maxHeight = savedHeight / Math.pow(2, zoom)
             bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxWidth, maxHeight)
         }
 		

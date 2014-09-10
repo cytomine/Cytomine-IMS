@@ -50,24 +50,44 @@ abstract class ImageFormat extends Format {
         int height = params.int('height')
         int imageWidth = params.int('imageWidth')
         int imageHeight = params.int('imageHeight')
+		
+		println height
+		
         def x = (topLeftX == 0) ? 0 : 1/(imageWidth / topLeftX)
         def y = ((imageHeight - topLeftY) == 0) ? 0 : 1/(imageHeight / (imageHeight - topLeftY))
         def w = (width == 0) ? 0 : 1/(imageWidth / width)
         def h = (height == 0) ? 0 : 1/(imageHeight / height)
 
-        /*if (params.int('scale')) {
-            int scale = params.int('scale')
-            if (height > scale) {
-                int hei = Math.round(imageHeight / Math.ceil(height / scale))
-                return "FIF=$fif&RGN=$x,$y,$w,$h&HEI=$hei&CVT=jpeg"
-            } else if (width > scale) {
-                int wid = Math.round(imageWidth / Math.ceil(width / scale))
-                return "FIF=$fif&RGN=$x,$y,$w,$h&WID=$wid&CVT=jpeg"
-            }
-        } else {*/
+		int maxWidthOrHeight = 5000
+		if (width > maxWidthOrHeight || height > maxWidthOrHeight) {		
+			int tmpWidth = width
+			int tmpHeight = height
+			int zoom = 0		
+			while (tmpWidth > maxWidthOrHeight || tmpHeight > maxWidthOrHeight) {
+				tmpWidth = tmpWidth / 2
+				tmpHeight = tmpHeight / 2				
+				zoom++
+			}
+			/*
+			Ruven P. (author of IIP Image) 
+			In fact, the region is calculated from the WID or HEI given, not from
+			the full image size. So you get the requested region on the virtual
+			750px resize. I guess you were expecting to get a region exactly of size
+			WID?
 
-            return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
-        //}
+			This is something that seems to have caused confusion with others also
+			and perhaps the way it works in counter intuitive, so I'm considering
+			changing the behaviour in the 1.0 release and have WID or HEI define the
+			final region size rather than the virtual image size. In the meantime,
+			the way to get around it is to calculate the appropriate WID that the
+			full image would be. So if your image is x pixels wide, give WID the
+			value of x/2 to get a 750px wide image. 
+			*/
+			int hei = imageHeight / (height / tmpHeight)
+			return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$hei&CVT=jpeg"
+		} else {
+			return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
+		}
     }
 
     public String tileURL(fif, params) {
