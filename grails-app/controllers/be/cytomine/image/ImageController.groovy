@@ -164,12 +164,10 @@ class ImageController extends ImageUtilsController {
             String location = params.location
             Geometry geometry  = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, false)
-            new ImagePlus("", bufferedImage).show()
         } else if (params.alphaMask) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
-            new ImagePlus("", bufferedImage).show()
         }
         //resize if necessary
         if (params.maxSize) {

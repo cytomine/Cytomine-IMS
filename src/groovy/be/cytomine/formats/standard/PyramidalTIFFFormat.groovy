@@ -4,6 +4,7 @@ import be.cytomine.formats.digitalpathology.OpenSlideSingleFileFormat
 import grails.util.Holders
 import org.springframework.util.StringUtils
 import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 
 /**
  * Created by stevben on 28/04/14.
@@ -71,12 +72,10 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
         }
     }
 
+
     BufferedImage thumb(int maxSize) {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
-        int bestLevel = Math.round(maxSize / 256) + 1 //the smallest level is smaller than 256 (widht & height)
-        getTIFFSubImage(numberOfTIFFDirectories - bestLevel)
+        String thumbURL = "$iipURL?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&CVT=jpeg&QLT=99"
+		return ImageIO.read(new URL(thumbURL))
     }
 
 

@@ -249,7 +249,7 @@ public class Multi_OtsuThreshold implements PlugInFilter
                 }
             }
         }
-        for (int i=0; i < mlevel; i++)
-            region[i].show();
+        //for (int i=0; i < mlevel; i++)
+            //region[i].show();
     }
 }

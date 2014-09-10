@@ -275,6 +275,6 @@ public class DynamicThreshold implements PlugInFilter {
     void createImagePlus(ImageStack imsTemp, String txt){
         ImagePlus impTemp = new ImagePlus(txt,imsTemp);
         impTemp.setStack(null,imsTemp);
-        impTemp.show();
+        //impTemp.show();
     }
 }
