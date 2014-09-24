@@ -18,7 +18,6 @@ class UrlMappings {
             action = [GET : "download"]
         }
 
-
         "/image/associated.$format" (controller:"image") {
             action = [GET:"associated"]
         }
