@@ -26,6 +26,9 @@ class VisionController extends ImageUtilsController {
     def merge () {
 
         def urls = extractParams("url")
+        urls = urls.collect{
+            return it + "&mimeType=${params.get('mimeType')}"
+        }
         def colors = extractParams("color")
         colors = colors.collect{
             int intValue = Integer.parseInt(it,16);
