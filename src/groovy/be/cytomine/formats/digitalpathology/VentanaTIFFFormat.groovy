@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage
 class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
 
     public VentanaTIFFFormat() {
-        extensions = ["tif"]
+        extensions = ["tif", "vtif"]
         vendor = "ventana"
         mimeType = "openslide/ventana"
         widthProperty = "openslide.level[0].width"
