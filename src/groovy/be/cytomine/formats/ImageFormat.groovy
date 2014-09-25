@@ -11,11 +11,6 @@ import java.awt.image.BufferedImage
  */
 abstract class ImageFormat extends Format {
 
-    protected final static String ARGS_PREFIX = "?"
-    protected final static String ARGS_DELIMITER = "&"
-    protected final static String ARGS_EQUAL = "="
-    protected final static int    TILE_SIZE = 256
-
     public String[] extensions = null
     public String mimeType = null
     public String widthProperty = "width"
@@ -24,7 +19,7 @@ abstract class ImageFormat extends Format {
     public String magnificiationProperty = "magnificiation"
     public String iipURL = Holders.config.cytomine.iipImageServer
 
-    abstract public String convert(String workingPath)
+    abstract public def convert(String workingPath)
     abstract BufferedImage associated(String label)
     abstract BufferedImage thumb(int maxSize)
 
@@ -50,8 +45,6 @@ abstract class ImageFormat extends Format {
         int height = params.int('height')
         int imageWidth = params.int('imageWidth')
         int imageHeight = params.int('imageHeight')
-		
-		println height
 		
         def x = (topLeftX == 0) ? 0 : 1/(imageWidth / topLeftX)
         def y = ((imageHeight - topLeftY) == 0) ? 0 : 1/(imageHeight / (imageHeight - topLeftY))

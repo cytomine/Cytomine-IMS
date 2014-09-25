@@ -8,6 +8,8 @@ import be.cytomine.formats.digitalpathology.LeicaSCNFormat
 import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
 import be.cytomine.formats.digitalpathology.SakuraSVSlideFormat
 import be.cytomine.formats.digitalpathology.MiraxMRXSFormat
+import be.cytomine.formats.microscopy.OMEXML
+import be.cytomine.formats.microscopy.ZeissZVI
 import be.cytomine.formats.standard.BMPFormat
 import be.cytomine.formats.standard.JPEG2000Format
 import be.cytomine.formats.standard.JPEGFormat
@@ -55,6 +57,8 @@ public class FormatIdentifier {
                 new PGMFormat(),
                 new PNGFormat(),
                 new BMPFormat()
+                //new OMEXML(), //WORK IN PROGRESS
+                //new ZeissZVI() //WORK IN PROGRESS
         ]
     }
 

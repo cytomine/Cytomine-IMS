@@ -11,14 +11,12 @@ import java.awt.image.BufferedImage
  */
 class ZipFormat extends ArchiveFormat {
 
-    def DESCRIPTION_EXPECTED = "Zip archive data"
-
     public boolean detect() {
         String command = "file  $absoluteFilePath"
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text
-        return stdout.contains(DESCRIPTION_EXPECTED)
+        return stdout.contains("Zip archive data")
     }
 
     public String[] extract(String destPath) {

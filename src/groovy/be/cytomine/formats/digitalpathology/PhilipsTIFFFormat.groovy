@@ -65,7 +65,7 @@ class PhilipsTIFFFormat extends TIFFFormat{
         //:to do - scale the image to maxSize
     }
 
-    String convert(String workingPath) {
+    public def convert(String workingPath) {
         boolean convertSuccessfull = true
 
         String source = absoluteFilePath
@@ -78,6 +78,7 @@ class PhilipsTIFFFormat extends TIFFFormat{
         if (convertSuccessfull) {
             return target
         }
+
     }
 
     public def properties() {

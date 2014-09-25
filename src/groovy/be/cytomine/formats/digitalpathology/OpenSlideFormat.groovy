@@ -31,7 +31,7 @@ abstract class OpenSlideFormat extends ImageFormat {
 
     }
 
-    String convert(String workingPath) {
+    public def convert(String workingPath) {
         return null //nothing to do, the format is understood by IIP+OpenSlide natively
     }
 

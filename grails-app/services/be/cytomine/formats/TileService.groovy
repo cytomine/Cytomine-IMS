@@ -11,7 +11,6 @@ class TileService {
             fif = fif.substring(0, fif.length()-1)
         String mimeType = params.mimeType
         ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        //todo, use mimetype to have imageFormat identification
         return imageFormat.tileURL(fif, params)
     }
 }

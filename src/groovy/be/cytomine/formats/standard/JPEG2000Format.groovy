@@ -22,8 +22,8 @@ class JPEG2000Format extends CommonFormat {
         return FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase() == "jp2"
     }
 
-    public String convert(String workingPath) {
-        return absoluteFilePath //nothing to do
+    public def convert(String workingPath) {
+        return null //nothing to do
     }
 
 

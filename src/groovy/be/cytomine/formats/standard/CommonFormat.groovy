@@ -1,6 +1,7 @@
 package be.cytomine.formats.standard
 
 import be.cytomine.formats.ImageFormat
+import be.cytomine.formats.digitalpathology.VentanaTIFFFormat
 import grails.util.Holders
 import utils.FilesUtils
 import utils.ProcUtils
@@ -16,6 +17,12 @@ abstract class CommonFormat extends ImageFormat {
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
     public boolean detect() {
+        String extension = FilesUtils.getExtensionFromFilename(absoluteFilePath)
+
+        if (new PyramidalTIFFFormat().extensions.contains(extension) || new VentanaTIFFFormat().extensions.contains(extension)) {
+            return false //we do not run identify -verbose for TIFF files
+        }
+
         def identifyExecutable = Holders.config.cytomine.identify
         String command = "$identifyExecutable -verbose $absoluteFilePath"
         def proc = command.execute()
@@ -24,7 +31,7 @@ abstract class CommonFormat extends ImageFormat {
         return stdout.contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
     }
 
-    String convert(String workingPath) {
+    public def convert(String workingPath) {
         String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         String source = absoluteFilePath
         String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
@@ -46,7 +53,7 @@ abstract class CommonFormat extends ImageFormat {
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
 
         if (success) {
-            return target
+            target
         }
     }
 
