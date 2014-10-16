@@ -133,6 +133,10 @@ cytomine.tiffinfo = "tiffinfo"
 cytomine.identify = "identify"
 cytomine.vipsthumbnail = "/usr/local/bin/vipsthumbnail"
 
+cytomine.maxAnnotationOnImageWidth = 200000
+
+cytomine.charset = "UTF-8"
+
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
 /* remove this line 

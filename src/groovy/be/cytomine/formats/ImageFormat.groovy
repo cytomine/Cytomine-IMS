@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage
  */
 abstract class ImageFormat extends Format {
 
+    def grailsApplication
     public String[] extensions = null
     public String mimeType = null
     public String widthProperty = "width"
@@ -37,8 +38,8 @@ abstract class ImageFormat extends Format {
         return properties
     }
 
-    String cropURL(def params) {
-        String fif = params.fif
+    String cropURL(def params, def charset = "UTF-8") {
+        String fif = URLEncoder.encode(params.fif,charset)
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         int width = params.int('width')

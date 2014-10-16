@@ -125,8 +125,7 @@ class ImageController extends ImageUtilsController {
             params.topLeftY = params.int('topLeftY')+((params.double('height')-savedHeight)/2)
         }
 
-        String cropURL = imageFormat.cropURL(params)
-        log.info "cropURL=$cropURL"
+        String cropURL = imageFormat.cropURL(params,grailsApplication.config.cytomine.charset)
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
 
         params.topLeftX = savedTopX
@@ -134,11 +133,13 @@ class ImageController extends ImageUtilsController {
         params.width = savedWidth
         params.height = savedHeight
 
-        println "params.topLeftX=${params.topLeftX}"
-        println "params.width=${params.width}"
-        println "params.topLeftY=${params.topLeftY}"
-        println "params.height=${params.height}"
-//
+        if(params.safe) {
+            //if safe mode, skip annotation too large
+            if(params.int('width')>grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
+            if(params.int('height')>grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
+        }
+
+
        if (params.draw) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
@@ -166,10 +167,6 @@ class ImageController extends ImageUtilsController {
         if(params.boolean('drawScaleBar')) {
             double proport1 = params.double('width')/params.double('height')
             double porpert2 = (double)bufferedImage.getWidth()/(double)bufferedImage.getHeight()
-            println "params.int('width')=${params.int('width')}"
-            println "proport1=${proport1}"
-            println "proport2=${porpert2}"
-            println "real('width')=${bufferedImage.getWidth()}"
 //            if(proport1==porpert2) {
                 //If the crop mage has been resized, the image may be "cut" (how to know that?).
                 //(we may have oldWidth/oldHeight <> newWidth/newHeight)
