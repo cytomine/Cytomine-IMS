@@ -57,6 +57,7 @@ class ImageController extends ImageUtilsController {
         String mimeType = params.mimeType
         int maxSize = params.int('maxSize', 512)
         ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        println "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
@@ -126,7 +127,12 @@ class ImageController extends ImageUtilsController {
         }
 
         String cropURL = imageFormat.cropURL(params,grailsApplication.config.cytomine.charset)
+        log.info cropURL
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
+
+        if(bufferedImage==null) {
+            throw new Exception("Not a valid image: ${cropURL}")
+        }
 
         params.topLeftX = savedTopX
         params.topLeftY = savedTopY
