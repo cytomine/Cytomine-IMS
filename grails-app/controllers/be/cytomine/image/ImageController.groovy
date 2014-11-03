@@ -130,6 +130,12 @@ class ImageController extends ImageUtilsController {
         log.info cropURL
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
 
+        int i = 0
+        while(bufferedImage==null && i<3) {
+            bufferedImage = ImageIO.read(new URL(cropURL))
+            i++
+        }
+
         if(bufferedImage==null) {
             throw new Exception("Not a valid image: ${cropURL}")
         }
