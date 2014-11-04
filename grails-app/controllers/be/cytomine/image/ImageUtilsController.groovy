@@ -86,6 +86,7 @@ class ImageUtilsController {
      * @param url Image url
      */
     protected def responseImageFromUrl(String url) {
+        log.info "url2=$url"
         URL source = new URL(url)
         URLConnection connection = source.openConnection()
         response.contentType = 'image/jpeg'
