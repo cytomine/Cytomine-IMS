@@ -2,6 +2,7 @@ package be.cytomine.formats
 
 import grails.util.Holders
 import utils.ProcUtils
+import utils.ServerUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -18,7 +19,7 @@ abstract class ImageFormat extends Format {
     public String heightProperty = "height"
     public String resolutionProperty = "resolution"
     public String magnificiationProperty = "magnificiation"
-    public String iipURL = Holders.config.cytomine.iipImageServer
+    public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServer)
 
     abstract public def convert(String workingPath)
     abstract BufferedImage associated(String label)
@@ -52,7 +53,7 @@ abstract class ImageFormat extends Format {
         def w = (width == 0) ? 0 : 1/(imageWidth / width)
         def h = (height == 0) ? 0 : 1/(imageHeight / height)
 
-		int maxWidthOrHeight = 5000
+		int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
 		if (width > maxWidthOrHeight || height > maxWidthOrHeight) {		
 			int tmpWidth = width
 			int tmpHeight = height
@@ -78,15 +79,15 @@ abstract class ImageFormat extends Format {
 			value of x/2 to get a 750px wide image. 
 			*/
 			int hei = imageHeight / (height / tmpHeight)
-			return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$hei&CVT=jpeg"
+			return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$hei&CVT=jpeg"
 		} else {
-			return "$iipURL?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
+			return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
 		}
     }
 
     public String tileURL(fif, params) {
         //return "$iipURL?zoomify=$params.zoomify"
-        return "$iipURL?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg&mimeType=$params.mimeType"
+        return "${ServerUtils.getServer(iipURL)}?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg&mimeType=$params.mimeType"
     }
 
     protected BufferedImage rotate90ToRight( BufferedImage inputImage ){

@@ -2,6 +2,7 @@ package be.cytomine.formats.standard
 
 import grails.util.Holders
 import utils.FilesUtils
+import utils.ServerUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -14,7 +15,8 @@ class JPEG2000Format extends CommonFormat {
     public JPEG2000Format() {
         extensions = ["jp2"]
         mimeType = "image/jp2"
-        iipURL = Holders.config.cytomine.iipJ2KImageServer
+        println "Holders.config.cytomine.iipJ2KImageServer=${Holders.config.cytomine.iipJ2KImageServer}"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipJ2KImageServer)
     }
 
     public boolean detect() {
@@ -30,12 +32,12 @@ class JPEG2000Format extends CommonFormat {
     public BufferedImage thumb(int maxSize) {
         //construct IIP2K URL
         //maxSize currently ignored because we need to know width of the image with IIP
-        String thumbURL = "$iipURL?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&CVT=jpeg&QLT=99"
+        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&CVT=jpeg&QLT=99"
         return ImageIO.read(new URL(thumbURL))
     }
 
     public def properties() {
-        String propertiesURL = "$iipURL?fif=$absoluteFilePath&obj=IIP,1.0&obj=Max-size&obj=Tile-size&obj=Resolution-number"
+        String propertiesURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&obj=IIP,1.0&obj=Max-size&obj=Tile-size&obj=Resolution-number"
         String propertiesTextResponse = new URL(propertiesURL).text
         Integer width = null
         Integer height = null
