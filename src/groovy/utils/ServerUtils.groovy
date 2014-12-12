@@ -9,9 +9,6 @@ package utils
 class ServerUtils {
 
     static public List<String> getServers(String conf) {
-        println "conf=$conf"
-        println conf.split(",").toList()
-        println conf.split(",").toList().class
         return conf.split(",").toList()
     }
 
