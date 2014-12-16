@@ -3,6 +3,7 @@ package be.cytomine.formats.standard
 import be.cytomine.formats.digitalpathology.OpenSlideSingleFileFormat
 import grails.util.Holders
 import org.springframework.util.StringUtils
+import utils.FilesUtils
 import utils.ServerUtils
 
 import java.awt.image.BufferedImage
@@ -21,7 +22,7 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
     private excludeDescription = [
             "Not a TIFF",
             "<iScan",
-            "Hamamatsu",
+            //"Hamamatsu",
             "Aperio",
             "Leica",
             "PHILIPS",
@@ -36,6 +37,12 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
         boolean notTiff = false
         excludeDescription.each {
             notTiff |= tiffinfo.contains(it)
+        }
+        println "${tiffinfo.contains("Hamamatsu")}"
+        println "${!FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase().equals("tif")}"
+        println "notTiff=${notTiff}"
+        if(tiffinfo.contains("Hamamatsu") && !FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase().equals("tif")) {
+            return false //otherwise its a tiff file converted from ndpi
         }
         if (notTiff) return false
 

@@ -58,14 +58,18 @@ abstract class OpenSlideFormat extends ImageFormat {
     public def properties() {
         File slideFile = new File(absoluteFilePath)
         def properties = [[key : "mimeType", value : mimeType]]
-        if (slideFile.canRead()) {
-            OpenSlide openSlide = new OpenSlide(slideFile)
-            openSlide.getProperties().each {
-                properties << [ key : it.key, value  : it.value]
+        try {
+            if (slideFile.canRead()) {
+                OpenSlide openSlide = new OpenSlide(slideFile)
+                openSlide.getProperties().each {
+                    properties << [key: it.key, value: it.value]
+                }
+                openSlide.close()
+            } else {
+                println "cannot read ${slideFile.absolutePath}"
             }
-            openSlide.close()
-        } else {
-            println "cannot read ${slideFile.absolutePath}"
+        }catch(Exception e) {
+            println e
         }
         println properties
         if (widthProperty && properties.find { it.key == widthProperty})
