@@ -84,9 +84,10 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
 
 
     BufferedImage thumb(int maxSize) {
-        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&CVT=jpeg&QLT=99"
+        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&HEI=$maxSize&WID=$maxSize&CVT=jpeg&QLT=99"
         println thumbURL
 		return ImageIO.read(new URL(thumbURL))
+
     }
 
 

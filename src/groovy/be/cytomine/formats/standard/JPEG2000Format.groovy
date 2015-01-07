@@ -32,7 +32,7 @@ class JPEG2000Format extends CommonFormat {
     public BufferedImage thumb(int maxSize) {
         //construct IIP2K URL
         //maxSize currently ignored because we need to know width of the image with IIP
-        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&CVT=jpeg&QLT=99"
+        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&HEI=$maxSize&WID=$maxSize&CVT=jpeg&QLT=99"
         return ImageIO.read(new URL(thumbURL))
     }
 
