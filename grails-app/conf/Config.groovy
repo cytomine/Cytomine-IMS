@@ -122,8 +122,18 @@ log4j = {
 }
 
 cytomine.storageBufferPath="/tmp/imageserver_buffer"
-cytomine.iipImageServer="http://localhost:8081/fcgi-bin/iipsrv.fcgi" //default path for iip image server
-cytomine.iipJ2KImageServer="http://localhost:8082/fcgi-bin/iipsrv.fcgi"  //default path for iip image server J2K
+//cytomine.iipImageServer="http://localhost:8081/fcgi-bin/iipsrv.fcgi" //default path for iip image server
+//cytomine.iipJ2KImageServer="http://localhost:8082/fcgi-bin/iipsrv.fcgi"  //default path for iip image server J2K
+
+cytomine.iipImageServerBase="http://localhost:8081/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerJpeg2000="http://localhost:8082/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerVentana="http://localhost:8083/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerCyto="http://localhost:8084/fcgi-bin/iipsrv.fcgi"
+
+
+
+
+
 cytomine.imageServerPrivateKey="70f35a45-c317-405a-8056-353db3d2bf56"
 cytomine.imageServerPublicKey="4a5c7004-b6f8-4705-a118-c15d5c90dcdb"
 

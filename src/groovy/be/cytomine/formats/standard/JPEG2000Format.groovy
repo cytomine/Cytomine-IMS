@@ -15,8 +15,7 @@ class JPEG2000Format extends CommonFormat {
     public JPEG2000Format() {
         extensions = ["jp2"]
         mimeType = "image/jp2"
-        println "Holders.config.cytomine.iipJ2KImageServer=${Holders.config.cytomine.iipJ2KImageServer}"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipJ2KImageServer)
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerJpeg2000)
     }
 
     public boolean detect() {

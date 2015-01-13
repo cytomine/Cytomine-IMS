@@ -1,5 +1,8 @@
 package be.cytomine.formats.digitalpathology
 
+import grails.util.Holders
+import utils.ServerUtils
+
 /**
  * Created by stevben on 19/06/14.
  */
@@ -13,6 +16,7 @@ class VentanaBIFFormat extends OpenSlideSingleFileFormat {
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "ventana.ScanRes"
         magnificiationProperty = "ventana.Magnification"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerVentana)
     }
 
 }

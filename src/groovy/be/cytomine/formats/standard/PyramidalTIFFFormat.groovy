@@ -17,6 +17,7 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
     public PyramidalTIFFFormat () {
         extensions = ["tif", "tiff"]
         mimeType = "image/pyrtiff"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 
     private excludeDescription = [

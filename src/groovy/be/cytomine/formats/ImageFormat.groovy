@@ -19,7 +19,7 @@ abstract class ImageFormat extends Format {
     public String heightProperty = "height"
     public String resolutionProperty = "resolution"
     public String magnificiationProperty = "magnificiation"
-    public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServer)
+    public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
 
     abstract public def convert(String workingPath)
     abstract BufferedImage associated(String label)

@@ -1,6 +1,7 @@
 package be.cytomine.formats.standard
 
 import grails.util.Holders
+import utils.ServerUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -13,6 +14,7 @@ abstract class TIFFFormat extends CommonFormat {
     public TIFFFormat() {
         extensions = ["tif", "tiff"]
         mimeType = "image/tiff"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 
     def properties() {

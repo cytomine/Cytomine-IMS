@@ -4,6 +4,7 @@ import be.cytomine.formats.standard.TIFFFormat
 import grails.util.Holders
 import org.openslide.OpenSlide
 import utils.ProcUtils
+import utils.ServerUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -21,6 +22,7 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = "openslide.objective-power"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerVentana)
     }
 	
     String convert(String workingPath) {
