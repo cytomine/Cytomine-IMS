@@ -1,6 +1,7 @@
 package be.cytomine.formats
 
 import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
+import be.cytomine.formats.standard.PhotoshopTIFFFormat
 import be.cytomine.image.ImageUtilsController
 
 
@@ -106,6 +107,10 @@ class CytomineFormatSpec {
         checkCorrectDetect(uploadedFile, PlanarTIFFFormat.class)
     }
 
+    void "test tiffphotoshopformat"() {
+        def uploadedFile = createFullPathFromFilename("1464-001-L.tif")
+        checkCorrectDetect(uploadedFile, PhotoshopTIFFFormat.class)
+    }
 
     void "test ventanatiffformat"() {
         def uploadedFile = createFullPathFromFilename("bif_tif/11GH076256_A2_CD3_100.tif")
