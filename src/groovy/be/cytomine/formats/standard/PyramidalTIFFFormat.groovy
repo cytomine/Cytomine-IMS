@@ -27,7 +27,8 @@ class PyramidalTIFFFormat  extends OpenSlideSingleFileFormat {
             "Aperio",
             "Leica",
             "PHILIPS",
-            "OME-XML"
+            "OME-XML",
+            "Adobe Photoshop CS3 Windows"
     ]
 
     public boolean detect() {
