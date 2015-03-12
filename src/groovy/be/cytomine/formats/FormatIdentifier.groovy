@@ -76,13 +76,13 @@ public class FormatIdentifier {
             it.detect()
         }
 
+        def imageFormats = []
         if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
             def extractedFiles = detectedArchiveFormat.extract(new File(uploadedFilePath).getParent())
 
             //multiple single image or a single image composed of multiple files ?
             //if (extractedFiles.size() > 1) {
             def multipleFileImageFormats = getAvailableMultipleImageFormats()
-            def imageFormats = []
 
             //look for multiple files image formats (e.g mrxs & vms)
             extractedFiles.each {  extractedFile ->
@@ -106,11 +106,13 @@ public class FormatIdentifier {
                             imageFormat : imageFormat]
                 }
             }
-            return imageFormats
 
         } else {
-            return [[uploadedFilePath : uploadedFilePath, imageFormat : getImageFormat(uploadedFilePath)]]
+            imageFormats << [
+                    absoluteFilePath : uploadedFilePath,
+                    imageFormat : getImageFormat(uploadedFilePath)]
         }
+        return imageFormats
     }
 
     static public ImageFormat getImageFormatByMimeType(String fif, String mimeType) {

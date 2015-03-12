@@ -124,6 +124,10 @@ class StorageController {
 
             String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join("")
 
+
+            // TODO : put the above code in a service
+
+
             def imageFormats = FormatIdentifier.getImageFormats(
                     originalFilenameFullPath
             )
@@ -134,28 +138,28 @@ class StorageController {
                 //todo: response error message
                 return
             }
+            // || imageFormats.findAll {it.imageFormat==null}.size() > 0
 
             def images = []
-            if(isSync) {
-                log.info "Execute convert & deploy NOT in background (sync=true!)"
+
+            def convertAndCreate = {
                 cytomine.editUploadedFile(uploadedFile.id, 6) //to deploy
-                def imageFormatsToDeploy = convertImage(imageFormats,storageBufferPath)
+                def imageFormatsToDeploy = convertImage(imageFormats, storageBufferPath)
                 uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 1)
                 imageFormatsToDeploy.each {
                     images << createImage(cytomine,it,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile)
                 }
                 cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
+            };
+
+            if(isSync) {
+                log.info "Execute convert & deploy NOT in background (sync=true!)"
+                convertAndCreate();
                 log.info "image sync = $images"
             } else {
                 log.info "Execute convert & deploy into background"
                 backgroundService.execute("convertAndDeployImage", {
-                    cytomine.editUploadedFile(uploadedFile.id, 6) //to deploy
-                    def imageFormatsToDeploy = convertImage(imageFormats,storageBufferPath)
-                    uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 1)
-                    imageFormatsToDeploy.each {
-                        images << createImage(cytomine,it,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile)
-                    }
-                    cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
+                    convertAndCreate();
                     log.info "image async = $images"
                 })
             }
