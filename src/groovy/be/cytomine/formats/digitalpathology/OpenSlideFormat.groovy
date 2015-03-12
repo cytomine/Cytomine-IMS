@@ -76,10 +76,10 @@ abstract class OpenSlideFormat extends ImageFormat {
             properties << [ key : "cytomine.width", value : Integer.parseInt(properties.find { it.key == widthProperty}?.value) ]
         if (heightProperty && properties.find { it.key == heightProperty})
             properties << [ key : "cytomine.height", value : Integer.parseInt(properties.find { it.key == heightProperty}?.value) ]
-//        if (resolutionProperty)
-//            properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value) ]
-//        if (magnificiationProperty)
-//            properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value).intValue() ]
+        if (resolutionProperty)
+            properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value) ]
+        if (magnificiationProperty)
+            properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value).intValue() ]
 
         return properties
     }
