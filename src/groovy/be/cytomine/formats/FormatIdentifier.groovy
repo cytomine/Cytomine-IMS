@@ -109,7 +109,7 @@ public class FormatIdentifier {
 
         } else {
             imageFormats << [
-                    absoluteFilePath : uploadedFilePath,
+                    uploadedFilePath : uploadedFilePath,
                     imageFormat : getImageFormat(uploadedFilePath)]
         }
         return imageFormats
