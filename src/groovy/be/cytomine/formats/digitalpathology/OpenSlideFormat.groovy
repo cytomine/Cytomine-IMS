@@ -72,13 +72,13 @@ abstract class OpenSlideFormat extends ImageFormat {
             println e
         }
         println properties
-        if (widthProperty && properties.find { it.key == widthProperty})
+        if (widthProperty && properties.find { it.key == widthProperty}?.value != null)
             properties << [ key : "cytomine.width", value : Integer.parseInt(properties.find { it.key == widthProperty}?.value) ]
-        if (heightProperty && properties.find { it.key == heightProperty})
+        if (heightProperty && properties.find { it.key == heightProperty}?.value != null)
             properties << [ key : "cytomine.height", value : Integer.parseInt(properties.find { it.key == heightProperty}?.value) ]
-        if (resolutionProperty)
+        if (resolutionProperty && properties.find { it.key == resolutionProperty}?.value != null)
             properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value) ]
-        if (magnificiationProperty)
+        if (magnificiationProperty && properties.find { it.key == magnificiationProperty}?.value != null)
             properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value).intValue() ]
 
         return properties
