@@ -130,6 +130,9 @@ cytomine.iipImageServerJpeg2000="http://localhost:8082/fcgi-bin/iipsrv.fcgi"
 cytomine.iipImageServerVentana="http://localhost:8083/fcgi-bin/iipsrv.fcgi"
 cytomine.iipImageServerCyto="http://localhost:8084/fcgi-bin/iipsrv.fcgi"
 
+bioformat.application.enabled="false"
+bioformat.application.location="localhost"
+bioformat.application.port="4321"
 
 
 

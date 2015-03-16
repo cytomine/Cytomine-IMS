@@ -22,7 +22,9 @@ class DeployImagesService {
 
         storages.each { storage ->
             def destFilename = storage.getStr("basePath") + File.separator + uploadedFile.getStr("filename")
-            fileSystemService.makeLocalDirectory(new File(destFilename).parent)
+            if(!new File(new File(destFilename).parent).exists()) {
+                fileSystemService.makeLocalDirectory(new File(destFilename).parent)
+            }
 
             def command = """mv "$localFile" "$destFilename" """
             log.info "Command=$command"
