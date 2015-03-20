@@ -235,7 +235,7 @@ class UploadService {
 
         log.info "BIOFORMAT called !"
         def files = [];
-
+        String error;
 
         String hostName = Holders.config.bioformat.application.location
         int portNumber = Integer.parseInt(Holders.config.bioformat.application.port);
@@ -252,12 +252,19 @@ class UploadService {
             String result = inp.readLine();
             def json  = JSON.parse(result);
             files = json.files
+            error = json.error;
         } catch (UnknownHostException e) {
             System.err.println(e.toString());
         }
 
         log.info "bioformat returns"
         log.info files
+
+        if(files ==[] || files == null) {
+            if (error != null) {
+                throw new Exception("BioFormat Exception : \n"+error);
+            }
+        }
         return files
     }
 
