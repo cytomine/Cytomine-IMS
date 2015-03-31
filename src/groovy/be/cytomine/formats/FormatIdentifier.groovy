@@ -8,14 +8,13 @@ import be.cytomine.formats.digitalpathology.LeicaSCNFormat
 import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
 import be.cytomine.formats.digitalpathology.SakuraSVSlideFormat
 import be.cytomine.formats.digitalpathology.MiraxMRXSFormat
-import be.cytomine.formats.microscopy.OMEXML
-import be.cytomine.formats.microscopy.ZeissZVI
+import be.cytomine.formats.specialtiff.HuronTIFFFormat
 import be.cytomine.formats.standard.BMPFormat
 import be.cytomine.formats.standard.JPEG2000Format
 import be.cytomine.formats.standard.JPEGFormat
 import be.cytomine.formats.standard.PGMFormat
 import be.cytomine.formats.standard.PNGFormat
-import be.cytomine.formats.standard.PhotoshopTIFFFormat
+import be.cytomine.formats.specialtiff.PhotoshopTIFFFormat
 import be.cytomine.formats.standard.PlanarTIFFFormat
 import be.cytomine.formats.standard.PyramidalTIFFFormat
 import be.cytomine.formats.digitalpathology.VentanaTIFFFormat
@@ -51,6 +50,7 @@ public class FormatIdentifier {
                 new PhilipsTIFFFormat(),
                 //common formats
                 new PhotoshopTIFFFormat(),
+                new HuronTIFFFormat(),
                 new PlanarTIFFFormat(),
                 new PyramidalTIFFFormat(),
                 new VentanaTIFFFormat(),

@@ -1,5 +1,6 @@
-package be.cytomine.formats.standard
+package be.cytomine.formats.specialtiff
 
+import be.cytomine.formats.standard.TIFFFormat
 import grails.util.Holders
 import org.springframework.util.StringUtils
 import utils.ServerUtils
@@ -7,7 +8,7 @@ import utils.ServerUtils
 /**
  * Created by hoyoux on 16.02.15.
  */
-class PhotoshopTIFFFormat extends TIFFFormat {
+class PhotoshopTIFFFormat extends TIFFToConvert {
 
     public PhotoshopTIFFFormat () {
         extensions = ["tif", "tiff"]
@@ -16,8 +17,7 @@ class PhotoshopTIFFFormat extends TIFFFormat {
     }
 
     public boolean detect() {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
+        String tiffinfo = getTiffInfo()
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
         return tiffinfo.contains("Adobe Photoshop CS3 Windows");
