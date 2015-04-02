@@ -1,7 +1,8 @@
 package be.cytomine.formats
 
 import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
-import be.cytomine.formats.standard.PhotoshopTIFFFormat
+import be.cytomine.formats.specialtiff.CZITIFFFormat
+import be.cytomine.formats.specialtiff.PhotoshopTIFFFormat
 import be.cytomine.image.ImageUtilsController
 
 
@@ -169,6 +170,14 @@ class CytomineFormatSpec {
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
         assert detectedFiles.size() == 1
         assert detectedFiles[0].imageFormat.class == HamamatsuVMSFormat //clean tmp file (only vms file is cleaned, not nested...)
+    }
+
+    void "test CZITIFFDetect"() {
+        String uploadedFile = getFilenameForTest("CZITIFF_TEST.tif")
+        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+
+        assert detectedFiles.size() == 1
+        assert detectedFiles[0].imageFormat.class == CZITIFFFormat
     }
 
     void "test convertJPEG"() {
