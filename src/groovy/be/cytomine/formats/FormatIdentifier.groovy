@@ -8,6 +8,7 @@ import be.cytomine.formats.digitalpathology.LeicaSCNFormat
 import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
 import be.cytomine.formats.digitalpathology.SakuraSVSlideFormat
 import be.cytomine.formats.digitalpathology.MiraxMRXSFormat
+import be.cytomine.formats.specialtiff.CZITIFFFormat
 import be.cytomine.formats.specialtiff.HuronTIFFFormat
 import be.cytomine.formats.standard.BMPFormat
 import be.cytomine.formats.standard.JPEG2000Format
@@ -48,6 +49,7 @@ public class FormatIdentifier {
                 new LeicaSCNFormat(),
                 new SakuraSVSlideFormat(),
                 new PhilipsTIFFFormat(),
+                new CZITIFFFormat(),
                 //common formats
                 new PhotoshopTIFFFormat(),
                 new HuronTIFFFormat(),
