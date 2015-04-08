@@ -150,7 +150,7 @@ cytomine.maxAnnotationOnImageWidth = 200000
 
 cytomine.charset = "UTF-8"
 
-cytomine.maxCropSize = 5000
+cytomine.maxCropSize = 512
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
