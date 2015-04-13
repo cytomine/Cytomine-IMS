@@ -54,6 +54,12 @@ abstract class ImageFormat extends Format {
         def h = (height == 0) ? 0 : 1/(imageHeight / height)
 
 		int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
+        if (params.maxSize) {
+            int maxSize = params.int('maxSize', 256)
+            if(maxWidthOrHeight > maxSize) {
+                maxWidthOrHeight=maxSize;
+            }
+        }
 
         if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
             int tmpWidth = width
