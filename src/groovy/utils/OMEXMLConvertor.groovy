@@ -2,8 +2,7 @@ package utils
 
 /**
  * This class provided by ome team has been modified in order to be used in this project
- * The modifier author: A. DEBIT University of Liege
- * mail: adebit@student.ulg.ac.be
+ * The modifier authors: see NOTICE
  */
 
 import java.awt.image.IndexColorModel

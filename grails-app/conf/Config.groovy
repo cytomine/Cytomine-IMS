@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2009-2015. Authors: see NOTICE file.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -19,18 +37,18 @@ grails.project.groupId = appName // change this to alter the default package nam
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
 grails.mime.types = [
-    all:           '*/*',
-    atom:          'application/atom+xml',
-    css:           'text/css',
-    csv:           'text/csv',
-    form:          'application/x-www-form-urlencoded',
-    html:          ['text/html','application/xhtml+xml'],
-    js:            'text/javascript',
-    json:          ['application/json', 'text/json'],
-    multipartForm: 'multipart/form-data',
-    rss:           'application/rss+xml',
-    text:          'text/plain',
-    xml:           ['text/xml', 'application/xml']
+        all:           '*/*',
+        atom:          'application/atom+xml',
+        css:           'text/css',
+        csv:           'text/csv',
+        form:          'application/x-www-form-urlencoded',
+        html:          ['text/html','application/xhtml+xml'],
+        js:            'text/javascript',
+        json:          ['application/json', 'text/json'],
+        multipartForm: 'multipart/form-data',
+        rss:           'application/rss+xml',
+        text:          'text/plain',
+        xml:           ['text/xml', 'application/xml']
 ]
 
 // URL Mapping Cache Max Size, defaults to 5000
@@ -125,20 +143,21 @@ cytomine.storageBufferPath="/tmp/imageserver_buffer"
 //cytomine.iipImageServer="http://localhost:8081/fcgi-bin/iipsrv.fcgi" //default path for iip image server
 //cytomine.iipJ2KImageServer="http://localhost:8082/fcgi-bin/iipsrv.fcgi"  //default path for iip image server J2K
 
-cytomine.iipImageServerBase="http://localhost:8081/fcgi-bin/iipsrv.fcgi"
-cytomine.iipImageServerJpeg2000="http://localhost:8082/fcgi-bin/iipsrv.fcgi"
-cytomine.iipImageServerVentana="http://localhost:8083/fcgi-bin/iipsrv.fcgi"
-cytomine.iipImageServerCyto="http://localhost:8084/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerJpeg2000="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerVentana="http://localhost-iip-ventana/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerCyto="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
 
-bioformat.application.enabled="false"
+bioformat.application.enabled="true"
 bioformat.application.location="localhost"
 bioformat.application.port="4321"
 
 
 
-
 cytomine.imageServerPrivateKey="70f35a45-c317-405a-8056-353db3d2bf56"
 cytomine.imageServerPublicKey="4a5c7004-b6f8-4705-a118-c15d5c90dcdb"
+//cytomine.imageServerPrivateKey="dff7c034-9fcb-4615-bf3f-5b3d11b5869e"
+//cytomine.imageServerPublicKey="9070db9d-cb16-4c8f-a443-ffa4f452db64"
 
 //image manipulation executable
 cytomine.vips = "/usr/local/bin/vips"
