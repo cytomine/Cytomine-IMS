@@ -23,6 +23,10 @@ import ij.IJ
 import ij.ImagePlus
 import ij.plugin.ContrastEnhancer
 import ij.process.ImageConverter
+import org.restapidoc.annotation.RestApiMethod
+import org.restapidoc.annotation.RestApiParam
+import org.restapidoc.annotation.RestApiParams
+import org.restapidoc.pojo.RestApiParamType
 
 import javax.imageio.ImageIO
 import java.awt.*
@@ -38,23 +42,47 @@ class VisionController extends ImageUtilsController {
 
     def imageProcessingService
 
-
+    @RestApiMethod(description="Merge multiple channel (multiple image) to an image", extensions = ["png"])
+    @RestApiParams(params=[
+            @RestApiParam(name="url0", type="String", paramType = RestApiParamType.QUERY, description = "URL for the tile of the first channel"),
+            @RestApiParam(name="url...", type="String", paramType = RestApiParamType.QUERY, description = "URL for the tile of the ... channel"),
+            @RestApiParam(name="urlN", type="String", paramType = RestApiParamType.QUERY, description = "URL for the tile of the N channel"),
+            @RestApiParam(name="color0", type="String", paramType = RestApiParamType.QUERY, description = "Color for the tile of the first channel"),
+            @RestApiParam(name="color...", type="String", paramType = RestApiParamType.QUERY, description = "Color for the tile of the ... channel"),
+            @RestApiParam(name="colorN", type="String", paramType = RestApiParamType.QUERY, description = "Color for the tile of the N channel"),
+            @RestApiParam(name="zoomify", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="tileGroup", type="int", paramType = RestApiParamType.QUERY, description = "The Tile Group (see zoomify format)"),
+            @RestApiParam(name="z", type="int", paramType = RestApiParamType.QUERY, description = "The Z index (see zoomify format)"),
+            @RestApiParam(name="x", type="int", paramType = RestApiParamType.QUERY, description = "The X index (see zoomify format)"),
+            @RestApiParam(name="y", type="int", paramType = RestApiParamType.QUERY, description = "The Y index (see zoomify format)")
+    ])
     def merge () {
 
+        def paramsWithoutUrl = params.clone()
+
         def urls = extractParams("url")
+        int i = 0
         urls = urls.collect{
-            return it + "&mimeType=${params.get('mimeType')}"
+            paramsWithoutUrl.remove("url"+String.valueOf(i++))
+            return it + "&"
         }
         def colors = extractParams("color")
+        i=0
         colors = colors.collect{
+            paramsWithoutUrl.remove("color"+String.valueOf(i++))
             int intValue = Integer.parseInt(it,16);
             return new Color( intValue );
         }
 
-        def zoomifyParam = params.get('zoomify')
+        paramsWithoutUrl.remove("zoomify")
 
+
+        log.info "paramsWithoutUrl=$paramsWithoutUrl"
         log.info "Urls=$urls"
         log.info "Colors=$colors"
+
+        def postParam = paramsWithoutUrl.collect{it.key+"="+it.value}.join("&")
 
         if(!urls.isEmpty()) {
 
@@ -64,8 +92,8 @@ class VisionController extends ImageUtilsController {
 
 
             urls.eachWithIndex { url, index ->
-                log.info "load=${url+zoomifyParam}"
-                images[index] = new ImagePlus("Image$index",(java.awt.Image)ImageIO.read(new URL(url+zoomifyParam)))
+                log.info "load=${url+postParam}"
+                images[index] = new ImagePlus("Image$index",(java.awt.Image)ImageIO.read(new URL(url+"&"+postParam)))
             }
 
             Color[] colorsArray = colors.toArray(new Color[colors.size()])
@@ -79,26 +107,6 @@ class VisionController extends ImageUtilsController {
             render "url arugment is missing (start with url0=)!"
             response.status = 400
         }
-    }
-
-    /**
-     * Extract all args into a list.
-     * argStart0=val0&argStart1=val1&argStart2=val2... => [val0,val1, val2...]
-     * @param argStart
-     */
-    private def extractParams(String argStart) {
-        def list = []
-        int i=0;
-        String nextUrlParams = params.get(argStart+i)
-        log.info "nextUrlParams=" +nextUrlParams
-
-        while(nextUrlParams!=null) {
-            log.info "nextUrlParams=$nextUrlParams"
-            list << nextUrlParams
-            i++
-            nextUrlParams = params.get(argStart+i)
-        }
-        return list
     }
 
 
@@ -371,4 +379,22 @@ class VisionController extends ImageUtilsController {
         responseBufferedImage(newTile)
     }
 
+
+
+    /**
+     * Extract all args into a list.
+     * argStart0=val0&argStart1=val1&argStart2=val2... => [val0,val1, val2...]
+     * @param argStart
+     */
+    private def extractParams(String argStart) {
+        def list = []
+        int i=0;
+        String nextUrlParams = params.get(argStart+i)
+        while(nextUrlParams!=null) {
+            list << nextUrlParams
+            i++
+            nextUrlParams = params.get(argStart+i)
+        }
+        return list
+    }
 }

@@ -6,698 +6,13 @@
             {
                "headers": [],
                "bodyobject": null,
-               "jsondocId": "c77d9c0e-feec-4a82-953b-573535246ebe",
+               "jsondocId": "4a860df3-5b37-422b-8bc4-6be99994bb09",
                "consumes": [],
                "response": {
                   "mapKeyObject": "",
-                  "jsondocId": "584b48f5-e0e7-4d81-8887-b79e63d67495",
+                  "jsondocId": "2793cf76-b26a-492a-ab58-17b6dac9f041",
                   "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get the available properties (with, height, resolution, magnitude, ...) of an image",
-               "queryparameters": [
-                  {
-                     "jsondocId": "03102083-b13d-4f74-b8e1-21663eeb4a0f",
-                     "description": "The absolute path of the image",
-                     "name": "fif",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "0253f2e1-dba2-46b2-8103-48195f560520",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  }
-               ],
-               "path": "/image/properties",
-               "produces": ["application/json"],
-               "methodName": "properties"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "ca822649-f08f-4af3-b25f-df02a447e484",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "df4d331e-6439-411b-8f27-e02f6c28edc7",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Download an image",
-               "queryparameters": [{
-                  "jsondocId": "6fbfb0af-4348-4aa6-8a52-96678873c166",
-                  "description": "The absolute path of the image",
-                  "name": "fif",
-                  "allowedvalues": [],
-                  "format": "",
-                  "required": "true",
-                  "type": "String"
-               }],
-               "path": "/image/download.jpg",
-               "produces": ["application/json"],
-               "methodName": "download"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "f76056d3-f4f5-449b-8c32-0a678b066f4a",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "16a51fc5-4f74-4eb2-9ff1-4f0ab89ab308",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Download an image",
-               "queryparameters": [{
-                  "jsondocId": "a08a59e3-c40b-43dd-87f2-c4b4e09aca04",
-                  "description": "The absolute path of the image",
-                  "name": "fif",
-                  "allowedvalues": [],
-                  "format": "",
-                  "required": "true",
-                  "type": "String"
-               }],
-               "path": "/image/download.png",
-               "produces": ["application/json"],
-               "methodName": "download"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "24525055-3932-4df8-9147-3c7a72599b3a",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "cd86eb68-0a96-41b1-92f0-262044be4a6f",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get the thumb of an image",
-               "queryparameters": [
-                  {
-                     "jsondocId": "eff61ce5-36c2-4d67-a842-90780ad5045d",
-                     "description": "The absolute path of the image",
-                     "name": "fif",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "776578ce-3071-409f-a978-db8dfe27de65",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "d0821a7f-6e92-48b4-98ce-e2eef47c5ba3",
-                     "description": "The max width or height of the generated thumb",
-                     "name": "maxSize",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  }
-               ],
-               "path": "/image/thumb.jpg",
-               "produces": ["application/json"],
-               "methodName": "thumb"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "0640f758-8a9b-4fe8-b0a0-916c097890ea",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "fc9e17a0-4bf4-473e-a2a9-3d2ad8e75552",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get the thumb of an image",
-               "queryparameters": [
-                  {
-                     "jsondocId": "44f0a2d9-1cd7-4839-8fee-6098b8c5d585",
-                     "description": "The absolute path of the image",
-                     "name": "fif",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "da553563-2e56-478a-b264-7bfa436c162c",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "4ced5033-0bd2-48b8-b90b-6313aecdb193",
-                     "description": "The max width or height of the generated thumb",
-                     "name": "maxSize",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  }
-               ],
-               "path": "/image/thumb.png",
-               "produces": ["application/json"],
-               "methodName": "thumb"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "52139d2c-07bd-4305-b745-806219f34086",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "173339b6-902e-4d63-95cc-eb5ad135551c",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get a tile of an image (following zoomify format)",
-               "queryparameters": [
-                  {
-                     "jsondocId": "ededf6c8-2e9d-4a24-8b86-987243cb90c0",
-                     "description": "The absolute path of the image",
-                     "name": "zoomify",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "f52609e6-3752-42f2-ae57-7815ed79bcd4",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "316d2fcd-573d-403e-9646-11b251f42d62",
-                     "description": "The Tile Group (see zoomify format)",
-                     "name": "tileGroup",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "0527d6ba-38f2-4a1c-89a0-00b4a91c2552",
-                     "description": "The Z index (see zoomify format)",
-                     "name": "z",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "029bb783-7de1-4175-b89b-0a62f5da572f",
-                     "description": "The X index (see zoomify format)",
-                     "name": "x",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "cf8ebb7e-939a-4cbc-a9d5-12cec70ca502",
-                     "description": "The Y index (see zoomify format)",
-                     "name": "y",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  }
-               ],
-               "path": "/image/tile.jpg",
-               "produces": ["application/json"],
-               "methodName": "tile"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "499d8f98-eab2-47c0-b139-b9030a543dd3",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "de1ec319-05d4-4b9a-a478-915b12288aee",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get a tile of an image (following zoomify format)",
-               "queryparameters": [
-                  {
-                     "jsondocId": "31de3080-e989-435e-aa95-3085519f30fa",
-                     "description": "The absolute path of the image",
-                     "name": "zoomify",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "d49513bc-572a-43d2-b631-0264c914850d",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "8e6ca16a-11bd-4ea9-b737-4a7cb9cfa89c",
-                     "description": "The Tile Group (see zoomify format)",
-                     "name": "tileGroup",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "13af4b1b-6613-47be-a3d3-039d75f83265",
-                     "description": "The Z index (see zoomify format)",
-                     "name": "z",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "038fec65-9f3f-4476-9e2e-9604790154f7",
-                     "description": "The X index (see zoomify format)",
-                     "name": "x",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "e21fa8fa-9bee-42d9-ac42-ccd70b23147a",
-                     "description": "The Y index (see zoomify format)",
-                     "name": "y",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  }
-               ],
-               "path": "/image/tile.png",
-               "produces": ["application/json"],
-               "methodName": "tile"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "038a3f1d-bdc1-47e1-931b-e8c80bd27a16",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "b1f7bd84-35c7-48dd-b119-1639f7e3266e",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get the crop of an image",
-               "queryparameters": [
-                  {
-                     "jsondocId": "dcfc7eb0-a0b8-4d1b-9964-34bd21ac3e84",
-                     "description": "The absolute path of the image",
-                     "name": "fif",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "3254f043-95ed-425c-ac36-90f799e85dca",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "0673006e-b23f-4ee9-b90c-7d6b3d6e47e4",
-                     "description": "The top left X value of the requested ROI",
-                     "name": "topLeftX",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "f9c69b43-fa50-4a20-96dd-65ba26926e8d",
-                     "description": "The top left Y value of the requested ROI",
-                     "name": "topLeftX",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "e96b45b6-425a-4320-b9fe-2240b7bd35c6",
-                     "description": "The width of the ROI (in pixels)",
-                     "name": "width",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "25723274-d37b-419f-834a-de9f5f6d1e3b",
-                     "description": "The height of the ROI (in pixels)",
-                     "name": "height",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "99d8f26a-bb43-4021-8950-da2c0ebd882c",
-                     "description": "The image width of the whole image",
-                     "name": "imageWidth",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "d02f0aa7-0a7d-46ad-a6bb-56183ede6ba0",
-                     "description": "The image height of the whole image",
-                     "name": "imageHeight",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "7034ca66-99d4-4654-a2d8-d1d95a6bf209",
-                     "description": " The max width or height of the generated thumb",
-                     "name": "maxSize",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "00819abd-c011-4da3-a312-f7a7e8b38883",
-                     "description": " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.",
-                     "name": "zoom",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "ff421095-65f6-4e88-95a7-a2d6553cb6d1",
-                     "description": " A geometry in WKT Format (Well-known text)",
-                     "name": "location",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "db94fa60-15bd-4d9d-95e4-086447337bde",
-                     "description": " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.",
-                     "name": "draw",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "4dc1decc-e035-42dd-be0c-47cc9e35d7b6",
-                     "description": " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask",
-                     "name": "mask",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "757ccd03-7215-467c-b56b-c190efeb6b9d",
-                     "description": " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required",
-                     "name": "alphaMask",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  }
-               ],
-               "path": "/image/crop.jpg",
-               "produces": ["application/json"],
-               "methodName": "crop"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "e6bcad8e-f1f1-405a-9787-f7e5c376eb87",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "dad91ebb-d31d-42c5-9aaf-da2185e09cfe",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get the crop of an image",
-               "queryparameters": [
-                  {
-                     "jsondocId": "3a971e8c-8d1a-4137-a9a3-cc0e5d4d3c86",
-                     "description": "The absolute path of the image",
-                     "name": "fif",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "a7a2e864-c66e-456d-877f-dc303fb1659c",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "1dff199b-d30c-4350-82e7-41320d98c3ab",
-                     "description": "The top left X value of the requested ROI",
-                     "name": "topLeftX",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "681cfccb-a8cc-448c-8326-1c97bdd99409",
-                     "description": "The top left Y value of the requested ROI",
-                     "name": "topLeftX",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "d6373a2f-4ae4-4359-b687-4ff9eb82213b",
-                     "description": "The width of the ROI (in pixels)",
-                     "name": "width",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "17de4255-54af-4338-8aad-b391074d09f0",
-                     "description": "The height of the ROI (in pixels)",
-                     "name": "height",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "efd88d8d-3e1e-4828-b2ae-7aca8c0f7bf7",
-                     "description": "The image width of the whole image",
-                     "name": "imageWidth",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "58c15e05-9592-4124-a156-54c3ee6d96d3",
-                     "description": "The image height of the whole image",
-                     "name": "imageHeight",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "b2551402-6062-4c3e-a1b5-74d542b66f06",
-                     "description": " The max width or height of the generated thumb",
-                     "name": "maxSize",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "a8d3ee96-bc36-4021-a78d-4b7ae02defc5",
-                     "description": " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.",
-                     "name": "zoom",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "1cbb9b06-d4bc-432f-a8d5-6b497955396b",
-                     "description": " A geometry in WKT Format (Well-known text)",
-                     "name": "location",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "57551a90-bd92-4524-86ef-42041a01bfae",
-                     "description": " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.",
-                     "name": "draw",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "9365f84a-73ad-456e-8b8b-6056493c0349",
-                     "description": " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask",
-                     "name": "mask",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  },
-                  {
-                     "jsondocId": "5cdd958b-5a91-4e62-9c7d-a5a0182768dd",
-                     "description": " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required",
-                     "name": "alphaMask",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "false",
-                     "type": "int"
-                  }
-               ],
-               "path": "/image/crop.png",
-               "produces": ["application/json"],
-               "methodName": "crop"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "de62dd41-99e4-481d-be2c-ef25d3f4d69f",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "9482d287-b614-41aa-af03-32122d7e2ddd",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
-               },
-               "pathparameters": [],
-               "apierrors": [],
-               "verb": "GET",
-               "description": "Get the list of nested (or associated) images available of an image",
-               "queryparameters": [
-                  {
-                     "jsondocId": "8e13ab9c-654a-4a20-991f-e921e0c6621a",
-                     "description": "The absolute path of the image",
-                     "name": "fif",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  },
-                  {
-                     "jsondocId": "9e56b578-3922-47f6-814a-80034236609c",
-                     "description": "The mime type of the image",
-                     "name": "mimeType",
-                     "allowedvalues": [],
-                     "format": "",
-                     "required": "true",
-                     "type": "String"
-                  }
-               ],
-               "path": "/image/associated.json",
-               "produces": ["application/json"],
-               "methodName": "associated"
-            },
-            {
-               "headers": [],
-               "bodyobject": null,
-               "jsondocId": "fc46c7c9-f295-423b-8512-79eed53c4146",
-               "consumes": [],
-               "response": {
-                  "mapKeyObject": "",
-                  "jsondocId": "67343c8e-1aae-4899-9e05-3e95419a6d5e",
-                  "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
+                  "object": "image"
                },
                "pathparameters": [],
                "apierrors": [],
@@ -705,7 +20,7 @@
                "description": "Get a nested (or associated) image (e.g. macro) of an image",
                "queryparameters": [
                   {
-                     "jsondocId": "784de15c-326d-44fa-94d6-39f6722d51dd",
+                     "jsondocId": "c6a31f40-0d45-485c-a5ef-d4769ac03c34",
                      "description": "The absolute path of the image",
                      "name": "fif",
                      "allowedvalues": [],
@@ -714,7 +29,7 @@
                      "type": "String"
                   },
                   {
-                     "jsondocId": "6f803b72-6dcb-4155-a22c-4f7cd1a6dbae",
+                     "jsondocId": "6728e6f2-0913-45a2-af6b-5b234f72a5dd",
                      "description": "The mime type of the image",
                      "name": "mimeType",
                      "allowedvalues": [],
@@ -723,7 +38,7 @@
                      "type": "String"
                   },
                   {
-                     "jsondocId": "16a93f4e-5e29-4c1e-bd62-4f085d5c4d95",
+                     "jsondocId": "b565cc12-b8cf-41ff-942f-c20f9b681f44",
                      "description": "The requested nested image, identified by label (e.g. macro)",
                      "name": "label",
                      "allowedvalues": [],
@@ -732,7 +47,7 @@
                      "type": "String"
                   },
                   {
-                     "jsondocId": "efbefd08-09e8-4c90-b4d1-e834e2286848",
+                     "jsondocId": "7af1c0cc-0ef6-405c-9a1a-3dce02fa327a",
                      "description": " The max width or height of the generated thumb",
                      "name": "maxSize",
                      "allowedvalues": [],
@@ -748,14 +63,13 @@
             {
                "headers": [],
                "bodyobject": null,
-               "jsondocId": "beee1b20-6a5b-4592-8750-7021d626d302",
+               "jsondocId": "e42492f7-40cb-4bcc-bb34-cfe062ca1b60",
                "consumes": [],
                "response": {
                   "mapKeyObject": "",
-                  "jsondocId": "0536a556-5754-425b-9856-b6228f53018a",
+                  "jsondocId": "b978346d-3f89-4ff5-bda6-82da7bcabfc2",
                   "mapValueObject": "",
-                  "object": "image",
-                  "multiple": "Unknow"
+                  "object": "image"
                },
                "pathparameters": [],
                "apierrors": [],
@@ -763,7 +77,7 @@
                "description": "Get a nested (or associated) image (e.g. macro) of an image",
                "queryparameters": [
                   {
-                     "jsondocId": "b9241e58-489c-4f74-9f91-39173d689602",
+                     "jsondocId": "41fddff8-25b8-4a59-bca7-77c21c35b0b6",
                      "description": "The absolute path of the image",
                      "name": "fif",
                      "allowedvalues": [],
@@ -772,7 +86,7 @@
                      "type": "String"
                   },
                   {
-                     "jsondocId": "77604f2d-32f5-4f9b-bc98-c9f9c9824042",
+                     "jsondocId": "e8f87dc8-2909-4e18-a7a8-5efbc7fa0724",
                      "description": "The mime type of the image",
                      "name": "mimeType",
                      "allowedvalues": [],
@@ -781,7 +95,7 @@
                      "type": "String"
                   },
                   {
-                     "jsondocId": "a50d5140-b2fe-4224-96f4-5b2fd2b82caa",
+                     "jsondocId": "01cac6a0-620f-4748-972a-906d9adff412",
                      "description": "The requested nested image, identified by label (e.g. macro)",
                      "name": "label",
                      "allowedvalues": [],
@@ -790,7 +104,7 @@
                      "type": "String"
                   },
                   {
-                     "jsondocId": "96dc5b8b-102c-47b6-a5a1-baa2eaf42530",
+                     "jsondocId": "6d9bc6c5-eeaf-494c-86ac-eb366b672dcf",
                      "description": " The max width or height of the generated thumb",
                      "name": "maxSize",
                      "allowedvalues": [],
@@ -802,9 +116,683 @@
                "path": "/image/nested.png",
                "produces": ["application/json"],
                "methodName": "nested"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "c2724b27-e4ce-43fe-86b7-c7621f1bafe1",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "854aeafa-1e9c-4a76-bd5f-984d807e1ae9",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Download an image",
+               "queryparameters": [{
+                  "jsondocId": "fecc9136-05d1-47f1-b577-e0a5b6dc82ca",
+                  "description": "The absolute path of the image",
+                  "name": "fif",
+                  "allowedvalues": [],
+                  "format": "",
+                  "required": "true",
+                  "type": "String"
+               }],
+               "path": "/image/download.jpg",
+               "produces": ["application/json"],
+               "methodName": "download"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "d5e7b6d0-0c99-45ee-9293-da049817def9",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "c64c87ce-37df-442c-9f83-440c9ac2ee77",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Download an image",
+               "queryparameters": [{
+                  "jsondocId": "90126633-ef67-496d-9695-02514ada8655",
+                  "description": "The absolute path of the image",
+                  "name": "fif",
+                  "allowedvalues": [],
+                  "format": "",
+                  "required": "true",
+                  "type": "String"
+               }],
+               "path": "/image/download.png",
+               "produces": ["application/json"],
+               "methodName": "download"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "bae22958-bed5-40da-b0a3-f80e3f96ebf8",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "aa306c0c-9806-4911-a5b4-51c7823d6ccf",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get the thumb of an image",
+               "queryparameters": [
+                  {
+                     "jsondocId": "d950931e-294f-4d7c-aeaa-0bb3fc74fe50",
+                     "description": "The absolute path of the image",
+                     "name": "fif",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "7632729a-e16b-403c-a825-cbb10e903195",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "84501f62-da57-4e3b-9a95-dfa6b13cfa0c",
+                     "description": "The max width or height of the generated thumb",
+                     "name": "maxSize",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  }
+               ],
+               "path": "/image/thumb.jpg",
+               "produces": ["application/json"],
+               "methodName": "thumb"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "6e4ba033-4371-4bbc-8b17-a5bcecbf1cc2",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "6b553ad0-8485-4040-ac09-4f2f82a436fb",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get the thumb of an image",
+               "queryparameters": [
+                  {
+                     "jsondocId": "60ba1790-fe50-40cb-9c70-a4889c54154e",
+                     "description": "The absolute path of the image",
+                     "name": "fif",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "1ad1bf19-ce3b-4339-880a-cc4644fbf6ad",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "830517f7-2036-4f31-be1a-aab0552acb64",
+                     "description": "The max width or height of the generated thumb",
+                     "name": "maxSize",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  }
+               ],
+               "path": "/image/thumb.png",
+               "produces": ["application/json"],
+               "methodName": "thumb"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "8a736a1b-0ed0-40ea-aa60-dc09c85ae467",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "683ccbdb-475f-4126-89b7-eb9833be5467",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get the list of nested (or associated) images available of an image",
+               "queryparameters": [
+                  {
+                     "jsondocId": "9c7a5dc5-610d-41e4-90a5-5b7da4b3b71a",
+                     "description": "The absolute path of the image",
+                     "name": "fif",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "00dc161a-1652-4cfa-91ac-84a29986f229",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  }
+               ],
+               "path": "/image/associated.json",
+               "produces": ["application/json"],
+               "methodName": "associated"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "19a331e1-2843-4c8c-8a64-832b5d33f500",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "2b4ee6fe-0ae9-4fe0-ac03-33675596ef7a",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get the crop of an image",
+               "queryparameters": [
+                  {
+                     "jsondocId": "f4932bcc-4f21-49d2-b942-72ea9cff3fbc",
+                     "description": "The absolute path of the image",
+                     "name": "fif",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "d76e8a63-ce8d-4331-a7aa-dd007fe9aa24",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "e6edb9e6-9ed8-4ac0-a0cc-cc1aafdd8316",
+                     "description": "The top left X value of the requested ROI",
+                     "name": "topLeftX",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "fbcac6ac-ca07-4c27-b3b2-f3abd8e9c10f",
+                     "description": "The top left Y value of the requested ROI",
+                     "name": "topLeftX",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "c7952c50-8452-4288-8a21-c0dfca41e114",
+                     "description": "The width of the ROI (in pixels)",
+                     "name": "width",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "38032c0a-6e99-4e1c-b7cd-919f1a0f60af",
+                     "description": "The height of the ROI (in pixels)",
+                     "name": "height",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "7df9111c-40c7-485e-999b-71ea0d54b711",
+                     "description": "The image width of the whole image",
+                     "name": "imageWidth",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "d5efdf62-f516-4976-a0b3-be2ce35d9ef0",
+                     "description": "The image height of the whole image",
+                     "name": "imageHeight",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "8fc62727-49fd-4299-8956-ec7485f53ae4",
+                     "description": " The max width or height of the generated thumb",
+                     "name": "maxSize",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "6d680a89-1c4f-4e5e-bc0b-52d632d01a23",
+                     "description": " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.",
+                     "name": "zoom",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "5c9579f9-7c42-4458-9224-67afac76f26b",
+                     "description": " A geometry in WKT Format (Well-known text)",
+                     "name": "location",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "ac4d3b14-8e5f-424c-88a8-f3e60adf6258",
+                     "description": " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.",
+                     "name": "draw",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "a49be320-5763-4ba4-91be-67c32682f75f",
+                     "description": " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask",
+                     "name": "mask",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "0db1fb49-aa8b-4551-bb6a-f217a0586aa4",
+                     "description": " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required",
+                     "name": "alphaMask",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  }
+               ],
+               "path": "/image/crop.jpg",
+               "produces": ["application/json"],
+               "methodName": "crop"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "8b3f3324-fff9-4980-9911-15f42ea296f7",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "37dbadea-0e20-4ccd-8a54-1b5853905e1e",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get the crop of an image",
+               "queryparameters": [
+                  {
+                     "jsondocId": "d883a0fb-3855-4965-8609-22c2d6f18ad5",
+                     "description": "The absolute path of the image",
+                     "name": "fif",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "45af3430-c4c6-4653-b035-a81c79f8f810",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "8934b3e9-8154-4293-85a1-366555547889",
+                     "description": "The top left X value of the requested ROI",
+                     "name": "topLeftX",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "e553e7a9-d246-4c07-9a61-92cddc778674",
+                     "description": "The top left Y value of the requested ROI",
+                     "name": "topLeftX",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "7e800628-5c83-41ec-b6e7-4f5bf3e04a90",
+                     "description": "The width of the ROI (in pixels)",
+                     "name": "width",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "2b98e115-5c9f-4b78-8a17-4187f09cdf82",
+                     "description": "The height of the ROI (in pixels)",
+                     "name": "height",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "c91f0a3f-562d-4ea5-9459-33a54238434a",
+                     "description": "The image width of the whole image",
+                     "name": "imageWidth",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "e07cdaa9-9a5b-4f75-8877-b33c0c32662c",
+                     "description": "The image height of the whole image",
+                     "name": "imageHeight",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "331a136c-ffa1-48b0-b570-ba7bb4c6c59a",
+                     "description": " The max width or height of the generated thumb",
+                     "name": "maxSize",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "ede9f233-114c-421f-a9ad-7d899b787495",
+                     "description": " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.",
+                     "name": "zoom",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "20182cb5-4223-4b5a-a35a-0fd99ad445a4",
+                     "description": " A geometry in WKT Format (Well-known text)",
+                     "name": "location",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "19901c0c-8197-4b30-a83b-e9203bf9fff4",
+                     "description": " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.",
+                     "name": "draw",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "b4ed405a-a3c5-496a-95bb-11762e89cb5e",
+                     "description": " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask",
+                     "name": "mask",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "f7ad2d9b-a14e-4cde-aa82-3fdf39fabb6d",
+                     "description": " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required",
+                     "name": "alphaMask",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "false",
+                     "type": "int"
+                  }
+               ],
+               "path": "/image/crop.png",
+               "produces": ["application/json"],
+               "methodName": "crop"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "ff055f2f-d0ac-4820-8447-ee1339f519e4",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "9a043664-91f9-42d1-8a53-798d48da31a8",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get a tile of an image (following zoomify format)",
+               "queryparameters": [
+                  {
+                     "jsondocId": "9d3f0f88-4b42-4251-a7bb-63c13ddd5570",
+                     "description": "The absolute path of the image",
+                     "name": "zoomify",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "b5238e60-e52d-4bcd-8343-9ef84436bdc9",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "f2d5bb1a-72d9-489c-a551-9a803f7b8509",
+                     "description": "The Tile Group (see zoomify format)",
+                     "name": "tileGroup",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "0c6dc0ab-a672-4d48-9726-a2da24026cbd",
+                     "description": "The Z index (see zoomify format)",
+                     "name": "z",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "b7c8387e-ed7b-44bc-83a9-a34982b86953",
+                     "description": "The X index (see zoomify format)",
+                     "name": "x",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "8a6b1b9e-11de-45de-bbea-4800713c52f8",
+                     "description": "The Y index (see zoomify format)",
+                     "name": "y",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  }
+               ],
+               "path": "/image/tile.jpg",
+               "produces": ["application/json"],
+               "methodName": "tile"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "87a776ef-ae54-42c4-981e-27b10b6b2ca8",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "65c21ade-0bf5-410f-bf22-48a66bbac3f8",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get a tile of an image (following zoomify format)",
+               "queryparameters": [
+                  {
+                     "jsondocId": "cf917a51-2348-4304-8d6d-dbde90001344",
+                     "description": "The absolute path of the image",
+                     "name": "zoomify",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "db36424c-e54c-4ab8-89f3-7c99ba869e95",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "e10398cd-108c-4744-8f1a-e4ee0fe6bccc",
+                     "description": "The Tile Group (see zoomify format)",
+                     "name": "tileGroup",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "59a04bd0-c4a9-4817-a169-12bd7a723713",
+                     "description": "The Z index (see zoomify format)",
+                     "name": "z",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "40ad3773-94d9-4a80-87df-1a95f87cd079",
+                     "description": "The X index (see zoomify format)",
+                     "name": "x",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  },
+                  {
+                     "jsondocId": "1b8224d9-a00f-459e-898e-cc7dfb10b8e5",
+                     "description": "The Y index (see zoomify format)",
+                     "name": "y",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "int"
+                  }
+               ],
+               "path": "/image/tile.png",
+               "produces": ["application/json"],
+               "methodName": "tile"
+            },
+            {
+               "headers": [],
+               "bodyobject": null,
+               "jsondocId": "be9263e7-eda4-4d6e-a7e7-6026b9f2713e",
+               "consumes": [],
+               "response": {
+                  "mapKeyObject": "",
+                  "jsondocId": "d2b23d3b-be2c-43ec-bb22-4cff4c5c313f",
+                  "mapValueObject": "",
+                  "object": "image"
+               },
+               "pathparameters": [],
+               "apierrors": [],
+               "verb": "GET",
+               "description": "Get the available properties (with, height, resolution, magnitude, ...) of an image",
+               "queryparameters": [
+                  {
+                     "jsondocId": "6d676c6b-78e6-4c82-8581-98945505ab33",
+                     "description": "The absolute path of the image",
+                     "name": "fif",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  },
+                  {
+                     "jsondocId": "95f17ab8-181d-4f1f-b899-c4a00b482426",
+                     "description": "The mime type of the image",
+                     "name": "mimeType",
+                     "allowedvalues": [],
+                     "format": "",
+                     "required": "true",
+                     "type": "String"
+                  }
+               ],
+               "path": "/image/properties",
+               "produces": ["application/json"],
+               "methodName": "properties"
             }
          ],
-         "jsondocId": "5191f2ce-f536-48f4-9ca2-772571afe6fa",
+         "jsondocId": "195c878d-fa80-488b-812b-92e40ab5c8b3",
          "description": "Methods for images (thumb, tile, property, ...)",
          "name": "image services"
       },
@@ -813,20 +801,19 @@
             "headers": [],
             "bodyobject": {
                "mapKeyObject": "",
-               "jsondocId": "9d4c0dfe-62ce-46dc-af3a-a92622ffeb67",
+               "jsondocId": "63348642-e146-4805-a998-31adc19e5e73",
                "mapValueObject": "",
                "map": "",
                "object": "storage",
                "multiple": "Unknow"
             },
-            "jsondocId": "975c155a-5080-4f8a-939c-783874e65c69",
+            "jsondocId": "6eeedb46-d908-4ec0-a237-244d08a98ded",
             "consumes": ["application/json"],
             "response": {
                "mapKeyObject": "",
-               "jsondocId": "53851aab-219d-499f-86d8-7ca52a1dad06",
+               "jsondocId": "cd83d71c-6de0-423e-95d2-6574e08e205a",
                "mapValueObject": "",
-               "object": "storage",
-               "multiple": "Unknow"
+               "object": "storage"
             },
             "pathparameters": [],
             "apierrors": [],
@@ -834,7 +821,7 @@
             "description": "Method for uploading an image",
             "queryparameters": [
                {
-                  "jsondocId": "34fe9cca-63fc-4453-8225-bd137cb5f44d",
+                  "jsondocId": "56a48a04-0fa7-4b57-b42b-a382a708bd14",
                   "description": "The files content (Multipart)",
                   "name": "files[]",
                   "allowedvalues": [],
@@ -843,7 +830,7 @@
                   "type": "data"
                },
                {
-                  "jsondocId": "69373639-fd96-457e-a406-1636afc82886",
+                  "jsondocId": "b1ef0e54-ab41-42a1-8398-c55269161ca4",
                   "description": "The url of Cytomine",
                   "name": "cytomine",
                   "allowedvalues": [],
@@ -852,7 +839,7 @@
                   "type": "String"
                },
                {
-                  "jsondocId": "aa6308e2-6a71-4c03-bd6e-11e899bf28b1",
+                  "jsondocId": "ef8b9c77-c2e9-4a88-9fbd-07ba70331ca4",
                   "description": "The id of the targeted storage",
                   "name": "idStorage",
                   "allowedvalues": [],
@@ -861,7 +848,7 @@
                   "type": "int"
                },
                {
-                  "jsondocId": "c48d6d5b-cf2b-4fff-ad2e-1d268a12604e",
+                  "jsondocId": "8288f8e0-39e3-424b-b782-389480f299b6",
                   "description": "Indicates if operations are done synchronously or not (false by default)",
                   "name": "sync",
                   "allowedvalues": [],
@@ -870,7 +857,7 @@
                   "type": "boolean"
                },
                {
-                  "jsondocId": "203d15cb-b2e6-42a5-917c-4147ff8bc58e",
+                  "jsondocId": "6fcfb780-272e-4122-a0d3-9685bcfaae72",
                   "description": " The id of the targeted project",
                   "name": "idProject",
                   "allowedvalues": [],
@@ -879,7 +866,7 @@
                   "type": "int"
                },
                {
-                  "jsondocId": "489b734a-5266-46aa-bb14-89f2b9537e1f",
+                  "jsondocId": "b997789e-5518-4160-bf41-cfc8434504b4",
                   "description": "The keys of the properties you want to link with your files (e.g. : key1,key2, ...)",
                   "name": "keys",
                   "allowedvalues": [],
@@ -888,9 +875,9 @@
                   "type": "String"
                },
                {
-                  "jsondocId": "69ec4f40-50ed-4106-969f-f7804af34748",
+                  "jsondocId": "b021184b-891f-439a-8817-93d33b0f7c43",
                   "description": "The values of the properties you want to link with your files (e.g. : key1,key2, ...)",
-                  "name": "keys",
+                  "name": "values",
                   "allowedvalues": [],
                   "format": "",
                   "required": "false",
@@ -901,7 +888,7 @@
             "produces": ["application/json"],
             "methodName": "upload"
          }],
-         "jsondocId": "e9f0d0e1-ec69-46dd-8ed6-167f4b11a11a",
+         "jsondocId": "8fda9f14-e4e2-4060-a0c1-e1d8349acc3c",
          "description": "Methods for uploading images",
          "name": "upload services"
       }
