@@ -23,6 +23,7 @@ import ij.IJ
 import ij.ImagePlus
 import ij.plugin.ContrastEnhancer
 import ij.process.ImageConverter
+import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
@@ -38,6 +39,7 @@ import java.awt.image.BufferedImage
  * Date: 1/06/11
  * Time: 13:44
  */
+@RestApi(name = "vision services", description = "Methods for image processing services")
 class VisionController extends ImageUtilsController {
 
     def imageProcessingService
