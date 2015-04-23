@@ -92,8 +92,6 @@ class CytomineService {
         //println "accessKey=" + accessKey
         String authorizationSign = authorization.substring(authorization.indexOf(":") + 1)
         //println "authorizationSign=" + authorizationSign
-        //TODO: ask user with public key
-        //TODO: pubKey = a50f6f5d-1bcb-4cca-ac37-9bbf8581f25e, privKey = 278c5d52-396b-4036-b535-d541652edffa
 
         log.info "content_md5=$content_md5"
         log.info "content_type=$content_type"
