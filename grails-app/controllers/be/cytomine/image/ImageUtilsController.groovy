@@ -101,7 +101,7 @@ class ImageUtilsController {
      * @param url Image url
      */
     protected def responseImageFromUrl(String url) {
-        log.info "url2=$url"
+        log.info "url=$url"
         URL source = new URL(url)
         URLConnection connection = source.openConnection()
         response.contentType = 'image/jpeg'
@@ -110,8 +110,4 @@ class ImageUtilsController {
         // Get the input stream from the connection
         response.outputStream << connection.getInputStream()
     }
-
-
-
-
 }

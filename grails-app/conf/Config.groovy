@@ -152,12 +152,8 @@ bioformat.application.enabled="true"
 bioformat.application.location="localhost"
 bioformat.application.port="4321"
 
-
-
-cytomine.imageServerPrivateKey="70f35a45-c317-405a-8056-353db3d2bf56"
-cytomine.imageServerPublicKey="4a5c7004-b6f8-4705-a118-c15d5c90dcdb"
-//cytomine.imageServerPrivateKey="dff7c034-9fcb-4615-bf3f-5b3d11b5869e"
-//cytomine.imageServerPublicKey="9070db9d-cb16-4c8f-a443-ffa4f452db64"
+cytomine.imageServerPublicKey=null
+cytomine.imageServerPrivateKey=null
 
 //image manipulation executable
 cytomine.vips = "/usr/local/bin/vips"
@@ -170,27 +166,3 @@ cytomine.maxAnnotationOnImageWidth = 200000
 cytomine.charset = "UTF-8"
 
 cytomine.maxCropSize = 5000
-
-// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
-
-/* remove this line 
-// GSP settings
-grails {
-    views {
-        gsp {
-            encoding = 'UTF-8'
-            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
-            codecs {
-                expression = 'html' // escapes values inside null
-                scriptlet = 'none' // escapes output from scriptlets in GSPs
-                taglib = 'none' // escapes output from taglibs
-                staticparts = 'none' // escapes output from static template parts
-            }
-        }
-        // escapes all not-encoded output at final stage of outputting
-        filteringCodecForContentType {
-            //'text/html' = 'html'
-        }
-    }
-}
-remove this line */
