@@ -18,6 +18,7 @@ package be.cytomine.formats
 
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.digitalpathology.AperioSVSFormat
+import be.cytomine.formats.convertable.DotSlideFormat
 import be.cytomine.formats.digitalpathology.HamamatsuNDPIFormat
 import be.cytomine.formats.digitalpathology.HamamatsuVMSFormat
 import be.cytomine.formats.digitalpathology.LeicaSCNFormat
@@ -53,6 +54,12 @@ public class FormatIdentifier {
                 //openslide compatibles formats
                 new HamamatsuVMSFormat(),
                 new MiraxMRXSFormat(),
+        ]
+    }
+
+    static public getAvailableHierarchicalMultipleImageFormats() {
+        return [
+                new DotSlideFormat()
         ]
     }
 
@@ -95,6 +102,27 @@ public class FormatIdentifier {
         def imageFormats = []
         if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
             def extractedFiles = detectedArchiveFormat.extract(new File(uploadedFilePath).getParent())
+
+            def hierarchicalMultipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats()
+            def extractedFolder = new File(uploadedFilePath).getParentFile().absolutePath
+
+            // if the zip contained a folder with the same name, we go into this folder
+            File subFolder = new File(uploadedFilePath).getParentFile().listFiles().find {
+                it ->
+                    it.isDirectory() && new File(uploadedFilePath).name.contains(it.name)
+                };
+            if(subFolder) extractedFolder = subFolder.absolutePath
+
+            hierarchicalMultipleFileImageFormats.each { imageFormat ->
+                imageFormat.absoluteFilePath = extractedFolder
+                if (imageFormat.detect()) {
+                    imageFormats << [
+                            absoluteFilePath : imageFormat.absoluteFilePath,
+                            imageFormat : imageFormat]
+                    // Currently, we can't continue the process. Subimages cannot be processed independently
+                    return imageFormats
+                }
+            }
 
             //multiple single image or a single image composed of multiple files ?
             //if (extractedFiles.size() > 1) {
