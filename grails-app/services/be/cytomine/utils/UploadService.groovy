@@ -24,6 +24,7 @@ import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
+import be.cytomine.formats.convertable.ConvertableFormat
 import grails.converters.JSON
 import grails.util.Holders
 import org.apache.commons.io.FilenameUtils
@@ -86,8 +87,8 @@ class UploadService {
             return
         }
 
-        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null};
-        imageFormats = imageFormats.findAll {it.imageFormat!=null};
+        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableFormat};
+        imageFormats = imageFormats - unsupportedImageFormats;
 
         def images = []
 
@@ -100,32 +101,46 @@ class UploadService {
             }
         };
 
-        def bioFormatConversion = { inputPath ->
-            // call Bioformat application and get an array of paths (the converted & splited images)
+        def conversion = { image ->
 
-            def files = callConvertor(inputPath);
+            String inputPath = image.uploadedFilePath;
 
-            def newFiles = [];
+            if(image.imageFormat == null) {
+                //if more than BioFormat change by if(image.imageFormat instanceof ConvertableToMultifile) where BioFormat is an extension
 
-            files.each { file ->
-                def path = file.path;
+                // call Bioformat application and get an array of paths (the converted & splited images)
+                def files = callConvertor(inputPath);
+
+                def newFiles = [];
+
+                files.each { file ->
+                    def path = file.path;
+                    def nameNewFile = path.substring(path.lastIndexOf("/")+1)
+                    // maybe redetermine the contentType ?
+                    // recursion
+                    def tmpResponseContent = upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)
+
+                    def newFile = [:]
+                    def outputImage = tmpResponseContent[0].images[0]
+                    newFile.path = outputImage.get("filename")
+                    newFile.id = outputImage.id
+                    newFile.z = file.z
+                    newFile.t = file.t
+                    newFile.c = file.c
+                    newFiles << newFile
+                }
+
+                projects.each { project ->
+                    groupImages(cytomine, newFiles, project);
+                }
+            } else {
+                println "conversion DotSlide";
+                String path = image.imageFormat.convert();
                 def nameNewFile = path.substring(path.lastIndexOf("/")+1)
                 // maybe redetermine the contentType ?
                 // recursion
-                def tmpResponseContent = upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)
+                upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)
 
-                def newFile = [:]
-                def image = tmpResponseContent[0].images[0]
-                newFile.path = image.get("filename")
-                newFile.id = image.id
-                newFile.z = file.z
-                newFile.t = file.t
-                newFile.c = file.c
-                newFiles << newFile
-            }
-
-            projects.each { project ->
-                groupImages(cytomine, newFiles, project);
             }
         };
 
@@ -136,7 +151,7 @@ class UploadService {
                 unsupportedImageFormats.each {
                     println "unsupported image "+it
                     /// can it be absoluteFilePath ?
-                    bioFormatConversion(it.uploadedFilePath);
+                    conversion(it);
                 };
             }
             cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
@@ -149,7 +164,7 @@ class UploadService {
                     unsupportedImageFormats.each {
                         println "unsupported image "+it
                         /// can it be absoluteFilePath ?
-                        bioFormatConversion(it.uploadedFilePath);
+                        conversion(it);
                     };
                 }
                 cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
