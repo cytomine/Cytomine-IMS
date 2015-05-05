@@ -1,5 +1,5 @@
 package be.cytomine.processing.merge;
-commit
+
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
