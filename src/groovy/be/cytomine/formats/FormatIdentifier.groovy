@@ -1,5 +1,8 @@
 package be.cytomine.formats
 
+import be.cytomine.formats.archive.ZipFormat
+import be.cytomine.formats.convertable.DotSlideFormat
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,27 +18,11 @@ package be.cytomine.formats
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import be.cytomine.formats.archive.ZipFormat
-import be.cytomine.formats.digitalpathology.AperioSVSFormat
-import be.cytomine.formats.convertable.DotSlideFormat
-import be.cytomine.formats.digitalpathology.HamamatsuNDPIFormat
-import be.cytomine.formats.digitalpathology.HamamatsuVMSFormat
-import be.cytomine.formats.digitalpathology.LeicaSCNFormat
-import be.cytomine.formats.digitalpathology.PhilipsTIFFFormat
-import be.cytomine.formats.digitalpathology.SakuraSVSlideFormat
-import be.cytomine.formats.digitalpathology.MiraxMRXSFormat
+import be.cytomine.formats.digitalpathology.*
 import be.cytomine.formats.specialtiff.CZITIFFFormat
 import be.cytomine.formats.specialtiff.HuronTIFFFormat
-import be.cytomine.formats.standard.BMPFormat
-import be.cytomine.formats.standard.JPEG2000Format
-import be.cytomine.formats.standard.JPEGFormat
-import be.cytomine.formats.standard.PGMFormat
-import be.cytomine.formats.standard.PNGFormat
 import be.cytomine.formats.specialtiff.PhotoshopTIFFFormat
-import be.cytomine.formats.standard.PlanarTIFFFormat
-import be.cytomine.formats.standard.PyramidalTIFFFormat
-import be.cytomine.formats.digitalpathology.VentanaTIFFFormat
+import be.cytomine.formats.standard.*
 import utils.FilesUtils
 
 /**

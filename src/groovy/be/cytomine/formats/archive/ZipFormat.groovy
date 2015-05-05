@@ -1,5 +1,8 @@
 package be.cytomine.formats.archive
 
+import be.cytomine.formats.ArchiveFormat
+import utils.FilesUtils
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,12 +18,7 @@ package be.cytomine.formats.archive
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import be.cytomine.formats.ArchiveFormat
-import utils.FilesUtils
 import utils.ProcUtils
-
-import java.awt.image.BufferedImage
 
 /**
  * Created by stevben on 23/04/14.

@@ -1,5 +1,7 @@
 package be.cytomine.formats.digitalpathology
 
+import org.openslide.OpenSlide
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,10 +17,6 @@ package be.cytomine.formats.digitalpathology
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import org.openslide.OpenSlide
-import utils.FilesUtils
-
 /**
  * Created by stevben on 22/04/14.
  */

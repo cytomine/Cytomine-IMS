@@ -1,5 +1,8 @@
 package be.cytomine.formats.digitalpathology
 
+import grails.util.Holders
+import utils.ServerUtils
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,9 +18,6 @@ package be.cytomine.formats.digitalpathology
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import grails.util.Holders
-import utils.ServerUtils
 import java.awt.image.BufferedImage
 
 /**

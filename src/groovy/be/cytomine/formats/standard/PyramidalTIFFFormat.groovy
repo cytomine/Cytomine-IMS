@@ -1,5 +1,8 @@
 package be.cytomine.formats.standard
 
+import be.cytomine.formats.digitalpathology.OpenSlideSingleFileFormat
+import grails.util.Holders
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,15 +18,12 @@ package be.cytomine.formats.standard
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import be.cytomine.formats.digitalpathology.OpenSlideSingleFileFormat
-import grails.util.Holders
 import org.springframework.util.StringUtils
 import utils.FilesUtils
 import utils.ServerUtils
 
-import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
 
 /**
  * Created by stevben on 28/04/14.

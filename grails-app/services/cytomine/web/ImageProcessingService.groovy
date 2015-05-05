@@ -1,5 +1,8 @@
 package cytomine.web
 
+import be.cytomine.processing.image.filters.Auto_Threshold
+import com.vividsolutions.jts.geom.Coordinate
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,20 +18,14 @@ package cytomine.web
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import be.cytomine.processing.image.filters.Auto_Threshold
-import com.vividsolutions.jts.geom.Coordinate
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.geom.LineString
 import com.vividsolutions.jts.geom.MultiPolygon
-import grails.util.Holders
 import ij.ImagePlus
 import ij.process.ImageConverter
 import ij.process.ImageProcessor
 import ij.process.PolygonFiller
-import utils.ProcUtils
 
-import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage

@@ -1,5 +1,8 @@
 package be.cytomine.storage
 
+import be.cytomine.client.Cytomine
+import grails.converters.JSON
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,21 +18,11 @@ package be.cytomine.storage
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import be.cytomine.client.Cytomine
-import be.cytomine.client.models.Storage
-import be.cytomine.client.models.UploadedFile
-import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.ImageFormat
-import grails.converters.JSON
-import org.apache.commons.io.FilenameUtils
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
-import org.springframework.web.multipart.commons.CommonsMultipartFile
-import utils.FilesUtils
 
 /**
  * Cytomine @ GIGA-ULG

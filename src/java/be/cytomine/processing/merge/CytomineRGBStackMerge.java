@@ -1,12 +1,15 @@
 package be.cytomine.processing.merge;
-
-import ij.*;
-import ij.plugin.PlugIn;
+commit
+import ij.CompositeImage;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
 import ij.plugin.RGBStackMerge;
-import ij.process.*;
-import ij.gui.*;
+import ij.process.ImageProcessor;
+import ij.process.LUT;
+
 import java.awt.*;
-import java.awt.image.*;
+import java.awt.image.IndexColorModel;
 
 /** This plugin implements the Image/Color/Merge Channels command. */
 public class CytomineRGBStackMerge extends RGBStackMerge {

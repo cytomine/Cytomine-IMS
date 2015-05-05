@@ -1,5 +1,8 @@
 package be.cytomine.image
 
+import be.cytomine.formats.FormatIdentifier
+import be.cytomine.formats.ImageFormat
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -15,15 +18,9 @@ package be.cytomine.image
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.ImageFormat
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
-import ij.IJ
-import ij.ImagePlus
-import ij.plugin.Macro_Runner
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
@@ -32,7 +29,6 @@ import org.restapidoc.pojo.RestApiParamType
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-import java.awt.image.BufferedImageFilter
 
 @RestApi(name = "image services", description = "Methods for images (thumb, tile, property, ...)")
 class ImageController extends ImageUtilsController {

@@ -1,10 +1,8 @@
 package cytomine.web
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.models.AbstractImage
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
-import utils.FilesUtils
 import utils.ProcUtils
 
 /**
