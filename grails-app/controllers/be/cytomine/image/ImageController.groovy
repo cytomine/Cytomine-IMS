@@ -26,6 +26,7 @@ import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
+import utils.ImageUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -141,6 +142,21 @@ class ImageController extends ImageUtilsController {
         String cropURL = imageFormat.cropURL(params,grailsApplication.config.cytomine.charset)
         log.info cropURL
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
+
+        Long start = System.currentTimeMillis()
+
+        /*
+         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for IIP server request. Same for h.
+         * We may loose precision and the size could be w+-1 * h+-1.
+         * If the difference is < as threshold, we rescale
+         */
+        int threshold = 10
+        boolean imageDifferentSize = (savedWidth!=bufferedImage.width) || (savedHeight!=bufferedImage.height)
+        if(imageDifferentSize && (Math.abs(savedWidth-bufferedImage.width)<threshold && Math.abs(savedHeight-bufferedImage.height)<threshold)) {
+            bufferedImage = ImageUtils.resize(bufferedImage,(int)savedWidth,(int)savedHeight)
+        }
+
+        println "time=${System.currentTimeMillis()-start}"
 
         int i = 0
         while(bufferedImage==null && i<3) {

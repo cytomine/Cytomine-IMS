@@ -19,6 +19,7 @@ import com.vividsolutions.jts.geom.Coordinate
  * limitations under the License.
  */
 import com.vividsolutions.jts.geom.Geometry
+import com.vividsolutions.jts.geom.GeometryCollection
 import com.vividsolutions.jts.geom.LineString
 import com.vividsolutions.jts.geom.MultiPolygon
 import ij.ImagePlus
@@ -26,6 +27,7 @@ import ij.process.ImageConverter
 import ij.process.ImageProcessor
 import ij.process.PolygonFiller
 
+import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
@@ -89,11 +91,12 @@ class ImageProcessingService {
     }
 
     public BufferedImage colorizeWindow(def params, BufferedImage window, Collection<Geometry> geometryCollection, int x, int y, double x_ratio, double y_ratio) {
-
+        log.info "colorizeWindow=${geometryCollection.size()}"
+        ImageIO.write(window,"jpg",new File("/home/lrollus/mask/1.jpg"))
         for (geometry in geometryCollection) {
-
-            if (geometry instanceof MultiPolygon) {
-                MultiPolygon multiPolygon = (MultiPolygon) geometry;
+            log.info "colorizeWindow 1"
+            if (geometry instanceof GeometryCollection) {
+                GeometryCollection multiPolygon = (GeometryCollection) geometry;
                 for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
                     window = colorizeWindow(params, window, multiPolygon.getGeometryN(i), x, y, x_ratio, y_ratio)
                 }
@@ -101,12 +104,13 @@ class ImageProcessingService {
                 window = colorizeWindow(params, window, geometry, x, y, x_ratio, y_ratio)
             }
         }
-
+        ImageIO.write(window,"jpg",new File("/home/lrollus/mask/9.jpg"))
         return window
     }
 
     public BufferedImage colorizeWindow(def params, BufferedImage window,  Geometry geometry, int x, int y, double x_ratio, double y_ratio) {
-
+        log.info "colorizeWindow 2"
+        log.info geometry.class
         if (geometry instanceof com.vividsolutions.jts.geom.Polygon) {
             com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geometry;
             window = colorizeWindow(params, window, polygon, x, y, x_ratio, y_ratio)
@@ -116,7 +120,7 @@ class ImageProcessingService {
     }
 
     public BufferedImage colorizeWindow(def params, BufferedImage window, com.vividsolutions.jts.geom.Polygon polygon, int x, int y, double x_ratio, double y_ratio) {
-
+        log.info "colorizeWindow 3"
         window = colorizeWindow(params, window, polygon.getExteriorRing(), Color.WHITE, x, y, x_ratio, y_ratio)
         for (def j = 0; j < polygon.getNumInteriorRing(); j++) {
             window = colorizeWindow(params, window, polygon.getInteriorRingN(j), Color.BLACK, x, y, x_ratio, y_ratio)
@@ -126,6 +130,7 @@ class ImageProcessingService {
     }
 
     public BufferedImage colorizeWindow(def params, BufferedImage window, LineString lineString, Color color, int x, int y, double x_ratio, double y_ratio) {
+        log.info "colorizeWindow FINAL"
         int imageHeight = params.int('imageHeight')
         ImagePlus imagePlus = new ImagePlus("", window)
         ImageProcessor ip = imagePlus.getProcessor()
@@ -149,9 +154,9 @@ class ImageProcessingService {
         PolygonFiller polygonFiller = new PolygonFiller()
         polygonFiller.setPolygon(_x, _y, coordinates.size())
         polygonFiller.fill(ip, new Rectangle(window.getWidth(), window.getHeight()))
-
         //ip.setPixels(pixels)
         ip.getBufferedImage()
+
     }
 
     public BufferedImage drawPolygons(def params, BufferedImage bufferedImage, Collection<Geometry> geometryCollection, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio) {

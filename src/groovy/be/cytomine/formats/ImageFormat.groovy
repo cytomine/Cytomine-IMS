@@ -59,15 +59,15 @@ abstract class ImageFormat extends Format {
         String fif = URLEncoder.encode(params.fif,charset)
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
-        int width = params.int('width')
-        int height = params.int('height')
-        int imageWidth = params.int('imageWidth')
-        int imageHeight = params.int('imageHeight')
+        double width = params.double('width')
+        double height = params.double('height')
+        double imageWidth = params.double('imageWidth')
+        double imageHeight = params.double('imageHeight')
 		
         def x = (topLeftX == 0) ? 0 : 1/(imageWidth / topLeftX)
         def y = ((imageHeight - topLeftY) == 0) ? 0 : 1/(imageHeight / (imageHeight - topLeftY))
-        def w = (width == 0) ? 0 : 1/(imageWidth / width)
-        def h = (height == 0) ? 0 : 1/(imageHeight / height)
+        double w = (width == 0) ? 0d : 1d/(imageWidth / width)
+        double h = (height == 0) ? 0d : 1d/(imageHeight / height)
 
 		int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
         if (params.maxSize) {
