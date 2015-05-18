@@ -25,6 +25,7 @@ import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
+import org.restapidoc.annotation.RestApiResponseObject
 import org.restapidoc.pojo.RestApiParamType
 import utils.ImageUtils
 
@@ -105,6 +106,47 @@ class ImageController extends ImageUtilsController {
         render imageFormat.properties() as JSON
     }
 
+    @RestApiMethod(description="Get the mask of a crop image", extensions = ["jpg","png"])
+    @RestApiResponseObject(objectIdentifier =  "[location : wkt]")
+    @RestApiParams(params=[
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left X value of the requested ROI"),
+            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left Y value of the requested ROI"),
+            @RestApiParam(name="width", type="int", paramType = RestApiParamType.QUERY, description = "The width of the ROI (in pixels)"),
+            @RestApiParam(name="height", type="int", paramType = RestApiParamType.QUERY, description = "The height of the ROI (in pixels)"),
+            @RestApiParam(name="imageWidth", type="int", paramType = RestApiParamType.QUERY, description = "The image width of the whole image"),
+            @RestApiParam(name="imageHeight", type="int", paramType = RestApiParamType.QUERY, description = "The image height of the whole image"),
+            @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
+            @RestApiParam(name="zoom", type="int", paramType = RestApiParamType.QUERY, description = " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.", required = false),
+            @RestApiParam(name="alphaMask", type="boolean", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
+    ])
+    def mask() {
+        BufferedImage bufferedImage = readCropBufferedImage(params)
+
+        def geometry = null
+
+        if(params.location) {
+            geometry = new WKTReader().read(params.location)
+        } else if(request.JSON.location!=null && request.JSON.location!="") {
+            geometry = new WKTReader().read(request.JSON.location)
+        }
+
+        bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, params.boolean('alphaMask',false))
+        //resize if necessary
+        if (params.maxSize) {
+            int maxSize = params.int('maxSize', 256)
+            bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
+        } else if (params.zoom) {
+            int zoom = params.int('zoom', 0)
+            int maxWidth = params.double('width') / Math.pow(2, zoom)
+            int maxHeight = params.double('height') / Math.pow(2, zoom)
+            bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxWidth, maxHeight)
+        }
+        responseBufferedImage(bufferedImage)
+    }
+
+
     @RestApiMethod(description="Get the crop of an image", extensions = ["jpg","png"])
     @RestApiParams(params=[
     @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
@@ -123,61 +165,11 @@ class ImageController extends ImageUtilsController {
     @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
     ])
     def crop() {
-        String fif = params.fif
-        String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
 
-        def savedTopX = params.topLeftX
-        def savedTopY = params.topLeftY
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
 
-        if(params.double('increaseArea')) {
-            params.width = params.int('width')*params.double("increaseArea")
-            params.height =   params.int('height')*params.double("increaseArea")
-            params.topLeftX = params.int('topLeftX')-((params.double('width')-savedWidth)/2)
-            params.topLeftY = params.int('topLeftY')+((params.double('height')-savedHeight)/2)
-        }
-
-        String cropURL = imageFormat.cropURL(params,grailsApplication.config.cytomine.charset)
-        log.info cropURL
-        BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
-
-        Long start = System.currentTimeMillis()
-
-        /*
-         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for IIP server request. Same for h.
-         * We may loose precision and the size could be w+-1 * h+-1.
-         * If the difference is < as threshold, we rescale
-         */
-        int threshold = 10
-        boolean imageDifferentSize = (savedWidth!=bufferedImage.width) || (savedHeight!=bufferedImage.height)
-        if(imageDifferentSize && (Math.abs(savedWidth-bufferedImage.width)<threshold && Math.abs(savedHeight-bufferedImage.height)<threshold)) {
-            bufferedImage = ImageUtils.resize(bufferedImage,(int)savedWidth,(int)savedHeight)
-        }
-
-        println "time=${System.currentTimeMillis()-start}"
-
-        int i = 0
-        while(bufferedImage==null && i<3) {
-            bufferedImage = ImageIO.read(new URL(cropURL))
-            i++
-        }
-
-        if(bufferedImage==null) {
-            throw new Exception("Not a valid image: ${cropURL}")
-        }
-
-        params.topLeftX = savedTopX
-        params.topLeftY = savedTopY
-        params.width = savedWidth
-        params.height = savedHeight
-
-        if(params.safe) {
-            //if safe mode, skip annotation too large
-            if(params.int('width')>grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
-            if(params.int('height')>grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
-        }
+        BufferedImage bufferedImage = readCropBufferedImage(params)
 
 
        if (params.draw) {
@@ -220,6 +212,66 @@ class ImageController extends ImageUtilsController {
 //            }
         } 
         responseBufferedImage(bufferedImage)
+    }
+
+    public BufferedImage readCropBufferedImage(def params) {
+        String fif = params.fif
+        String mimeType = params.mimeType
+        def savedTopX = params.topLeftX
+        def savedTopY = params.topLeftY
+
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+
+        def savedWidth = params.double('width')
+        def savedHeight = params.double('height')
+
+        if (params.double('increaseArea')) {
+            params.width = params.int('width') * params.double("increaseArea")
+            params.height = params.int('height') * params.double("increaseArea")
+            params.topLeftX = params.int('topLeftX') - ((params.double('width') - savedWidth) / 2)
+            params.topLeftY = params.int('topLeftY') + ((params.double('height') - savedHeight) / 2)
+        }
+
+        String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
+        log.info cropURL
+        BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
+
+        Long start = System.currentTimeMillis()
+
+        /*
+         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for IIP server request. Same for h.
+         * We may loose precision and the size could be w+-1 * h+-1.
+         * If the difference is < as threshold, we rescale
+         */
+        int threshold = 10
+        boolean imageDifferentSize = (savedWidth != bufferedImage.width) || (savedHeight != bufferedImage.height)
+        if (imageDifferentSize && (Math.abs(savedWidth - bufferedImage.width) < threshold && Math.abs(savedHeight - bufferedImage.height) < threshold)) {
+            bufferedImage = ImageUtils.resize(bufferedImage, (int) savedWidth, (int) savedHeight)
+        }
+
+        println "time=${System.currentTimeMillis() - start}"
+
+        int i = 0
+        while (bufferedImage == null && i < 3) {
+            bufferedImage = ImageIO.read(new URL(cropURL))
+            i++
+        }
+
+        if (bufferedImage == null) {
+            throw new Exception("Not a valid image: ${cropURL}")
+        }
+
+        params.topLeftX = savedTopX
+        params.topLeftY = savedTopY
+        params.width = savedWidth
+        params.height = savedHeight
+
+        if (params.safe) {
+            //if safe mode, skip annotation too large
+            if (params.int('width') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
+            if (params.int('height') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
+        }
+        bufferedImage
     }
 
     @RestApiMethod(description="Get a tile of an image (following zoomify format)", extensions = ["jpg","png"])

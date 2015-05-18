@@ -51,9 +51,11 @@ class UrlMappings {
         }
 
         "/image/crop.$format" (controller:"image") {
-            action = [GET:"crop"]
+            action = [GET:"crop", POST:"crop"]
         }
 
-
+        "/image/mask.$format" (controller:"image") {
+            action = [GET:"mask",POST:"mask"]
+        }
 	}
 }

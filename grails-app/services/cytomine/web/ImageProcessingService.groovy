@@ -91,8 +91,6 @@ class ImageProcessingService {
     }
 
     public BufferedImage colorizeWindow(def params, BufferedImage window, Collection<Geometry> geometryCollection, int x, int y, double x_ratio, double y_ratio) {
-        log.info "colorizeWindow=${geometryCollection.size()}"
-        ImageIO.write(window,"jpg",new File("/home/lrollus/mask/1.jpg"))
         for (geometry in geometryCollection) {
             log.info "colorizeWindow 1"
             if (geometry instanceof GeometryCollection) {
@@ -104,7 +102,6 @@ class ImageProcessingService {
                 window = colorizeWindow(params, window, geometry, x, y, x_ratio, y_ratio)
             }
         }
-        ImageIO.write(window,"jpg",new File("/home/lrollus/mask/9.jpg"))
         return window
     }
 
