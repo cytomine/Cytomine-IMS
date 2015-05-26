@@ -183,6 +183,7 @@ class ImageProcessingService {
         BufferedImage newImage = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = newImage.createGraphics();
+//        g.setBackground (color);
         try {
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                     RenderingHints.VALUE_INTERPOLATION_BICUBIC);
