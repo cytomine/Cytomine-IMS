@@ -2,6 +2,9 @@ package be.cytomine.image
 
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
+import org.imgscalr.Scalr
+
+import static org.imgscalr.Scalr.*;
 
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
@@ -182,22 +185,6 @@ class ImageController extends ImageUtilsController {
             Geometry geometry  = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, false)
         } else if (params.alphaMask) {
-           /*
-           http://localhost:9080/image/crop.png?fif=%2Fdata%2Fbeta.cytomine.be%2F156037249%2F%2F1430310481926%2FAGDC1_PBS_6_-_2015-03-18_10.53.53.ndpi&mimeType=openslide/ndpi&topLeftX=7444&topLeftY=10286&width=240&height=232&imageWidth=23040&imageHeight=16896&alphaMask=true&location=POLYGON+%28%287484+10246%2C+7476+10238%2C+7460+10238%2C+7460+10230%2C+7452+10230%2C+7444+10230%2C+7444+10222%2C+7444+10214%2C+7444+10206%2C+7444+10198%2C+7444+10190%2C+7444+10182%2C+7444+10174%2C+7444+10166%2C+7452+10158%2C+7452+10150%2C+7452+10142%2C+7452+10134%2C+7460+10118%2C+7468+10110%2C+7476+10102%2C+7476+10094%2C+7484+10086%2C+7492+10086%2C+7492+10078%2C+7500+10070%2C+7508+10070%2C+7516+10070%2C+7516+10062%2C+7524+10062%2C+7532+10062%2C+7532+10054%2C+7540+10054%2C+7548+10054%2C+7556+10054%2C+7564+10054%2C+7572+10054%2C+7580+10054%2C+7588+10054%2C+7596+10054%2C+7604+10054%2C+7612+10054%2C+7620+10054%2C+7628+10054%2C+7636+10054%2C+7644+10054%2C+7652+10062%2C+7652+10070%2C+7660+10070%2C+7660+10078%2C+7660+10086%2C+7668+10094%2C+7668+10102%2C+7676+10110%2C+7676+10118%2C+7676+10126%2C+7676+10134%2C+7684+10142%2C+7684+10150%2C+7684+10158%2C+7684+10166%2C+7684+10174%2C+7684+10182%2C+7684+10190%2C+7684+10198%2C+7676+10206%2C+7676+10214%2C+7668+10222%2C+7668+10230%2C+7660+10238%2C+7652+10246%2C+7644+10254%2C+7636+10262%2C+7628+10262%2C+7620+10270%2C+7612+10278%2C+7604+10286%2C+7596+10286%2C+7588+10286%2C+7580+10286%2C+7572+10286%2C+7564+10286%2C+7556+10286%2C+7548+10286%2C+7540+10286%2C+7532+10286%2C+7524+10278%2C+7484+10246%29%29&resolution=0.4567461311817169
-
-
-                http://localhost:9080/image/crop.png?fif=%2Fdata%2Fbeta.cytomine.be%2F156037249%2F%2F1430310481926%2FAGDC1_PBS_6_-_2015-03-18_10.53.53.ndpi&mimeType=openslide/ndpi&topLeftX=7444&topLeftY=10286&width=240&height=232&imageWidth=23040&imageHeight=16896&zoom=0&alphaMask=true&location=POLYGON+%28%287484+10246%2C+7476+10238%2C+7460+10238%2C+7460+10230%2C+7452+10230%2C+7444+10230%2C+7444+10222%2C+7444+10214%2C+7444+10206%2C+7444+10198%2C+7444+10190%2C+7444+10182%2C+7444+10174%2C+7444+10166%2C+7452+10158%2C+7452+10150%2C+7452+10142%2C+7452+10134%2C+7460+10118%2C+7468+10110%2C+7476+10102%2C+7476+10094%2C+7484+10086%2C+7492+10086%2C+7492+10078%2C+7500+10070%2C+7508+10070%2C+7516+10070%2C+7516+10062%2C+7524+10062%2C+7532+10062%2C+7532+10054%2C+7540+10054%2C+7548+10054%2C+7556+10054%2C+7564+10054%2C+7572+10054%2C+7580+10054%2C+7588+10054%2C+7596+10054%2C+7604+10054%2C+7612+10054%2C+7620+10054%2C+7628+10054%2C+7636+10054%2C+7644+10054%2C+7652+10062%2C+7652+10070%2C+7660+10070%2C+7660+10078%2C+7660+10086%2C+7668+10094%2C+7668+10102%2C+7676+10110%2C+7676+10118%2C+7676+10126%2C+7676+10134%2C+7684+10142%2C+7684+10150%2C+7684+10158%2C+7684+10166%2C+7684+10174%2C+7684+10182%2C+7684+10190%2C+7684+10198%2C+7676+10206%2C+7676+10214%2C+7668+10222%2C+7668+10230%2C+7660+10238%2C+7652+10246%2C+7644+10254%2C+7636+10262%2C+7628+10262%2C+7620+10270%2C+7612+10278%2C+7604+10286%2C+7596+10286%2C+7588+10286%2C+7580+10286%2C+7572+10286%2C+7564+10286%2C+7556+10286%2C+7548+10286%2C+7540+10286%2C+7532+10286%2C+7524+10278%2C+7484+10246%29%29&resolution=0.4567461311817169
-
-
-           should be white (transparent!!!!)
-            change scale image to be transparent
-
-
-            */
-
-
-
-
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
@@ -210,7 +197,9 @@ class ImageController extends ImageUtilsController {
             int zoom = params.int('zoom', 0)
             int maxWidth = savedWidth / Math.pow(2, zoom)
             int maxHeight = savedHeight / Math.pow(2, zoom)
-            bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxWidth, maxHeight)
+            //resize and preserve png transparency for alpha mask
+            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
+                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
         }
 		
         if(params.boolean('drawScaleBar')) {
