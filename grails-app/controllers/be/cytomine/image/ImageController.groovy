@@ -4,6 +4,9 @@ import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
 import org.imgscalr.Scalr
 
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+
 import static org.imgscalr.Scalr.*;
 
 /*
@@ -187,19 +190,43 @@ class ImageController extends ImageUtilsController {
         } else if (params.alphaMask) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
+
+           if (params.zoom) {
+               int zoom = params.int('zoom', 0)
+               int maxWidth = savedWidth / Math.pow(2, zoom)
+               int maxHeight = savedHeight / Math.pow(2, zoom)
+               //resize and preserve png transparency for alpha mask
+//            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
+//                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
+               // Create new (blank) image of required (scaled) size
+
+               bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
+           }
+
+
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
         }
+        println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
+        println "bufferedImage.getType()"+bufferedImage.getType()
+        println new Color(bufferedImage.getRGB(0, 0)).alpha;
+        println bufferedImage.getRGB(0, 0);
+        println bufferedImage
+        println new Color(bufferedImage.getRGB(0, 0)).transparency;
+
         //resize if necessary
         if (params.maxSize) {
             int maxSize = params.int('maxSize', 256)
             bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
-        } else if (params.zoom) {
+        } else if (params.zoom && !params.alphaMask) {
             int zoom = params.int('zoom', 0)
             int maxWidth = savedWidth / Math.pow(2, zoom)
             int maxHeight = savedHeight / Math.pow(2, zoom)
             //resize and preserve png transparency for alpha mask
-            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.SPEED, Scalr.Mode.FIT_TO_WIDTH,
-                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
+//            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
+//                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
+            // Create new (blank) image of required (scaled) size
+
+            bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
         }
 		
         if(params.boolean('drawScaleBar')) {
@@ -216,8 +243,33 @@ class ImageController extends ImageUtilsController {
                 Double magnification = params.double('magnification')					
                 bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth, magnification)
 //            }
-        } 
+        }
+
+        println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
+        println "bufferedImage.getType()"+bufferedImage.getType()
+        println new Color(bufferedImage.getRGB(0, 0)).alpha;
+        println bufferedImage.getRGB(0, 0);
+        println bufferedImage
+        println new Color(bufferedImage.getRGB(0, 0)).transparency;
+
         responseBufferedImage(bufferedImage)
+    }
+
+    public BufferedImage resizeImage(int maxWidth, int maxHeight, BufferedImage bufferedImage) {
+        BufferedImage scaledImage = new BufferedImage(
+                maxWidth, maxHeight, BufferedImage.TYPE_INT_ARGB);
+
+// Paint scaled version of image to new image
+
+        Graphics2D graphics2D = scaledImage.createGraphics();
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.drawImage(bufferedImage, 0, 0, maxWidth, maxHeight, null);
+
+// clean up
+
+        graphics2D.dispose();
+        return scaledImage;
     }
 
     public BufferedImage readCropBufferedImage(def params) {
