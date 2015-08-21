@@ -4,6 +4,8 @@ import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
 import org.imgscalr.Scalr
 
+import java.awt.BasicStroke
+import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 
@@ -178,6 +180,10 @@ class ImageController extends ImageUtilsController {
 
         BufferedImage bufferedImage = readCropBufferedImage(params)
 
+        if(params.boolean("point")) {
+            drawPoint(bufferedImage)
+        }
+
 
        if (params.draw) {
             String location = params.location
@@ -253,6 +259,20 @@ class ImageController extends ImageUtilsController {
         println new Color(bufferedImage.getRGB(0, 0)).transparency;
 
         responseBufferedImage(bufferedImage)
+    }
+
+    public void drawPoint(BufferedImage image) {
+        Graphics g = image.createGraphics();
+        g.setColor(Color.RED);
+
+        int length = 10
+        int x = image.getWidth()/2
+        int y = image.getHeight()/2
+
+        g.setStroke(new BasicStroke(1));
+        g.drawLine(x, y-length, x, y+length);
+        g.drawLine(x-length,y,x+length,y);
+        g.dispose();
     }
 
     public BufferedImage resizeImage(int maxWidth, int maxHeight, BufferedImage bufferedImage) {
