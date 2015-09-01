@@ -32,6 +32,6 @@ class PhotoshopTIFFFormat extends TIFFToConvert {
         String tiffinfo = getTiffInfo()
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
 
-        return tiffinfo.contains("Adobe Photoshop CS3 Windows");
+        return tiffinfo.contains("Adobe Photoshop");
     }
 }
