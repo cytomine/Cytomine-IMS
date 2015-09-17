@@ -93,12 +93,15 @@ public class FormatIdentifier {
             def hierarchicalMultipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats()
             def extractedFolder = new File(uploadedFilePath).getParentFile().absolutePath
 
-            // if the zip contained a folder with the same name, we go into this folder
-            File subFolder = new File(uploadedFilePath).getParentFile().listFiles().find {
-                it ->
-                    it.isDirectory() && new File(uploadedFilePath).name.contains(it.name)
-                };
-            if(subFolder) extractedFolder = subFolder.absolutePath
+            // if the zip contained only one folder, we go into this folder
+            def folders = new File(uploadedFilePath).getParentFile().listFiles().findAll {it.isDirectory()};
+
+            // TODO substract the folde "MACOSX"
+
+            if (folders.size() == 1) {
+                File subFolder = folders.get(0)
+                extractedFolder = subFolder.absolutePath
+            }
 
             hierarchicalMultipleFileImageFormats.each { imageFormat ->
                 imageFormat.absoluteFilePath = extractedFolder
