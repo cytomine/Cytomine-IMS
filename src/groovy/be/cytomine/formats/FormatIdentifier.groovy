@@ -72,6 +72,7 @@ public class FormatIdentifier {
                 new PyramidalTIFFFormat(),
                 new VentanaTIFFFormat(),
                 new JPEG2000Format(),
+                new DICOMFormat(),
                 new JPEGFormat(),
                 new PGMFormat(),
                 new PNGFormat(),
