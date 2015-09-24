@@ -99,10 +99,14 @@ public class FormatIdentifier {
             def extractedFolder = new File(uploadedFilePath).getParentFile().absolutePath
 
             // if the zip contained only one folder, we go into this folder
-            def folders = new File(uploadedFilePath).getParentFile().listFiles();
-
-            // TODO substract the folder "MACOSX"
-            //folders = folders.findAll {it.name != "MACOSX"}
+            def folders = new File(uploadedFilePath).getParentFile().listFiles(new FileFilter() {
+                @Override
+                boolean accept(File pathname) {
+                    // substract the folder "MACOSX"
+                    if(pathname.isDirectory() && pathname.name == "__MACOSX") return false;
+                    return true
+                }
+            });
 
             if (folders.size() == 1 && folders.get(0).isDirectory) {
                 File subFolder = folders.get(0)
