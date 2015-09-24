@@ -104,12 +104,14 @@ public class FormatIdentifier {
                 boolean accept(File pathname) {
                     // substract the folder "MACOSX"
                     if(pathname.isDirectory() && pathname.name == "__MACOSX") return false;
+                    //substract the original zip
+                    if(pathname.absolutePath == uploadedFilePath) return false;
                     return true
                 }
             });
 
-            if (folders.size() == 1 && folders.get(0).isDirectory) {
-                File subFolder = folders.get(0)
+            if (folders.size() == 1 && folders[0].isDirectory()) {
+                File subFolder = folders[0]
                 extractedFolder = subFolder.absolutePath
             }
 
