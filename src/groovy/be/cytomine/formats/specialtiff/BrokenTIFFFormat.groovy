@@ -1,4 +1,6 @@
-package be.cytomine.formats.standard
+package be.cytomine.formats.specialtiff
+
+import grails.util.Holders
 
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
@@ -16,29 +18,28 @@ package be.cytomine.formats.standard
  * limitations under the License.
  */
 
-import grails.util.Holders
-import org.springframework.util.StringUtils
-import utils.FilesUtils
 
 /**
- * Created by stevben on 28/04/14.
+ * Created by hoyoux on 16.02.15.
  */
-class OMETIFFFormat extends TIFFFormat {
+class BrokenTIFFFormat extends TIFFToConvert {
 
-    private excludeDescription = [
-    ]
+    public BrokenTIFFFormat () {
+        extensions = ["tif", "tiff"]
+    }
 
     public boolean detect() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
+        def process = "$tiffinfoExecutable $absoluteFilePath".execute()
 
-        boolean notTiff = false
-        excludeDescription.each {
-            notTiff |= tiffinfo.contains(it)
+        BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErr()));
+
+        String err;
+        while((err = errReader.readLine()) != null) {
+            println "tiffinfo error :"
+            println err
+            if(err.contains("not a valid IFD offset.")) return true;
         }
-        if (notTiff) return false
-
-        return tiffinfo.contains("OME-TIFF")
+        return false
     }
 }

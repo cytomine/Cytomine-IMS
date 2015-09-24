@@ -25,7 +25,10 @@ class DotSlideFormat extends ConvertableFormat {
         String mainFile = "ExtendedProps.xml"
         File folder = new File(absoluteFilePath)
 
-        String command = "cat  "+folder.listFiles().find {it.name.equals(mainFile)}.absolutePath
+        File target = folder.listFiles().find {it.name.equals(mainFile)}
+        if(!target) return false
+
+        String command = "cat  "+target.absolutePath
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text

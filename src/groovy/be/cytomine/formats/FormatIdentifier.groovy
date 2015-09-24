@@ -1,6 +1,7 @@
 package be.cytomine.formats
 
 import be.cytomine.formats.archive.ZipFormat
+import be.cytomine.formats.convertable.CellSensVSIFormat
 import be.cytomine.formats.convertable.DotSlideFormat
 
 /*
@@ -19,6 +20,7 @@ import be.cytomine.formats.convertable.DotSlideFormat
  * limitations under the License.
  */
 import be.cytomine.formats.digitalpathology.*
+import be.cytomine.formats.specialtiff.BrokenTIFFFormat
 import be.cytomine.formats.specialtiff.CZITIFFFormat
 import be.cytomine.formats.specialtiff.HuronTIFFFormat
 import be.cytomine.formats.specialtiff.PhotoshopTIFFFormat
@@ -46,7 +48,8 @@ public class FormatIdentifier {
 
     static public getAvailableHierarchicalMultipleImageFormats() {
         return [
-                new DotSlideFormat()
+                new DotSlideFormat(),
+                new CellSensVSIFormat()
         ]
     }
 
@@ -63,7 +66,9 @@ public class FormatIdentifier {
                 //common formats
                 new PhotoshopTIFFFormat(),
                 new HuronTIFFFormat(),
+                new BrokenTIFFFormat(),
                 new PlanarTIFFFormat(),
+                //new OMETIFFFormat(),
                 new PyramidalTIFFFormat(),
                 new VentanaTIFFFormat(),
                 new JPEG2000Format(),
@@ -94,11 +99,12 @@ public class FormatIdentifier {
             def extractedFolder = new File(uploadedFilePath).getParentFile().absolutePath
 
             // if the zip contained only one folder, we go into this folder
-            def folders = new File(uploadedFilePath).getParentFile().listFiles().findAll {it.isDirectory()};
+            def folders = new File(uploadedFilePath).getParentFile().listFiles();
 
-            // TODO substract the folde "MACOSX"
+            // TODO substract the folder "MACOSX"
+            //folders = folders.findAll {it.name != "MACOSX"}
 
-            if (folders.size() == 1) {
+            if (folders.size() == 1 && folders.get(0).isDirectory) {
                 File subFolder = folders.get(0)
                 extractedFolder = subFolder.absolutePath
             }

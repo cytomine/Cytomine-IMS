@@ -1,4 +1,5 @@
 package be.cytomine.formats.convertable
+import be.cytomine.formats.Format
 
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
@@ -18,33 +19,14 @@ package be.cytomine.formats.convertable
 /**
  * Created by hoyoux on 28.04.15.
  */
-class CellSensVSIFormat extends ConvertableFormat {
+class CellSensVSIFormat extends Format {
 
     @Override
     boolean detect() {
-        String mainFile = "ExtendedProps.xml"
         File folder = new File(absoluteFilePath)
 
-        File target = folder.listFiles().find {it.name.equals(mainFile)}
-        if(!target) return false
-
-        String command = "cat  "+target.absolutePath
-        def proc = command.execute()
-        proc.waitFor()
-        String stdout = proc.in.text
-        return stdout.contains("dotSlide")
-    }
-
-    @Override
-    def convert() {
-        println "Conversion DotSlide : begin"
-        String name = new File(absoluteFilePath).name
-
-        // call the dotslide lib
-        dotslide.Main.main("-fi", "$absoluteFilePath/fi", "-fp", "$absoluteFilePath/fp" , "-p", "$absoluteFilePath/");
-        dotslidebuild.Main.main("-f", "$absoluteFilePath/fp.txt", "-io", "$absoluteFilePath/$name")
-
-        println "Conversion DotSlide : end"
-        return absoluteFilePath+"/"+name+".tif"
+        File target = folder.listFiles().find {it.isFile() && it.absolutePath.endsWith(".vsi")}
+        if(target) absoluteFilePath = target.absolutePath
+        return target != null;
     }
 }

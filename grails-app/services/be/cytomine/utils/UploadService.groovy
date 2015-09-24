@@ -24,6 +24,7 @@ import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
+import be.cytomine.formats.convertable.CellSensVSIFormat
 import be.cytomine.formats.convertable.ConvertableFormat
 import grails.converters.JSON
 import grails.util.Holders
@@ -87,7 +88,7 @@ class UploadService {
             return
         }
 
-        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableFormat};
+        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableFormat || it.imageFormat instanceof CellSensVSIFormat};
         imageFormats = imageFormats - unsupportedImageFormats;
 
         def images = []
@@ -104,8 +105,9 @@ class UploadService {
         def conversion = { image ->
 
             String inputPath = image.uploadedFilePath;
+            if (inputPath == null) inputPath = image.absoluteFilePath;
 
-            if(image.imageFormat == null) {
+            if(image.imageFormat == null || image.imageFormat instanceof CellSensVSIFormat) {
                 //if more than BioFormat change by if(image.imageFormat instanceof ConvertableToMultifile) where BioFormat is an extension
 
                 // call Bioformat application and get an array of paths (the converted & splited images)
@@ -217,8 +219,8 @@ class UploadService {
                     [idStorage],
                     currentUserId,
                     -1l,
-                    uploadedFile.id,
-                    null)
+                    uploadedFile.id, // this is the parent
+                    null)//this is the Download parent
 
         } else {
             //put correct mime_type in uploadedFile
@@ -241,8 +243,8 @@ class UploadService {
                 [idStorage],
                 currentUserId,
                 -1l,
-                finalParent.id,
-                uploadedFile.id)
+                finalParent.id, // this is the parent
+                uploadedFile.id) //this is the Download parent
 
         println "_uploadedFile : "+_uploadedFile
         println "_uploadedFile.id : "+_uploadedFile.id
@@ -279,7 +281,7 @@ class UploadService {
                     new BufferedReader(
                             new InputStreamReader(echoSocket.getInputStream()));
 
-            out.println('{path:"'+filePath+'"}');
+            out.println('{path:"'+filePath+'",group:false}');
             String result = inp.readLine();
             def json  = JSON.parse(result);
             files = json.files
