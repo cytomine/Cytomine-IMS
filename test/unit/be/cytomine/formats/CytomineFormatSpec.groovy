@@ -2,7 +2,9 @@ package be.cytomine.formats
 
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.archive.ZipFormat
-import be.cytomine.formats.digitalpathology.*
+import be.cytomine.formats.lightconvertable.VentanaTIFFFormat
+import be.cytomine.formats.supported.PhilipsTIFFFormat
+import be.cytomine.formats.supported.digitalpathology.*
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -19,12 +21,12 @@ import be.cytomine.formats.digitalpathology.*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import be.cytomine.formats.specialtiff.CZITIFFFormat
-import be.cytomine.formats.specialtiff.PhotoshopTIFFFormat
-import be.cytomine.formats.standard.JPEGFormat
-import be.cytomine.formats.standard.PNGFormat
-import be.cytomine.formats.standard.PlanarTIFFFormat
-import be.cytomine.formats.standard.PyramidalTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.PhotoshopTIFFFormat
+import be.cytomine.formats.lightconvertable.JPEGFormat
+import be.cytomine.formats.lightconvertable.PNGFormat
+import be.cytomine.formats.lightconvertable.specialtiff.PlanarTIFFFormat
+import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.image.ImageUtilsController
 import grails.test.mixin.TestFor
 import utils.ProcUtils

@@ -1,7 +1,5 @@
 package be.cytomine.formats
 
-import be.cytomine.formats.supported.SupportedImageFormat
-
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -18,17 +16,9 @@ import be.cytomine.formats.supported.SupportedImageFormat
  * limitations under the License.
  */
 
-class TileService {
-
-    def getTileUrl(def params) {
-        String fif = params.zoomify
-        /*remove the "/" at the end of the path injected by openlayers (OL2).
-          I Did not find the way to avoid it from OL2 (BS)
-         */
-        if (fif.endsWith("/"))
-            fif = fif.substring(0, fif.length()-1)
-        String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params)
-    }
+/**
+ * Created by hoyoux on 29.04.15.
+ */
+interface IConvertableImageFormat {
+    def convert()
 }

@@ -1,6 +1,4 @@
-package be.cytomine.formats
-
-import be.cytomine.formats.supported.SupportedImageFormat
+package be.cytomine.formats.lightconvertable
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -18,17 +16,18 @@ import be.cytomine.formats.supported.SupportedImageFormat
  * limitations under the License.
  */
 
-class TileService {
+import grails.util.Holders
+import utils.ServerUtils
 
-    def getTileUrl(def params) {
-        String fif = params.zoomify
-        /*remove the "/" at the end of the path injected by openlayers (OL2).
-          I Did not find the way to avoid it from OL2 (BS)
-         */
-        if (fif.endsWith("/"))
-            fif = fif.substring(0, fif.length()-1)
-        String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params)
+/**
+ * Created by stevben on 22/04/14.
+ */
+class PNGFormat extends CommonFormat {
+
+    public PNGFormat() {
+        extensions = ["png"]
+        IMAGE_MAGICK_FORMAT_IDENTIFIER = "Format: PNG (Portable Network Graphics)"
+        //mimeType = "image/png"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 }

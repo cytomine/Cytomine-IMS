@@ -24,10 +24,13 @@ import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.ImageFormat
+/*import be.cytomine.formats.ImageFormat
 import be.cytomine.formats.convertable.CellSensVSIFormat
 import be.cytomine.formats.convertable.ConvertableFormat
-import be.cytomine.formats.specialtiff.OMETIFFFormat
+import be.cytomine.formats.specialtiff.OMETIFFFormat*/
+import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
+import be.cytomine.formats.ConvertableImageFormat
 import grails.converters.JSON
 import grails.util.Holders
 import org.apache.commons.io.FilenameUtils
@@ -90,7 +93,7 @@ class UploadService {
             return
         }
 
-        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableFormat || it.imageFormat instanceof CellSensVSIFormat || it.imageFormat instanceof OMETIFFFormat};
+        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableImageFormat || it.imageFormat instanceof CellSensVSIFormat};
         imageFormats = imageFormats - unsupportedImageFormats;
 
         def images = []
@@ -186,7 +189,7 @@ class UploadService {
         //start to convert into pyramid format, if necessary
         def imageFormatsToDeploy = []
         filesToDeploy.each { fileToDeploy ->
-            ImageFormat imageFormat = fileToDeploy.imageFormat
+            SupportedImageFormat imageFormat = fileToDeploy.imageFormat
             String convertedImageFilename = imageFormat.convert(storageBufferPath)
             if (convertedImageFilename) {
                 FormatIdentifier.getImageFormats(convertedImageFilename).each { convertedImageFormat ->
@@ -205,8 +208,8 @@ class UploadService {
     private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, List projects, long idStorage, long currentUserId, def properties, UploadedFile uploadedFile) {
         log.info "createImage $imageFormatsToDeploy"
 
-        ImageFormat imageFormat = imageFormatsToDeploy.imageFormat
-        ImageFormat parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
+        SupportedImageFormat imageFormat = imageFormatsToDeploy.imageFormat
+        SupportedImageFormat parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
         File f = new File(imageFormat.absoluteFilePath)
         def parentUploadedFile = null

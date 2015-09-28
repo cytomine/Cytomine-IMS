@@ -1,6 +1,4 @@
-package be.cytomine.formats
-
-import be.cytomine.formats.supported.SupportedImageFormat
+package be.cytomine.formats.supported.digitalpathology
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -18,17 +16,15 @@ import be.cytomine.formats.supported.SupportedImageFormat
  * limitations under the License.
  */
 
-class TileService {
+/**
+ * Created by stevben on 22/04/14.
+ */
+class SakuraSVSlideFormat extends OpenSlideSingleFileFormat {
 
-    def getTileUrl(def params) {
-        String fif = params.zoomify
-        /*remove the "/" at the end of the path injected by openlayers (OL2).
-          I Did not find the way to avoid it from OL2 (BS)
-         */
-        if (fif.endsWith("/"))
-            fif = fif.substring(0, fif.length()-1)
-        String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params)
+    public SakuraSVSlideFormat () {
+        extensions = ["svslide"]
+        vendor = "sakura"
+        mimeType = "sakura/svslide"
     }
+
 }

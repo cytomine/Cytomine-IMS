@@ -1,8 +1,25 @@
 package be.cytomine.formats
 
 import be.cytomine.formats.archive.ZipFormat
-import be.cytomine.formats.convertable.CellSensVSIFormat
-import be.cytomine.formats.convertable.DotSlideFormat
+import be.cytomine.formats.lightconvertable.BMPFormat
+import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
+import be.cytomine.formats.lightconvertable.DICOMFormat
+import be.cytomine.formats.heavyconvertable.DotSlideFormat
+import be.cytomine.formats.lightconvertable.VentanaTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.PlanarTIFFFormat
+import be.cytomine.formats.supported.JPEG2000Format
+import be.cytomine.formats.supported.PhilipsTIFFFormat
+import be.cytomine.formats.supported.PyramidalTIFFFormat
+import be.cytomine.formats.supported.digitalpathology.*
+import be.cytomine.formats.lightconvertable.JPEGFormat
+import be.cytomine.formats.lightconvertable.PGMFormat
+import be.cytomine.formats.lightconvertable.PNGFormat
+import be.cytomine.formats.lightconvertable.specialtiff.BrokenTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.HuronTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.PhotoshopTIFFFormat
+import be.cytomine.formats.supported.SupportedImageFormat
+import utils.FilesUtils
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -19,14 +36,6 @@ import be.cytomine.formats.convertable.DotSlideFormat
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import be.cytomine.formats.digitalpathology.*
-import be.cytomine.formats.specialtiff.BrokenTIFFFormat
-import be.cytomine.formats.specialtiff.CZITIFFFormat
-import be.cytomine.formats.specialtiff.HuronTIFFFormat
-import be.cytomine.formats.specialtiff.OMETIFFFormat
-import be.cytomine.formats.specialtiff.PhotoshopTIFFFormat
-import be.cytomine.formats.standard.*
-import utils.FilesUtils
 
 /**
  * Created by stevben on 22/04/14.
@@ -149,7 +158,7 @@ public class FormatIdentifier {
             //multiple single files (jpeg1, jpeg2, ...) ?
             if (imageFormats.size() == 0) { //obviously, we did not detect multiple files image formats
                 extractedFiles.each {  extractedFile ->
-                    def imageFormat = getImageFormat(extractedFile)
+                    SupportedImageFormat imageFormat = getImageFormat(extractedFile)
                     if (imageFormat) imageFormats << [
                             absoluteFilePath : imageFormat.absoluteFilePath,
                             imageFormat : imageFormat]
@@ -164,10 +173,10 @@ public class FormatIdentifier {
         return imageFormats
     }
 
-    static public ImageFormat getImageFormatByMimeType(String fif, String mimeType) {
+    static public SupportedImageFormat getImageFormatByMimeType(String fif, String mimeType) {
         def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
 
-        ImageFormat imageFormat =  imageFormats.find {
+        SupportedImageFormat imageFormat =  imageFormats.find {
             it.mimeType == mimeType
         }
 
@@ -176,7 +185,7 @@ public class FormatIdentifier {
 
     }
 
-    static public def getImageFormat(String uploadedFile) {
+    static public SupportedImageFormat getImageFormat(String uploadedFile) {
         def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
 
         //hack to avoid running detect on ndpi

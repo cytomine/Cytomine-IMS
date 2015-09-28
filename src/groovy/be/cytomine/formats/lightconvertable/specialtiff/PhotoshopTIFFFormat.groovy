@@ -1,7 +1,4 @@
-package be.cytomine.formats
-
-import be.cytomine.formats.supported.SupportedImageFormat
-
+package be.cytomine.formats.lightconvertable.specialtiff
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -18,17 +15,20 @@ import be.cytomine.formats.supported.SupportedImageFormat
  * limitations under the License.
  */
 
-class TileService {
 
-    def getTileUrl(def params) {
-        String fif = params.zoomify
-        /*remove the "/" at the end of the path injected by openlayers (OL2).
-          I Did not find the way to avoid it from OL2 (BS)
-         */
-        if (fif.endsWith("/"))
-            fif = fif.substring(0, fif.length()-1)
-        String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params)
+/**
+ * Created by hoyoux on 16.02.15.
+ */
+class PhotoshopTIFFFormat extends TIFFFormat {
+
+    public PhotoshopTIFFFormat () {
+        extensions = ["tif", "tiff"]
+    }
+
+    public boolean detect() {
+        String tiffinfo = getTiffInfo()
+        //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
+
+        return tiffinfo.contains("Adobe Photoshop");
     }
 }

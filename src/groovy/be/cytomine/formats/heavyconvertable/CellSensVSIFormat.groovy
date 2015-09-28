@@ -1,6 +1,5 @@
-package be.cytomine.formats
-
-import be.cytomine.formats.supported.SupportedImageFormat
+package be.cytomine.formats.heavyconvertable
+import be.cytomine.formats.Format
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -17,18 +16,17 @@ import be.cytomine.formats.supported.SupportedImageFormat
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * Created by hoyoux on 28.04.15.
+ */
+class CellSensVSIFormat extends BioFormatConvertable {
 
-class TileService {
+    @Override
+    boolean detect() {
+        File folder = new File(absoluteFilePath)
 
-    def getTileUrl(def params) {
-        String fif = params.zoomify
-        /*remove the "/" at the end of the path injected by openlayers (OL2).
-          I Did not find the way to avoid it from OL2 (BS)
-         */
-        if (fif.endsWith("/"))
-            fif = fif.substring(0, fif.length()-1)
-        String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params)
+        File target = folder.listFiles().find {it.isFile() && it.absolutePath.endsWith(".vsi")}
+        if(target) absoluteFilePath = target.absolutePath
+        return target != null;
     }
 }

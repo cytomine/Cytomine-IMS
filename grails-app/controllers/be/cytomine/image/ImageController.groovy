@@ -1,17 +1,16 @@
 package be.cytomine.image
 
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.ImageFormat
+/*import be.cytomine.formats.ImageFormat
 import grails.util.Holders
 import org.imgscalr.Scalr
-import utils.ServerUtils
+import utils.ServerUtils*/
+import be.cytomine.formats.supported.SupportedImageFormat
 
 import java.awt.BasicStroke
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.RenderingHints
-
-import static org.imgscalr.Scalr.*;
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -59,7 +58,7 @@ class ImageController extends ImageUtilsController {
         String fif = params.fif
         int maxSize = params.int('maxSize', 512)
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         BufferedImage bufferedImage = imageFormat.thumb(maxSize)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
@@ -81,7 +80,7 @@ class ImageController extends ImageUtilsController {
         String label = params.label
         String mimeType = params.mimeType
         int maxSize = params.int('maxSize', 512)
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         println "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
@@ -101,7 +100,7 @@ class ImageController extends ImageUtilsController {
     def associated() {
         String fif = params.fif
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         render imageFormat.associated() as JSON
     }
 
@@ -113,7 +112,7 @@ class ImageController extends ImageUtilsController {
     def properties() {
         String fif = params.fif
         String mimeType = params.mimeType
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         render imageFormat.properties() as JSON
     }
 
@@ -306,7 +305,7 @@ class ImageController extends ImageUtilsController {
         def savedTopX = params.topLeftX
         def savedTopY = params.topLeftY
 
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
 
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
