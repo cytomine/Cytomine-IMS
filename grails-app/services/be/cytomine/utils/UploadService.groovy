@@ -70,10 +70,13 @@ class UploadService {
                 size,
                 extension,
                 contentType,
-                null,
+                null, //mimeType
                 projects,
                 [idStorage],
-                currentUserId)
+                currentUserId,
+                0, // UPLOADED status
+                null // idParent
+        )
 
         deployImagesService.copyUploadedFile(cytomine, uploadedFilePath.absolutePath, uploadedFile, [storage])
 
@@ -107,7 +110,7 @@ class UploadService {
         def convertAndCreate = {
             cytomine.editUploadedFile(uploadedFile.id, 6) //to deploy
             //def imageFormatsToDeploy = convertImage(imageFormats, storageBufferPath)
-            uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 1)
+            uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 1) // converted
             imageFormats.each {
                 images << createImage(cytomine,it,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile)
             }
@@ -132,10 +135,8 @@ class UploadService {
 
             if(image.imageFormat instanceof BioFormatConvertable && image.imageFormat.group) {
 
-
+                def newFiles = [];
                 files.each { file ->
-                    def newFiles = [];
-
                     def newFile = [:]
                     def outputImage = tmpResponseContent[0].images[0]
                     newFile.path = outputImage.get("filename")
@@ -232,9 +233,9 @@ class UploadService {
                     projects,
                     [idStorage],
                     currentUserId,
-                    -1l,
+                    2, //DEPLOYED status
                     uploadedFile.id, // this is the parent
-                    null)//this is the Download parent
+                    )//download parent is not in this function anymore !
 
         } else {
             //put correct mime_type in uploadedFile
