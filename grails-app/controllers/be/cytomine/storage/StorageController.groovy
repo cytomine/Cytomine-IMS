@@ -63,7 +63,7 @@ class StorageController {
             long currentUserId = user.id
 
             log.info "init cytomine..."
-            Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey, "./")
+            Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
 
             def idStorage = Integer.parseInt(params['idStorage'] + "")
             def projects = []

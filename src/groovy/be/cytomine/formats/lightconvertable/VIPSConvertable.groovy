@@ -1,6 +1,5 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.formats.ConvertableImageFormat
 import be.cytomine.formats.Format
 import be.cytomine.formats.IConvertableImageFormat
 import grails.util.Holders

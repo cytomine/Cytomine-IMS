@@ -23,7 +23,7 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-class JPEGFormat extends CommonFormat {
+public class JPEGFormat extends CommonFormat {
 
     public JPEGFormat () {
         extensions = ["jpg", "jpeg"]

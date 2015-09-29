@@ -23,7 +23,7 @@ import utils.FilesUtils
 /**
  * Created by stevben on 22/04/14.
  */
-abstract class CommonFormat extends VIPSConvertable {
+public abstract class CommonFormat extends VIPSConvertable {
 
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 

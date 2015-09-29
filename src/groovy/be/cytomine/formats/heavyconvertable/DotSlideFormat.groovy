@@ -1,8 +1,6 @@
 package be.cytomine.formats.heavyconvertable
 
-import be.cytomine.formats.ConvertableImageFormat
 import be.cytomine.formats.Format
-import be.cytomine.formats.IConvertableImageFormat
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.

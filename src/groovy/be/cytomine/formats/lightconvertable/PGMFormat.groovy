@@ -22,7 +22,7 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-class PGMFormat extends CommonFormat {
+public class PGMFormat extends CommonFormat {
 
     public PGMFormat () {
         extensions = ["pgm"]

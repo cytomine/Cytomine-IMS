@@ -1,8 +1,6 @@
 package be.cytomine.formats.heavyconvertable
 
-import be.cytomine.formats.ConvertableImageFormat
 import be.cytomine.formats.Format
-import be.cytomine.formats.IConvertableImageFormat
 import grails.converters.JSON
 import grails.util.Holders
 
@@ -30,7 +28,7 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
                     new BufferedReader(
                             new InputStreamReader(echoSocket.getInputStream()));
 
-            out.println('{path:"'+absoluteFilePath+'",group:false}');
+            out.println('{path:"'+absoluteFilePath+'",group:'+group+'}');
             String result = inp.readLine();
             def json  = JSON.parse(result);
             files = json.files

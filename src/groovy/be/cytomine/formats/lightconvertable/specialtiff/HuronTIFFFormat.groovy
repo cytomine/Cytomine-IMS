@@ -15,7 +15,7 @@ package be.cytomine.formats.lightconvertable.specialtiff
  * limitations under the License.
  */
 
-class HuronTIFFFormat extends TIFFFormat {
+public class HuronTIFFFormat extends TIFFFormat {
     public HuronTIFFFormat () {
         extensions = ["tif", "tiff"]
     }

@@ -23,6 +23,7 @@ import be.cytomine.client.models.ImageSequence
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.ArchiveFormat
+import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.IConvertableImageFormat
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
@@ -156,26 +157,22 @@ class UploadService {
         if(isSync) {
             log.info "Execute convert & deploy NOT in background (sync=true!)"
             convertAndCreate();
-            if(heavyConvertableImageFormats.size()>0) {
-                heavyConvertableImageFormats.each {
-                    println "unsupported image "+it
-                    /// can it be absoluteFilePath ?
-                    conversion(it);
-                };
-            }
+            heavyConvertableImageFormats.each {
+                println "unsupported image "+it
+                /// can it be absoluteFilePath ?
+                conversion(it);
+            };
             cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
             log.info "image sync = $images"
         } else {
             log.info "Execute convert & deploy into background"
             backgroundService.execute("convertAndDeployImage", {
                 convertAndCreate();
-                if(heavyConvertableImageFormats.size()>0) {
-                    heavyConvertableImageFormats.each {
-                        println "unsupported image "+it
-                        /// can it be absoluteFilePath ?
-                        conversion(it);
-                    };
-                }
+                heavyConvertableImageFormats.each {
+                    println "unsupported image "+it
+                    /// can it be absoluteFilePath ?
+                    conversion(it);
+                };
                 cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
                 log.info "image async = $images"
             })
@@ -186,37 +183,17 @@ class UploadService {
         return responseContent;
     }
 
-    /*private def convertImage(def filesToDeploy,String storageBufferPath) {
-        //start to convert into pyramid format, if necessary
-        def imageFormatsToDeploy = []
-        filesToDeploy.each { fileToDeploy ->
-            SupportedImageFormat imageFormat = fileToDeploy.imageFormat
-            String convertedImageFilename = imageFormat.convert(storageBufferPath)
-            if (convertedImageFilename) {
-                FormatIdentifier.getImageFormats(convertedImageFilename).each { convertedImageFormat ->
-                    convertedImageFormat.parent = fileToDeploy
-                    imageFormatsToDeploy << convertedImageFormat
-                }
-            //not necessary to convert it
-            } else {
-                fileToDeploy.parent = fileToDeploy
-                imageFormatsToDeploy << fileToDeploy
-            }
-        }
-        return imageFormatsToDeploy
-    }*/
-
     private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, List projects, long idStorage, long currentUserId, def properties, UploadedFile uploadedFile) {
         log.info "createImage $imageFormatsToDeploy"
 
-        SupportedImageFormat imageFormat = imageFormatsToDeploy.imageFormat
+        Format imageFormat = imageFormatsToDeploy.imageFormat
 
         if(imageFormat instanceof VIPSConvertable) {
             def newImage = imageFormat.convert();
         }
         // use the new Image in tha AbstractImage creation.
 
-        SupportedImageFormat parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
+        Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
         // Don't forget heavyconvertable & archives !
         File f = new File(imageFormat.absoluteFilePath)
@@ -237,10 +214,10 @@ class UploadService {
                     uploadedFile.id, // this is the parent
                     )//download parent is not in this function anymore !
 
-        } else {
+        /*} else {
             //put correct mime_type in uploadedFile
             uploadedFile.set('mimeType', parentImageFormat.mimeType)
-            cytomine.updateModel(uploadedFile)
+            cytomine.updateModel(uploadedFile)*/
         }
 
         /*UploadedFile finalParent = (parentUploadedFile) == null ? uploadedFile : parentUploadedFile

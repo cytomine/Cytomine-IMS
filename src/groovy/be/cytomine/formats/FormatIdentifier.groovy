@@ -1,6 +1,7 @@
 package be.cytomine.formats
 
 import be.cytomine.formats.archive.ZipFormat
+import be.cytomine.formats.heavyconvertable.OMETIFFFormat
 import be.cytomine.formats.lightconvertable.BMPFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.formats.lightconvertable.DICOMFormat
@@ -73,6 +74,7 @@ public class FormatIdentifier {
                 new SakuraSVSlideFormat(),
                 new PhilipsTIFFFormat(),
                 new CZITIFFFormat(),
+                new OMETIFFFormat(),
                 //common formats
                 new OMETIFFFormat(),
                 new PhotoshopTIFFFormat(),
@@ -158,7 +160,7 @@ public class FormatIdentifier {
             //multiple single files (jpeg1, jpeg2, ...) ?
             if (imageFormats.size() == 0) { //obviously, we did not detect multiple files image formats
                 extractedFiles.each {  extractedFile ->
-                    SupportedImageFormat imageFormat = getImageFormat(extractedFile)
+                    Format imageFormat = getImageFormat(extractedFile)
                     if (imageFormat) imageFormats << [
                             absoluteFilePath : imageFormat.absoluteFilePath,
                             imageFormat : imageFormat]
@@ -185,7 +187,7 @@ public class FormatIdentifier {
 
     }
 
-    static public SupportedImageFormat getImageFormat(String uploadedFile) {
+    static public Format getImageFormat(String uploadedFile) {
         def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
 
         //hack to avoid running detect on ndpi
