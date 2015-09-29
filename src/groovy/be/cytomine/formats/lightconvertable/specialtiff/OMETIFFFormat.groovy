@@ -22,20 +22,9 @@ import grails.util.Holders
  */
 class OMETIFFFormat extends TIFFFormat {
 
-    private excludeDescription = [
-    ]
-
     public boolean detect() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
-
-        boolean notTiff = false
-        excludeDescription.each {
-            notTiff |= tiffinfo.contains(it)
-        }
-        if (notTiff) return false
-
         return tiffinfo.contains("OME-TIFF")
     }
 }

@@ -22,7 +22,7 @@ import be.cytomine.formats.IConvertableImageFormat
 /**
  * Created by hoyoux on 28.04.15.
  */
-class DotSlideFormat extends Format implements IConvertableImageFormat {
+class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
 
     @Override
     boolean detect() {

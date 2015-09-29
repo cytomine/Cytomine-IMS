@@ -1,6 +1,9 @@
-package be.cytomine.formats.lightconvertable.specialtiff
+package be.cytomine.formats.heavyconvertable
+
+import be.cytomine.formats.IConvertableImageFormat
+
 /*
- * Copyright (c) 2009-2016. Authors: see NOTICE file.
+ * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +18,7 @@ package be.cytomine.formats.lightconvertable.specialtiff
  * limitations under the License.
  */
 
-
 /**
- * Created by hoyoux on 16.02.15.
+ * Created by hoyoux on 29.04.15.
  */
-class PhotoshopTIFFFormat extends TIFFFormat {
-
-    public PhotoshopTIFFFormat () {
-        extensions = ["tif", "tiff"]
-    }
-
-    public boolean detect() {
-        String tiffinfo = getTiffInfo()
-        return tiffinfo.contains("Adobe Photoshop");
-    }
-}
+interface IHeavyConvertableImageFormat extends IConvertableImageFormat {}

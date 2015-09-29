@@ -22,15 +22,15 @@ import be.cytomine.client.models.ImageGroup
 import be.cytomine.client.models.ImageSequence
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
-import be.cytomine.exception.MiddlewareException
+import be.cytomine.formats.ArchiveFormat
 import be.cytomine.formats.FormatIdentifier
-/*import be.cytomine.formats.ImageFormat
-import be.cytomine.formats.convertable.CellSensVSIFormat
-import be.cytomine.formats.convertable.ConvertableFormat
-import be.cytomine.formats.specialtiff.OMETIFFFormat*/
+import be.cytomine.formats.IConvertableImageFormat
+import be.cytomine.formats.heavyconvertable.BioFormatConvertable
+import be.cytomine.formats.heavyconvertable.DotSlideFormat
+import be.cytomine.formats.heavyconvertable.IHeavyConvertableImageFormat
+import be.cytomine.formats.lightconvertable.VIPSConvertable
 import be.cytomine.formats.supported.SupportedImageFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
-import be.cytomine.formats.ConvertableImageFormat
 import grails.converters.JSON
 import grails.util.Holders
 import org.apache.commons.io.FilenameUtils
@@ -62,6 +62,7 @@ class UploadService {
 
         def storage = cytomine.getStorage(idStorage)
         log.info "storage.getStr(basePath) : " + storage.getStr("basePath")
+        // no parents, no mimeType, no converted_X
         def uploadedFile = cytomine.addUploadedFile(
                 filename,
                 destPath,
@@ -90,19 +91,24 @@ class UploadService {
 
         if (imageFormats.size() == 0) { //not a file that we can recognize
             //todo: response error message
+            uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 3) // status ERROR FORMAT
             return
         }
 
-        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableImageFormat || it.imageFormat instanceof CellSensVSIFormat};
-        imageFormats = imageFormats - unsupportedImageFormats;
+
+        // CHANGE FROM HERE !
+        // If instance of Convertable, call convert method
+
+        def heavyConvertableImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof IHeavyConvertableImageFormat}; // remove the check ==null
+        imageFormats = imageFormats - heavyConvertableImageFormats;
 
         def images = []
 
         def convertAndCreate = {
             cytomine.editUploadedFile(uploadedFile.id, 6) //to deploy
-            def imageFormatsToDeploy = convertImage(imageFormats, storageBufferPath)
+            //def imageFormatsToDeploy = convertImage(imageFormats, storageBufferPath)
             uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 1)
-            imageFormatsToDeploy.each {
+            imageFormats.each {
                 images << createImage(cytomine,it,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile)
             }
         };
@@ -110,23 +116,25 @@ class UploadService {
         def conversion = { image ->
 
             String inputPath = image.uploadedFilePath;
-            if (inputPath == null) inputPath = image.absoluteFilePath;
+            if (inputPath == null) inputPath = image.absoluteFilePath; //unused ? check this.
 
-            if(image.imageFormat == null || image.imageFormat instanceof CellSensVSIFormat || image.imageFormat instanceof OMETIFFFormat) {
-                //if more than BioFormat change by if(image.imageFormat instanceof ConvertableToMultifile) where BioFormat is an extension
+            def files = image.imageFormat.convert();
 
-                // call Bioformat application and get an array of paths (the converted & splited images)
-                boolean group = image.imageFormat instanceof OMETIFFFormat;
-                def files = callConvertor(inputPath, group);
+            def tmpResponseContent;
+            files.each { file ->
+                def path = file.path;
+                def nameNewFile = path.substring(path.lastIndexOf("/")+1)
+                // maybe redetermine the contentType ?
+                // recursion
+                tmpResponseContent = upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)
 
-                def newFiles = [];
+            }
+
+            if(image.imageFormat instanceof BioFormatConvertable && image.imageFormat.group) {
+
 
                 files.each { file ->
-                    def path = file.path;
-                    def nameNewFile = path.substring(path.lastIndexOf("/")+1)
-                    // maybe redetermine the contentType ?
-                    // recursion
-                    def tmpResponseContent = upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)
+                    def newFiles = [];
 
                     def newFile = [:]
                     def outputImage = tmpResponseContent[0].images[0]
@@ -141,23 +149,15 @@ class UploadService {
                 projects.each { project ->
                     groupImages(cytomine, newFiles, project);
                 }
-            } else {
-                log.info "conversion DotSlide";
-                String path = image.imageFormat.convert();
-                def nameNewFile = path.substring(path.lastIndexOf("/")+1)
-                // maybe redetermine the contentType ?
-                // recursion
-                upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)
-
             }
         };
 
         if(isSync) {
             log.info "Execute convert & deploy NOT in background (sync=true!)"
             convertAndCreate();
-            if(unsupportedImageFormats.size()>0) {
-                unsupportedImageFormats.each {
-                    log.info "unsupported image "+it
+            if(heavyConvertableImageFormats.size()>0) {
+                heavyConvertableImageFormats.each {
+                    println "unsupported image "+it
                     /// can it be absoluteFilePath ?
                     conversion(it);
                 };
@@ -168,9 +168,9 @@ class UploadService {
             log.info "Execute convert & deploy into background"
             backgroundService.execute("convertAndDeployImage", {
                 convertAndCreate();
-                if(unsupportedImageFormats.size()>0) {
-                    unsupportedImageFormats.each {
-                        log.info "unsupported image "+it
+                if(heavyConvertableImageFormats.size()>0) {
+                    heavyConvertableImageFormats.each {
+                        println "unsupported image "+it
                         /// can it be absoluteFilePath ?
                         conversion(it);
                     };
@@ -185,7 +185,7 @@ class UploadService {
         return responseContent;
     }
 
-    private def convertImage(def filesToDeploy,String storageBufferPath) {
+    /*private def convertImage(def filesToDeploy,String storageBufferPath) {
         //start to convert into pyramid format, if necessary
         def imageFormatsToDeploy = []
         filesToDeploy.each { fileToDeploy ->
@@ -203,17 +203,24 @@ class UploadService {
             }
         }
         return imageFormatsToDeploy
-    }
+    }*/
 
     private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, List projects, long idStorage, long currentUserId, def properties, UploadedFile uploadedFile) {
         log.info "createImage $imageFormatsToDeploy"
 
         SupportedImageFormat imageFormat = imageFormatsToDeploy.imageFormat
+
+        if(imageFormat instanceof VIPSConvertable) {
+            def newImage = imageFormat.convert();
+        }
+        // use the new Image in tha AbstractImage creation.
+
         SupportedImageFormat parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
+        // Don't forget heavyconvertable & archives !
         File f = new File(imageFormat.absoluteFilePath)
         def parentUploadedFile = null
-        if (parentImageFormat &&  imageFormatsToDeploy.parent?.uploadedFilePath != parentImageFormat.absoluteFilePath) {
+        if (parentImageFormat instanceof ArchiveFormat) {
             parentUploadedFile = cytomine.addUploadedFile(
                     (String) filename,
                     (String) ((String)parentImageFormat.absoluteFilePath).replace(storage.getStr("basePath"), ""),
@@ -235,7 +242,7 @@ class UploadService {
             cytomine.updateModel(uploadedFile)
         }
 
-        UploadedFile finalParent = (parentUploadedFile) == null ? uploadedFile : parentUploadedFile
+        /*UploadedFile finalParent = (parentUploadedFile) == null ? uploadedFile : parentUploadedFile
         String originalFilename =  (parentUploadedFile) == null ? filename :  FilenameUtils.getName(parentUploadedFile.absolutePath)
 
         def _uploadedFile = cytomine.addUploadedFile(
@@ -253,8 +260,11 @@ class UploadService {
                 finalParent.id, // this is the parent
                 uploadedFile.id) //this is the Download parent
 
-        log.info "_uploadedFile : "+_uploadedFile
-        log.info "_uploadedFile.id : "+_uploadedFile.id
+        println "_uploadedFile : "+_uploadedFile
+        println "_uploadedFile.id : "+_uploadedFile.id*/
+
+
+        // change this ! Replace with a function when we put all the values and not the value of the uploadedFile
         def image = cytomine.addNewImage(_uploadedFile.id)
 
         log.info "properties"
@@ -267,45 +277,6 @@ class UploadService {
             cytomine.addDomainProperties(image.getStr("class"),image.getLong("id"),it.key.toString(),it.value.toString())
         }
         return image
-    }
-
-    private def callConvertor(String filePath, boolean group){
-
-        if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new MiddlewareException("Convertor BioFormat not enabled");
-
-        log.info "BIOFORMAT called !"
-        def files = [];
-        String error;
-
-        String hostName = Holders.config.bioformat.application.location
-        int portNumber = Integer.parseInt(Holders.config.bioformat.application.port);
-
-        try {
-            Socket echoSocket = new Socket(hostName, portNumber);
-            PrintWriter out =
-                    new PrintWriter(echoSocket.getOutputStream(), true);
-            BufferedReader inp =
-                    new BufferedReader(
-                            new InputStreamReader(echoSocket.getInputStream()));
-
-            out.println('{path:"'+filePath+'",group:'+group+'}');
-            String result = inp.readLine();
-            def json  = JSON.parse(result);
-            files = json.files
-            error = json.error;
-        } catch (UnknownHostException e) {
-            log.error(e.toString());
-        }
-
-        log.info "bioformat returns"
-        log.info files
-
-        if(files ==[] || files == null) {
-            if (error != null) {
-                throw new MiddlewareException("BioFormat Exception : \n"+error);
-            }
-        }
-        return files
     }
 
     private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {

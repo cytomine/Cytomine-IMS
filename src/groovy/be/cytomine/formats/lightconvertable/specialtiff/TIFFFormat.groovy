@@ -1,6 +1,7 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
 import be.cytomine.formats.lightconvertable.CommonFormat
+import be.cytomine.formats.lightconvertable.VIPSConvertable
 import grails.util.Holders
 import utils.ServerUtils
 
@@ -22,7 +23,7 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-abstract class TIFFFormat extends CommonFormat {
+abstract class TIFFFormat extends VIPSConvertable {
 
     public TIFFFormat() {
         extensions = ["tif", "tiff"]

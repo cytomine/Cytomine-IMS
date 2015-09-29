@@ -21,6 +21,7 @@ import be.cytomine.formats.Format
  */
 class CellSensVSIFormat extends BioFormatConvertable {
 
+    boolean group = false;
     @Override
     boolean detect() {
         File folder = new File(absoluteFilePath)
