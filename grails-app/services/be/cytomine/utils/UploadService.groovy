@@ -26,6 +26,7 @@ import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
 import be.cytomine.formats.convertable.CellSensVSIFormat
 import be.cytomine.formats.convertable.ConvertableFormat
+import be.cytomine.formats.specialtiff.OMETIFFFormat
 import grails.converters.JSON
 import grails.util.Holders
 import org.apache.commons.io.FilenameUtils
@@ -88,7 +89,7 @@ class UploadService {
             return
         }
 
-        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableFormat || it.imageFormat instanceof CellSensVSIFormat};
+        def unsupportedImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof ConvertableFormat || it.imageFormat instanceof CellSensVSIFormat || it.imageFormat instanceof OMETIFFFormat};
         imageFormats = imageFormats - unsupportedImageFormats;
 
         def images = []
@@ -107,11 +108,12 @@ class UploadService {
             String inputPath = image.uploadedFilePath;
             if (inputPath == null) inputPath = image.absoluteFilePath;
 
-            if(image.imageFormat == null || image.imageFormat instanceof CellSensVSIFormat) {
+            if(image.imageFormat == null || image.imageFormat instanceof CellSensVSIFormat || image.imageFormat instanceof OMETIFFFormat) {
                 //if more than BioFormat change by if(image.imageFormat instanceof ConvertableToMultifile) where BioFormat is an extension
 
                 // call Bioformat application and get an array of paths (the converted & splited images)
-                def files = callConvertor(inputPath);
+                boolean group = image.imageFormat instanceof OMETIFFFormat;
+                def files = callConvertor(inputPath, group);
 
                 def newFiles = [];
 
@@ -262,7 +264,7 @@ class UploadService {
         return image
     }
 
-    private def callConvertor(String filePath){
+    private def callConvertor(String filePath, boolean group){
 
         if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new Exception("Convertor BioFormat not enabled");
 
@@ -281,7 +283,7 @@ class UploadService {
                     new BufferedReader(
                             new InputStreamReader(echoSocket.getInputStream()));
 
-            out.println('{path:"'+filePath+'",group:false}');
+            out.println('{path:"'+filePath+'",group:'+group+'}');
             String result = inp.readLine();
             def json  = JSON.parse(result);
             files = json.files

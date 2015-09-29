@@ -23,6 +23,7 @@ import be.cytomine.formats.digitalpathology.*
 import be.cytomine.formats.specialtiff.BrokenTIFFFormat
 import be.cytomine.formats.specialtiff.CZITIFFFormat
 import be.cytomine.formats.specialtiff.HuronTIFFFormat
+import be.cytomine.formats.specialtiff.OMETIFFFormat
 import be.cytomine.formats.specialtiff.PhotoshopTIFFFormat
 import be.cytomine.formats.standard.*
 import utils.FilesUtils
@@ -64,11 +65,11 @@ public class FormatIdentifier {
                 new PhilipsTIFFFormat(),
                 new CZITIFFFormat(),
                 //common formats
+                new OMETIFFFormat(),
                 new PhotoshopTIFFFormat(),
                 new HuronTIFFFormat(),
                 new BrokenTIFFFormat(),
                 new PlanarTIFFFormat(),
-                //new OMETIFFFormat(),
                 new PyramidalTIFFFormat(),
                 new VentanaTIFFFormat(),
                 new JPEG2000Format(),
@@ -147,7 +148,7 @@ public class FormatIdentifier {
             //multiple single files (jpeg1, jpeg2, ...) ?
             if (imageFormats.size() == 0) { //obviously, we did not detect multiple files image formats
                 extractedFiles.each {  extractedFile ->
-                    ImageFormat imageFormat = getImageFormat(extractedFile)
+                    def imageFormat = getImageFormat(extractedFile)
                     if (imageFormat) imageFormats << [
                             absoluteFilePath : imageFormat.absoluteFilePath,
                             imageFormat : imageFormat]
@@ -174,7 +175,7 @@ public class FormatIdentifier {
 
     }
 
-    static public ImageFormat getImageFormat(String uploadedFile) {
+    static public def getImageFormat(String uploadedFile) {
         def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
 
         //hack to avoid running detect on ndpi

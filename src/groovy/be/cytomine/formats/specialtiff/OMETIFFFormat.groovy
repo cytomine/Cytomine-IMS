@@ -1,4 +1,7 @@
-package be.cytomine.formats.standard
+package be.cytomine.formats.specialtiff
+
+import be.cytomine.formats.Format
+import be.cytomine.formats.standard.TIFFFormat
 
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
@@ -23,21 +26,11 @@ import utils.FilesUtils
 /**
  * Created by stevben on 28/04/14.
  */
-class OMETIFFFormat extends TIFFFormat {
-
-    private excludeDescription = [
-    ]
+class OMETIFFFormat extends Format {
 
     public boolean detect() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
-
-        boolean notTiff = false
-        excludeDescription.each {
-            notTiff |= tiffinfo.contains(it)
-        }
-        if (notTiff) return false
 
         return tiffinfo.contains("OME-TIFF")
     }
