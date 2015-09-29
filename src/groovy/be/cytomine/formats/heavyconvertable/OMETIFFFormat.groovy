@@ -1,4 +1,7 @@
-package be.cytomine.formats.lightconvertable.specialtiff
+package be.cytomine.formats.heavyconvertable
+
+import be.cytomine.formats.lightconvertable.specialtiff.TIFFFormat
+
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -20,7 +23,9 @@ import grails.util.Holders
 /**
  * Created by stevben on 28/04/14.
  */
-class OMETIFFFormat extends TIFFFormat {
+class OMETIFFFormat extends BioFormatConvertable {
+
+    boolean group = true;
 
     public boolean detect() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
