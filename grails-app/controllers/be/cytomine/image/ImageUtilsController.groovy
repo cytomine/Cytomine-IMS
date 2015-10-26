@@ -108,6 +108,9 @@ class ImageUtilsController {
         // Set the content length
         response.setHeader("Content-Length", connection.contentLength.toString())
         // Get the input stream from the connection
-        response.outputStream << connection.getInputStream()
+        InputStream is = connection.getInputStream()
+        response.outputStream << is
+        response.outputStream.flush()
+        is.close()
     }
 }
