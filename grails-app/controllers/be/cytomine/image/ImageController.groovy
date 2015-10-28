@@ -212,12 +212,12 @@ class ImageController extends ImageUtilsController {
 
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
         }
-        println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
+        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
         println "bufferedImage.getType()"+bufferedImage.getType()
         println new Color(bufferedImage.getRGB(0, 0)).alpha;
         println bufferedImage.getRGB(0, 0);
         println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;
+        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
 
         //resize if necessary
         if (params.maxSize) {
@@ -251,13 +251,12 @@ class ImageController extends ImageUtilsController {
 //            }
         }
 
-        println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
+        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
         println "bufferedImage.getType()"+bufferedImage.getType()
         println new Color(bufferedImage.getRGB(0, 0)).alpha;
         println bufferedImage.getRGB(0, 0);
         println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;
-
+        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
         responseBufferedImage(bufferedImage)
     }
 
