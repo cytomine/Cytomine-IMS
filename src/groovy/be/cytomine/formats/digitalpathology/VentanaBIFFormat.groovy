@@ -17,6 +17,7 @@ package be.cytomine.formats.digitalpathology
  */
 
 import grails.util.Holders
+import utils.FilesUtils
 import utils.ServerUtils
 
 /**
@@ -27,7 +28,7 @@ class VentanaBIFFormat extends OpenSlideSingleFileFormat {
     public VentanaBIFFormat(){
         extensions = ["bif"]
         vendor = "ventana"
-        mimeType = "ventana/bif"
+        mimeType = "openslide/bif"
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "ventana.ScanRes"
@@ -35,4 +36,10 @@ class VentanaBIFFormat extends OpenSlideSingleFileFormat {
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerVentana)
     }
 
+
+    @Override
+    boolean detect() {
+        String extension = FilesUtils.getExtensionFromFilename(absoluteFilePath)
+        return super.detect() && extensions.contains(extension)
+    }
 }
