@@ -1,7 +1,4 @@
-package be.cytomine.formats.specialtiff
-
-import be.cytomine.formats.Format
-import grails.util.Holders
+package be.cytomine.exception;
 
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
@@ -19,16 +16,14 @@ import grails.util.Holders
  * limitations under the License.
  */
 
+public class AuthenticationException extends CytomineException {
 
-/**
- * Created by stevben on 28/04/14.
- */
-class OMETIFFFormat extends Format {
-
-    public boolean detect() {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-
-        return tiffinfo.contains("OME-TIFF")
+    /**
+     * Message map with this exception
+     * @param message Message
+     */
+    public AuthenticationException(String message) {
+        super(message,401);
     }
+
 }

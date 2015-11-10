@@ -1,7 +1,4 @@
-package be.cytomine.formats.specialtiff
-
-import be.cytomine.formats.Format
-import grails.util.Holders
+package be.cytomine.exception;
 
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
@@ -19,16 +16,30 @@ import grails.util.Holders
  * limitations under the License.
  */
 
-
 /**
- * Created by stevben on 28/04/14.
+ * GIGA-ULg
+ * This exception is the top exception for all cytomine exception
+ * It store a message and a code, corresponding to an HTTP code
  */
-class OMETIFFFormat extends Format {
+public abstract class CytomineException extends RuntimeException{
 
-    public boolean detect() {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
+    /**
+     * Http code for an exception
+     */
+    public int code;
 
-        return tiffinfo.contains("OME-TIFF")
+    /**
+     * Message for exception
+     */
+    public String msg;
+
+    /**
+     * Message map with this exception
+     * @param msg Message
+     * @param code Http code
+     */
+    public CytomineException(String msg, int code) {
+        this.msg=msg;
+        this.code = code;
     }
 }

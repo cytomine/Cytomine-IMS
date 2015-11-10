@@ -22,6 +22,7 @@ import be.cytomine.client.models.ImageGroup
 import be.cytomine.client.models.ImageSequence
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
+import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
 import be.cytomine.formats.convertable.CellSensVSIFormat
@@ -45,7 +46,7 @@ class UploadService {
 
         log.info "absoluteFilePath=${uploadedFilePath.absolutePath}"
         if (!uploadedFilePath.exists()) {
-            throw new Exception(uploadedFilePath.absolutePath + " NOT EXIST!")
+            throw new FileNotFoundException(uploadedFilePath.absolutePath + " NOT EXIST!")
         }
         def size = uploadedFilePath.size()
         log.info "size=$size"
@@ -82,7 +83,7 @@ class UploadService {
                 originalFilenameFullPath
         )
 
-        println "imageFormats = $imageFormats"
+        log.info "imageFormats = $imageFormats"
 
         if (imageFormats.size() == 0) { //not a file that we can recognize
             //todo: response error message
@@ -138,7 +139,7 @@ class UploadService {
                     groupImages(cytomine, newFiles, project);
                 }
             } else {
-                println "conversion DotSlide";
+                log.info "conversion DotSlide";
                 String path = image.imageFormat.convert();
                 def nameNewFile = path.substring(path.lastIndexOf("/")+1)
                 // maybe redetermine the contentType ?
@@ -153,7 +154,7 @@ class UploadService {
             convertAndCreate();
             if(unsupportedImageFormats.size()>0) {
                 unsupportedImageFormats.each {
-                    println "unsupported image "+it
+                    log.info "unsupported image "+it
                     /// can it be absoluteFilePath ?
                     conversion(it);
                 };
@@ -166,7 +167,7 @@ class UploadService {
                 convertAndCreate();
                 if(unsupportedImageFormats.size()>0) {
                     unsupportedImageFormats.each {
-                        println "unsupported image "+it
+                        log.info "unsupported image "+it
                         /// can it be absoluteFilePath ?
                         conversion(it);
                     };
@@ -187,21 +188,22 @@ class UploadService {
         filesToDeploy.each { fileToDeploy ->
             ImageFormat imageFormat = fileToDeploy.imageFormat
             String convertedImageFilename = imageFormat.convert(storageBufferPath)
-            if (!convertedImageFilename) { //not necessary to convert it
-                fileToDeploy.parent = fileToDeploy
-                imageFormatsToDeploy << fileToDeploy
-            } else {
+            if (convertedImageFilename) {
                 FormatIdentifier.getImageFormats(convertedImageFilename).each { convertedImageFormat ->
                     convertedImageFormat.parent = fileToDeploy
                     imageFormatsToDeploy << convertedImageFormat
                 }
+            //not necessary to convert it
+            } else {
+                fileToDeploy.parent = fileToDeploy
+                imageFormatsToDeploy << fileToDeploy
             }
         }
         return imageFormatsToDeploy
     }
 
     private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, List projects, long idStorage, long currentUserId, def properties, UploadedFile uploadedFile) {
-        println "createImage $imageFormatsToDeploy"
+        log.info "createImage $imageFormatsToDeploy"
 
         ImageFormat imageFormat = imageFormatsToDeploy.imageFormat
         ImageFormat parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
@@ -248,17 +250,17 @@ class UploadService {
                 finalParent.id, // this is the parent
                 uploadedFile.id) //this is the Download parent
 
-        println "_uploadedFile : "+_uploadedFile
-        println "_uploadedFile.id : "+_uploadedFile.id
+        log.info "_uploadedFile : "+_uploadedFile
+        log.info "_uploadedFile.id : "+_uploadedFile.id
         def image = cytomine.addNewImage(_uploadedFile.id)
 
-        println "properties"
-        println properties
+        log.info "properties"
+        log.info properties
         properties.each {
-            println "it.key"
-            println it.key
-            println "it.value"
-            println it.value
+            log.info "it.key"
+            log.info it.key
+            log.info "it.value"
+            log.info it.value
             cytomine.addDomainProperties(image.getStr("class"),image.getLong("id"),it.key.toString(),it.value.toString())
         }
         return image
@@ -266,7 +268,7 @@ class UploadService {
 
     private def callConvertor(String filePath, boolean group){
 
-        if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new Exception("Convertor BioFormat not enabled");
+        if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new MiddlewareException("Convertor BioFormat not enabled");
 
         log.info "BIOFORMAT called !"
         def files = [];
@@ -289,7 +291,7 @@ class UploadService {
             files = json.files
             error = json.error;
         } catch (UnknownHostException e) {
-            System.err.println(e.toString());
+            log.error(e.toString());
         }
 
         log.info "bioformat returns"
@@ -297,7 +299,7 @@ class UploadService {
 
         if(files ==[] || files == null) {
             if (error != null) {
-                throw new Exception("BioFormat Exception : \n"+error);
+                throw new MiddlewareException("BioFormat Exception : \n"+error);
             }
         }
         return files
@@ -312,7 +314,7 @@ class UploadService {
             def path = file.path;
             def idImage = 0L
             while (idImage == 0) {
-                println "Wait for " + path;
+                log.info "Wait for " + path;
 
                 ImageInstanceCollection collection = cytomine.getImageInstances(idProject);
 
@@ -320,16 +322,16 @@ class UploadService {
                     Long expected = file.id;
                     Long current = collection.get(i).get("baseImage");
                     if (expected.equals(current)) {
-                        System.out.println("OK!");
+                        log.info "OK!";
                         idImage = collection.get(i).getId();
                     }
                 }
                 Thread.sleep(1000);
             }
-            println "Uploaded ImageID: $idImage"
+            log.info "Uploaded ImageID: $idImage"
             //Add this image to current imagegroup
             ImageSequence imageSequence = cytomine.addImageSequence(imageGroup.getId(), idImage, Integer.parseInt(file.z), 0, Integer.parseInt(file.t), Integer.parseInt(file.c));
-            println "new ImageSequence: " + imageSequence.get("id");
+            log.info "new ImageSequence: " + imageSequence.get("id");
         }
     }
 

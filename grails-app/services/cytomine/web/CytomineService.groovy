@@ -18,6 +18,7 @@ package cytomine.web
 
 import be.cytomine.client.Cytomine
 import be.cytomine.client.models.User
+import be.cytomine.exception.AuthenticationException
 import org.springframework.security.crypto.codec.Base64
 
 import javax.crypto.Mac
@@ -36,31 +37,31 @@ class CytomineService {
 
     public def tryAPIAuthentification(def cytomineUrl,def ISPubKey, def ISPrivKey, HttpServletRequest request) {
 
-        println "tryAPIAuthentification"
-        println "cytomineUrl=$cytomineUrl"
-        println "ISPubKey=$ISPubKey"
-        println "ISPrivKey=$ISPrivKey"
+        log.info "tryAPIAuthentification"
+        log.info "cytomineUrl=$cytomineUrl"
+        log.info "ISPubKey=$ISPubKey"
+        log.info "ISPrivKey=$ISPrivKey"
 
         String authorization = request.getHeader("authorization")
-        println "authorization=$authorization"
+        log.info "authorization=$authorization"
         if (request.getHeader("dateFull") == null && request.getHeader("date") == null) {
-            println "Auth failed: no date"
-            throw new Exception("Auth failed: no date")
+            log.info "Auth failed: no date"
+            throw new AuthenticationException("Auth failed: no date")
         }
         if (request.getHeader("host") == null) {
-            println "Auth failed: no host"
-            throw new Exception("Auth failed: no host")
+            log.info "Auth failed: no host"
+            throw new AuthenticationException("Auth failed: no host")
         }
         if (authorization == null) {
-            println "Auth failed: no authorization"
-            throw new Exception("Auth failed: no authorization")
+            log.info "Auth failed: no authorization"
+            throw new AuthenticationException("Auth failed: no authorization")
         }
         if (!authorization.startsWith("CYTOMINE") || !authorization.indexOf(" ") == -1 || !authorization.indexOf(":") == -1) {
-            println "Auth failed: bad authorization"
-            throw new Exception("Auth failed: bad authorization")
+            log.info "Auth failed: bad authorization"
+            throw new AuthenticationException("Auth failed: bad authorization")
         }
         request.getHeaderNames().each {
-            println it + "=" + request.getHeader(it)
+            log.info it + "=" + request.getHeader(it)
         }
 
 
@@ -77,8 +78,8 @@ class CytomineService {
         String date = (request.getHeader("date") != null) ? request.getHeader("date") : ""
         date = (request.getHeader("dateFull") != null) ? request.getHeader("dateFull") : date
 
-        println "finalDate=" + date
-        println "forwardURI=" + request.forwardURI
+        log.info "finalDate=" + date
+        log.info "forwardURI=" + request.forwardURI
         String canonicalHeaders = request.getMethod() + "\n" + content_md5 + "\n" + content_type + "\n" + date + "\n"
         //println "canonicalHeaders=" + canonicalHeaders
         String canonicalExtensionHeaders = ""
@@ -100,22 +101,22 @@ class CytomineService {
         log.info "path=$path"
         log.info "method=${request.getMethod()}"
 
-        println "accessKey=$accessKey"
+        log.info "accessKey=$accessKey"
 
-        println "Connection Cytomine: $cytomineUrl $ISPubKey $ISPrivKey"
+        log.info "Connection Cytomine: $cytomineUrl $ISPubKey $ISPrivKey"
 
         Cytomine cytomine = new Cytomine(cytomineUrl, ISPubKey,ISPrivKey, "./")
 
-        println "cytomine.getKeys($accessKey)"
+        log.info "cytomine.getKeys($accessKey)"
 
         User user = cytomine.getKeys(accessKey)
 
-        println "cytomine.getUser($accessKey)"
+        log.info "cytomine.getUser($accessKey)"
 
         def retrieveUser = cytomine.getUser(accessKey)
         if (!user || retrieveUser?.id==null) {
-            println "User not found with key $accessKey!"
-            throw new Exception("Auth failed: User not found with key $accessKey! May be ImageServer user is not an admin!")
+            log.info "User not found with key $accessKey!"
+            throw new AuthenticationException("Auth failed: User not found with key $accessKey! May be ImageServer user is not an admin!")
         }
 
         long id = retrieveUser.id
@@ -124,8 +125,8 @@ class CytomineService {
         String key = user.get("privateKey")
 
 
-        println "Privatekey=${user.get("privateKey")}"
-        println "PublicKey=${user.get("publicKey")}"
+        log.info "Privatekey=${user.get("privateKey")}"
+        log.info "PublicKey=${user.get("publicKey")}"
 
         SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1")
         //println "signingKey=" + signingKey
@@ -142,14 +143,14 @@ class CytomineService {
         def signature = new String(signatureBytes)
         //println "signature=" + signature
 
-        println "authorizationSign=$authorizationSign"
-        println "signature=$signature"
+        log.info "authorizationSign=$authorizationSign"
+        log.info "signature=$signature"
         if (authorizationSign == signature) {
-            println "AUTH TRUE"
+            log.info "AUTH TRUE"
             return ["id": id, "privateKey": user.get("privateKey"), "publicKey": user.get("publicKey")]
         } else {
-            println "AUTH FALSE"
-            throw new Exception("Auth failed")
+            log.info "AUTH FALSE"
+            throw new AuthenticationException("Auth failed")
         }
     }
 }
