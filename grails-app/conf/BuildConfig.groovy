@@ -77,7 +77,7 @@ grails.project.dependency.resolution = {
 
     plugins {
 
-        //compile ":grails-melody:1.49.0"
+        compile ":grails-melody:1.49.0"
 
         build ':tomcat:7.0.54'
 		compile (':hibernate:3.6.10.17') {
