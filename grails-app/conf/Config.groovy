@@ -145,7 +145,6 @@ cytomine.storageBufferPath="/tmp/imageserver_buffer"
 
 cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
 cytomine.iipImageServerJpeg2000="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
-cytomine.iipImageServerVentana="http://localhost-iip-ventana/fcgi-bin/iipsrv.fcgi"
 cytomine.iipImageServerCyto="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
 
 bioformat.application.enabled="true"

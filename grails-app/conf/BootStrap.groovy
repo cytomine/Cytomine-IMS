@@ -32,7 +32,6 @@ class BootStrap {
 
         println "iipImageServerBase:" + grailsApplication.config.cytomine.iipImageServerBase
         println "iipImageServerJpeg2000:" + grailsApplication.config.cytomine.iipImageServerJpeg2000
-        println "iipImageServerVentana:" + grailsApplication.config.cytomine.iipImageServerVentana
         println "iipImageServerCyto:" + grailsApplication.config.cytomine.iipImageServerCyto
 
         Holders.config.cytomine.maxCropSize = Integer.parseInt(Holders.config.cytomine.maxCropSize+"")

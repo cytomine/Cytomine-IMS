@@ -35,7 +35,7 @@ class VentanaBIFFormat extends OpenSlideSingleFileFormat {
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "ventana.ScanRes"
         magnificiationProperty = "ventana.Magnification"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerVentana)
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
     }
 
 

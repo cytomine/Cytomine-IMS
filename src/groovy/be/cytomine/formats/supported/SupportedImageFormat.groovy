@@ -93,6 +93,7 @@ abstract class SupportedImageFormat extends Format {
                 // TODO here maxSize is the "wanted size". Create a param wantedSize when all iip wiil be unified
                 int maxSize = params.int('maxSize', 256)
                 return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$maxSize&WID=$maxSize&CVT=jpeg"
+
             }
             return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$height&WID=$width&CVT=jpeg"
 

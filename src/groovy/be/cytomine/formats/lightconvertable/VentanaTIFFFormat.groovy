@@ -35,7 +35,7 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements IConvertabl
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = "openslide.objective-power"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerVentana)
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
     }
 
     @Override
