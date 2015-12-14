@@ -20,25 +20,6 @@ The IMS server provides services to:
 
 It uses Grails/Groovy/Java.
 
-## Prerequisites
+## How to install it
 
-###  If you want to run it
-* Linux
-* Java 1.7+
-
-### If you want to modify it
-* Same as for run it
-* Grails 2.4+
-
-
-
-
-
-
-
-
-
-
-
-
-
+See our [Cytomine-bootstrap](https://github.com/cytomine/Cytomine-bootstrap) project to install it with Docker
