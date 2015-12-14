@@ -2,7 +2,9 @@ package be.cytomine.image
 
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.ImageFormat
+import grails.util.Holders
 import org.imgscalr.Scalr
+import utils.ServerUtils
 
 import java.awt.BasicStroke
 import java.awt.Graphics
@@ -178,6 +180,10 @@ class ImageController extends ImageUtilsController {
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
 
+        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
+
+        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
+
         BufferedImage bufferedImage = readCropBufferedImage(params)
 
         if(params.boolean("point")) {
@@ -185,7 +191,7 @@ class ImageController extends ImageUtilsController {
         }
 
 
-       if (params.draw) {
+        if (params.draw) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createCropWithDraw(bufferedImage, geometry, params)
@@ -221,8 +227,11 @@ class ImageController extends ImageUtilsController {
 
         //resize if necessary
         if (params.maxSize) {
-            int maxSize = params.int('maxSize', 256)
-            bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
+            //useless with new iipversion
+            if(!exactSize) {
+                int maxSize = params.int('maxSize', 256)
+                bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
+            }
         } else if (params.zoom && !params.alphaMask) {
             int zoom = params.int('zoom', 0)
             int maxWidth = savedWidth / Math.pow(2, zoom)
@@ -311,22 +320,10 @@ class ImageController extends ImageUtilsController {
 
         String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
         log.info cropURL
+
+        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
+
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
-
-        Long start = System.currentTimeMillis()
-
-        /*
-         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for IIP server request. Same for h.
-         * We may loose precision and the size could be w+-1 * h+-1.
-         * If the difference is < as threshold, we rescale
-         */
-        int threshold = 10
-        boolean imageDifferentSize = (savedWidth != bufferedImage.width) || (savedHeight != bufferedImage.height)
-        if (imageDifferentSize && (Math.abs(savedWidth - bufferedImage.width) < threshold && Math.abs(savedHeight - bufferedImage.height) < threshold)) {
-            bufferedImage = ImageUtils.resize(bufferedImage, (int) savedWidth, (int) savedHeight)
-        }
-
-        println "time=${System.currentTimeMillis() - start}"
 
         int i = 0
         while (bufferedImage == null && i < 3) {
@@ -337,6 +334,24 @@ class ImageController extends ImageUtilsController {
         if (bufferedImage == null) {
             throw new Exception("Not a valid image: ${cropURL}")
         }
+
+        Long start = System.currentTimeMillis()
+
+        /*
+         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for old IIP server request. Same for h.
+         * We may loose precision and the size could be w+-1 * h+-1.
+         * If the difference is < as threshold, we rescale
+         */
+        if(!exactSize) {
+            int threshold = 10
+            boolean imageDifferentSize = (savedWidth != bufferedImage.width) || (savedHeight != bufferedImage.height)
+            // TODO so if increase area is set, it is possible than we have no effect :s ==> fix with increaseArea
+            if (imageDifferentSize && (Math.abs(savedWidth - bufferedImage.width) < threshold && Math.abs(savedHeight - bufferedImage.height) < threshold)) {
+                bufferedImage = ImageUtils.resize(bufferedImage, (int) savedWidth, (int) savedHeight)
+            }
+        }
+
+        println "time=${System.currentTimeMillis() - start}"
 
         params.topLeftX = savedTopX
         params.topLeftY = savedTopY

@@ -55,7 +55,7 @@ abstract class ImageFormat extends Format {
         return properties
     }
 
-    String cropURL(def params, def charset = "UTF-8") {
+    String  cropURL(def params, def charset = "UTF-8") {
         String fif = URLEncoder.encode(params.fif,charset)
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
@@ -63,11 +63,18 @@ abstract class ImageFormat extends Format {
         double height = params.double('height')
         double imageWidth = params.double('imageWidth')
         double imageHeight = params.double('imageHeight')
-		
+
+        //All values x,y,w & h should be in ratios 0-1.0 [RGN=x,y,w,h]
         def x = (topLeftX == 0) ? 0 : 1/(imageWidth / topLeftX)
         def y = ((imageHeight - topLeftY) == 0) ? 0 : 1/(imageHeight / (imageHeight - topLeftY))
         double w = (width == 0) ? 0d : 1d/(imageWidth / width)
         double h = (height == 0) ? 0d : 1d/(imageHeight / height)
+
+        // TODO perf: replace the previous assignment by the following
+        /*def x = topLeftX/imageWidth
+        def y = (imageHeight - topLeftY)/imageHeight
+        double w = width/imageWidth
+        double h = height/imageHeight*/
 
 		int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
         if (params.maxSize) {
@@ -77,33 +84,39 @@ abstract class ImageFormat extends Format {
             }
         }
 
-        if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
-            int tmpWidth = width
-            int tmpHeight = height
-            int zoom = 0
-            while (tmpWidth > maxWidthOrHeight || tmpHeight > maxWidthOrHeight) {
-                tmpWidth = tmpWidth / 2
-                tmpHeight = tmpHeight / 2
-                zoom++
+        if(ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(iipURL)){
+            // with new version of iipsrv, the meaning of WID & HEI change !
+            if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
+                return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$maxWidthOrHeight&WID=$maxWidthOrHeight&CVT=jpeg"
             }
-            /*
-            Ruven P. (author of IIP Image)
-            In fact, the region is calculated from the WID or HEI given, not from
-            the full image size. So you get the requested region on the virtual
-            750px resize. I guess you were expecting to get a region exactly of size
-            WID?
+            return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$height&WID=$width&CVT=jpeg"
 
-            This is something that seems to have caused confusion with others also
-            and perhaps the way it works in counter intuitive, so I'm considering
-            changing the behaviour in the 1.0 release and have WID or HEI define the
-            final region size rather than the virtual image size. In the meantime,
-            the way to get around it is to calculate the appropriate WID that the
-            full image would be. So if your image is x pixels wide, give WID the
-            value of x/2 to get a 750px wide image.
-            */
-            int hei = imageHeight / (height / tmpHeight)
-            return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$hei&CVT=jpeg"
         } else {
+            if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
+                int tmpWidth = width
+                int tmpHeight = height
+                while (tmpWidth > maxWidthOrHeight || tmpHeight > maxWidthOrHeight) {
+                    tmpWidth = tmpWidth / 2
+                    tmpHeight = tmpHeight / 2
+                }
+                /*
+                Ruven P. (author of IIP Image)
+                In fact, the region is calculated from the WID or HEI given, not from
+                the full image size. So you get the requested region on the virtual
+                750px resize. I guess you were expecting to get a region exactly of size
+                WID?
+
+                This is something that seems to have caused confusion with others also
+                and perhaps the way it works in counter intuitive, so I'm considering
+                changing the behaviour in the 1.0 release and have WID or HEI define the
+                final region size rather than the virtual image size. In the meantime,
+                the way to get around it is to calculate the appropriate WID that the
+                full image would be. So if your image is x pixels wide, give WID the
+                value of x/2 to get a 750px wide image.
+                */
+                int hei = imageHeight / (height / tmpHeight)
+                return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&HEI=$hei&CVT=jpeg"
+            }
             return "${ServerUtils.getServer(iipURL)}?FIF=$fif&RGN=$x,$y,$w,$h&CVT=jpeg"
         }
     }

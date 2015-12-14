@@ -175,6 +175,8 @@ class ImageProcessingService {
     public BufferedImage scaleImage(BufferedImage img, Integer width, Integer height) {
         int imgWidth = img.getWidth();
         int imgHeight = img.getHeight();
+
+        // if ratio height/imgHeight < width/imgWidth then we apply the same ratio to width => we took the smaller ratio
         if (imgWidth*height < imgHeight*width) {
             width = imgWidth*height/imgHeight;
         } else {
