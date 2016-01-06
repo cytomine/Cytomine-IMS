@@ -21,4 +21,4 @@ It uses Grails/Groovy/Java.
 
 ## How to install it
 
-See our [Cytomine-bootstrap](https://github.com/cytomine/Cytomine-bootstrap) project to install it with Docker
+It is automatically installed with the [Cytomine-bootstrap](https://github.com/cytomine/Cytomine-bootstrap) procedure using Docker.
