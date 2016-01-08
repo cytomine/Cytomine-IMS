@@ -5,7 +5,7 @@ import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.digitalpathology.*
 
 /*
- * Copyright (c) 2009-2015. Authors: see NOTICE file.
+ * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
