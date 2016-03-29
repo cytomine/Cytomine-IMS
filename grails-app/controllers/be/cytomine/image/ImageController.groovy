@@ -179,7 +179,7 @@ class ImageController extends ImageUtilsController {
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
 
-        ImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
 
         boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
 

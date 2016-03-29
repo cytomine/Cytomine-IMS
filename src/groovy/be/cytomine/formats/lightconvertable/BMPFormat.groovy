@@ -1,7 +1,5 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.formats.lightconvertable.CommonFormat
-
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *

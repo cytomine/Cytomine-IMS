@@ -1,6 +1,5 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-import be.cytomine.formats.lightconvertable.CommonFormat
 import be.cytomine.formats.lightconvertable.VIPSConvertable
 import grails.util.Holders
 import utils.ServerUtils
@@ -27,7 +26,7 @@ abstract class TIFFFormat extends VIPSConvertable {
 
     public TIFFFormat() {
         extensions = ["tif", "tiff"]
-        mimeType = "image/tiff"
+        //mimeType = "image/tiff"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
     public String getTiffInfo() {

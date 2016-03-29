@@ -33,7 +33,7 @@ public class JPEGFormat extends CommonFormat {
     }
 
     boolean detect() {
-        boolean isJPEG = Object.detect()
+        boolean isJPEG = super.detect()
         if (isJPEG) { //check if not MRXS (fake JPEG)
             File slideFile = new File(absoluteFilePath)
             if (slideFile.canRead()) {

@@ -1,9 +1,5 @@
 package be.cytomine.formats.supported
 
-import be.cytomine.formats.supported.SupportedImageFormat
-import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
-import grails.util.Holders
-
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -19,6 +15,7 @@ import grails.util.Holders
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import grails.util.Holders
 import org.springframework.util.StringUtils
 import utils.FilesUtils
 import utils.ServerUtils
@@ -45,7 +42,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
             "Leica",
             "PHILIPS",
             "OME-XML",
-            "Adobe Photoshop"
+            "Software: Adobe Photoshop"
     ]
 
     public boolean detect() {

@@ -1,8 +1,5 @@
 package be.cytomine.formats.supported
 
-import be.cytomine.formats.lightconvertable.CommonFormat
-import be.cytomine.formats.supported.SupportedImageFormat
-
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *

@@ -27,6 +27,6 @@ class PhotoshopTIFFFormat extends TIFFFormat {
 
     public boolean detect() {
         String tiffinfo = getTiffInfo()
-        return tiffinfo.contains("Adobe Photoshop");
+        return tiffinfo.contains("Software: Adobe Photoshop");
     }
 }

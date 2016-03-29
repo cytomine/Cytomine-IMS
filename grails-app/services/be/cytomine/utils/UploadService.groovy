@@ -25,14 +25,10 @@ import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.ArchiveFormat
 import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.IConvertableImageFormat
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
-import be.cytomine.formats.heavyconvertable.DotSlideFormat
 import be.cytomine.formats.heavyconvertable.IHeavyConvertableImageFormat
 import be.cytomine.formats.lightconvertable.VIPSConvertable
 import be.cytomine.formats.supported.SupportedImageFormat
-import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
-import grails.converters.JSON
 import grails.util.Holders
 import org.apache.commons.io.FilenameUtils
 import utils.FilesUtils
@@ -188,10 +184,6 @@ class UploadService {
 
         Format imageFormat = imageFormatsToDeploy.imageFormat
 
-        if(imageFormat instanceof VIPSConvertable) {
-            def newImage = imageFormat.convert();
-        }
-        // use the new Image in tha AbstractImage creation.
 
         Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
@@ -206,7 +198,7 @@ class UploadService {
                     f.size(),
                     (String) FilesUtils.getExtensionFromFilename(parentImageFormat.absoluteFilePath).toLowerCase(),
                     (String) contentType,
-                    (String) parentImageFormat.mimeType,
+                    null, // TODO delete mimeType in uploadedFile domain
                     projects,
                     [idStorage],
                     currentUserId,
@@ -220,10 +212,16 @@ class UploadService {
             cytomine.updateModel(uploadedFile)*/
         }
 
-        /*UploadedFile finalParent = (parentUploadedFile) == null ? uploadedFile : parentUploadedFile
+        if(imageFormat instanceof VIPSConvertable) {
+            String newImage = imageFormat.convert();
+            SupportedImageFormat newFormat = FormatIdentifier.getImageFormat(newImage)
+            imageFormatsToDeploy = [uploadedFilePath:newImage, imageFormat:newFormat]
+        }
+
+        UploadedFile finalParent = parentUploadedFile ?: uploadedFile
         String originalFilename =  (parentUploadedFile) == null ? filename :  FilenameUtils.getName(parentUploadedFile.absolutePath)
 
-        def _uploadedFile = cytomine.addUploadedFile(
+        /*def _uploadedFile = cytomine.addUploadedFile(
                 (String) originalFilename,
                 (String) ((String)imageFormat.absoluteFilePath).replace(storage.getStr("basePath"), ""),
                 (String) storage.getStr("basePath"),
@@ -241,9 +239,11 @@ class UploadService {
         println "_uploadedFile : "+_uploadedFile
         println "_uploadedFile.id : "+_uploadedFile.id*/
 
+        // TODO find a way to unify absoluteFilePath & uploadedFilepath
+        String path = (imageFormatsToDeploy.uploadedFilePath ?: imageFormatsToDeploy.absoluteFilePath).replace(storage.getStr("basePath"), "")
 
         // change this ! Replace with a function when we put all the values and not the value of the uploadedFile
-        def image = cytomine.addNewImage(_uploadedFile.id)
+        def image = cytomine.addNewImage(finalParent.id, path, finalParent.get('filename'), imageFormatsToDeploy.imageFormat.mimeType)
 
         log.info "properties"
         log.info properties

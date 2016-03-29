@@ -11,6 +11,7 @@ import be.cytomine.formats.lightconvertable.specialtiff.PlanarTIFFFormat
 import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.PhilipsTIFFFormat
 import be.cytomine.formats.supported.PyramidalTIFFFormat
+import be.cytomine.formats.supported.VentanaBIFFormat
 import be.cytomine.formats.supported.digitalpathology.*
 import be.cytomine.formats.lightconvertable.JPEGFormat
 import be.cytomine.formats.lightconvertable.PGMFormat
