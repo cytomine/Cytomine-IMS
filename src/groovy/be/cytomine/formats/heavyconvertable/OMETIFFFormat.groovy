@@ -32,4 +32,8 @@ class OMETIFFFormat extends BioFormatConvertable {
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         return tiffinfo.contains("OME-TIFF")
     }
+
+    boolean getGroup(){
+        return true;
+    }
 }

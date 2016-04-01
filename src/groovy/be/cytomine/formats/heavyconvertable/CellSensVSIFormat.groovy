@@ -21,7 +21,6 @@ import be.cytomine.formats.Format
  */
 class CellSensVSIFormat extends BioFormatConvertable {
 
-    boolean group = false;
     @Override
     boolean detect() {
         File folder = new File(absoluteFilePath)
@@ -29,5 +28,10 @@ class CellSensVSIFormat extends BioFormatConvertable {
         File target = folder.listFiles().find {it.isFile() && it.absolutePath.endsWith(".vsi")}
         if(target) absoluteFilePath = target.absolutePath
         return target != null;
+    }
+
+    @Override
+    boolean getGroup() {
+        return false
     }
 }

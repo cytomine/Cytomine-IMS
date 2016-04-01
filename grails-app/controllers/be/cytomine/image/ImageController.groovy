@@ -1,12 +1,9 @@
 package be.cytomine.image
 
 import be.cytomine.formats.FormatIdentifier
-/*import be.cytomine.formats.ImageFormat
 import grails.util.Holders
-import org.imgscalr.Scalr
-import utils.ServerUtils*/
+import utils.ServerUtils
 import be.cytomine.formats.supported.SupportedImageFormat
-
 import java.awt.BasicStroke
 import java.awt.Graphics
 import java.awt.Graphics2D

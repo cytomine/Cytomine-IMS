@@ -8,7 +8,6 @@ import grails.util.Holders
  * Created by hoyoux on 25.09.15.
  */
 abstract class BioFormatConvertable extends Format implements IHeavyConvertableImageFormat {
-    boolean group = false;
     @Override
     def convert() {
         if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new Exception("Convertor BioFormat not enabled");
@@ -28,7 +27,7 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
                     new BufferedReader(
                             new InputStreamReader(echoSocket.getInputStream()));
 
-            out.println('{path:"'+absoluteFilePath+'",group:'+group+'}');
+            out.println('{path:"'+absoluteFilePath+'",group:'+this.group+'}');
             String result = inp.readLine();
             def json  = JSON.parse(result);
             files = json.files
@@ -47,4 +46,6 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
         }
         return files
     }
+
+    abstract boolean getGroup();
 }

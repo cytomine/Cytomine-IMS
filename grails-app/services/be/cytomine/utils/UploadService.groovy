@@ -59,7 +59,7 @@ class UploadService {
 
         def storage = cytomine.getStorage(idStorage)
         log.info "storage.getStr(basePath) : " + storage.getStr("basePath")
-        // no parents, no mimeType, no converted_X
+        // no parent
         def uploadedFile = cytomine.addUploadedFile(
                 filename,
                 destPath,
@@ -67,7 +67,6 @@ class UploadService {
                 size,
                 extension,
                 contentType,
-                null, //mimeType
                 projects,
                 [idStorage],
                 currentUserId,
@@ -96,9 +95,6 @@ class UploadService {
         }
 
 
-        // CHANGE FROM HERE !
-        // If instance of Convertable, call convert method
-
         def heavyConvertableImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof IHeavyConvertableImageFormat}; // remove the check ==null
         imageFormats = imageFormats - heavyConvertableImageFormats;
 
@@ -106,17 +102,13 @@ class UploadService {
 
         def convertAndCreate = {
             cytomine.editUploadedFile(uploadedFile.id, 6) //to deploy
-            //def imageFormatsToDeploy = convertImage(imageFormats, storageBufferPath)
-            uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 1) // converted
             imageFormats.each {
                 images << createImage(cytomine,it,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile)
             }
+            cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
         };
 
         def conversion = { image ->
-
-            String inputPath = image.uploadedFilePath;
-            if (inputPath == null) inputPath = image.absoluteFilePath; //unused ? check this.
 
             def files = image.imageFormat.convert();
 
@@ -148,6 +140,9 @@ class UploadService {
                     groupImages(cytomine, newFiles, project);
                 }
             }
+
+            int status = tmpResponseContent.size() > 0 && tmpResponseContent[0]?.status == 200 ? 1 : 4;
+            cytomine.editUploadedFile(uploadedFile.id, status) // converted or error conversion
         };
 
         if(isSync) {
@@ -155,10 +150,8 @@ class UploadService {
             convertAndCreate();
             heavyConvertableImageFormats.each {
                 println "unsupported image "+it
-                /// can it be absoluteFilePath ?
                 conversion(it);
             };
-            cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
             log.info "image sync = $images"
         } else {
             log.info "Execute convert & deploy into background"
@@ -166,10 +159,8 @@ class UploadService {
                 convertAndCreate();
                 heavyConvertableImageFormats.each {
                     println "unsupported image "+it
-                    /// can it be absoluteFilePath ?
                     conversion(it);
                 };
-                cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
                 log.info "image async = $images"
             })
         }
@@ -187,10 +178,9 @@ class UploadService {
 
         Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
-        // Don't forget heavyconvertable & archives !
-        File f = new File(imageFormat.absoluteFilePath)
         def parentUploadedFile = null
         if (parentImageFormat instanceof ArchiveFormat) {
+            File f = new File(imageFormat.absoluteFilePath)
             parentUploadedFile = cytomine.addUploadedFile(
                     (String) filename,
                     (String) ((String)parentImageFormat.absoluteFilePath).replace(storage.getStr("basePath"), ""),
@@ -198,18 +188,13 @@ class UploadService {
                     f.size(),
                     (String) FilesUtils.getExtensionFromFilename(parentImageFormat.absoluteFilePath).toLowerCase(),
                     (String) contentType,
-                    null, // TODO delete mimeType in uploadedFile domain
                     projects,
                     [idStorage],
                     currentUserId,
                     2, //DEPLOYED status
                     uploadedFile.id, // this is the parent
-                    )//download parent is not in this function anymore !
+                    )
 
-        /*} else {
-            //put correct mime_type in uploadedFile
-            uploadedFile.set('mimeType', parentImageFormat.mimeType)
-            cytomine.updateModel(uploadedFile)*/
         }
 
         if(imageFormat instanceof VIPSConvertable) {
@@ -219,30 +204,10 @@ class UploadService {
         }
 
         UploadedFile finalParent = parentUploadedFile ?: uploadedFile
-        String originalFilename =  (parentUploadedFile) == null ? filename :  FilenameUtils.getName(parentUploadedFile.absolutePath)
-
-        /*def _uploadedFile = cytomine.addUploadedFile(
-                (String) originalFilename,
-                (String) ((String)imageFormat.absoluteFilePath).replace(storage.getStr("basePath"), ""),
-                (String) storage.getStr("basePath"),
-                f.size(),
-                (String) FilesUtils.getExtensionFromFilename(imageFormat.absoluteFilePath).toLowerCase(),
-                (String) contentType,
-                (String) imageFormat.mimeType,
-                projects,
-                [idStorage],
-                currentUserId,
-                -1l,
-                finalParent.id, // this is the parent
-                uploadedFile.id) //this is the Download parent
-
-        println "_uploadedFile : "+_uploadedFile
-        println "_uploadedFile.id : "+_uploadedFile.id*/
 
         // TODO find a way to unify absoluteFilePath & uploadedFilepath
         String path = (imageFormatsToDeploy.uploadedFilePath ?: imageFormatsToDeploy.absoluteFilePath).replace(storage.getStr("basePath"), "")
 
-        // change this ! Replace with a function when we put all the values and not the value of the uploadedFile
         def image = cytomine.addNewImage(finalParent.id, path, finalParent.get('filename'), imageFormatsToDeploy.imageFormat.mimeType)
 
         log.info "properties"

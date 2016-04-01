@@ -1,6 +1,7 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
 import grails.util.Holders
+import org.springframework.util.StringUtils
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -40,6 +41,12 @@ class BrokenTIFFFormat extends TIFFFormat{
             println err
             if(err.contains("not a valid IFD offset.")) return true;
         }
+
+        String tiffinfo = process.text
+        int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
+        int nbWidth = StringUtils.countOccurrencesOf(tiffinfo, "Image Width:")
+        if(nbTiffDirectory  == 2 && nbWidth < 2) return true
+
         return false
     }
 }
