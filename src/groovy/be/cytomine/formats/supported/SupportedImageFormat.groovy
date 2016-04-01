@@ -77,6 +77,8 @@ abstract class SupportedImageFormat extends Format {
         double w = width/imageWidth
         double h = height/imageHeight*/
 
+        if(x>1 || y > 1) return
+
 		int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
         if (params.maxSize) {
             int maxSize = params.int('maxSize', 256)
@@ -128,8 +130,7 @@ abstract class SupportedImageFormat extends Format {
     }
 
     public String tileURL(fif, params) {
-        //return "$iipURL?zoomify=$params.zoomify"
-        return "${ServerUtils.getServer(iipURL)}?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg&mimeType=$params.mimeType"
+        return "${ServerUtils.getServer(iipURL)}?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
     }
 
     // TODO do it with OpenSlide or IIP ?
