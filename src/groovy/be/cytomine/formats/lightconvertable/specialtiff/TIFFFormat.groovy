@@ -31,7 +31,7 @@ abstract class TIFFFormat extends VIPSConvertable {
     }
     public String getTiffInfo() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
+        String tiffinfo = ["$tiffinfoExecutable", absoluteFilePath].execute().text
         return tiffinfo;
     }
 }

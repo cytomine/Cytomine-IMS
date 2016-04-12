@@ -35,7 +35,7 @@ public abstract class CommonFormat extends VIPSConvertable {
         }
 
         def identifyExecutable = Holders.config.cytomine.identify
-        String command = "$identifyExecutable -verbose $absoluteFilePath"
+        def command = ["$identifyExecutable", "-verbose", absoluteFilePath]
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text

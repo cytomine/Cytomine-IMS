@@ -31,7 +31,7 @@ class BrokenTIFFFormat extends TIFFFormat{
 
     public boolean detect() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        def process = "$tiffinfoExecutable $absoluteFilePath".execute()
+        def process = ["$tiffinfoExecutable", absoluteFilePath].execute()
 
         BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErr()));
 
