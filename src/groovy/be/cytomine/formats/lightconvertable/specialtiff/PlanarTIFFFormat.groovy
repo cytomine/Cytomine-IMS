@@ -45,6 +45,6 @@ class PlanarTIFFFormat extends TIFFFormat {
 
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
 
-        return (nbTiffDirectory == 1) //single layer tiff, we ne need to create a pyramid version
+        return (nbTiffDirectory == 1 && !tiffinfo.contains("Tile")) //single layer tiff, we ne need to create a pyramid version
     }
 }

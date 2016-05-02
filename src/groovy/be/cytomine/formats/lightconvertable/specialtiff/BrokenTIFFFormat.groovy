@@ -30,19 +30,10 @@ class BrokenTIFFFormat extends TIFFFormat{
     }
 
     public boolean detect() {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        def process = ["$tiffinfoExecutable", absoluteFilePath].execute()
+        String tiffinfo = getTiffInfo()
 
-        BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErr()));
+        if (tiffinfo.contains("not a valid IFD offset.")) return true;
 
-        String err;
-        while((err = errReader.readLine()) != null) {
-            println "tiffinfo error :"
-            println err
-            if(err.contains("not a valid IFD offset.")) return true;
-        }
-
-        String tiffinfo = process.text
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
         int nbWidth = StringUtils.countOccurrencesOf(tiffinfo, "Image Width:")
         if(nbTiffDirectory  == 2 && nbWidth < 2) return true
