@@ -25,7 +25,7 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 28/04/14.
  */
-class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements IConvertableImageFormat {
+class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
 
     public VentanaTIFFFormat() {
         extensions = ["tif", "vtif"]
@@ -37,16 +37,6 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements IConvertabl
         magnificiationProperty = "openslide.objective-power"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
     }
-
-    @Override
-    def convert() {
-        String source = absoluteFilePath
-        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".vtif"].join(File.separator)
-        //make a symbolic link to the original file with a special extension 'vtif' in order to recognize the format within IIP.
-        "ln -s $source $target".execute()
-        return target
-    }
-
 
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
