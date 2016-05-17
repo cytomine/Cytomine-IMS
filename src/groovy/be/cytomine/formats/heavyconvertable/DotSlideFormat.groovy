@@ -47,6 +47,6 @@ class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
         dotslidebuild.Main.main("-f", "$absoluteFilePath/fp.txt", "-io", "$absoluteFilePath/$name")
 
         println "Conversion DotSlide : end"
-        return absoluteFilePath+"/"+name+".tif"
+        return [[path:absoluteFilePath+"/"+name+".tif"]]
     }
 }
