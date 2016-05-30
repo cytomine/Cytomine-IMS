@@ -1,6 +1,5 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.formats.IConvertableImageFormat
 import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
 import grails.util.Holders
 import utils.ServerUtils

@@ -19,7 +19,6 @@ import be.cytomine.formats.Format
  */
 
 import grails.util.Holders
-import utils.ProcUtils
 import utils.ServerUtils
 
 import javax.imageio.ImageIO

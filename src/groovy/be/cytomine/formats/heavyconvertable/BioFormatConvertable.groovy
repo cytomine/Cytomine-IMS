@@ -1,5 +1,6 @@
 package be.cytomine.formats.heavyconvertable
 
+import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.Format
 import grails.converters.JSON
 import grails.util.Holders
@@ -10,7 +11,7 @@ import grails.util.Holders
 abstract class BioFormatConvertable extends Format implements IHeavyConvertableImageFormat {
     @Override
     def convert() {
-        if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new Exception("Convertor BioFormat not enabled");
+        if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new MiddlewareException("Convertor BioFormat not enabled");
 
         println "BIOFORMAT called !"
         def files = [];
@@ -41,7 +42,7 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
 
         if(files ==[] || files == null) {
             if (error != null) {
-                throw new Exception("BioFormat Exception : \n"+error);
+                throw new MiddlewareException("BioFormat Exception : \n"+error);
             }
         }
         return files

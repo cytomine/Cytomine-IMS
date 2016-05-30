@@ -1,5 +1,6 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.supported.SupportedImageFormat
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
@@ -43,7 +44,7 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
                 return false
             }
         } else {
-            //throw ERROR reading file
+            throw new MiddlewareException("ERROR cannot read this file")
         }
 
     }

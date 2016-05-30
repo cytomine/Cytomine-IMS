@@ -1,6 +1,5 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-import grails.util.Holders
 import org.springframework.util.StringUtils
 
 /*

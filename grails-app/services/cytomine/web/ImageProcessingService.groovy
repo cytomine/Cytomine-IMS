@@ -27,7 +27,6 @@ import ij.process.ImageConverter
 import ij.process.ImageProcessor
 import ij.process.PolygonFiller
 
-import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage

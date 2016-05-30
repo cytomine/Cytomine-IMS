@@ -1,5 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.exception.MiddlewareException
+
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -44,7 +46,7 @@ public class JPEGFormat extends CommonFormat {
                     return true
                 }
             } else {
-                //throw ERROR reading file
+                throw new MiddlewareException("ERROR cannot reading JPEG file")
             }
         }
 

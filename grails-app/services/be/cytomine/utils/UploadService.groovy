@@ -30,7 +30,6 @@ import be.cytomine.formats.heavyconvertable.IHeavyConvertableImageFormat
 import be.cytomine.formats.lightconvertable.VIPSConvertable
 import be.cytomine.formats.supported.SupportedImageFormat
 import grails.util.Holders
-import org.apache.commons.io.FilenameUtils
 import utils.FilesUtils
 
 class UploadService {
