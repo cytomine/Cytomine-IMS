@@ -255,13 +255,6 @@ class ImageProcessingService {
 			
         log.info "scaleBarSize=$scaleBarSize"
 
-        Double realSize = (scaleBarSize / ratioWith) * resolution
-
-        log.info "realSize=$realSize"
-
-        DecimalFormat f = new DecimalFormat("##.00");
-        String textUp = f.format(realSize) + " µm"
-        String textBelow = f.format(magnification) + " X"
         int space = scaleBarSize/10
         int boxSizeWidth = scaleBarSize + (space*2)
         int boxSizeHeight = scaleBarSize * 0.5
@@ -290,13 +283,36 @@ class ImageProcessingService {
 
         graphScaleBar.dispose();
 
+        Double realSize = resolution ? (scaleBarSize / ratioWith) * resolution : null
+
+        log.info "realSize=$realSize"
+
+        DecimalFormat f = new DecimalFormat("##.00");
+        String textUp, textBelow;
         //draw text
         int textSize = 9//8*(scaleBarSize/100)
 		int textXPosition =  xStartBar + (xStopBar - xStartBar)/2 - 25
         Graphics2D graphText = image.createGraphics();
-        graphText.setColor(Color.BLACK);
         graphText.setFont(new Font( "Monaco", Font.BOLD, textSize ));
+
+        if(realSize) {
+            textUp = f.format(realSize) + " µm"
+            graphText.setColor(Color.BLACK);
+        } else{
+            textUp = "Size unknown"
+            graphText.setColor(Color.RED);
+        }
         graphText.drawString(textUp, textXPosition, yStartBar-5)
+
+        if(magnification) {
+            textBelow = f.format(magnification) + " X"
+            graphText.setColor(Color.BLACK);
+        } else{
+            textBelow = "Magnitude unknown"
+            textXPosition -= 25;
+            graphText.setColor(Color.RED);
+        }
+
         graphText.drawString(textBelow, textXPosition, yStartBar+(5+textSize))
         graphText.dispose();
         return image
