@@ -2,6 +2,9 @@ package be.cytomine.formats.lightconvertable.specialtiff
 
 import org.springframework.util.StringUtils
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -36,6 +39,43 @@ class BrokenTIFFFormat extends TIFFFormat{
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
         int nbWidth = StringUtils.countOccurrencesOf(tiffinfo, "Image Width:")
         if(nbTiffDirectory  == 2 && nbWidth < 2) return true
+
+        if(nbTiffDirectory  == 1 && tiffinfo.contains("Tile Width")){
+
+            int imWidth = -1;
+            int imHeight = -1;
+            int tileWidth = -1;
+            int tileHeight = -1;
+
+            Pattern pattern = Pattern.compile("Image Width: (\\d)+");
+            Matcher matcher = pattern.matcher(tiffinfo);
+            if (matcher.find()){
+                imWidth = Integer.parseInt(tiffinfo.substring("Image Width: ".length()+matcher.start(),matcher.end()))
+            }
+            pattern = Pattern.compile("Tile Width: (\\d)+");
+            matcher = pattern.matcher(tiffinfo);
+            if (matcher.find())
+            {
+                tileWidth = Integer.parseInt(tiffinfo.substring("Tile Width: ".length()+matcher.start(),matcher.end()))
+            }
+
+            if(tileWidth > -1 && imWidth > tileWidth) return true;
+
+            pattern = Pattern.compile("Image Length: (\\d)+");
+            matcher = pattern.matcher(tiffinfo);
+            if (matcher.find()){
+                imHeight = Integer.parseInt(tiffinfo.substring("Image Length: ".length()+matcher.start(),matcher.end()))
+            }
+            pattern = Pattern.compile("Tile Length: (\\d)+");
+            matcher = pattern.matcher(tiffinfo);
+            if (matcher.find())
+            {
+                tileHeight = Integer.parseInt(tiffinfo.substring("Tile Length: ".length()+matcher.start(),matcher.end()))
+            }
+
+            if(tileHeight > -1 && imHeight > tileHeight) return true;
+        }
+
 
         return false
     }
