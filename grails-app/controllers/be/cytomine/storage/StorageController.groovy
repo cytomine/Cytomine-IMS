@@ -2,6 +2,7 @@ package be.cytomine.storage
 
 import be.cytomine.client.Cytomine
 import grails.converters.JSON
+import grails.util.Holders
 
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
@@ -115,5 +116,51 @@ class StorageController {
             render e
             return
         }
+    }
+
+    @RestApiMethod(description="Method for getting used and free space of the image storage")
+    def size () {
+
+        def result = [:]
+
+        String storagePath = Holders.config.cytomine.storagePath
+        def proc = "df $storagePath".execute()
+        proc.waitFor()
+
+        String[] out = proc.text.split("\n")[1].trim().replaceAll("\\s+"," ").split(" ")
+
+        boolean nfs;
+        if(out[0].contains(":")) nfs = true;
+
+        Long used = Long.parseLong(out[2])
+        Long available = Long.parseLong(out[3])
+        result.put("used",used)
+        result.put("available",available)
+        result.put("usedP",(double)(used/(used+available)))
+        String hostname = ""
+        String mount = ""
+
+        if(nfs){
+            hostname = out[0].split(":")[0]
+            mount= out[0].split(":")[1]
+        } else {
+            hostname = "hostname".execute().text.split("\n")[0]
+            mount = out[5]
+        }
+
+        result.put("hostname",hostname.hashCode())
+        result.put("mount",mount)
+
+        String ip = "host $hostname".execute().text
+        if(ip.contains("not found")) {
+            ip = null
+        }
+        else {
+            ip = ip.split(" ").last().hashCode()
+        }
+        result.put("ip",ip)
+
+        render result as JSON
+
     }
 }

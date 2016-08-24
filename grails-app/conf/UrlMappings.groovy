@@ -57,5 +57,9 @@ class UrlMappings {
         "/image/mask.$format" (controller:"image") {
             action = [GET:"mask",POST:"mask"]
         }
+
+        "/storage/size.$format"(controller:"storage"){
+            action = [GET:"size"]
+        }
 	}
 }

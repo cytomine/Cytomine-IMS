@@ -1,14 +1,5 @@
 package be.cytomine.image
 
-import be.cytomine.formats.FormatIdentifier
-import grails.util.Holders
-import utils.ServerUtils
-import be.cytomine.formats.supported.SupportedImageFormat
-import java.awt.BasicStroke
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.RenderingHints
-
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -24,9 +15,19 @@ import java.awt.RenderingHints
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import be.cytomine.formats.FormatIdentifier
+import be.cytomine.formats.supported.SupportedImageFormat
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
+import grails.util.Holders
+import java.awt.BasicStroke
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
@@ -34,10 +35,7 @@ import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.annotation.RestApiResponseObject
 import org.restapidoc.pojo.RestApiParamType
 import utils.ImageUtils
-
-import javax.imageio.ImageIO
-import java.awt.Color
-import java.awt.image.BufferedImage
+import utils.ServerUtils
 
 @RestApi(name = "image services", description = "Methods for images (thumb, tile, property, ...)")
 class ImageController extends ImageUtilsController {
