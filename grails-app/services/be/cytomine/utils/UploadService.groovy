@@ -173,20 +173,33 @@ class UploadService {
         log.info "createImage $imageFormatsToDeploy"
 
         Format imageFormat = imageFormatsToDeploy.imageFormat
+        String originalName = new File(imageFormat.absoluteFilePath).name
 
 
         Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
-        def parentUploadedFile = null
+        if(imageFormat instanceof VIPSConvertable) {
+            String newImage = imageFormat.convert();
+            imageFormat = FormatIdentifier.getImageFormat(newImage)
+            imageFormatsToDeploy = [uploadedFilePath:newImage, imageFormat:imageFormat]
+        }
+
+        // TODO find a way to unify absoluteFilePath & uploadedFilepath
+        String path = imageFormatsToDeploy.uploadedFilePath ?: imageFormatsToDeploy.absoluteFilePath
+        String shortPath = path.replace(storage.getStr("basePath"), "")
+
+        def childUploadedFile = null
         if (parentImageFormat instanceof ArchiveFormat) {
             File f = new File(imageFormat.absoluteFilePath)
-            parentUploadedFile = cytomine.addUploadedFile(
-                    (String) filename,
-                    (String) ((String)parentImageFormat.absoluteFilePath).replace(storage.getStr("basePath"), ""),
+            contentType = imageFormatsToDeploy.imageFormat.mimeType ?: URLConnection.guessContentTypeFromName(f.getName());
+
+            childUploadedFile = cytomine.addUploadedFile(
+                    originalName,
+                    (String) shortPath,
                     (String) storage.getStr("basePath"),
                     f.size(),
-                    (String) FilesUtils.getExtensionFromFilename(parentImageFormat.absoluteFilePath).toLowerCase(),
-                    (String) contentType,
+                    (String) FilesUtils.getExtensionFromFilename(path).toLowerCase(),
+                    contentType,
                     projects,
                     [idStorage],
                     currentUserId,
@@ -196,18 +209,9 @@ class UploadService {
 
         }
 
-        if(imageFormat instanceof VIPSConvertable) {
-            String newImage = imageFormat.convert();
-            SupportedImageFormat newFormat = FormatIdentifier.getImageFormat(newImage)
-            imageFormatsToDeploy = [uploadedFilePath:newImage, imageFormat:newFormat]
-        }
+        UploadedFile finalParent = childUploadedFile ?: uploadedFile
 
-        UploadedFile finalParent = parentUploadedFile ?: uploadedFile
-
-        // TODO find a way to unify absoluteFilePath & uploadedFilepath
-        String path = (imageFormatsToDeploy.uploadedFilePath ?: imageFormatsToDeploy.absoluteFilePath).replace(storage.getStr("basePath"), "")
-
-        def image = cytomine.addNewImage(finalParent.id, path, finalParent.get('filename'), imageFormatsToDeploy.imageFormat.mimeType)
+        def image = cytomine.addNewImage(finalParent.id, shortPath, finalParent.get('filename'), imageFormatsToDeploy.imageFormat.mimeType)
 
         log.info "properties"
         log.info properties

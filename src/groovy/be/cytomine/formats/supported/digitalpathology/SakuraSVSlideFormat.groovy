@@ -19,7 +19,7 @@ package be.cytomine.formats.supported.digitalpathology
 /**
  * Created by stevben on 22/04/14.
  */
-class SakuraSVSlideFormat extends OpenSlideSingleFileFormat {
+class SakuraSVSlideFormat extends OpenSlideMultipleFileFormat {
 
     public SakuraSVSlideFormat () {
         extensions = ["svslide"]

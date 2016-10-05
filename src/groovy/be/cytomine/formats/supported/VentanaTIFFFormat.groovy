@@ -1,4 +1,4 @@
-package be.cytomine.formats.lightconvertable
+package be.cytomine.formats.supported
 
 import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
 import grails.util.Holders

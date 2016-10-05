@@ -36,15 +36,16 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         println "detect $absoluteFilePath"
         File slideFile = new File(absoluteFilePath)
         if (slideFile.canRead()) {
-            println "can read $absoluteFilePath " +  OpenSlide.detectVendor(slideFile)
             try {
+                println "can read $absoluteFilePath " +  OpenSlide.detectVendor(slideFile)
                 return OpenSlide.detectVendor(slideFile) == vendor
             } catch (java.io.IOException e) {
                 //Not a file that OpenSlide can recognize
                 return false
             }
         } else {
-            throw new MiddlewareException("ERROR cannot read this file")
+            println "can not read $absoluteFilePath "
+            return false
         }
 
     }

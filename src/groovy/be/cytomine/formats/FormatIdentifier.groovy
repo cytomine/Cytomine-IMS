@@ -1,28 +1,5 @@
 package be.cytomine.formats
 
-import be.cytomine.formats.archive.ZipFormat
-import be.cytomine.formats.heavyconvertable.OMETIFFFormat
-import be.cytomine.formats.lightconvertable.BMPFormat
-import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
-import be.cytomine.formats.lightconvertable.DICOMFormat
-import be.cytomine.formats.heavyconvertable.DotSlideFormat
-import be.cytomine.formats.lightconvertable.VentanaTIFFFormat
-import be.cytomine.formats.lightconvertable.specialtiff.PlanarTIFFFormat
-import be.cytomine.formats.supported.JPEG2000Format
-import be.cytomine.formats.supported.PhilipsTIFFFormat
-import be.cytomine.formats.supported.PyramidalTIFFFormat
-import be.cytomine.formats.supported.VentanaBIFFormat
-import be.cytomine.formats.supported.digitalpathology.*
-import be.cytomine.formats.lightconvertable.JPEGFormat
-import be.cytomine.formats.lightconvertable.PGMFormat
-import be.cytomine.formats.lightconvertable.PNGFormat
-import be.cytomine.formats.lightconvertable.specialtiff.BrokenTIFFFormat
-import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
-import be.cytomine.formats.lightconvertable.specialtiff.HuronTIFFFormat
-import be.cytomine.formats.lightconvertable.specialtiff.PhotoshopTIFFFormat
-import be.cytomine.formats.supported.SupportedImageFormat
-import utils.FilesUtils
-
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -38,6 +15,29 @@ import utils.FilesUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import be.cytomine.formats.archive.ZipFormat
+import be.cytomine.formats.heavyconvertable.OMETIFFFormat
+import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
+import be.cytomine.formats.heavyconvertable.DotSlideFormat
+import be.cytomine.formats.lightconvertable.BMPFormat
+import be.cytomine.formats.lightconvertable.DICOMFormat
+import be.cytomine.formats.lightconvertable.JPEGFormat
+import be.cytomine.formats.lightconvertable.PGMFormat
+import be.cytomine.formats.lightconvertable.PNGFormat
+import be.cytomine.formats.lightconvertable.specialtiff.BrokenTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.HuronTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.PlanarTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.PhotoshopTIFFFormat
+import be.cytomine.formats.supported.VentanaTIFFFormat
+import be.cytomine.formats.supported.JPEG2000Format
+import be.cytomine.formats.supported.PhilipsTIFFFormat
+import be.cytomine.formats.supported.PyramidalTIFFFormat
+import be.cytomine.formats.supported.VentanaBIFFormat
+import be.cytomine.formats.supported.digitalpathology.*
+import be.cytomine.formats.supported.SupportedImageFormat
+import org.apache.commons.lang.RandomStringUtils
 
 /**
  * Created by stevben on 22/04/14.
@@ -55,6 +55,7 @@ public class FormatIdentifier {
                 //openslide compatibles formats
                 new HamamatsuVMSFormat(),
                 new MiraxMRXSFormat(),
+                new SakuraSVSlideFormat()
         ]
     }
 
@@ -72,7 +73,7 @@ public class FormatIdentifier {
                 new AperioSVSFormat(),
                 new HamamatsuNDPIFormat(),
                 new LeicaSCNFormat(),
-                new SakuraSVSlideFormat(),
+                //new SakuraSVSlideFormat(),
                 new PhilipsTIFFFormat(),
                 new CZITIFFFormat(),
                 new OMETIFFFormat(),
@@ -94,7 +95,33 @@ public class FormatIdentifier {
         ]
     }
 
-    static public def getImageFormats(String uploadedFilePath) {
+    static public def getImageFormats(String uploadedFilePath, def imageFormats = [], def parent = null) {
+
+        File uploadedFile = new File(uploadedFilePath);
+
+        if(uploadedFile.isDirectory()){
+            println "$uploadedFilePath is a directory"
+
+            if(uploadedFile.isDirectory() && uploadedFile.name == "__MACOSX") return;
+            // check if it is a folder containing one multipleFileImage
+            def multipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats() + getAvailableMultipleImageFormats()
+
+            def format = multipleFileImageFormats.find { imageFormat ->
+                imageFormat.absoluteFilePath = uploadedFilePath
+                return imageFormat.detect()
+            }
+
+            if(format){
+                imageFormats << [
+                        absoluteFilePath : format.absoluteFilePath,
+                        imageFormat : format,
+                        parent : parent
+                ]
+            } else {
+                for(File child : uploadedFile.listFiles()) getImageFormats(child.absolutePath, imageFormats, parent);
+            }
+            return imageFormats
+        }
 
         def archiveFormats = getAvailableArchiveFormats()
 
@@ -106,72 +133,19 @@ public class FormatIdentifier {
             it.detect()
         }
 
-        def imageFormats = []
         if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
-            def extractedFiles = detectedArchiveFormat.extract(new File(uploadedFilePath).getParent())
 
-            def hierarchicalMultipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats()
-            def extractedFolder = new File(uploadedFilePath).getParentFile().absolutePath
+            String dest = uploadedFile.getParent()+ "/" + RandomStringUtils.random(13,  (('A'..'Z') + ('0'..'0')).join().toCharArray())
+            detectedArchiveFormat.extract(dest)
 
-            // if the zip contained only one folder, we go into this folder
-            def folders = new File(uploadedFilePath).getParentFile().listFiles(new FileFilter() {
-                @Override
-                boolean accept(File pathname) {
-                    // substract the folder "MACOSX"
-                    if(pathname.isDirectory() && pathname.name == "__MACOSX") return false;
-                    //substract the original zip
-                    if(pathname.absolutePath == uploadedFilePath) return false;
-                    return true
-                }
-            });
-
-            if (folders.size() == 1 && folders[0].isDirectory()) {
-                File subFolder = folders[0]
-                extractedFolder = subFolder.absolutePath
-            }
-
-            hierarchicalMultipleFileImageFormats.each { imageFormat ->
-                imageFormat.absoluteFilePath = extractedFolder
-                if (imageFormat.detect()) {
-                    imageFormats << [
-                            absoluteFilePath : imageFormat.absoluteFilePath,
-                            imageFormat : imageFormat]
-                    // Currently, we can't continue the process. Subimages cannot be processed independently
-                    return imageFormats
-                }
-            }
-
-            //multiple single image or a single image composed of multiple files ?
-            //if (extractedFiles.size() > 1) {
-            def multipleFileImageFormats = getAvailableMultipleImageFormats()
-
-            //look for multiple files image formats (e.g mrxs & vms)
-            extractedFiles.each {  extractedFile ->
-                String ext = FilesUtils.getExtensionFromFilename(extractedFile).toLowerCase()
-                multipleFileImageFormats.each { imageFormat ->
-                    if (imageFormat.extensions.contains(ext)) {
-                        imageFormat.absoluteFilePath = extractedFile
-                        if (imageFormat.detect()) imageFormats << [
-                                absoluteFilePath : imageFormat.absoluteFilePath,
-                                imageFormat : imageFormat]
-                    }
-                }
-            }
-
-            //multiple single files (jpeg1, jpeg2, ...) ?
-            if (imageFormats.size() == 0) { //obviously, we did not detect multiple files image formats
-                extractedFiles.each {  extractedFile ->
-                    Format imageFormat = getImageFormat(extractedFile)
-                    if (imageFormat) imageFormats << [
-                            absoluteFilePath : imageFormat.absoluteFilePath,
-                            imageFormat : imageFormat]
-                }
-            }
+            getImageFormats(dest,imageFormats, [absoluteFilePath : uploadedFilePath, imageFormat : detectedArchiveFormat])
 
         } else {
             imageFormats << [
                     uploadedFilePath : uploadedFilePath,
-                    imageFormat : getImageFormat(uploadedFilePath)]
+                    imageFormat : getImageFormat(uploadedFilePath),
+                    parent : parent
+            ]
         }
         return imageFormats
     }

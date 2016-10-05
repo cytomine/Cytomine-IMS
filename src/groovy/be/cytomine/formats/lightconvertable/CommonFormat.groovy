@@ -1,7 +1,5 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.formats.supported.PyramidalTIFFFormat
-
 /*
  * Copyright (c) 2009-2015. Authors: see NOTICE file.
  *
@@ -19,6 +17,8 @@ import be.cytomine.formats.supported.PyramidalTIFFFormat
  */
 import grails.util.Holders
 import utils.FilesUtils
+import be.cytomine.formats.supported.PyramidalTIFFFormat
+import be.cytomine.formats.supported.VentanaTIFFFormat
 
 /**
  * Created by stevben on 22/04/14.

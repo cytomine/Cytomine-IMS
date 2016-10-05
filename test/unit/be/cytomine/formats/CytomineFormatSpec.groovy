@@ -1,11 +1,5 @@
 package be.cytomine.formats
 
-import be.cytomine.client.models.UploadedFile
-import be.cytomine.formats.archive.ZipFormat
-import be.cytomine.formats.lightconvertable.VentanaTIFFFormat
-import be.cytomine.formats.supported.PhilipsTIFFFormat
-import be.cytomine.formats.supported.digitalpathology.*
-
 /*
  * Copyright (c) 2009-2016. Authors: see NOTICE file.
  *
@@ -21,14 +15,28 @@ import be.cytomine.formats.supported.digitalpathology.*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import be.cytomine.client.models.UploadedFile
+import be.cytomine.formats.archive.ZipFormat
+import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.PhotoshopTIFFFormat
 import be.cytomine.formats.lightconvertable.JPEGFormat
 import be.cytomine.formats.lightconvertable.PNGFormat
 import be.cytomine.formats.lightconvertable.specialtiff.PlanarTIFFFormat
+import be.cytomine.formats.lightconvertable.BMPFormat
+import be.cytomine.formats.lightconvertable.PGMFormat
+import be.cytomine.formats.lightconvertable.specialtiff.BrokenTIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.HuronTIFFFormat
+import be.cytomine.formats.supported.digitalpathology.*
+import be.cytomine.formats.supported.JPEG2000Format
+import be.cytomine.formats.supported.PhilipsTIFFFormat
 import be.cytomine.formats.supported.PyramidalTIFFFormat
+import be.cytomine.formats.supported.VentanaBIFFormat
+import be.cytomine.formats.supported.VentanaTIFFFormat
+
 import be.cytomine.image.ImageUtilsController
 import grails.test.mixin.TestFor
+import org.apache.commons.io.FileUtils
 import utils.ProcUtils
 
 /**
@@ -38,7 +46,7 @@ import utils.ProcUtils
 @TestFor(ImageUtilsController)
 class CytomineFormatSpec {
 
-    final static String IMAGES_REPOSITORY_PATH = '/opt/cytomine/testdata'
+    final static String IMAGES_REPOSITORY_PATH = '/data/cytominetest/images'
 
     private static String getFilenameForTest(def imageFilename, String imageRepository = IMAGES_REPOSITORY_PATH) {
         String source = createFullPathFromFilename(imageFilename, imageRepository)
@@ -75,130 +83,203 @@ class CytomineFormatSpec {
 
 
     private static checkCorrectDetect(String uploadedFile, Class expectedClass){
-        def imageFormats = FormatIdentifier.getAvailableSingleFileImageFormats()
-        imageFormats.each {
-            it.absoluteFilePath = uploadedFile
-            if (it.class ==  expectedClass) {
-                assert(it.detect())
-            } else {
-                assert(!it.detect())
-            }
-        }
-    }
+        def imageFormats = FormatIdentifier.getImageFormats(uploadedFile)
+        println imageFormats
 
-    void "test jpegdetect"() {
-        def uploadedFile = createFullPathFromFilename("384.jpg")
-        checkCorrectDetect(uploadedFile, JPEGFormat.class)
+        def format = imageFormats.find { expectedClass.isInstance(it.imageFormat) }
+
+        assert(format != null)
     }
 
 
+    /*********************** Test formats ***********************/
+    // Common Format
     void "test jpegformat"() {
-        def uploadedFile = createFullPathFromFilename("384.jpg")
+        def uploadedFile = createFullPathFromFilename("jpeg/test.jpeg")
         checkCorrectDetect(uploadedFile, JPEGFormat.class)
     }
 
     void "test pngformat"() {
-        def uploadedFile = createFullPathFromFilename("384.png")
+        def uploadedFile = createFullPathFromFilename("png/test.png")
         checkCorrectDetect(uploadedFile, PNGFormat.class)
     }
 
-    void "test ndpiformat"() {
-        def uploadedFile = createFullPathFromFilename("CMU-1.ndpi")
-        checkCorrectDetect(uploadedFile, HamamatsuNDPIFormat.class)
+    void "test pgmformat"() {
+        def uploadedFile = createFullPathFromFilename("pgm/test.pgm")
+        checkCorrectDetect(uploadedFile, PGMFormat.class)
     }
 
-    void "test vmsformat"() {
-        def uploadedFile = createFullPathFromFilename("CMU-1.vms/CMU-1-40x_-_2010-01-12_13.24.05.vms")
-        checkCorrectDetect(uploadedFile, HamamatsuVMSFormat.class)
+    void "test bmpformat"() {
+        def uploadedFile = createFullPathFromFilename("bmp/test.bmp")
+        checkCorrectDetect(uploadedFile, BMPFormat.class)
     }
 
+
+    // TIFF Format
     void "test tiffplanarformat"() {
-        def uploadedFile = createFullPathFromFilename("384.tiff")
+        def uploadedFile = createFullPathFromFilename("tiff/planar.tif")
         checkCorrectDetect(uploadedFile, PlanarTIFFFormat.class)
     }
 
     void "test tiffphotoshopformat"() {
-        def uploadedFile = createFullPathFromFilename("1464-001-L.tif")
+        def uploadedFile = createFullPathFromFilename("tiff/photoshop.tif")
         checkCorrectDetect(uploadedFile, PhotoshopTIFFFormat.class)
     }
 
     void "test ventanatiffformat"() {
-        def uploadedFile = createFullPathFromFilename("bif_tif/11GH076256_A2_CD3_100.tif")
+        def uploadedFile = createFullPathFromFilename("tiff/ventana.tif")
         checkCorrectDetect(uploadedFile, VentanaTIFFFormat.class)
     }
 
-    void "test aperioSVSFormat"() {
-        def uploadedFile = createFullPathFromFilename("alphaSMA_B-1609444_3-2013-02-27-17.12.08.svs")
-        checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
+    void "test huronTIFFformat"() {
+        def uploadedFile = createFullPathFromFilename("tiff/huron.tif")
+        checkCorrectDetect(uploadedFile, HuronTIFFFormat.class)
     }
 
-    void "test aperioSVSJ2KFormat"() {
-        def uploadedFile = createFullPathFromFilename("JP2K-33003-1.svs")
-        checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
+    void "test brokenTIFFformat"() {
+        def uploadedFile = createFullPathFromFilename("tiff/broken.tif")
+        checkCorrectDetect(uploadedFile, BrokenTIFFFormat.class)
     }
 
-    void "test leicaSCNFormat"() {
-        def uploadedFile = createFullPathFromFilename("Leica-1.scn")
-        checkCorrectDetect(uploadedFile, LeicaSCNFormat.class)
-    }
-
-    void "test miraxMRXSFormat"() {
-        def uploadedFile = createFullPathFromFilename("CMU-1-Saved-1_16.mrxs/CMU-1-Saved-1_16.mrxs")
-        checkCorrectDetect(uploadedFile, MiraxMRXSFormat.class)
+    void "test pyrTIFFformat"() {
+        def uploadedFile = createFullPathFromFilename("tiff/pyramidal.tif")
+        checkCorrectDetect(uploadedFile, PyramidalTIFFFormat.class)
     }
 
     void "test philipsTIFFFormat"() {
-        def uploadedFile = createFullPathFromFilename("PhilipsTest02.tiff")
+        def uploadedFile = createFullPathFromFilename("tiff/philips.tif")
         checkCorrectDetect(uploadedFile, PhilipsTIFFFormat.class)
     }
 
+    void "test CZITIFFDetect"() {
+        def uploadedFile = createFullPathFromFilename("tiff/czi.tif")
+        checkCorrectDetect(uploadedFile, CZITIFFFormat.class)
+    }
+
+
+    // Single File Format
+    void "test ndpiformat"() {
+        def uploadedFile = createFullPathFromFilename("ndpi/test.ndpi")
+        checkCorrectDetect(uploadedFile, HamamatsuNDPIFormat.class)
+    }
+
+    void "test aperioSVSFormat"() {
+        def uploadedFile = createFullPathFromFilename("svs/test.svs")
+        checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
+    }
+
+    void "test ventanabifformat"() {
+        def uploadedFile = createFullPathFromFilename("bif/test.bif")
+        checkCorrectDetect(uploadedFile, VentanaBIFFormat.class)
+    }
+
+    void "test J2Kformat"() {
+        def uploadedFile = createFullPathFromFilename("j2k/test.jp2")
+        checkCorrectDetect(uploadedFile, JPEG2000Format.class)
+    }
+
+    void "test leicaSCNFormat"() {
+        def uploadedFile = createFullPathFromFilename("scn/test.scn")
+        checkCorrectDetect(uploadedFile, LeicaSCNFormat.class)
+    }
+
+
+    // Multiple File Format
+    void "test miraxMRXSFormat"() {
+        def uploadedFile = createFullPathFromFilename("mrxs/")
+        checkCorrectDetect(uploadedFile, MiraxMRXSFormat.class)
+    }
+
+    void "test vmsformat"() {
+        def uploadedFile = createFullPathFromFilename("vms/")
+        checkCorrectDetect(uploadedFile, HamamatsuVMSFormat.class)
+    }
+
+    void "test vsiformat"() {
+        def uploadedFile = createFullPathFromFilename("vsi/")
+        checkCorrectDetect(uploadedFile, CellSensVSIFormat.class)
+    }
+
+
+    // Zip Format
     void "test zipFormat"() {
-        def uploadedFile = getFilenameForTest("499-488.zip")
-        checkCorrectDetect(uploadedFile, ZipFormat.class)
+        def uploadedFile = createFullPathFromFilename("mrxs/MRXS.zip")
+
+        def format = FormatIdentifier.getAvailableArchiveFormats().find {
+            it.absoluteFilePath = uploadedFile
+            return (it.class ==  ZipFormat.class)
+        }
+        assert(format != null)
     }
 
     void "test zipFormatMultipleSingleImages"() {
-        String uploadedFile = getFilenameForTest("499-488.zip")
+        String uploadedFile = getFilenameForTest("zip/test.zip")
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
-        assert(detectedFiles.size() == 2)
-        detectedFiles.each { it ->
-            assert(it.imageFormat.class == JPEGFormat)
-        }
+        assert(detectedFiles.size() == 3)
+        assert (detectedFiles.collect {it.imageFormat.class}.sort() == [PhotoshopTIFFFormat, PhotoshopTIFFFormat, PNGFormat].sort())
+        //clean tmp file
+        FileUtils.deleteDirectory(new File(uploadedFile).parentFile.parentFile)
     }
 
     void "test zipMRXSDetect"() {
-        String uploadedFile = getFilenameForTest("CMU-1-Saved-1_16.mrxs.zip")
+        String uploadedFile = getFilenameForTest("mrxs/MRXS.zip")
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
         assert detectedFiles.size() == 1
         assert detectedFiles[0].imageFormat.class == MiraxMRXSFormat
         assert(new File(uploadedFile).delete()) //clean tmp file (only mrxs file is cleaned, not nested...)
+        //clean tmp file
+        FileUtils.deleteDirectory(new File(uploadedFile).parentFile.parentFile)
     }
 
     void "test zipVMSDetect"() {
-        String uploadedFile = getFilenameForTest("CMU-1.vms.zip")
+        String uploadedFile = getFilenameForTest("vms/test.zip")
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
         assert detectedFiles.size() == 1
         assert detectedFiles[0].imageFormat.class == HamamatsuVMSFormat //clean tmp file (only vms file is cleaned, not nested...)
+        //clean tmp file
+        FileUtils.deleteDirectory(new File(uploadedFile).parentFile.parentFile)
     }
 
-    void "test CZITIFFDetect"() {
-        String uploadedFile = getFilenameForTest("CZITIFF_TEST.tif")
+    void "test zipFormatSimpleMultipleAndZip"() {
+        String uploadedFile = getFilenameForTest("zip/testSimpleMultipleAndZip.zip")
         def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
-
-        assert detectedFiles.size() == 1
-        assert detectedFiles[0].imageFormat.class == CZITIFFFormat
+        assert(detectedFiles.size() == 6)
+        assert (detectedFiles.collect {it.imageFormat.class}.sort() == [PhotoshopTIFFFormat, PhotoshopTIFFFormat, PNGFormat, HamamatsuVMSFormat, MiraxMRXSFormat, PyramidalTIFFFormat].sort())
+        //clean tmp file
+        FileUtils.deleteDirectory(new File(uploadedFile).parentFile.parentFile)
     }
+
+    void "test zipFormatTwoMultiples"() {
+        String uploadedFile = getFilenameForTest("zip/testVMSAndMRXS.zip")
+        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+        assert(detectedFiles.size() == 2)
+        assert (detectedFiles.collect {it.imageFormat.class}.sort() == [HamamatsuVMSFormat, MiraxMRXSFormat].sort())
+        //clean tmp file
+        FileUtils.deleteDirectory(new File(uploadedFile).parentFile.parentFile)
+    }
+
+    void "test zipFormatInvalidTwoMultiples"() {
+        String uploadedFile = getFilenameForTest("zip/testInvalidVMSAndMRXS.zip")
+        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+        assert(detectedFiles.size() == 1)
+        def clazz = detectedFiles.collect {it.imageFormat.class}[0]
+        assert (clazz == HamamatsuVMSFormat || clazz == MiraxMRXSFormat)
+        //clean tmp file
+        FileUtils.deleteDirectory(new File(uploadedFile).parentFile.parentFile)
+    }
+
+    // TODO other convert
 
     void "test convertJPEG"() {
-        JPEGFormat jpegFormat = new JPEGFormat(absoluteFilePath: getFilenameForTest("384.jpg"))
-        String convertedFilename = jpegFormat.convert("/tmp")
+        String filePath = getFilenameForTest("jpeg/test.jpeg");
+        JPEGFormat jpegFormat = new JPEGFormat(absoluteFilePath: filePath)
+        String convertedFilename = jpegFormat.convert()
         assert(convertedFilename)
-        println convertedFilename
-        String uploadedFile = getFilenameForTest(convertedFilename, "/")
-        def detectedFiles = FormatIdentifier.getImageFormats(uploadedFile)
+        def detectedFiles = FormatIdentifier.getImageFormats(convertedFilename)
         assert detectedFiles.size() == 1
         assert detectedFiles[0].imageFormat.class == PyramidalTIFFFormat
-        assert(new File(uploadedFile).delete()) //clean tmp file
         assert(new File(convertedFilename).delete()) //clean tmp file
+        //clean tmp file
+        FileUtils.deleteDirectory(new File(filePath).parentFile.parentFile)
     }
 }

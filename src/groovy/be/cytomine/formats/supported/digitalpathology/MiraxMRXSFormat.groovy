@@ -33,6 +33,18 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
         magnificiationProperty = "mirax.GENERAL.OBJECTIVE_MAGNIFICATION"
     }
 
+    @Override
+    boolean detect() {
+        File uploadedFile = new File(absoluteFilePath);
+        File mrxs = uploadedFile.listFiles(). find { it.name.endsWith('.mrxs')}
+
+        if(mrxs){
+            absoluteFilePath = mrxs.absolutePath
+            return super.detect()
+        }
+        return false
+    }
+
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
         if (label == "macro")

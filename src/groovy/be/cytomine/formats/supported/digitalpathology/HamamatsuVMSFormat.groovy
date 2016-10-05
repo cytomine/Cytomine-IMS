@@ -32,14 +32,16 @@ class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
         magnificiationProperty = "hamamatsu.SourceLens"
     }
 
+    @Override
     boolean detect() {
-        try {
-            //if(FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase().equals("tif")) return false //hack: if convert ndpi to tif => still hamamatsu metadata
-            return new OpenSlide(new File(absoluteFilePath)).properties.keySet().contains("hamamatsu.MapFile")
-        } catch (java.io.IOException e) {
-            //Not a file that OpenSlide can recognize
-            return false
+        File uploadedFile = new File(absoluteFilePath);
+        File vms = uploadedFile.listFiles(). find { it.name.endsWith('.vms')}
+
+        if(vms){
+            absoluteFilePath = vms.absolutePath
+            return super.detect()
         }
+        return false
     }
 
     def properties() {

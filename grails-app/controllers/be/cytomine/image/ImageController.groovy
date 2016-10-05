@@ -371,7 +371,6 @@ class ImageController extends ImageUtilsController {
     ])
     def tile() {
         responseImageFromUrl(tileService.getTileUrl(params))
-        //redirect(url:tileService.getTileUrl(params))
     }
 
     @RestApiMethod(description="Download an image", extensions = ["jpg","png"])
