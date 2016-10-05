@@ -116,7 +116,7 @@ class CytomineFormatSpec {
 
 
     // TIFF Format
-    void "test tiffplanarformat"() {
+    /*void "test tiffplanarformat"() {
         def uploadedFile = createFullPathFromFilename("tiff/planar.tif")
         checkCorrectDetect(uploadedFile, PlanarTIFFFormat.class)
     }
@@ -154,7 +154,7 @@ class CytomineFormatSpec {
     void "test CZITIFFDetect"() {
         def uploadedFile = createFullPathFromFilename("tiff/czi.tif")
         checkCorrectDetect(uploadedFile, CZITIFFFormat.class)
-    }
+    }*/
 
 
     // Single File Format
@@ -168,20 +168,20 @@ class CytomineFormatSpec {
         checkCorrectDetect(uploadedFile, AperioSVSFormat.class)
     }
 
-    void "test ventanabifformat"() {
+    /*void "test ventanabifformat"() {
         def uploadedFile = createFullPathFromFilename("bif/test.bif")
         checkCorrectDetect(uploadedFile, VentanaBIFFormat.class)
-    }
+    }*/
 
     void "test J2Kformat"() {
         def uploadedFile = createFullPathFromFilename("j2k/test.jp2")
         checkCorrectDetect(uploadedFile, JPEG2000Format.class)
     }
 
-    void "test leicaSCNFormat"() {
+    /*void "test leicaSCNFormat"() {
         def uploadedFile = createFullPathFromFilename("scn/test.scn")
         checkCorrectDetect(uploadedFile, LeicaSCNFormat.class)
-    }
+    }*/
 
 
     // Multiple File Format
@@ -190,10 +190,10 @@ class CytomineFormatSpec {
         checkCorrectDetect(uploadedFile, MiraxMRXSFormat.class)
     }
 
-    void "test vmsformat"() {
+    /*void "test vmsformat"() {
         def uploadedFile = createFullPathFromFilename("vms/")
         checkCorrectDetect(uploadedFile, HamamatsuVMSFormat.class)
-    }
+    }*/
 
     void "test vsiformat"() {
         def uploadedFile = createFullPathFromFilename("vsi/")
@@ -202,7 +202,7 @@ class CytomineFormatSpec {
 
 
     // Zip Format
-    void "test zipFormat"() {
+    /*void "test zipFormat"() {
         def uploadedFile = createFullPathFromFilename("mrxs/MRXS.zip")
 
         def format = FormatIdentifier.getAvailableArchiveFormats().find {
@@ -266,7 +266,7 @@ class CytomineFormatSpec {
         assert (clazz == HamamatsuVMSFormat || clazz == MiraxMRXSFormat)
         //clean tmp file
         FileUtils.deleteDirectory(new File(uploadedFile).parentFile.parentFile)
-    }
+    }*/
 
     // TODO other convert
 
