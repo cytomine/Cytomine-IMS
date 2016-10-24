@@ -33,7 +33,7 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileFormat{
         mimeType = "philips/tif"
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
-        resolutionProperty = null
+        resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = null
     }
 

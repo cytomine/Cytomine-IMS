@@ -102,7 +102,7 @@ public class FormatIdentifier {
         if(uploadedFile.isDirectory()){
             println "$uploadedFilePath is a directory"
 
-            if(uploadedFile.isDirectory() && uploadedFile.name == "__MACOSX") return;
+            if(uploadedFile.name == "__MACOSX") return;
             // check if it is a folder containing one multipleFileImage
             def multipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats() + getAvailableMultipleImageFormats()
 

@@ -92,7 +92,8 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
         def properties = [[key : "mimeType", value : mimeType]]
         int maxWidth = 0
         int maxHeight = 0
-        tiffinfo.tokenize( '\n' ).findAll {
+        def infos = tiffinfo.tokenize( '\n' );
+        infos.findAll {
             it.contains 'Image Width:'
         }.each {
             def tokens = it.tokenize(" ")
@@ -101,9 +102,20 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
             maxWidth = Math.max(maxWidth, width)
             maxHeight = Math.max(maxHeight, height)
         }
+        Double resolution;
+        String unit;
+        def resolutions = infos.findAll {
+            it.contains 'Resolution:'
+        }.unique();
+        if(resolutions.size() == 1){
+            def tokens = resolutions[0].tokenize(" ,/")
+            tokens.each {println it}
+            resolution = Double.parseDouble(tokens.get(1))
+            unit = tokens.get(4)
+        }
         properties << [ key : "cytomine.width", value : maxWidth ]
         properties << [ key : "cytomine.height", value : maxHeight ]
-        properties << [ key : "cytomine.resolution", value : null ]
+        properties << [ key : "cytomine.resolution", value : unitConverter(resolution, unit) ]
         properties << [ key : "cytomine.magnification", value : null ]
         return properties
 
@@ -123,7 +135,22 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
 
     }
 
-
+    //convert from pixel/unit to µm/pixel
+    private Double unitConverter(Double res, String unit){
+        if(res == null) return null;
+        Double resOutput = res;
+        if(unit == "inch"){
+            resOutput /= 2.54
+            unit = "cm"
+        }
+        if(unit == "cm"){
+            resOutput = 1/resOutput
+            resOutput*=10000
+        } else{
+            return null
+        }
+        return resOutput
+    }
 
 
 }
