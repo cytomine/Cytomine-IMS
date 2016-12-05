@@ -17,6 +17,7 @@ package be.cytomine.image
  */
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.exception.MiddlewareException
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
@@ -76,7 +77,7 @@ class ImageController extends ImageUtilsController {
         String mimeType = params.mimeType
         int maxSize = params.int('maxSize', 512)
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        println "imageFormat=${imageFormat.class}"
+        log.info "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
@@ -239,18 +240,16 @@ class ImageController extends ImageUtilsController {
         }
 		
         if(params.boolean('drawScaleBar')) {
-            double proport1 = params.double('width')/params.double('height')
-            double porpert2 = (double)bufferedImage.getWidth()/(double)bufferedImage.getHeight()
 //            if(proport1==porpert2) {
                 //If the crop mage has been resized, the image may be "cut" (how to know that?).
                 //(we may have oldWidth/oldHeight <> newWidth/newHeight)
                 //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
                 //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
                 //but if the image is cut , its not possible to compute the good width size
-                double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
-                Double resolution = params.double('resolution')
-                Double magnification = params.double('magnification')					
-                bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth, magnification)
+            double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
+            Double resolution = params.double('resolution')
+            Double magnification = params.double('magnification')
+            bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth, magnification)
 //            }
         }
 
@@ -326,7 +325,7 @@ class ImageController extends ImageUtilsController {
         }
 
         if (bufferedImage == null) {
-            throw new Exception("Not a valid image: ${cropURL}")
+            throw new MiddlewareException("Not a valid image: ${cropURL}")
         }
 
         Long start = System.currentTimeMillis()
@@ -345,7 +344,7 @@ class ImageController extends ImageUtilsController {
             }
         }
 
-        println "time=${System.currentTimeMillis() - start}"
+        log.info "time=${System.currentTimeMillis() - start}"
 
         params.topLeftX = savedTopX
         params.topLeftY = savedTopY
@@ -354,8 +353,10 @@ class ImageController extends ImageUtilsController {
 
         if (params.safe) {
             //if safe mode, skip annotation too large
-            if (params.int('width') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
-            if (params.int('height') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) throw new Exception("Too big annotation!")
+            if ((params.int('width') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) ||
+                    (params.int('height') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth)){
+                throw new MiddlewareException("Too big annotation!");
+            }
         }
         bufferedImage
     }

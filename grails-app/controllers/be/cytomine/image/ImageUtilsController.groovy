@@ -34,8 +34,8 @@ class ImageUtilsController {
         def out = new ByteArrayOutputStream()
         try {
             out << new URL(url).openStream()
-        } catch (Exception e) {
-            e.printStackTrace()
+        } catch (MalformedURLException | UnknownServiceException | java.io.IOException e) {
+            log.error "getImageFromURL $url Exception "+e.toString()
         }
         InputStream inputStream = new ByteArrayInputStream(out.toByteArray())
         BufferedImage bufferedImage = ImageIO.read(inputStream)

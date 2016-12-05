@@ -1,6 +1,5 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.supported.SupportedImageFormat
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
@@ -63,8 +62,7 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
             }
             openSlide.close()
         }
-        if (associatedBufferedImage) return associatedBufferedImage
-        else return null
+        return associatedBufferedImage
     }
 
     public def properties() {

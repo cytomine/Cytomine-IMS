@@ -86,8 +86,10 @@ class VisionController extends ImageUtilsController {
 
         def postParam = paramsWithoutUrl.collect{it.key+"="+it.value}.join("&")
 
-        if(!urls.isEmpty()) {
-
+        if(urls.isEmpty()) {
+            render "url argument is missing (start with url0=)!"
+            response.status = 400
+        } else {
             log.info "urls=$urls"
 
             ImagePlus[] images = new ImagePlus[urls.size()]
@@ -104,10 +106,6 @@ class VisionController extends ImageUtilsController {
             BufferedImage resultImage = result.getBufferedImage()
 
             responseBufferedImage(resultImage)
-
-        } else {
-            render "url arugment is missing (start with url0=)!"
-            response.status = 400
         }
     }
 

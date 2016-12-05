@@ -73,7 +73,8 @@ class StorageController {
             if (params['idProject']) {
                 try {
                     projects << Integer.parseInt(params['idProject'] + "")
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
+                    log.error "Integer parse Exception : "+params['idProject']
                 }
             }
 
@@ -103,6 +104,7 @@ class StorageController {
             log.info "idStorage=$idStorage"
             log.info "projects=$projects"
             log.info "filename=$filename"
+            log.info "filePath=$filePath"
             log.info "contentType=$contentType"
             long timestamp = new Date().getTime()
 

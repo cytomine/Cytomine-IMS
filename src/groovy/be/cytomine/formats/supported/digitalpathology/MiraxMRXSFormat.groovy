@@ -47,10 +47,12 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
 
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro")
+        if (label == "macro"){
             return rotate90ToRight(bufferedImage)
-        else
+        }
+        else {
             return bufferedImage
+        }
     }
 
 }

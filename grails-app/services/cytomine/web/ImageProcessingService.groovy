@@ -137,9 +137,6 @@ class ImageProcessingService {
         int[] _x = new int[coordinates.size()]
         int[] _y = new int[coordinates.size()]
         coordinates.eachWithIndex { coordinate, i ->
-            if(i%100==0) {
-                //println "*** $i/${coordinates.size()} coordinates"
-            }
             int xLocal = Math.min((coordinate.x - x) * x_ratio, window.getWidth());
             xLocal = Math.max(0, xLocal)
             int yLocal = Math.min((imageHeight - coordinate.y - y) * y_ratio, window.getHeight());
@@ -324,7 +321,6 @@ class ImageProcessingService {
         int topLeftY = params.int('topLeftY')
         int width = params.int('width')
         int height = params.int('height')
-        int imageWidth = params.int('imageWidth')
         int imageHeight = params.int('imageHeight')
         BufferedImage mask = new BufferedImage(bufferedImage.getWidth(),bufferedImage.getHeight(),BufferedImage.TYPE_INT_ARGB);
         double x_ratio = bufferedImage.getWidth() / width
@@ -332,10 +328,11 @@ class ImageProcessingService {
 
         mask = colorizeWindow(params, mask, [geometry], topLeftX, imageHeight - topLeftY, x_ratio, y_ratio)
 
-        if (withAlpha)
+        if (withAlpha) {
             return applyMaskToAlpha(bufferedImage, mask)
-        else
+        } else {
             return mask
+        }
 
     }
     public BufferedImage createCropWithDraw(BufferedImage bufferedImage, Geometry geometry, def params) {
@@ -357,7 +354,6 @@ class ImageProcessingService {
             topLeftY = params.int('topLeftY')+((height-params.int('height'))/2)
         }
 
-        int imageWidth = params.int('imageWidth')
         int imageHeight = params.int('imageHeight')
         double x_ratio = bufferedImage.getWidth() / width
         double y_ratio = bufferedImage.getHeight() / height
