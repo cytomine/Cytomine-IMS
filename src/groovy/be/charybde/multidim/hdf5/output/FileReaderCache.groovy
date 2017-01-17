@@ -27,4 +27,11 @@ class FileReaderCache {
         cache.put(name, reader)
         return reader
     }
+
+    public void shutdown(){
+        cache.each {
+            it.close()
+        }
+    }
+
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import be.charybde.multidim.hdf5.output.FileReaderCache
 import grails.util.Holders
 
 class BootStrap {
@@ -38,5 +40,7 @@ class BootStrap {
     }
 
     def destroy = {
+        println "Shutdown the multispectral cache"
+        FileReaderCache.getInstance().shutdown()
     }
 }
