@@ -61,5 +61,13 @@ class UrlMappings {
         "/storage/size.$format"(controller:"storage"){
             action = [GET:"size"]
         }
+
+        "/multidim/pxl.$format" (controller:"multiDim"){
+            action = [GET:"pxl"]
+        }
+
+        "/multidim/rect.$format" (controller:"multiDim"){
+            action = [GET:"rect"]
+        }
 	}
 }
