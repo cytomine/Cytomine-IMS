@@ -29,6 +29,8 @@ class HDF5FileReader {
         retScript = retScript.replace("\n", "")
         relatedFilenames = retScript.split(",")
      //   relatedFilenames = ["/home/laurent/cyto_dev/Cytomine-MULTIDIM/test1650.0.h5", "/home/laurent/cyto_dev/Cytomine-MULTIDIM/test1650.1.h5"]
+
+
         relatedFilenames.each {
             readers << new HDF5Factory().openForReading(it)
         }

@@ -2,6 +2,7 @@ package be.cytomine.multidim
 
 import be.charybde.multidim.hdf5.output.FileReaderCache
 import grails.converters.JSON
+import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
@@ -25,9 +26,18 @@ class MultiDimController {
         def coo = [Integer.parseInt(params.x) , Integer.parseInt(params.y)]
         def aMap = new HashMap()
         aMap.put("pxl", coo)
-        def read = FileReaderCache.getInstance().getReader(name)
-        def spectra = read.extractSpectraPixel(coo)
-        aMap.put("spectra", spectra.getValues())
+        try{
+            def read = FileReaderCache.getInstance().getReader(name)
+            def spectra = read.extractSpectraPixel(coo)
+            aMap.put("spectra", spectra.getValues())
+        }
+        catch(HDF5FileNotFoundException e){
+            aMap.put("error", "File Not found")
+        }
+        catch(IndexOutOfBoundsException e){
+            aMap.put("error", "Coordinates out of bounds")
+        }
+
 
 
         render aMap as JSON
@@ -50,17 +60,27 @@ class MultiDimController {
         def w = Integer.parseInt(params.w)
         def h = Integer.parseInt(params.h)
 
-        def aMap = new HashMap()
-        def read = FileReaderCache.getInstance().getReader(name)
-        def spectra = read.extractSpectraRectangle(x,y,w,h)
-        def i = 0
 
-        spectra.getValues().each { pxl ->
-            def bMap = new HashMap()
-            bMap.put("pixel", pxl[0])
-            bMap.put("spectra", pxl[1])
-            aMap.put(i, bMap)
-            ++i
+        def aMap = new HashMap()
+
+        try{
+            def read = FileReaderCache.getInstance().getReader(name)
+            def spectra = read.extractSpectraRectangle(x,y,w,h)
+            def i = 0
+
+            spectra.getValues().each { pxl ->
+                def bMap = new HashMap()
+                bMap.put("pixel", pxl[0])
+                bMap.put("spectra", pxl[1])
+                aMap.put(i, bMap)
+                ++i
+            }
+        }
+        catch(HDF5FileNotFoundException e){
+            aMap.put("error", "File Not found")
+        }
+        catch(IndexOutOfBoundsException e){
+            aMap.put("error", "Coordinates out of bounds")
         }
 
         render aMap as JSON
