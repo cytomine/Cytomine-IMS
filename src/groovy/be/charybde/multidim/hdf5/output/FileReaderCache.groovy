@@ -1,5 +1,7 @@
 package be.charybde.multidim.hdf5.output
 
+import java.util.concurrent.Executors
+
 /**
  * Created by laurent on 17.01.17.
  */
@@ -7,9 +9,12 @@ class FileReaderCache {
 
     private static FileReaderCache singleton
     private HashMap<String, HDF5FileReader> cache
+    private def threadpool //Nb maybe we should use only one tp for the filereaders (this one)
 
     private FileReaderCache(){
-        this.cache = new HashMap<>()
+        this.cache = new HashMap<String, HDF5FileReader>()
+        this.threadpool =  Executors.newFixedThreadPool(8)
+
     }
 
     public static FileReaderCache getInstance(){
@@ -33,5 +38,6 @@ class FileReaderCache {
             it.close()
         }
     }
+
 
 }

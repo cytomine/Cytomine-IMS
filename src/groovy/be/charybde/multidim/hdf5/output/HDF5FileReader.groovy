@@ -12,6 +12,9 @@ import java.util.concurrent.Future
  * Created by laurent on 07.01.17.
  */
 class HDF5FileReader {
+    public final static int CACHE_MAX = 50
+
+
     private String name
     def private relatedFilenames
     private ArrayList<IHDF5Reader> readers
@@ -19,6 +22,7 @@ class HDF5FileReader {
     def private tp
     private int dimensions
     private HashMap cache
+    private int cache_size //NB this is maybe more efficient that asking cache.size()
 
     public HDF5FileReader(String name) {
         this.name = name
@@ -88,15 +92,18 @@ class HDF5FileReader {
                 tileConcerned << cache.get(path)
             }
             else{
-                def entry = new HDF5TileCache(dimensions, path)
+                def entry = new HDF5TileCache(dimensions, path, tile_width, tile_height)
                 entry.extractValues(this)
                 if(!entry.isDataPresent())
                     throw new IndexOutOfBoundsException()
                 cache.put(path, entry)
                 tileConcerned << entry
+                cache_size++
             }
         }
+
         figure.getDataFromCache(tileConcerned)
+        tp.submit({-> replaceLRU()}) // what if we want something bigger than cahce
         return figure
     }
 
@@ -128,6 +135,15 @@ class HDF5FileReader {
             it.close()
         }
         tp.shutdown()
+    }
+
+    //Do we need synchronization ?
+    private void replaceLRU(){
+        while(cache_size > CACHE_MAX){
+            def lru = cache.min{ it.lastUse() }
+            cache.remove(lru.getKey())
+            cache_size--
+        }
     }
 }
 

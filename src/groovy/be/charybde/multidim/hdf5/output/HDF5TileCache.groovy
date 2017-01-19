@@ -16,17 +16,19 @@ public class HDF5TileCache  {
     private String name
     private int x_start, x_end, y_start, y_end
     private Boolean dataPresent
+    private long last_use
 
-    public HDF5TileCache(int dim, def name){
+    public HDF5TileCache(int dim, def name, int x_size, int y_size){
         this.dataPresent = false
         this.cache = new ArrayList<MDShortArray>()
         this.dim = dim;
         this.name = name
         def xxyy = name.substring(1).split("_")
-        x_start = Integer.parseInt(xxyy[0]) * 256
-        x_end = x_start + 255
-        y_start = Integer.parseInt(xxyy[1]) * 256
-        y_end = y_start + 255
+        x_start = Integer.parseInt(xxyy[0]) * x_size
+        x_end = x_start + x_size - 1
+        y_start = Integer.parseInt(xxyy[1]) * y_size
+        y_end = y_start + y_size - 1
+        last_use = System.currentTimeMillis()
     }
 
     def benchmark = { closure ->
@@ -81,14 +83,20 @@ public class HDF5TileCache  {
     def isDataPresent(){
         return dataPresent
     }
-//TODO numbers
+
+    def lastUse(){
+        return last_use
+    }
+
     def getPixelInCache(int x, int y){
         def res = []
         cache.each{ cc ->
-            for(int i=0; i  < 256; ++i){
-                res << cc.get(x%256,y%256,i)
+            def dims =  cc.longDimensions()
+            for(int i=0; i  < dims[2]; ++i){
+                res << cc.get(x%dims[0],y%dims[1],i)
             }
         }
+        last_use = System.currentTimeMillis()
         return res
     }
 }
