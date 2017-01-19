@@ -54,6 +54,11 @@ public class HDF5TileCache  {
                 catch(HDF5SymbolTableException e){
                     noError = false
                 }
+                catch(OutOfMemoryError er){
+                    println "OOM"
+                    noError = false
+                    reader.adaptCacheSize()
+                }
             } as Callable)
         }
 
@@ -93,7 +98,7 @@ public class HDF5TileCache  {
         cache.each{ cc ->
             def dims =  cc.longDimensions()
             for(int i=0; i  < dims[2]; ++i){
-                res << cc.get(x%dims[0],y%dims[1],i)
+                res << cc.get((int) x%dims[0], (int) y%dims[1],i)
             }
         }
         last_use = System.currentTimeMillis()
