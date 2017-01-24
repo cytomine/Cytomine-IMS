@@ -43,7 +43,7 @@ public class HDF5TileCache  {
         def tile_d = reader.getTileDepth()
         int nr_depth_tiles = dim / tile_d;
         def noError = true
-
+        def oom = false
 
         ArrayList<Future> spectra =  []
         (0..nr_depth_tiles - 1).each { i ->
@@ -57,7 +57,7 @@ public class HDF5TileCache  {
                 catch(OutOfMemoryError er){
                     println "OOM"
                     noError = false
-                    reader.adaptCacheSize()
+                    oom = true
                 }
             } as Callable)
         }
@@ -65,6 +65,9 @@ public class HDF5TileCache  {
         spectra.each { res ->
             cache << res.get()
         }
+        if(oom)
+            reader.adaptCacheSize()
+
         if(noError)
             dataPresent = true
     }

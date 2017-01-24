@@ -1,5 +1,6 @@
 package be.cytomine.multidim
 
+import be.charybde.multidim.exceptions.CacheTooSmallException
 import be.charybde.multidim.hdf5.output.FileReaderCache
 import grails.converters.JSON
 import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException
@@ -22,20 +23,27 @@ class MultiDimController {
 
     ])
     def pxl(){
-        String name = params.fif
-        def coo = [Integer.parseInt(params.x) , Integer.parseInt(params.y)]
         def aMap = new HashMap()
-        aMap.put("pxl", coo)
+
         try{
+            String name = params.fif
+            def coo = [Integer.parseInt(params.x) , Integer.parseInt(params.y)]
+            aMap.put("pxl", coo)
             def read = FileReaderCache.getInstance().getReader(name)
             def spectra = read.extractSpectraPixel(coo)
-            aMap.put("spectra", spectra.getValues())
+            if(spectra != null)
+                aMap.put("spectra", spectra.getValues())
+            else
+                aMap.put("error", "Internal error try again")
         }
         catch(HDF5FileNotFoundException e){
             aMap.put("error", "File Not found")
         }
         catch(IndexOutOfBoundsException e){
             aMap.put("error", "Coordinates out of bounds")
+        }
+        catch(NumberFormatException e ){
+            aMap.put("error", "Bad/null number format")
         }
 
 
@@ -54,16 +62,14 @@ class MultiDimController {
 
     ])
     def rect(){
-        String name = params.fif
-        def x = Integer.parseInt(params.x)
-        def y = Integer.parseInt(params.y)
-        def w = Integer.parseInt(params.w)
-        def h = Integer.parseInt(params.h)
-
-
         def aMap = new HashMap()
 
         try{
+            String name = params.fif
+            def x = Integer.parseInt(params.x)
+            def y = Integer.parseInt(params.y)
+            def w = Integer.parseInt(params.w)
+            def h = Integer.parseInt(params.h)
             def read = FileReaderCache.getInstance().getReader(name)
             def spectra = read.extractSpectraRectangle(x,y,w,h)
             def i = 0
@@ -81,6 +87,12 @@ class MultiDimController {
         }
         catch(IndexOutOfBoundsException e){
             aMap.put("error", "Coordinates out of bounds")
+        }
+        catch (CacheTooSmallException e){
+            aMap.put("error", "The figure is too big")
+        }
+        catch(NumberFormatException e ){
+            aMap.put("error", "Bad/null number format")
         }
 
         render aMap as JSON

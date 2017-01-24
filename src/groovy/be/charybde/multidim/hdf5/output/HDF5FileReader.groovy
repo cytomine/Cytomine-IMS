@@ -1,5 +1,6 @@
 package be.charybde.multidim.hdf5.output
 
+import be.charybde.multidim.exceptions.CacheTooSmallException
 import ch.systemsx.cisd.hdf5.HDF5Factory
 import ch.systemsx.cisd.hdf5.IHDF5Reader
 import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException
@@ -69,7 +70,6 @@ class HDF5FileReader {
         def x_tile_end = (x + wid) / tile_width
         def y_tile_end = (y + wid) / tile_height
 
-        // TODO parall
         (x_tile..x_tile_end).each { xx ->
             (y_tile..y_tile_end).each { yy ->
                 tiles << "t" + xx + "_" + yy
@@ -84,27 +84,45 @@ class HDF5FileReader {
     }
 
     //Patharray is the array of path overlaping by the figure
-    //Throws IndexOutOfBoundExceptions if shit happens
+    //Throws IndexOutOfBoundExceptions if bad coordinates, and
+    //Warning if multiple tile requested and cache full :s
     HDF5Geometry extractSpectra(HDF5Geometry figure, def pathArray) {
+        if(pathArray.size() > CACHE_MAX)
+            throw new CacheTooSmallException()
+        println "ExSPec"
+
         def tileConcerned = []
         pathArray.each { path ->
             if(cache.containsKey(path)){
                 tileConcerned << cache.get(path)
+                println "Cache hit"
             }
             else{
+                def cacheM = CACHE_MAX
                 def entry = new HDF5TileCache(dimensions, path, tile_width, tile_height)
+                println entry.isDataPresent()
                 entry.extractValues(this)
-                if(!entry.isDataPresent()) //TODO warning this may be a cache  error now  -> do something
-                    throw new IndexOutOfBoundsException()
-                cache.put(path, entry)
+                if(!entry.isDataPresent()){
+                    if(cacheM != CACHE_MAX) {//we have change the size of cache (thus a OOM has happened)
+                        return extractSpectra(figure, pathArray) //rerun the stuff
+                    }
+                    else
+                        throw new IndexOutOfBoundsException()
+                }
                 tileConcerned << entry
+
+                if(cache_size > CACHE_MAX)
+                    removeXLRU(cache_size - CACHE_MAX)
+                cache.put(path, entry)
                 cache_size++
             }
         }
 
-        figure.getDataFromCache(tileConcerned)
-        tp.submit({-> replaceLRU()}) // what if we want something bigger than cahce
-        return figure
+        if(tileConcerned.size() !=0){
+            println "tc "+ tileConcerned.size()
+            figure.getDataFromCache(tileConcerned)
+            return figure
+        }
     }
 
     IHDF5Reader getReader(int i){
@@ -137,15 +155,30 @@ class HDF5FileReader {
         tp.shutdown()
     }
 
-    //Do we need synchronization ?
     private void replaceLRU(){
         while(cache_size > CACHE_MAX){
-            def lru = cache.min{ it.getValue()lastUse() }
-            println "Remove " + lru.getKey() + " from cache ("+cache_size+"/"+CACHE_MAX+")"
-            cache.remove(lru.getKey())
-            cache_size--
+            removeLRU()
         }
     }
+
+    private void removeXLRU(int x){
+        while(x > 0){
+            removeLRU()
+            x--
+        }
+    }
+
+    private void removeLRU(){
+        synchronized (this){
+            def lru = cache.min{ it.getValue().lastUse() }
+            cache.remove(lru.getKey())
+            cache_size--
+            println "Remove " + lru.getKey() + " from cache ("+cache_size+"/"+CACHE_MAX+")"
+            System.gc()
+
+        }
+    }
+
 
     public void adaptCacheSize(){
         CACHE_MAX = cache_size - 2
