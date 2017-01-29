@@ -93,7 +93,6 @@ class HDF5FileReader {
         pathArray.each { path ->
             if(cache.containsKey(path)){
                 tileConcerned << cache.get(path)
-                println "Cache hit"
             }
             else{
                 def cacheM = CACHE_MAX
