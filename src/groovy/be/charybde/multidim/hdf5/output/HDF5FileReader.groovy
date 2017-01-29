@@ -19,7 +19,7 @@ class HDF5FileReader {
     private String name
     def private relatedFilenames
     private ArrayList<IHDF5Reader> readers
-    private int tile_width, tile_height, tile_depth
+    private def tile_dimensions = [ ]
     def private tp
     private int dimensions
     private HashMap cache
@@ -35,17 +35,16 @@ class HDF5FileReader {
         relatedFilenames = retScript.split(",")
      //   relatedFilenames = ["/home/laurent/cyto_dev/Cytomine-MULTIDIM/test1650.0.h5", "/home/laurent/cyto_dev/Cytomine-MULTIDIM/test1650.1.h5"]
 
-
+        String meta_group = "/meta";
+        int i = 0
+        dimensions = 0
         relatedFilenames.each {
             readers << new HDF5Factory().openForReading(it)
+            int[] meta = readers[i].int32().readArray(meta_group);
+            tile_dimensions << meta
+            dimensions += meta[2]
+            ++i
         }
-
-        String meta_group = "/meta";
-        int[] meta = readers[0].int32().readArray(meta_group);
-        tile_width = meta[0]
-        tile_height = meta[1]
-        tile_depth = meta[2]
-        dimensions = relatedFilenames.size() * tile_depth //Note this is only ok if we have one file per tile depth
         this.tp = Executors.newFixedThreadPool(8)
         this.cache = new HashMap()
     }
@@ -56,8 +55,8 @@ class HDF5FileReader {
     }
 
     HDF5Geometry extractSpectraPixel(int x, int y) {
-        int x_tile = x / tile_width;
-        int y_tile = y / tile_height;
+        int x_tile = x / tile_dimensions[0][0];
+        int y_tile = y / tile_dimensions[0][1];
         def path =  [ "t" + x_tile + "_" + y_tile ]
         return extractSpectra(new HDF5Pixel(x,y,dimensions), path)
     }
@@ -65,10 +64,10 @@ class HDF5FileReader {
     HDF5Geometry extractSpectraRectangle(int x, int y, int wid, int hei){
         def rec = new HDF5Rectangle(x,y,wid,hei, dimensions)
         def tiles = []
-        int x_tile = x / tile_width;
-        int y_tile = y / tile_height;
-        def x_tile_end = (x + wid) / tile_width
-        def y_tile_end = (y + wid) / tile_height
+        int x_tile = x / tile_dimensions[0][0];
+        int y_tile = y / tile_dimensions[0][1];
+        def x_tile_end = (x + wid) / tile_dimensions[0][0]
+        def y_tile_end = (y + wid) / tile_dimensions[0][1]
 
         (x_tile..x_tile_end).each { xx ->
             (y_tile..y_tile_end).each { yy ->
@@ -89,7 +88,6 @@ class HDF5FileReader {
     HDF5Geometry extractSpectra(HDF5Geometry figure, def pathArray) {
         if(pathArray.size() > CACHE_MAX)
             throw new CacheTooSmallException()
-        println "ExSPec"
 
         def tileConcerned = []
         pathArray.each { path ->
@@ -99,8 +97,7 @@ class HDF5FileReader {
             }
             else{
                 def cacheM = CACHE_MAX
-                def entry = new HDF5TileCache(dimensions, path, tile_width, tile_height)
-                println entry.isDataPresent()
+                def entry = new HDF5TileCache(dimensions, path, tile_dimensions[0][0], tile_dimensions[0][1])
                 entry.extractValues(this)
                 if(!entry.isDataPresent()){
                     if(cacheM != CACHE_MAX) {//we have change the size of cache (thus a OOM has happened)
@@ -119,7 +116,6 @@ class HDF5FileReader {
         }
 
         if(tileConcerned.size() !=0){
-            println "tc "+ tileConcerned.size()
             figure.getDataFromCache(tileConcerned)
             return figure
         }
@@ -133,15 +129,19 @@ class HDF5FileReader {
     }
 
     def getTileWidth() {
-        return tile_width
+        return tile_dimensions[0][0]
     }
 
     def getTileHeight() {
-        return tile_height
+        return tile_dimensions[0][1]
     }
 
-    def getTileDepth() {
-        return tile_depth
+    def getTileDepth(int image) {
+        return tile_dimensions[image][2]
+    }
+
+    def getNumberOfImage(){
+        return readers.size()
     }
 
     def getThreadPool(){
@@ -157,6 +157,7 @@ class HDF5FileReader {
 
     private void replaceLRU(){
         while(cache_size > CACHE_MAX){
+            println "D"
             removeLRU()
         }
     }
@@ -184,6 +185,7 @@ class HDF5FileReader {
         CACHE_MAX = cache_size - 2
         if(CACHE_MAX < 0) //TODO implement stuff without caching ?
             CACHE_MAX = 1
+        println "K"
         replaceLRU()
     }
 }

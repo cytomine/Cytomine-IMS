@@ -40,8 +40,7 @@ public class HDF5TileCache  {
 
 
     public void extractValues(HDF5FileReader reader){
-        def tile_d = reader.getTileDepth()
-        int nr_depth_tiles = dim / tile_d;
+        int nr_depth_tiles = reader.getNumberOfImage()
         def noError = true
         def oom = false
 
