@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 /**
  * Created by laurent on 16.12.16.
  */
-public class HDF5TileCache  {
+public class HDF5CubeCache {
     private int dim
     def cache
     private String name
@@ -18,7 +18,7 @@ public class HDF5TileCache  {
     private Boolean dataPresent
     private long last_use
 
-    public HDF5TileCache(int dim, def name, int x_size, int y_size){
+    public HDF5CubeCache(int dim, def name, int x_size, int y_size){
         this.dataPresent = false
         this.cache = new ArrayList<MDShortArray>()
         this.dim = dim;
@@ -40,12 +40,12 @@ public class HDF5TileCache  {
 
 
     public void extractValues(HDF5FileReader reader){
-        int nr_depth_tiles = reader.getNumberOfImage()
+        int nr_depth_cube = reader.getNumberOfImage()
         def noError = true
         def oom = false
 
         ArrayList<Future> spectra =  []
-        (0..nr_depth_tiles - 1).each { i ->
+        (0..nr_depth_cube - 1).each { i ->
             spectra << reader.getThreadPool().submit({ ->
                 try{
                     reader.getReader(i).int16().readMDArray("/r"+i+"/"+name)

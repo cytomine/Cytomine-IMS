@@ -3,11 +3,8 @@ package be.charybde.multidim.hdf5.output
 import be.charybde.multidim.exceptions.CacheTooSmallException
 import ch.systemsx.cisd.hdf5.HDF5Factory
 import ch.systemsx.cisd.hdf5.IHDF5Reader
-import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException
 
-import java.util.concurrent.Callable
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
 
 /**
  * Created by laurent on 07.01.17.
@@ -96,7 +93,7 @@ class HDF5FileReader {
             }
             else{
                 def cacheM = CACHE_MAX
-                def entry = new HDF5TileCache(dimensions, path, tile_dimensions[0][0], tile_dimensions[0][1])
+                def entry = new HDF5CubeCache(dimensions, path, tile_dimensions[0][0], tile_dimensions[0][1])
                 entry.extractValues(this)
                 if(!entry.isDataPresent()){
                     if(cacheM != CACHE_MAX) {//we have change the size of cache (thus a OOM has happened)

@@ -29,8 +29,8 @@ public class HDF5Pixel implements  HDF5Geometry {
     }
 
     // tilecache is an array of size 1
-    def getDataFromCache(def tileCache){
-        setData(tileCache[0].getPixelInCache(x,y))
+    def getDataFromCache(def cubeCache){
+        setData( cubeCache[0].getPixelInCache(x,y))
     }
 
     public int getX() {
