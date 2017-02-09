@@ -1,4 +1,4 @@
-package be.charybde.multidim.hdf5.output;
+package be.cytomine.multidim.hdf5.output;
 
 import ch.systemsx.cisd.base.mdarray.MDShortArray
 import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException

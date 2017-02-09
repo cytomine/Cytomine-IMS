@@ -62,12 +62,12 @@ class UrlMappings {
             action = [GET:"size"]
         }
 
-        "/multidim/pxl.$format" (controller:"multiDim"){
-            action = [GET:"pxl"]
+        "/multidim/pixel.$format" (controller:"multiDim"){
+            action = [GET:"pixel"]
         }
 
-        "/multidim/rect.$format" (controller:"multiDim"){
-            action = [GET:"rect"]
+        "/multidim/rectangle.$format" (controller:"multiDim"){
+            action = [GET:"rectangle"]
         }
 	}
 }

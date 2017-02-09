@@ -1,12 +1,4 @@
-package be.charybde.multidim.hdf5.output;
-
-import ch.systemsx.cisd.base.mdarray.MDShortArray;
-import ch.systemsx.cisd.hdf5.IHDF5Reader
-
-import java.util.concurrent.Callable
-import java.util.concurrent.Future;
-
-
+package be.cytomine.multidim.hdf5.output
 /**
  * Created by laurent on 16.12.16.
  */

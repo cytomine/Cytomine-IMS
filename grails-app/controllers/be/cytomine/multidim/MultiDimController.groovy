@@ -1,7 +1,7 @@
 package be.cytomine.multidim
 
-import be.charybde.multidim.exceptions.CacheTooSmallException
-import be.charybde.multidim.hdf5.output.FileReaderCache
+import be.cytomine.multidim.exceptions.CacheTooSmallException
+import be.cytomine.multidim.hdf5.output.FileReaderCache
 import grails.converters.JSON
 import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException
 import org.restapidoc.annotation.RestApi
@@ -22,7 +22,7 @@ class MultiDimController {
             @RestApiParam(name="y", type="int", paramType= RestApiParamType.QUERY, description="The y coordinate" )
 
     ])
-    def pxl(){
+    def pixel(){
         def aMap = new HashMap()
 
         try{
@@ -61,7 +61,7 @@ class MultiDimController {
             @RestApiParam(name="h", type="int", paramType= RestApiParamType.QUERY, description="The height of the rectangle" )
 
     ])
-    def rect(){
+    def rectangle(){
         def aMap = new HashMap()
 
         try{

@@ -1,4 +1,4 @@
-package be.charybde.multidim.exceptions
+package be.cytomine.multidim.exceptions
 
 /**
  * Created by laurent on 22.01.17.
