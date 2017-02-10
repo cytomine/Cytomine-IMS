@@ -111,7 +111,9 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
             def tokens = resolutions[0].tokenize(" ,/")
             tokens.each {println it}
             resolution = Double.parseDouble(tokens.get(1))
-            unit = tokens.get(4)
+            if(tokens.size() >= 5 && !tokens.get(3).contains("unitless")){
+                unit = tokens.get(4)
+            }
         }
         properties << [ key : "cytomine.width", value : maxWidth ]
         properties << [ key : "cytomine.height", value : maxHeight ]

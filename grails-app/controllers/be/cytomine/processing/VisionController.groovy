@@ -347,7 +347,7 @@ class VisionController extends ImageUtilsController {
             responseBufferedImage(bufferedImage)
 
         } catch (Exception e) {
-            e.printStackTrace()
+            log.error e.toString()
             BufferedImage bufferedImage = getImageFromURL("/images/notavailable.jpg")
             responseBufferedImage(bufferedImage)
         }

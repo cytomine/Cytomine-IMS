@@ -112,8 +112,7 @@ class StorageController {
 
             render responseContent as JSON
         } catch (Exception e) {
-            log.error e
-            e.printStackTrace()
+            log.error e.toString()
             response.status = 400;
             render e
             return

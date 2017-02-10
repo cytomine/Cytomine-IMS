@@ -28,7 +28,6 @@ import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
 import be.cytomine.formats.heavyconvertable.IHeavyConvertableImageFormat
 import be.cytomine.formats.lightconvertable.VIPSConvertable
-import be.cytomine.formats.supported.SupportedImageFormat
 import grails.util.Holders
 import utils.FilesUtils
 
