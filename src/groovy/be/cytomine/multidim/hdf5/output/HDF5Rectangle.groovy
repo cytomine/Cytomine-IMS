@@ -41,7 +41,4 @@ class HDF5Rectangle implements HDF5Geometry{
         return [x,y,dim,wid,hei]
     }
 
-    def String getCSV(){
-        return getValues().toString()
-    }
 }

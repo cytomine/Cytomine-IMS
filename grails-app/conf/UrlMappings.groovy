@@ -63,11 +63,11 @@ class UrlMappings {
         }
 
         "/multidim/pixel.$format" (controller:"multiDim"){
-            action = [GET:"pixel"]
+            action = [GET:"getSpectraPixel"]
         }
 
         "/multidim/rectangle.$format" (controller:"multiDim"){
-            action = [GET:"rectangle"]
+            action = [GET:"getSpectraRectangle"]
         }
 	}
 }

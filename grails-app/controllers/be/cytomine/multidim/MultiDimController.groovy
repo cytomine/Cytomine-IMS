@@ -22,7 +22,7 @@ class MultiDimController {
             @RestApiParam(name="y", type="int", paramType= RestApiParamType.QUERY, description="The y coordinate" )
 
     ])
-    def pixel(){
+    def getSpectraPixel(){
         def aMap = new HashMap()
 
         try{
@@ -61,7 +61,7 @@ class MultiDimController {
             @RestApiParam(name="h", type="int", paramType= RestApiParamType.QUERY, description="The height of the rectangle" )
 
     ])
-    def rectangle(){
+    def getSpectraRectangle(){
         def aMap = new HashMap()
 
         try{

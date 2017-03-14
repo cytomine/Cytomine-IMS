@@ -181,7 +181,6 @@ class HDF5FileReader {
         CACHE_MAX = cache_size - 2
         if(CACHE_MAX < 0) //TODO implement stuff without caching ?
             CACHE_MAX = 1
-        println "K"
         replaceLRU()
     }
 }
