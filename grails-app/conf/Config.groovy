@@ -166,3 +166,5 @@ cytomine.maxAnnotationOnImageWidth = 200000
 cytomine.charset = "UTF-8"
 
 cytomine.maxCropSize = 5000
+
+cytomine.hdf5.scriptToFindFiles = "/home/laurent/cyto_dev/Cytomine-MULTIDIM/relatedFiles.sh"
