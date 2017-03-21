@@ -28,17 +28,11 @@ public abstract class CommonFormat extends VIPSConvertable {
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
     public boolean detect() {
-        String extension = FilesUtils.getExtensionFromFilename(absoluteFilePath)
-
-        if (new PyramidalTIFFFormat().extensions.contains(extension) || new VentanaTIFFFormat().extensions.contains(extension)) {
-            return false //we do not run identify -verbose for TIFF files
-        }
-
         def identifyExecutable = Holders.config.cytomine.identify
-        def command = ["$identifyExecutable", "-verbose", absoluteFilePath]
+        def command = ["$identifyExecutable", absoluteFilePath]
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text
-        return stdout.contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
+        return stdout.split(" ")[1].contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
     }
 }

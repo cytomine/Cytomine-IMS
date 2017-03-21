@@ -16,9 +16,6 @@ import be.cytomine.formats.Format
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Created by hoyoux on 28.04.15.
- */
 class CellSensVSIFormat extends BioFormatConvertable {
 
     @Override

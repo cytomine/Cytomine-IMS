@@ -26,7 +26,7 @@ class PNGFormat extends CommonFormat {
 
     public PNGFormat() {
         extensions = ["png"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "Format: PNG (Portable Network Graphics)"
+        IMAGE_MAGICK_FORMAT_IDENTIFIER = "PNG"
         //mimeType = "image/png"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }

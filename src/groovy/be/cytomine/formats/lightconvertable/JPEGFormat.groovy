@@ -29,7 +29,7 @@ public class JPEGFormat extends CommonFormat {
 
     public JPEGFormat () {
         extensions = ["jpg", "jpeg"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "Format: JPEG (Joint Photographic Experts Group JFIF format)"
+        IMAGE_MAGICK_FORMAT_IDENTIFIER = "JPEG"
         //mimeType = "image/jpeg"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }

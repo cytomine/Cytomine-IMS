@@ -1,7 +1,5 @@
 package be.cytomine.formats.heavyconvertable
 
-import grails.util.Holders
-
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -17,18 +15,33 @@ import grails.util.Holders
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class ZeissCZIFormat extends BioFormatConvertable {
+    final String CZI_MAGIC_STRING = "ZISRAWFILE";
 
-class OMETIFFFormat extends BioFormatConvertable {
-
-    boolean group = true;
-
-    public boolean detect() {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        return tiffinfo.contains("OME-TIFF")
+    @Override
+    boolean getGroup() {
+        return true
     }
 
-    boolean getGroup(){
-        return true;
+    @Override
+    boolean detect() {
+
+        int blockLen = 10;
+
+        File file = new File(absoluteFilePath);
+        String magic;
+
+        FileInputStream fin = null;
+        try {
+            fin = new FileInputStream(file);
+            byte[] fileContent = new byte[blockLen];
+            fin.read(fileContent)
+            magic = new String(fileContent);
+        } finally {
+            if (fin != null) fin.close();
+        }
+
+        return magic.equals(CZI_MAGIC_STRING)
     }
 }
+
