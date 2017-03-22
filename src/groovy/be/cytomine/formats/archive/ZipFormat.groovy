@@ -2,9 +2,10 @@ package be.cytomine.formats.archive
 
 import be.cytomine.formats.ArchiveFormat
 import utils.FilesUtils
+import utils.ProcUtils
 
 /*
- * Copyright (c) 2009-2016. Authors: see NOTICE file.
+ * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +19,7 @@ import utils.FilesUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import utils.ProcUtils
 
-/**
- * Created by stevben on 23/04/14.
- */
 class ZipFormat extends ArchiveFormat {
 
     public boolean detect() {

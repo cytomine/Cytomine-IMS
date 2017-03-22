@@ -3,7 +3,7 @@ package be.cytomine.formats.supported
 import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
 
 /*
- * Copyright (c) 2009-2016. Authors: see NOTICE file.
+ * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
