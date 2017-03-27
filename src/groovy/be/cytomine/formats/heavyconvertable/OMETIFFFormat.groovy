@@ -31,4 +31,9 @@ class OMETIFFFormat extends BioFormatConvertable {
     boolean getGroup(){
         return true;
     }
+
+    @Override
+    boolean getOnlyBiggestSerie() {
+        return false
+    }
 }

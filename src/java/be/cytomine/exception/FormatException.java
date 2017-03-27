@@ -1,5 +1,4 @@
-package be.cytomine.formats.heavyconvertable
-import be.cytomine.formats.Format
+package be.cytomine.exception;
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -16,24 +15,14 @@ import be.cytomine.formats.Format
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class CellSensVSIFormat extends BioFormatConvertable {
 
-    @Override
-    boolean detect() {
-        File folder = new File(absoluteFilePath)
-
-        File target = folder.listFiles().find {it.isFile() && it.absolutePath.endsWith(".vsi")}
-        if(target) absoluteFilePath = target.absolutePath
-        return target != null;
-    }
-
-    @Override
-    boolean getGroup() {
-        return false
-    }
-
-    @Override
-    boolean getOnlyBiggestSerie() {
-        return true
+public class FormatException extends CytomineException {
+    /**
+     * Message map with this exception
+     *
+     * @param msg  Message
+     */
+    public FormatException(String msg) {
+        super(msg, 500);
     }
 }

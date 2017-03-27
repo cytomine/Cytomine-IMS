@@ -19,11 +19,6 @@ class ZeissCZIFormat extends BioFormatConvertable {
     final String CZI_MAGIC_STRING = "ZISRAWFILE";
 
     @Override
-    boolean getGroup() {
-        return true
-    }
-
-    @Override
     boolean detect() {
 
         int blockLen = 10;
@@ -42,6 +37,16 @@ class ZeissCZIFormat extends BioFormatConvertable {
         }
 
         return magic.equals(CZI_MAGIC_STRING)
+    }
+
+    @Override
+    boolean getGroup() {
+        return true
+    }
+
+    @Override
+    boolean getOnlyBiggestSerie() {
+        return true
     }
 }
 

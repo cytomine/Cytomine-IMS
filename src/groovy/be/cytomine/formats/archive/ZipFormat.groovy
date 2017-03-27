@@ -1,5 +1,6 @@
 package be.cytomine.formats.archive
 
+import be.cytomine.exception.FormatException
 import be.cytomine.formats.ArchiveFormat
 import utils.FilesUtils
 import utils.ProcUtils
@@ -45,10 +46,15 @@ class ZipFormat extends ArchiveFormat {
         String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         /* Unzip */
         if (ext == 'zip') {
-            def ant = new AntBuilder()
+            /*def ant = new AntBuilder()
             ant.unzip(src : absoluteFilePath,
                     dest : destPath,
-                    overwrite : false)
+                    overwrite : false)*/
+            def command = "unzip "+absoluteFilePath+" -d "+destPath
+            println command
+            command.execute().waitFor()
+        } else{
+            throw new FormatException("Zip has no zip extension")
         }
 
         def pathsAndExtensions = []

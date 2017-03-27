@@ -18,6 +18,7 @@ package be.cytomine.formats
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
+import be.cytomine.formats.heavyconvertable.ZeissCZIFormat
 import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.PhotoshopTIFFFormat
 import be.cytomine.formats.lightconvertable.JPEGFormat
@@ -181,6 +182,16 @@ class CytomineFormatSpec {
     /*void "test leicaSCNFormat"() {
         def uploadedFile = createFullPathFromFilename("scn/test.scn")
         checkCorrectDetect(uploadedFile, LeicaSCNFormat.class)
+    }
+
+    // CZI Format
+    void "test CZIFormat"() {
+        def uploadedFile = createFullPathFromFilename("czi/test.czi")
+        checkCorrectDetect(uploadedFile, ZeissCZIFormat.class)
+    }
+    void "test CZIFormat multiChan"() {
+        def uploadedFile = createFullPathFromFilename("czi/test_multichan.czi")
+        checkCorrectDetect(uploadedFile, ZeissCZIFormat.class)
     }*/
 
 

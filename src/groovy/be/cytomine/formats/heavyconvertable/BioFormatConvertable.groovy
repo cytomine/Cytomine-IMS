@@ -28,7 +28,7 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
                     new BufferedReader(
                             new InputStreamReader(echoSocket.getInputStream()));
 
-            out.println('{path:"'+absoluteFilePath+'",group:'+this.group+'}');
+            out.println('{path:"'+absoluteFilePath+'",group:'+this.group+',onlyBiggestSerie:'+this.onlyBiggestSerie+'}');
             String result = inp.readLine();
             def json  = JSON.parse(result);
             files = json.files
@@ -49,4 +49,6 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
     }
 
     abstract boolean getGroup();
+
+    abstract boolean getOnlyBiggestSerie();
 }

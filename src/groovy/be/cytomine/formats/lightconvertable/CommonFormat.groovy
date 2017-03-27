@@ -33,6 +33,7 @@ public abstract class CommonFormat extends VIPSConvertable {
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text
+        if(stdout.split(" ").size() < 2) return false;
         return stdout.split(" ")[1].contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
     }
 }

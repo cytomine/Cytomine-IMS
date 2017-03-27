@@ -16,10 +16,12 @@ package be.cytomine.formats
  * limitations under the License.
  */
 
+import be.cytomine.exception.FormatException
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.heavyconvertable.OMETIFFFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.formats.heavyconvertable.DotSlideFormat
+import be.cytomine.formats.heavyconvertable.ZeissCZIFormat
 import be.cytomine.formats.lightconvertable.BMPFormat
 import be.cytomine.formats.lightconvertable.DICOMFormat
 import be.cytomine.formats.lightconvertable.JPEGFormat
@@ -69,6 +71,7 @@ public class FormatIdentifier {
     static public getAvailableSingleFileImageFormats() {
         //check the extension and or content in order to identify the right Format
         return [
+                new ZeissCZIFormat(),
                 //openslide compatibles formats
                 new AperioSVSFormat(),
                 new HamamatsuNDPIFormat(),
@@ -184,9 +187,11 @@ public class FormatIdentifier {
             it.absoluteFilePath = uploadedFile
         }
 
-        return imageFormats.find {
+        def result = imageFormats.find {
             it.detect()
         }
 
+        if(!result) throw new FormatException("Undetected Format")
+        return result
     }
 }

@@ -39,6 +39,7 @@ class BrokenTIFFFormat extends TIFFFormat{
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
         int nbWidth = StringUtils.countOccurrencesOf(tiffinfo, "Image Width:")
         if(nbTiffDirectory  == 2 && nbWidth < 2) return true
+        if(nbTiffDirectory  > 0 && StringUtils.countOccurrencesOf(tiffinfo, "Tile Width:") == 0) return true
 
         if(nbTiffDirectory  == 1 && tiffinfo.contains("Tile Width")){
 
