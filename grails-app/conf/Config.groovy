@@ -152,8 +152,8 @@ bioformat.application.enabled="true"
 bioformat.application.location="localhost"
 bioformat.application.port="4321"
 
-cytomine.imageServerPublicKey="cc161593-37fe-4487-baec-f6d46e62959f"
-cytomine.imageServerPrivateKey="cb2955c6-631b-4039-8ebf-889aefe8ea0c"
+cytomine.imageServerPublicKey=""
+cytomine.imageServerPrivateKey=""
 
 //image manipulation executable
 cytomine.vips = "/usr/local/bin/vips"
@@ -167,4 +167,4 @@ cytomine.charset = "UTF-8"
 
 cytomine.maxCropSize = 5000
 
-cytomine.hdf5.scriptToFindFiles = "/home/laurent/cyto_dev/Cytomine-MULTIDIM/relatedFiles.sh"
+cytomine.hdf5.scriptToFindFiles = "natives/scripts/relatedFiles.sh"
