@@ -110,27 +110,31 @@ class UploadService {
 
             def files = image.imageFormat.convert();
 
-            def tmpResponseContent;
+            def tmpResponseContent = [];
             files.each { file ->
                 def path = file.path;
                 def nameNewFile = path.substring(path.lastIndexOf("/")+1)
                 // maybe redetermine the contentType ?
                 // recursion
-                tmpResponseContent = upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)
+                def tmp = upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)[0]
+                tmp.z = file.z
+                tmp.t = file.t
+                tmp.c = file.c
+                tmpResponseContent << tmp
 
             }
 
             if(image.imageFormat instanceof BioFormatConvertable && image.imageFormat.group) {
 
                 def newFiles = [];
-                files.each { file ->
+                tmpResponseContent.each { tmp ->
                     def newFile = [:]
-                    def outputImage = tmpResponseContent[0].images[0]
+                    def outputImage = tmp.images[0]
                     newFile.path = outputImage.get("filename")
                     newFile.id = outputImage.id
-                    newFile.z = file.z
-                    newFile.t = file.t
-                    newFile.c = file.c
+                    newFile.z = tmp.z
+                    newFile.t = tmp.t
+                    newFile.c = tmp.c
                     newFiles << newFile
                 }
 
@@ -139,7 +143,7 @@ class UploadService {
                 }
             }
 
-            int status = tmpResponseContent.size() > 0 && tmpResponseContent[0]?.status == 200 ? 1 : 4;
+            int status = tmpResponseContent.size() > 0 && tmpResponseContent?.status.unique() == [200] ? 1 : 4;
             cytomine.editUploadedFile(uploadedFile.id, status) // converted or error conversion
         };
 
@@ -228,14 +232,13 @@ class UploadService {
         if(newFiles.size() == 1) return;
         //Create one imagegroup for this multidim image
         ImageGroup imageGroup = cytomine.addImageGroup(idProject)
+        ImageInstanceCollection collection = cytomine.getImageInstances(idProject);
 
         newFiles.each { file ->
             def path = file.path;
             def idImage = 0L
             while (idImage == 0) {
                 log.info "Wait for " + path;
-
-                ImageInstanceCollection collection = cytomine.getImageInstances(idProject);
 
                 for (int i = 0; i < collection.size(); i++) {
                     Long expected = file.id;
@@ -245,7 +248,11 @@ class UploadService {
                         idImage = collection.get(i).getId();
                     }
                 }
+
+                if(idImage != 0) break;
+
                 Thread.sleep(1000);
+                collection = cytomine.getImageInstances(idProject);
             }
             log.info "Uploaded ImageID: $idImage"
             //Add this image to current imagegroup
