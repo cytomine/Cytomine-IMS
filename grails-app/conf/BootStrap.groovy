@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import be.cytomine.multidim.hdf5.output.FileReaderCache
 import grails.util.Holders
 
 class BootStrap {
@@ -30,13 +32,15 @@ class BootStrap {
             throw new IllegalArgumentException("cytomine.imageServerPublicKey must be set!")
         }
 
-        println "iipImageServerBase:" + grailsApplication.config.cytomine.iipImageServerBase
-        println "iipImageServerJpeg2000:" + grailsApplication.config.cytomine.iipImageServerJpeg2000
-        println "iipImageServerCyto:" + grailsApplication.config.cytomine.iipImageServerCyto
+        log.info "iipImageServerBase:" + grailsApplication.config.cytomine.iipImageServerBase
+        log.info "iipImageServerJpeg2000:" + grailsApplication.config.cytomine.iipImageServerJpeg2000
+        log.info "iipImageServerCyto:" + grailsApplication.config.cytomine.iipImageServerCyto
 
         Holders.config.cytomine.maxCropSize = Integer.parseInt(Holders.config.cytomine.maxCropSize+"")
     }
 
     def destroy = {
+        log.info "Shutdown the multispectral cache"
+        FileReaderCache.getInstance().shutdown()
     }
 }

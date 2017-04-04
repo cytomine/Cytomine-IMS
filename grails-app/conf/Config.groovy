@@ -84,6 +84,7 @@ grails.hibernate.cache.queries = false
 environments {
     development {
         grails.logging.jul.usebridge = "true"
+        grails.serverURL = "http://localhost:9080"
     }
     production {
         grails.logging.jul.usebridge = false
@@ -151,8 +152,8 @@ bioformat.application.enabled="true"
 bioformat.application.location="localhost"
 bioformat.application.port="4321"
 
-cytomine.imageServerPublicKey=null
-cytomine.imageServerPrivateKey=null
+cytomine.imageServerPublicKey=""
+cytomine.imageServerPrivateKey=""
 
 //image manipulation executable
 cytomine.vips = "/usr/local/bin/vips"
@@ -165,3 +166,5 @@ cytomine.maxAnnotationOnImageWidth = 200000
 cytomine.charset = "UTF-8"
 
 cytomine.maxCropSize = 5000
+
+cytomine.hdf5.scriptToFindFiles = "natives/scripts/relatedFiles.sh"
