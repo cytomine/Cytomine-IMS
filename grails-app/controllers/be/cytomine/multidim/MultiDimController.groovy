@@ -47,10 +47,11 @@ class MultiDimController {
             aMap.put("pxl", coo)
             def read = FileReaderCache.getInstance().getReader(name)
             def spectra = read.extractSpectraPixel(coo)
-            if(spectra != null)
+            if(spectra != null) {
                 aMap.put("spectra", spectra.getValues())
-            else
+            } else {
                 aMap.put("error", "Internal error try again")
+            }
         }
         catch(HDF5FileNotFoundException e){
             aMap.put("error", "File Not found")
@@ -61,8 +62,6 @@ class MultiDimController {
         catch(NumberFormatException e ){
             aMap.put("error", "Bad/null number format")
         }
-
-
 
         render aMap as JSON
     }
