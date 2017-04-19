@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.gnu.org/licenses/lgpl-2.1.txt
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 package be.cytomine.multidim
 
 import be.cytomine.multidim.exceptions.CacheTooSmallException
+import be.cytomine.multidim.hdf5.input.BuildHyperSpectralFile
 import be.cytomine.multidim.hdf5.output.FileReaderCache
 import grails.converters.JSON
 import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException
@@ -29,7 +30,34 @@ import org.restapidoc.pojo.RestApiParamType
 
 @RestApi(name = "Multi dimentional services", description = "Methods for getting the spectra of geormetric forms")
 class MultiDimController {
+    def cytomineMailService
 
+    @RestApiMethod(description="Create a Multidim HDF5 file", extensions = [".json"])
+    @RestApiParams(params=[
+            @RestApiParam(name="files", type="list", paramType= RestApiParamType.QUERY, description="A list of image to convert separate by ,"),
+            @RestApiParam(name="dest", type="String", paramType= RestApiParamType.QUERY, description="The destination of the outputfile" )
+
+    ])
+    //Nb this request is executed in background and just return a .json file
+    def convertListToHdf5(){
+
+        println params
+        def destination = params.dest
+        def files = params.files
+        Thread.start {
+
+            BuildHyperSpectralFile h5builder = new BuildHyperSpectralFile(destination, "", files)
+            h5builder.createFile(4)
+//            cytomineMailService.send(
+//                    cytomineMailService.NO_REPLY_EMAIL,
+//                    [email.getEmail()] as String[],
+//                    "",
+//                    "Your conversion into HDF5 is finished",
+//                    "The file has been created with success and can now be used")
+        }
+
+
+    }
 
     @RestApiMethod(description="Get the spectra of  a pixel", extensions = [".json"])
     @RestApiParams(params=[

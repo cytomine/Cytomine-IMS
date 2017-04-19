@@ -69,5 +69,9 @@ class UrlMappings {
         "/multidim/rectangle.$format" (controller:"multiDim"){
             action = [GET:"getSpectraRectangle"]
         }
+
+        "/multidim/convert.$format" (controller: "multiDim"){
+            action = [POST: "convertListToHdf5"]
+        }
 	}
 }
