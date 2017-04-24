@@ -55,7 +55,9 @@ class MultiDimController {
 //                    "Your conversion into HDF5 is finished",
 //                    "The file has been created with success and can now be used")
         }
-
+        def aMap = new HashMap()
+        aMap.put("respond", "Conversion launched")
+        render aMap as JSON
 
     }
 
