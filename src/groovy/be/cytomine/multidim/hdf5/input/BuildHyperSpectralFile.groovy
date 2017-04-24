@@ -25,6 +25,7 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import groovy.util.logging.Log
+import grails.util.Holders
 
 /**
  * Created by laurent on 18.12.16.
@@ -80,6 +81,7 @@ public class BuildHyperSpectralFile {
 
     public BuildHyperSpectralFile(String filename, String root, def filename_list) {
         this(filename, Holders.config.cytomine.hdf5.size.maxWidth, Holders.config.cytomine.hdf5.size.maxHeigth, Holders.config.cytomine.hdf5.size.maxDepth, root, filename_list, Holders.config.cytomine.hdf5.convertBurstSize);
+       // println this.memory   + "" + this.cube_width
     }
 
 
