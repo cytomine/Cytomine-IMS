@@ -79,7 +79,7 @@ public class BuildHyperSpectralFile {
     }
 
     public BuildHyperSpectralFile(String filename, String root, def filename_list) {
-        this(filename, 256,256, 256, root, filename_list, 10);
+        this(filename, Holders.config.cytomine.hdf5.size.maxWidth, Holders.config.cytomine.hdf5.size.maxHeigth, Holders.config.cytomine.hdf5.size.maxDepth, root, filename_list, Holders.config.cytomine.hdf5.convertBurstSize);
     }
 
 
