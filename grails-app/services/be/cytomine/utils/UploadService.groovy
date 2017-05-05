@@ -22,6 +22,7 @@ import be.cytomine.client.models.ImageGroup
 import be.cytomine.client.models.ImageSequence
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
+import be.cytomine.exception.FormatException
 import be.cytomine.formats.ArchiveFormat
 import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
@@ -80,9 +81,15 @@ class UploadService {
         String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join("")
 
 
-        def imageFormats = FormatIdentifier.getImageFormats(
-                originalFilenameFullPath
-        )
+        def imageFormats;
+        try{
+            imageFormats = FormatIdentifier.getImageFormats(originalFilenameFullPath)
+        } catch(FormatException e){
+            log.warn "Undetected format"
+            log.warn e.toString()
+            uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 3) // status ERROR FORMAT
+            return
+        }
 
         log.info "imageFormats = $imageFormats"
 
