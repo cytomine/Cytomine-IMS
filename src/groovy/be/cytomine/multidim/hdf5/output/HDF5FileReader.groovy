@@ -36,7 +36,7 @@ class HDF5FileReader {
     private def tile_dimensions = [ ]
     def private tp
     private int dimensions
-    private HashMap cache
+    private HashMap<String, HDF5CubeCache> cache
     private int cache_size //NB this is maybe more efficient that asking cache.size()
 
     public HDF5FileReader(String name) {
@@ -63,10 +63,6 @@ class HDF5FileReader {
         this.cache = new HashMap()
     }
 
-
-    HDF5Geometry extractSpectraPixel(def arr){
-        return extractSpectraPixel(arr[0], arr[1])
-    }
 
     HDF5Geometry extractSpectraPixel(int x, int y) {
         int x_tile = x / tile_dimensions[0][0];
@@ -103,14 +99,14 @@ class HDF5FileReader {
         if(pathArray.size() > CACHE_MAX)
             throw new CacheTooSmallException()
 
-        def tileConcerned = []
+        ArrayList<HDF5CubeCache> tileConcerned = []
         pathArray.each { path ->
             if(cache.containsKey(path)){
                 tileConcerned << cache.get(path)
             }
             else{
                 def cacheM = CACHE_MAX
-                def entry = new HDF5CubeCache(dimensions, path, tile_dimensions[0][0], tile_dimensions[0][1])
+                HDF5CubeCache entry = new HDF5CubeCache(dimensions, path, tile_dimensions[0][0], tile_dimensions[0][1])
                 entry.extractValues(this)
                 if(!entry.isDataPresent()){
                     if(cacheM != CACHE_MAX) {//we have change the size of cache (thus a OOM has happened)
@@ -184,7 +180,7 @@ class HDF5FileReader {
 
     private void removeLRU(){
         synchronized (this){
-            def lru = cache.min{ it.getValue().lastUse() }
+            def lru = cache.min{ it.getValue().last_use }
             cache.remove(lru.getKey())
             cache_size--
             println "Remove " + lru.getKey() + " from cache ("+cache_size+"/"+CACHE_MAX+")"

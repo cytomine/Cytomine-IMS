@@ -31,14 +31,14 @@ class HDF5Rectangle implements HDF5Geometry{
     }
 
     @Override
-    def getDataFromCache(def array) {
+    def getDataFromCache(ArrayList<HDF5CubeCache> array) {
         def data = []
         def xStart, xEnd, yStart, yEnd
-        array.each{ cache ->
-            xStart = [x, cache.getXStart()].max()
-            yStart = [y, cache.getYStart()].max()
-            xEnd = [x+wid-1, cache.getXEnd()].min()
-            yEnd = [y+hei-1, cache.getYEnd()].min()
+        array.each{ HDF5CubeCache cache ->
+            xStart = [x, cache.x_start].max()
+            yStart = [y, cache.y_start].max()
+            xEnd = [x+wid-1, cache.x_end].min()
+            yEnd = [y+hei-1, cache.y_end].min()
 
             for(int i = xStart; i < xEnd; ++i){
                 for(int j = yStart; j < yEnd; ++j){

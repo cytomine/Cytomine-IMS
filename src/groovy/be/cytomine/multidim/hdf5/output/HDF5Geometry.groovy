@@ -38,6 +38,6 @@ trait HDF5Geometry {
         return this.extract
     }
 
-    def abstract getDataFromCache(def array)
+    def abstract getDataFromCache(ArrayList<HDF5CubeCache> array)
     def abstract getDim()
 }

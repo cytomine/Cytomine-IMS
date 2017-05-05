@@ -76,7 +76,7 @@ class MultiDimController {
             def coo = [Integer.parseInt(params.x) , Integer.parseInt(params.y)]
             aMap.put("pxl", coo)
             def read = FileReaderCache.getInstance().getReader(name)
-            def spectra = read.extractSpectraPixel(coo)
+            def spectra = read.extractSpectraPixel(coo[0],coo[1])
             if(spectra != null) {
                 aMap.put("spectra", spectra.getValues())
             } else {

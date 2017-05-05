@@ -30,9 +30,9 @@ public class HDF5CubeCache {
     private int dim
     def cache
     private String name
-    private int x_start, x_end, y_start, y_end
+    int x_start, x_end, y_start, y_end
     private Boolean dataPresent
-    private long last_use
+    long last_use
 
     public HDF5CubeCache(int dim, def name, int x_size, int y_size){
         this.dataPresent = false
@@ -87,28 +87,8 @@ public class HDF5CubeCache {
             dataPresent = true
     }
 
-    int getXStart() {
-        return x_start
-    }
-
-    int getXEnd() {
-        return x_end
-    }
-
-    int getYStart() {
-        return y_start
-    }
-
-    int getYEnd() {
-        return y_end
-    }
-
     def isDataPresent(){
         return dataPresent
-    }
-
-    def lastUse(){
-        return last_use
     }
 
     def getPixelInCache(int x, int y){
