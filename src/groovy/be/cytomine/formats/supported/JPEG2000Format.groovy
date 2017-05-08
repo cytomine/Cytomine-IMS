@@ -1,5 +1,7 @@
 package be.cytomine.formats.supported
 
+import be.cytomine.exception.FormatException
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -36,6 +38,8 @@ class JPEG2000Format extends SupportedImageFormat {
 
     public boolean detect() {
         //I check the extension for the moment because did not find an another way
+        if(!Holders.config.cytomine.Jpeg2000Enabled) throw new FormatException("JPEG2000 disabled");
+
         return FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase() == "jp2"
     }
 

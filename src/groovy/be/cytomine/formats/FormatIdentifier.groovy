@@ -71,7 +71,8 @@ public class FormatIdentifier {
 
     static public getAvailableSingleFileImageFormats() {
         //check the extension and or content in order to identify the right Format
-        def formats = [
+        return [
+                new JPEG2000Format(),
                 new ZeissCZIFormat(),
                 //openslide compatibles formats
                 new AperioSVSFormat(),
@@ -96,8 +97,6 @@ public class FormatIdentifier {
                 new PNGFormat(),
                 new BMPFormat()
         ]
-        if(Holders.config.cytomine.Jpeg2000Enabled) formats.add(0, new JPEG2000Format());
-        return formats
     }
 
     static public def getImageFormats(String uploadedFilePath, def imageFormats = [], def parent = null) {
