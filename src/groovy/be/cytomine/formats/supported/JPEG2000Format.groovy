@@ -38,9 +38,10 @@ class JPEG2000Format extends SupportedImageFormat {
 
     public boolean detect() {
         //I check the extension for the moment because did not find an another way
-        if(!Holders.config.cytomine.Jpeg2000Enabled) throw new FormatException("JPEG2000 disabled");
+        boolean detect = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase() == "jp2"
+        if(detect && !Holders.config.cytomine.Jpeg2000Enabled) throw new FormatException("JPEG2000 disabled");
 
-        return FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase() == "jp2"
+        return detect
     }
 
     @Override

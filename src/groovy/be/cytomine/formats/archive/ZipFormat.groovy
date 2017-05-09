@@ -52,7 +52,11 @@ class ZipFormat extends ArchiveFormat {
                     overwrite : false)*/
             def command = "unzip "+absoluteFilePath+" -d "+destPath
             println command
-            command.execute().waitFor()
+            def proc = command.execute()
+
+            def sout = new StringBuilder(), serr = new StringBuilder()
+            proc.consumeProcessOutput(sout, serr)
+            proc.waitFor()
         } else{
             throw new FormatException("Zip has no zip extension")
         }

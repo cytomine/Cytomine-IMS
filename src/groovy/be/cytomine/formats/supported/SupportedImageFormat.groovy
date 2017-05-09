@@ -129,7 +129,7 @@ abstract class SupportedImageFormat extends Format {
     }
 
     public String tileURL(fif, params) {
-        return "${ServerUtils.getServer(iipURL)}?zoomify=$fif/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
+        return "${ServerUtils.getServer(iipURL)}?zoomify="+URLEncoder.encode(fif, "UTF-8")+"/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
     }
 
     // TODO do it with OpenSlide or IIP ?

@@ -35,7 +35,7 @@ class BrokenTIFFFormat extends TIFFFormat{
         String tiffinfo = getTiffInfo()
 
         if (tiffinfo.contains("not a valid IFD offset.")) return true;
-
+        if (tiffinfo.contains("MissingRequired")) return true;
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
         int nbWidth = StringUtils.countOccurrencesOf(tiffinfo, "Image Width:")
         if(nbTiffDirectory  == 2 && nbWidth < 2) return true

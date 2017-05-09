@@ -80,7 +80,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
                 maxHeight = Math.max(maxHeight, height)
             }
 
-            return (maxWidth < 256 && maxHeight < 256)
+            return (maxWidth <= 256 && maxHeight <= 256)
         }
 
 
@@ -109,7 +109,9 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
         }.unique();
         if(resolutions.size() == 1){
             def tokens = resolutions[0].tokenize(" ,/")
+
             tokens.each {println it}
+
             resolution = Double.parseDouble(tokens.get(1))
             if(tokens.size() >= 5 && !tokens.get(3).contains("unitless")){
                 unit = tokens.get(4)
@@ -117,7 +119,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
         }
         properties << [ key : "cytomine.width", value : maxWidth ]
         properties << [ key : "cytomine.height", value : maxHeight ]
-        properties << [ key : "cytomine.resolution", value : unitConverter(resolution, unit) ]
+        properties << [ key : "cytomine.resolution", value : null/*unitConverter(resolution, unit)*/ ]
         properties << [ key : "cytomine.magnification", value : null ]
         return properties
 
