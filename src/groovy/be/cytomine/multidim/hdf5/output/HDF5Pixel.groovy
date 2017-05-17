@@ -18,7 +18,7 @@ package be.cytomine.multidim.hdf5.output
 /**
  * Created by laurent on 16.12.16.
  */
-public class HDF5Pixel implements  HDF5Geometry {
+public class HDF5Pixel implements HDF5Geometry {
     private int x,y,dim;
     //Base constructor
 
@@ -37,7 +37,8 @@ public class HDF5Pixel implements  HDF5Geometry {
     }
 
     // tilecache is an array of size 1
-    def getDataFromCache(def cubeCache){
+    @Override
+    def getDataFromCache(ArrayList<HDF5CubeCache> cubeCache) {
         setData( cubeCache[0].getPixelInCache(x,y))
     }
 
