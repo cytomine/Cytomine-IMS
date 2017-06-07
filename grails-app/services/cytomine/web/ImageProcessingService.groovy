@@ -178,14 +178,12 @@ class ImageProcessingService {
         } else {
             height = imgHeight*width/imgWidth;
         }
-        BufferedImage newImage = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImage = new BufferedImage(width, height,img.getType());
         Graphics2D g = newImage.createGraphics();
 //        g.setBackground (color);
         try {
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                     RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g.clearRect(0, 0, width, height);
             g.drawImage(img, 0, 0, width, height, null);
         } finally {
             g.dispose();

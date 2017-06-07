@@ -1,10 +1,5 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.supported.SupportedImageFormat
-import org.openslide.AssociatedImage
-import org.openslide.OpenSlide
-import java.awt.image.BufferedImage
-
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -21,9 +16,11 @@ import java.awt.image.BufferedImage
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 22/04/14.
- */
+import be.cytomine.formats.supported.SupportedImageFormat
+import org.openslide.AssociatedImage
+import org.openslide.OpenSlide
+import java.awt.image.BufferedImage
+
 abstract class OpenSlideFormat extends SupportedImageFormat {
 
     protected String vendor = null
@@ -96,7 +93,7 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
 
     public BufferedImage thumb(int maxSize) {
         OpenSlide openSlide = new OpenSlide(new File(absoluteFilePath))
-        BufferedImage thumbnail = openSlide.createThumbnailImage(maxSize)
+        BufferedImage thumbnail = openSlide.createThumbnailImage(0, 0, openSlide.getLevel0Width(), openSlide.getLevel0Height(), maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
         openSlide.close()
         return thumbnail
 
