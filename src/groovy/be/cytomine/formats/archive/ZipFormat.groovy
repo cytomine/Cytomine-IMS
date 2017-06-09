@@ -5,6 +5,8 @@ import be.cytomine.formats.ArchiveFormat
 import utils.FilesUtils
 import utils.ProcUtils
 
+import java.util.zip.ZipFile
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -24,11 +26,12 @@ import utils.ProcUtils
 class ZipFormat extends ArchiveFormat {
 
     public boolean detect() {
-        String command = "file  $absoluteFilePath"
-        def proc = command.execute()
-        proc.waitFor()
-        String stdout = proc.in.text
-        return stdout.contains("Zip archive data")
+        try{
+            new ZipFile(absoluteFilePath)
+        } catch(ZipException) {
+            return false
+        }
+        return true
     }
 
     public String[] extract(String destPath) {
