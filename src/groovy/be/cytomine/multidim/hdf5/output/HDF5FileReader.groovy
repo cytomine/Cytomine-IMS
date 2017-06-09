@@ -184,7 +184,7 @@ class HDF5FileReader {
             cache.remove(lru.getKey())
             cache_size--
             println "Remove " + lru.getKey() + " from cache ("+cache_size+"/"+CACHE_MAX+")"
-            System.gc()
+            //System.gc()
 
         }
     }

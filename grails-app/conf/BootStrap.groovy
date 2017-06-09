@@ -37,6 +37,7 @@ class BootStrap {
         log.info "iipImageServerCyto:" + grailsApplication.config.cytomine.iipImageServerCyto
 
         Holders.config.cytomine.maxCropSize = Integer.parseInt(Holders.config.cytomine.maxCropSize+"")
+        Holders.config.cytomine.hdf5.convertBurstSize = Integer.parseInt(Holders.config.cytomine.hdf5.convertBurstSize+"")
     }
 
     def destroy = {
