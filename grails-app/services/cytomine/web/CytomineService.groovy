@@ -107,28 +107,21 @@ class CytomineService {
 
         Cytomine cytomine = new Cytomine(cytomineUrl, ISPubKey,ISPrivKey)
 
-        log.info "cytomine.getKeys($accessKey)"
-
-        User user = cytomine.getKeys(accessKey)
-
         log.info "cytomine.getUser($accessKey)"
 
         def retrieveUser = cytomine.getUser(accessKey)
-        if (!user || retrieveUser?.id==null) {
+        if (retrieveUser?.id==null) {
             log.info "User not found with key $accessKey!"
             throw new AuthenticationException("Auth failed: User not found with key $accessKey! May be ImageServer user is not an admin!")
         }
 
         long id = retrieveUser.id
 
-        //TODO: get its private key
-        String key = user.get("privateKey")
+        String privatekey = cytomine.getKeys(accessKey).get("privateKey")
+        log.info "Privatekey=$privatekey"
+        log.info "PublicKey=$accessKey"
 
-
-        log.info "Privatekey=${user.get("privateKey")}"
-        log.info "PublicKey=${user.get("publicKey")}"
-
-        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), "HmacSHA1")
+        SecretKeySpec signingKey = new SecretKeySpec(privatekey.getBytes(), "HmacSHA1")
         //println "signingKey=" + signingKey
         // get an hmac_sha1 Mac instance and initialize with the signing key
         Mac mac = Mac.getInstance("HmacSHA1")
@@ -147,7 +140,7 @@ class CytomineService {
         log.info "signature=$signature"
         if (authorizationSign == signature) {
             log.info "AUTH TRUE"
-            return ["id": id, "privateKey": user.get("privateKey"), "publicKey": user.get("publicKey")]
+            return ["id": id, "privateKey": privatekey, "publicKey": accessKey]
         } else {
             log.info "AUTH FALSE"
             throw new AuthenticationException("Auth failed")
