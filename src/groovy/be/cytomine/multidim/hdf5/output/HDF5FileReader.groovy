@@ -42,7 +42,7 @@ class HDF5FileReader {
     public HDF5FileReader(String name) {
         this.name = name
         def script = Holders.config.cytomine.hdf5.scriptToFindFiles
-        def stringScript = "" + script + " " + name
+        def stringScript = "/bin/bash " + script + " " + name
         def retScript = stringScript.execute().text
         readers = []
         retScript = retScript.replace("\n", "")

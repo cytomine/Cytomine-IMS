@@ -102,3 +102,8 @@ grails.project.dependency.resolution = {
 //        compile ':cache:1.0.0'
     }
 }
+
+grails.war.resources = { stagingDir, args ->
+    copy(file: "natives/scripts/relatedFiles.sh",
+            tofile: "${stagingDir}/WEB-INF/scripts/relatedFiles.sh")
+}
