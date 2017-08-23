@@ -37,6 +37,7 @@ import be.cytomine.formats.supported.VentanaTIFFFormat
 
 import be.cytomine.image.ImageUtilsController
 import grails.test.mixin.TestFor
+import grails.util.Holders
 import org.apache.commons.io.FileUtils
 import utils.ProcUtils
 
@@ -175,6 +176,7 @@ class CytomineFormatSpec {
     }*/
 
     void "test J2Kformat"() {
+        if(!Holders.config.cytomine.Jpeg2000Enabled) return;
         def uploadedFile = createFullPathFromFilename("j2k/test.jp2")
         checkCorrectDetect(uploadedFile, JPEG2000Format.class)
     }
