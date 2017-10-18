@@ -62,7 +62,7 @@ class UrlMappings {
             action = [GET:"size"]
         }
 
-        /*"/multidim/pixel.$format" (controller:"multiDim"){
+        "/multidim/pixel.$format" (controller:"multiDim"){
             action = [GET:"getSpectraPixel"]
         }
 
@@ -72,6 +72,6 @@ class UrlMappings {
 
         "/multidim/convert.$format" (controller: "multiDim"){
             action = [POST: "convertListToHdf5"]
-        }*/
+        }
 	}
 }
