@@ -16,26 +16,25 @@ package be.cytomine.image
  * limitations under the License.
  */
 
-
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
 /**
  * Implement generics methods for handling imaging data in controllers
  */
-class ImageUtilsController {
+class ImageResponseController {
 
     /**
      * Read a picture from url
      * @param url Picture url
      * @return Picture as an object
      */
-    protected BufferedImage getImageFromURL(String url) {
+    BufferedImage getImageFromURL(String url) {
         def out = new ByteArrayOutputStream()
         try {
             out << new URL(url).openStream()
         } catch (MalformedURLException | UnknownServiceException | java.io.IOException e) {
-            log.error "getImageFromURL $url Exception "+e.toString()
+            log.error "getImageFromURL $url Exception " + e.toString()
         }
         InputStream inputStream = new ByteArrayInputStream(out.toByteArray())
         BufferedImage bufferedImage = ImageIO.read(inputStream)
@@ -44,7 +43,7 @@ class ImageUtilsController {
         return bufferedImage
     }
 
-    protected responseFile(File file) {
+    def responseFile(File file) {
         BufferedInputStream bufferedInputStream = file.newInputStream()
         response.setHeader "Content-disposition", "attachment; filename=\"${file.getName()}\""
         response.outputStream << bufferedInputStream
@@ -52,12 +51,11 @@ class ImageUtilsController {
         bufferedInputStream.close()
     }
 
-
     /**
      * Response an image as a HTTP response
      * @param bufferedImage Image
      */
-    protected def responseBufferedImage(BufferedImage bufferedImage) {
+    def responseBufferedImage(BufferedImage bufferedImage) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         if(params.format.equals("png")){
             if (request.method == 'HEAD') {
@@ -91,12 +89,11 @@ class ImageUtilsController {
         baos.close()
     }
 
-
     /**
      * Response an image as a HTTP response
      * @param url Image url
      */
-    protected def responseImageFromUrl(String url) {
+    def responseImageFromUrl(String url) {
         log.info "url=$url"
         URL source = new URL(url)
         URLConnection connection = source.openConnection()

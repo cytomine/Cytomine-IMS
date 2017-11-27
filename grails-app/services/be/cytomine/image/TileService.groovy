@@ -1,4 +1,4 @@
-package be.cytomine.utils
+package be.cytomine.image
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -16,15 +16,20 @@ package be.cytomine.utils
  * limitations under the License.
  */
 
-import utils.ProcUtils
+import be.cytomine.formats.FormatIdentifier
+import be.cytomine.formats.supported.SupportedImageFormat
 
-class FileSystemService {
+class TileService {
 
-    def makeLocalDirectory(String path) {
-        int value = ProcUtils.executeOnShell("mkdir -p " + path)
-        ProcUtils.executeOnShell("chmod -R 777 " + path)
-        return value
+    def getTileUrl(def params) {
+        String fif = params.zoomify
+        /*remove the "/" at the end of the path injected by openlayers (OL2).
+          I Did not find the way to avoid it from OL2 (BS)
+         */
+        if (fif.endsWith("/"))
+            fif = fif.substring(0, fif.length()-1)
+        String mimeType = params.mimeType
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        return imageFormat.tileURL(fif, params)
     }
-
-
 }

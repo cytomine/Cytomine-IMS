@@ -1,5 +1,7 @@
 package be.cytomine.processing
 
+import be.cytomine.image.ImageResponseController
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -16,7 +18,6 @@ package be.cytomine.processing
  * limitations under the License.
  */
 
-import be.cytomine.image.ImageUtilsController
 import be.cytomine.processing.image.filters.Colour_Deconvolution
 import be.cytomine.processing.merge.CytomineRGBStackMerge
 import ij.IJ
@@ -40,9 +41,10 @@ import java.awt.image.BufferedImage
  * Time: 13:44
  */
 @RestApi(name = "vision services", description = "Methods for image processing services")
-class VisionController extends ImageUtilsController {
+class VisionController extends ImageResponseController {
 
     def imageProcessingService
+    def tileService
 
     @RestApiMethod(description="Merge multiple channel (multiple image) to an image", extensions = ["png"])
     @RestApiParams(params=[
@@ -59,68 +61,64 @@ class VisionController extends ImageUtilsController {
             @RestApiParam(name="x", type="int", paramType = RestApiParamType.QUERY, description = "The X index (see zoomify format)"),
             @RestApiParam(name="y", type="int", paramType = RestApiParamType.QUERY, description = "The Y index (see zoomify format)")
     ])
-    def merge () {
+    def merge() {
 
         def paramsWithoutUrl = params.clone()
 
         def urls = extractParams("url")
         int i = 0
-        urls = urls.collect{
-            paramsWithoutUrl.remove("url"+String.valueOf(i++))
+        urls = urls.collect {
+            paramsWithoutUrl.remove("url" + String.valueOf(i++))
             return it + "&"
         }
         def colors = extractParams("color")
-        i=0
-        colors = colors.collect{
-            paramsWithoutUrl.remove("color"+String.valueOf(i++))
-            int intValue = Integer.parseInt(it,16);
-            return new Color( intValue );
+        i = 0
+        colors = colors.collect {
+            paramsWithoutUrl.remove("color" + String.valueOf(i++))
+            int intValue = Integer.parseInt(it, 16);
+            return new Color(intValue);
         }
 
         paramsWithoutUrl.remove("zoomify")
-
 
         log.info "paramsWithoutUrl=$paramsWithoutUrl"
         log.info "Urls=$urls"
         log.info "Colors=$colors"
 
-        def postParam = paramsWithoutUrl.collect{it.key+"="+it.value}.join("&")
+        def postParam = paramsWithoutUrl.collect { it.key + "=" + it.value }.join("&")
 
-        if(urls.isEmpty()) {
+        if (urls.isEmpty()) {
             render "url argument is missing (start with url0=)!"
             response.status = 400
-        } else {
+        }
+        else {
             log.info "urls=$urls"
 
             ImagePlus[] images = new ImagePlus[urls.size()]
-
-
             urls.eachWithIndex { url, index ->
-                log.info "load=${url+postParam}"
-                images[index] = new ImagePlus("Image$index",(java.awt.Image)ImageIO.read(new URL(url+"&"+postParam)))
+                log.info "load=${url + postParam}"
+                images[index] = new ImagePlus("Image$index", (java.awt.Image) ImageIO.read(new URL(url + "&" + postParam)))
             }
 
             Color[] colorsArray = colors.toArray(new Color[colors.size()])
-            ImagePlus result = CytomineRGBStackMerge.merge(images,colorsArray,false)
+            ImagePlus result = CytomineRGBStackMerge.merge(images, colorsArray, false)
 
             BufferedImage resultImage = result.getBufferedImage()
-
             responseBufferedImage(resultImage)
         }
     }
 
 
-    def process () {
-
+    def process() {
         if (!request.queryString) return
         def split = request.queryString.split("url=")
         Boolean cytomineAuthenticationRequired = params.boolean('cytomine_auth')
-        String imageURL =  "/images/notavailable.jpg"
+        String imageURL = "/images/notavailable.jpg"
         if (split.size() > 0) {
             imageURL = split[1]
         }
 
-        println "cytomineAuthenticationRequired : $cytomineAuthenticationRequired"
+        log.info "cytomineAuthenticationRequired : $cytomineAuthenticationRequired"
 
         /*log.info "URL " + params.url
         log.info "METHOD " + params.method
@@ -330,7 +328,8 @@ class VisionController extends ImageUtilsController {
                 double slope
                 if (contrast <= mid) {
                     slope = brightness / mid
-                } else {
+                }
+                else {
                     slope = mid / (fullRange - contrast)
                 }
                 if (slope > 0.0) {
@@ -353,14 +352,13 @@ class VisionController extends ImageUtilsController {
         }
     }
 
-    def tileService
 
     def ij() {
         String tileURL = tileService.getTileUrl(params)
         BufferedImage tile = getImageFromURL(tileURL)
         BufferedImage newTile = null
 
-        assert(tile)
+        assert (tile)
         if (params.macro == "ec") {
             ImagePlus imp = new ImagePlus("", tile)
             //IJ.run(imp,"Enhance Contrast", "saturated=0.35");
@@ -373,13 +371,12 @@ class VisionController extends ImageUtilsController {
             IJ.run(imp,"Median...", "radius=1")
             IJ.run(imp,"Unsharp Mask...", "gaussian=2 mask=0.60")*/
             newTile = imp.getBufferedImage()
-        } else {
+        }
+        else {
             newTile = tile
         }
         responseBufferedImage(newTile)
     }
-
-
 
     /**
      * Extract all args into a list.
@@ -388,12 +385,12 @@ class VisionController extends ImageUtilsController {
      */
     private def extractParams(String argStart) {
         def list = []
-        int i=0;
-        String nextUrlParams = params.get(argStart+i)
-        while(nextUrlParams!=null) {
+        int i = 0;
+        String nextUrlParams = params.get(argStart + i)
+        while (nextUrlParams != null) {
             list << nextUrlParams
             i++
-            nextUrlParams = params.get(argStart+i)
+            nextUrlParams = params.get(argStart + i)
         }
         return list
     }

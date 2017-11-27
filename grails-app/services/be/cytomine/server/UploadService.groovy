@@ -1,4 +1,4 @@
-package be.cytomine.utils
+package be.cytomine.server
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -87,7 +87,7 @@ class UploadService {
                 projects,
                 [idStorage],
                 currentUserId,
-                0,
+                0, // UPLOADED status
                 null // idParent
         )
 
@@ -340,30 +340,30 @@ class UploadService {
     }
 
     private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
-        if(newFiles.size() < 2) return;
+        if (newFiles.size() < 2) return
         //Create one imagegroup for this multidim image
         ImageGroup imageGroup = cytomine.addImageGroup(idProject)
-        ImageInstanceCollection collection = cytomine.getImageInstances(idProject);
+        ImageInstanceCollection collection = cytomine.getImageInstances(idProject)
 
         newFiles.each { file ->
-            def path = file.path;
+            def path = file.path
             def idImage = 0L
             while (idImage == 0) {
-                log.info "Wait for " + path;
+                log.info "Wait for " + path
 
                 for (int i = 0; i < collection.size(); i++) {
-                    Long expected = file.id;
-                    Long current = collection.get(i).get("baseImage");
+                    Long expected = file.id
+                    Long current = collection.get(i).get("baseImage")
                     if (expected.equals(current)) {
-                        log.info "OK!";
-                        idImage = collection.get(i).getId();
+                        log.info "OK!"
+                        idImage = collection.get(i).getId()
                     }
                 }
 
-                if(idImage != 0) break;
+                if (idImage != 0) break
 
-                Thread.sleep(1000);
-                collection = cytomine.getImageInstances(idProject);
+                Thread.sleep(1000)
+                collection = cytomine.getImageInstances(idProject)
             }
             log.info "Uploaded ImageID: $idImage"
             //Add this image to current imagegroup

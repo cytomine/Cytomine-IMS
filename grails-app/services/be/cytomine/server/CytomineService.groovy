@@ -1,4 +1,4 @@
-package cytomine.web
+package be.cytomine.server
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -17,7 +17,6 @@ package cytomine.web
  */
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.models.User
 import be.cytomine.exception.AuthenticationException
 import org.springframework.security.crypto.codec.Base64
 
