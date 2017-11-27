@@ -23,7 +23,7 @@ class BootStrap {
     def grailsApplication
 
     def init = { servletContext ->
-        println "Config file: "+ new File("imageserverconfig.properties").absolutePath
+        log.info "Config file: "+ new File("imageserverconfig.properties").absolutePath
 
         if(!grailsApplication.config.cytomine.imageServerPrivateKey) {
             throw new IllegalArgumentException("cytomine.imageServerPrivateKey must be set!")

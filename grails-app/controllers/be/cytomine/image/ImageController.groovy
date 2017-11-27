@@ -15,6 +15,7 @@ package be.cytomine.image
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.SupportedImageFormat
 import be.cytomine.exception.MiddlewareException
@@ -22,11 +23,6 @@ import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
 import grails.util.Holders
-import java.awt.BasicStroke
-import java.awt.Color
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import org.restapidoc.annotation.RestApi
@@ -39,7 +35,7 @@ import utils.ImageUtils
 import utils.ServerUtils
 
 @RestApi(name = "image services", description = "Methods for images (thumb, tile, property, ...)")
-class ImageController extends ImageUtilsController {
+class ImageController extends ImageResponseController {
 
     def imageProcessingService
     def tileService
@@ -59,8 +55,6 @@ class ImageController extends ImageUtilsController {
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
             responseBufferedImage(bufferedImage)
-        } else {
-            //return 404 image
         }
     }
 
@@ -82,10 +76,7 @@ class ImageController extends ImageUtilsController {
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
             responseBufferedImage(bufferedImage)
-        } else {
-            //return 404 image
         }
-
     }
 
     @RestApiMethod(description="Get the list of nested (or associated) images available of an image", extensions = ["json"])
@@ -131,24 +122,26 @@ class ImageController extends ImageUtilsController {
         BufferedImage bufferedImage = readCropBufferedImage(params)
 
         def geometry = null
-
-        if(params.location) {
+        if (params.location) {
             geometry = new WKTReader().read(params.location)
-        } else if(request.JSON.location!=null && request.JSON.location!="") {
+        }
+        else if (request.JSON.location != null && request.JSON.location != "") {
             geometry = new WKTReader().read(request.JSON.location)
         }
 
-        bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, params.boolean('alphaMask',false))
+        bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, params.boolean('alphaMask', false))
         //resize if necessary
         if (params.maxSize) {
             int maxSize = params.int('maxSize', 256)
             bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
-        } else if (params.zoom) {
+        }
+        else if (params.zoom) {
             int zoom = params.int('zoom', 0)
             int maxWidth = params.double('width') / Math.pow(2, zoom)
             int maxHeight = params.double('height') / Math.pow(2, zoom)
             bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxWidth, maxHeight)
         }
+
         responseBufferedImage(bufferedImage)
     }
 
@@ -171,194 +164,75 @@ class ImageController extends ImageUtilsController {
     @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
     ])
     def crop() {
-
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
 
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
 
-        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
+        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL)
 
         BufferedImage bufferedImage = readCropBufferedImage(params)
 
-        if(params.boolean("point")) {
-            drawPoint(bufferedImage)
+        if (params.boolean("point")) {
+            imageProcessingService.drawPoint(bufferedImage)
         }
-
 
         if (params.draw) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createCropWithDraw(bufferedImage, geometry, params)
-        } else if (params.mask) {
+        }
+        else if (params.mask) {
             String location = params.location
-            Geometry geometry  = new WKTReader().read(location)
+            Geometry geometry = new WKTReader().read(location)
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, false)
-        } else if (params.alphaMask) {
+        }
+        else if (params.alphaMask) {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
 
-           if (params.zoom) {
-               int zoom = params.int('zoom', 0)
-               int maxWidth = savedWidth / Math.pow(2, zoom)
-               int maxHeight = savedHeight / Math.pow(2, zoom)
-               //resize and preserve png transparency for alpha mask
-//            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
-//                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
-               // Create new (blank) image of required (scaled) size
-
-               bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
-           }
-
+            if (params.zoom) {
+                int zoom = params.int('zoom', 0)
+                int maxWidth = savedWidth / Math.pow(2, zoom)
+                int maxHeight = savedHeight / Math.pow(2, zoom)
+                //resize and preserve png transparency for alpha mask
+                //bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH, maxWidth,
+                // maxHeight, Scalr.OP_ANTIALIAS);
+                bufferedImage = imageProcessingService.resizeImage(bufferedImage, maxWidth, maxHeight)
+            }
 
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
         }
-        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
-        println "bufferedImage.getType()"+bufferedImage.getType()
-        println new Color(bufferedImage.getRGB(0, 0)).alpha;
-        println bufferedImage.getRGB(0, 0);
-        println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
 
         //resize if necessary
         if (params.maxSize) {
             //useless with new iipversion
-            if(!exactSize) {
+            if (!exactSize) {
                 int maxSize = params.int('maxSize', 256)
                 bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
             }
-        } else if (params.zoom && !params.alphaMask) {
+        }
+        else if (params.zoom && !params.alphaMask) {
             int zoom = params.int('zoom', 0)
             int maxWidth = savedWidth / Math.pow(2, zoom)
             int maxHeight = savedHeight / Math.pow(2, zoom)
-            //resize and preserve png transparency for alpha mask
-//            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
-//                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
-            // Create new (blank) image of required (scaled) size
-
-            bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
+            bufferedImage = imageProcessingService.resizeImage(bufferedImage, maxWidth, maxHeight)
         }
-		
-        if(params.boolean('drawScaleBar')) {
-//            if(proport1==porpert2) {
-                //If the crop mage has been resized, the image may be "cut" (how to know that?).
-                //(we may have oldWidth/oldHeight <> newWidth/newHeight)
-                //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
-                //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
-                //but if the image is cut , its not possible to compute the good width size
-            double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
+
+        if (params.boolean('drawScaleBar')) {
+            //If the crop mage has been resized, the image may be "cut" (how to know that?).
+            //(we may have oldWidth/oldHeight <> newWidth/newHeight)
+            //This mean that its impossible to compute the real size of the image because the size of the image change
+            // (not a problem) AND the image change (the image server cut somepart of the image).
+            //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
+            //but if the image is cut , its not possible to compute the good width size
+            double ratioWidth = (double) ((double) bufferedImage.getWidth() / params.double('width'))
             Double resolution = params.double('resolution')
             Double magnification = params.double('magnification')
-            bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth, magnification)
-//            }
+            bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution, ratioWidth, magnification)
         }
 
-        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
-        println "bufferedImage.getType()"+bufferedImage.getType()
-        println new Color(bufferedImage.getRGB(0, 0)).alpha;
-        println bufferedImage.getRGB(0, 0);
-        println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
         responseBufferedImage(bufferedImage)
-    }
-
-    public void drawPoint(BufferedImage image) {
-        Graphics g = image.createGraphics();
-        g.setColor(Color.RED);
-
-        int length = 10
-        int x = image.getWidth()/2
-        int y = image.getHeight()/2
-
-        g.setStroke(new BasicStroke(1));
-        g.drawLine(x, y-length, x, y+length);
-        g.drawLine(x-length,y,x+length,y);
-        g.dispose();
-    }
-
-    public BufferedImage resizeImage(int maxWidth, int maxHeight, BufferedImage bufferedImage) {
-        BufferedImage scaledImage = new BufferedImage(
-                maxWidth, maxHeight, BufferedImage.TYPE_INT_ARGB);
-
-// Paint scaled version of image to new image
-
-        Graphics2D graphics2D = scaledImage.createGraphics();
-        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        graphics2D.drawImage(bufferedImage, 0, 0, maxWidth, maxHeight, null);
-
-// clean up
-
-        graphics2D.dispose();
-        return scaledImage;
-    }
-
-    public BufferedImage readCropBufferedImage(def params) {
-        String fif = params.fif
-        String mimeType = params.mimeType
-        def savedTopX = params.topLeftX
-        def savedTopY = params.topLeftY
-
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-
-        def savedWidth = params.double('width')
-        def savedHeight = params.double('height')
-
-        if (params.double('increaseArea')) {
-            params.width = params.int('width') * params.double("increaseArea")
-            params.height = params.int('height') * params.double("increaseArea")
-            params.topLeftX = params.int('topLeftX') - ((params.double('width') - savedWidth) / 2)
-            params.topLeftY = params.int('topLeftY') + ((params.double('height') - savedHeight) / 2)
-        }
-
-        String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
-        log.info cropURL
-
-        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
-
-        BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
-
-        int i = 0
-        while (bufferedImage == null && i < 3) {
-            bufferedImage = ImageIO.read(new URL(cropURL))
-            i++
-        }
-
-        if (bufferedImage == null) {
-            throw new MiddlewareException("Not a valid image: ${cropURL}")
-        }
-
-        Long start = System.currentTimeMillis()
-
-        /*
-         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for old IIP server request. Same for h.
-         * We may loose precision and the size could be w+-1 * h+-1.
-         * If the difference is < as threshold, we rescale
-         */
-        if(!exactSize) {
-            int threshold = 10
-            boolean imageDifferentSize = (savedWidth != bufferedImage.width) || (savedHeight != bufferedImage.height)
-            // TODO so if increase area is set, it is possible than we have no effect :s ==> fix with increaseArea
-            if (imageDifferentSize && (Math.abs(savedWidth - bufferedImage.width) < threshold && Math.abs(savedHeight - bufferedImage.height) < threshold)) {
-                bufferedImage = ImageUtils.resize(bufferedImage, (int) savedWidth, (int) savedHeight)
-            }
-        }
-
-        log.info "time=${System.currentTimeMillis() - start}"
-
-        params.topLeftX = savedTopX
-        params.topLeftY = savedTopY
-        params.width = savedWidth
-        params.height = savedHeight
-
-        if (params.safe) {
-            //if safe mode, skip annotation too large
-            if ((params.int('width') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) ||
-                    (params.int('height') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth)){
-                throw new MiddlewareException("Too big annotation!");
-            }
-        }
-        bufferedImage
     }
 
     @RestApiMethod(description="Get a tile of an image (following zoomify format)", extensions = ["jpg","png"])
@@ -384,4 +258,73 @@ class ImageController extends ImageUtilsController {
     }
 
 
+    BufferedImage readCropBufferedImage(def params) {
+        String fif = params.fif
+        String mimeType = params.mimeType
+        def savedTopX = params.topLeftX
+        def savedTopY = params.topLeftY
+
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+
+        def savedWidth = params.double('width')
+        def savedHeight = params.double('height')
+
+        if (params.double('increaseArea')) {
+            params.width = params.int('width') * params.double("increaseArea")
+            params.height = params.int('height') * params.double("increaseArea")
+            params.topLeftX = params.int('topLeftX') - ((params.double('width') - savedWidth) / 2)
+            params.topLeftY = params.int('topLeftY') + ((params.double('height') - savedHeight) / 2)
+        }
+
+        String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
+        log.info cropURL
+
+        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL)
+
+        BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
+        int i = 0
+        while (bufferedImage == null && i < 3) {
+            bufferedImage = ImageIO.read(new URL(cropURL))
+            i++
+        }
+
+        if (bufferedImage == null) {
+            throw new MiddlewareException("Not a valid image: ${cropURL}")
+        }
+
+        Long start = System.currentTimeMillis()
+
+        /*
+         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for old IIP server request. Same for h.
+         * We may loose precision and the size could be w+-1 * h+-1.
+         * If the difference is < as threshold, we rescale
+         */
+        if (!exactSize) {
+            int threshold = 10
+            boolean imageDifferentSize = (savedWidth != bufferedImage.width) || (savedHeight != bufferedImage.height)
+            // TODO so if increase area is set, it is possible than we have no effect :s ==> fix with increaseArea
+            if (imageDifferentSize
+                    && (Math.abs(savedWidth - bufferedImage.width) < threshold
+                        && Math.abs(savedHeight - bufferedImage.height) < threshold)) {
+                bufferedImage = ImageUtils.resize(bufferedImage, (int) savedWidth, (int) savedHeight)
+            }
+        }
+
+        log.info "time=${System.currentTimeMillis() - start}"
+
+        params.topLeftX = savedTopX
+        params.topLeftY = savedTopY
+        params.width = savedWidth
+        params.height = savedHeight
+
+        if (params.safe) {
+            //if safe mode, skip annotation too large
+            if ((params.int('width') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) ||
+                    (params.int('height') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth)) {
+                throw new MiddlewareException("Too big annotation!")
+            }
+        }
+
+        bufferedImage
+    }
 }

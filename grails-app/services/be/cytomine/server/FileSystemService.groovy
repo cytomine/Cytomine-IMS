@@ -1,6 +1,4 @@
-package be.cytomine.formats
-
-import be.cytomine.formats.supported.SupportedImageFormat
+package be.cytomine.server
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -18,17 +16,15 @@ import be.cytomine.formats.supported.SupportedImageFormat
  * limitations under the License.
  */
 
-class TileService {
+import utils.ProcUtils
 
-    def getTileUrl(def params) {
-        String fif = params.zoomify
-        /*remove the "/" at the end of the path injected by openlayers (OL2).
-          I Did not find the way to avoid it from OL2 (BS)
-         */
-        if (fif.endsWith("/"))
-            fif = fif.substring(0, fif.length()-1)
-        String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params)
+class FileSystemService {
+
+    def makeLocalDirectory(String path) {
+        int value = ProcUtils.executeOnShell("mkdir -p " + path)
+        ProcUtils.executeOnShell("chmod -R 777 " + path)
+        return value
     }
+
+
 }

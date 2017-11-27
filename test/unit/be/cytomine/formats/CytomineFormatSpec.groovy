@@ -34,8 +34,7 @@ import be.cytomine.formats.supported.PhilipsTIFFFormat
 import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.VentanaBIFFormat
 import be.cytomine.formats.supported.VentanaTIFFFormat
-
-import be.cytomine.image.ImageUtilsController
+import be.cytomine.image.ImageResponseController
 import grails.test.mixin.TestFor
 import grails.util.Holders
 import org.apache.commons.io.FileUtils
@@ -45,7 +44,7 @@ import utils.ProcUtils
  * Created by stevben on 23/04/14.
  */
 
-@TestFor(ImageUtilsController)
+@TestFor(ImageResponseController)
 class CytomineFormatSpec {
 
     final static String IMAGES_REPOSITORY_PATH = '/data/cytominetest/images'

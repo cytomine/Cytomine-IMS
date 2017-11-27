@@ -1,4 +1,4 @@
-package cytomine.web
+package be.cytomine.image
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -16,22 +16,20 @@ package cytomine.web
  * limitations under the License.
  */
 
+import be.cytomine.formats.FormatIdentifier
+import be.cytomine.formats.supported.SupportedImageFormat
 
-class ImageServerService {
+class TileService {
 
-    def start() {
-        log.info("Start IIP instances...")
-
-        /*String fcgiPath = System.properties['base.dir'] + "/fcgi-bin/iipsrv.fcgi"
-        String command = "$fcgiPath --bind 127.0.0.1:9000"
-        println command
-        command.execute()*/
-
-    }
-
-    def stop() {
-        log.info("Stop IIP instances...")
-
-
+    def getTileUrl(def params) {
+        String fif = params.zoomify
+        /*remove the "/" at the end of the path injected by openlayers (OL2).
+          I Did not find the way to avoid it from OL2 (BS)
+         */
+        if (fif.endsWith("/"))
+            fif = fif.substring(0, fif.length()-1)
+        String mimeType = params.mimeType
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+        return imageFormat.tileURL(fif, params)
     }
 }
