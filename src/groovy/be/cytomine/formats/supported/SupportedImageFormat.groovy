@@ -18,8 +18,8 @@ package be.cytomine.formats.supported
 
 import be.cytomine.formats.Format
 import grails.util.Holders
-import org.apache.http.client.utils.URIBuilder
 import utils.ServerUtils
+import utils.URLBuilder
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -56,14 +56,13 @@ abstract class SupportedImageFormat extends Format {
     }
 
     String cropURL(def params, def charset = "UTF-8") {
-        String fif = URLEncoder.encode(params.fif, charset)
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         double width = params.double('width')
         double height = params.double('height')
         double imageWidth = params.double('imageWidth')
         double imageHeight = params.double('imageHeight')
-        String outputFormat = params.double('format')
+        boolean inverse = params.boolean("inverse", false)
 
         //All values x,y,w & h should be in ratios 0-1.0 [RGN=x,y,w,h]
         def x = (topLeftX == 0) ? 0 : 1 / (imageWidth / topLeftX)
@@ -77,7 +76,7 @@ abstract class SupportedImageFormat extends Format {
         double w = width/imageWidth
         double h = height/imageHeight*/
 
-        if (x > 1 || y > 1) return
+        if (x > 1 || y > 1) return ""
 
         int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
         if (params.maxSize) {
@@ -87,11 +86,11 @@ abstract class SupportedImageFormat extends Format {
             }
         }
 
-        def iipRequest = new URIBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", fif)
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL), charset)
+        iipRequest.addParameter("FIF", params.fif, true)
         iipRequest.addParameter("RGN", "$x,$y,$w,$h")
 
-        if (ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(iipURL)) {
+        if (ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto).containsAll(iipURL)) {
             // with new version of iipsrv, the meaning of WID & HEI change !
             if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
                 iipRequest.addParameter("HEI", "$maxWidthOrHeight")
@@ -134,12 +133,34 @@ abstract class SupportedImageFormat extends Format {
                 iipRequest.addParameter("HEI", "$hei")
             }
         }
-        iipRequest.addParameter("CVT", outputFormat)
+
+        if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
+        if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
+        if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
+        if (inverse) iipRequest.addParameter("INV", "true")
+        if (params.bits) iipRequest.addParameter("BIT", params.bits)
+        iipRequest.addParameter("CVT", params.format)
         return iipRequest.toString()
     }
 
-    String tileURL(fif, params) {
-        return "${ServerUtils.getServer(iipURL)}?zoomify=" + URLEncoder.encode(fif, "UTF-8") + "/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
+    String tileURL(fif, params, with_zoomify) {
+        if (with_zoomify) {
+            return "${ServerUtils.getServer(iipURL)}?zoomify=" + URLEncoder.encode(fif, "UTF-8") +
+                    "/TileGroup$params.tileGroup/$params.z-$params.x-$params.y" + ".jpg"
+        }
+        else {
+            def inverse = params.boolean("inverse", false)
+
+            def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+            iipRequest.addParameter("FIF", fif, true)
+            if (params.contrast) iipRequest.addParameter("CNT", params.contrast)
+            if (params.gamma) iipRequest.addParameter("GAM", params.gamma)
+            if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
+            if (inverse) iipRequest.addParameter("INV", "true")
+
+            iipRequest.addParameter("JTL", "$params.z,$params.tileIndex")
+            return iipRequest.toString()
+        }
     }
 
     // TODO do it with OpenSlide or IIP ?

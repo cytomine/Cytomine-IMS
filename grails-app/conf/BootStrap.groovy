@@ -32,7 +32,7 @@ class BootStrap {
             throw new IllegalArgumentException("cytomine.imageServerPublicKey must be set!")
         }
 
-        log.info "iipImageServerBase:" + grailsApplication.config.cytomine.iipImageServerBase
+        //log.info "iipImageServerBase:" + grailsApplication.config.cytomine.iipImageServerBase
         log.info "iipImageServerJpeg2000:" + grailsApplication.config.cytomine.iipImageServerJpeg2000
         log.info "iipImageServerCyto:" + grailsApplication.config.cytomine.iipImageServerCyto
 

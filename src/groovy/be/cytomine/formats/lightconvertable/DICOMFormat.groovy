@@ -27,6 +27,6 @@ class DICOMFormat extends CommonFormat {
     public DICOMFormat() {
         extensions = ["dcm"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "DCM"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 }

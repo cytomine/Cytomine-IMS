@@ -1,8 +1,4 @@
-package be.cytomine.formats.supported
-
-import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
-import grails.util.Holders
-import utils.ServerUtils
+package be.cytomine.formats.supported.digitalpathology
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -19,12 +15,16 @@ import utils.ServerUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.awt.image.BufferedImage
+import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
+import grails.util.Holders
+import utils.ServerUtils
 
 /**
  * Created by stevben on 28/04/14.
  */
-class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
+class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements ILightConvertableImageFormat {
 
     public VentanaTIFFFormat() {
         extensions = ["tif", "vtif"]
@@ -35,6 +35,15 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
         resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = "openslide.objective-power"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
+    }
+
+    @Override
+    def convert() {
+        String source = absoluteFilePath
+        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".vtif"].join(File.separator)
+        //make a symbolic link to the original file with a special extension 'vtif' in order to recognize the format within IIP.
+        "ln -s $source $target".execute()
+        return target
     }
 
     BufferedImage associated(String label) {

@@ -23,12 +23,12 @@ import be.cytomine.client.models.ImageSequence
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.exception.FormatException
-import be.cytomine.formats.ArchiveFormat
+import be.cytomine.formats.archive.ArchiveFormat
 import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
 import be.cytomine.formats.heavyconvertable.IHeavyConvertableImageFormat
-import be.cytomine.formats.lightconvertable.VIPSConvertable
+import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
 import grails.util.Holders
 import utils.FilesUtils
 
@@ -191,7 +191,7 @@ class UploadService {
 
         Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
-        if (imageFormat instanceof VIPSConvertable) {
+        if (imageFormat instanceof ILightConvertableImageFormat) {
             String newImage = imageFormat.convert()
             imageFormat = FormatIdentifier.getImageFormat(newImage)
             imageFormatsToDeploy = [uploadedFilePath: newImage, imageFormat: imageFormat]

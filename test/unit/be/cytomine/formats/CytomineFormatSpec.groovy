@@ -30,10 +30,7 @@ import be.cytomine.formats.lightconvertable.specialtiff.BrokenTIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.HuronTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.*
 import be.cytomine.formats.supported.JPEG2000Format
-import be.cytomine.formats.supported.PhilipsTIFFFormat
 import be.cytomine.formats.supported.PyramidalTIFFFormat
-import be.cytomine.formats.supported.VentanaBIFFormat
-import be.cytomine.formats.supported.VentanaTIFFFormat
 import be.cytomine.image.ImageResponseController
 import grails.test.mixin.TestFor
 import grails.util.Holders

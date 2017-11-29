@@ -27,7 +27,7 @@ public class PGMFormat extends CommonFormat {
     public PGMFormat () {
         extensions = ["pgm"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "PGM"
-        //mimeType = "image/pgm"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+//        mimeType = "image/pgm"
+//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 }

@@ -1,4 +1,4 @@
-package be.cytomine.formats.lightconvertable
+package utils
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -16,18 +16,32 @@ package be.cytomine.formats.lightconvertable
  * limitations under the License.
  */
 
-import grails.util.Holders
-import utils.ServerUtils
+class URLBuilder {
+    def host
+    def charset
+    def parameters = [:]
 
-/**
- * Created by stevben on 22/04/14.
- */
-class PNGFormat extends CommonFormat {
+    URLBuilder(host, charset) {
+        this.charset = charset
+        this.host = host
+    }
 
-    public PNGFormat() {
-        extensions = ["png"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "PNG"
-//        mimeType = "image/png"
-//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+    URLBuilder(host) {
+        charset = "UTF-8"
+        this.host = host
+    }
+
+    def addParameter(param, value, encode=false) {
+        if (encode)
+            parameters << [(param): URLEncoder.encode(value, charset)]
+        else
+            parameters << [(param): value]
+    }
+
+    String toString() {
+        if (parameters.isEmpty())
+            return host
+        else
+            return host + "?" + parameters.collect {p, v -> "$p=$v"}.join("&")
     }
 }

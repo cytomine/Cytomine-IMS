@@ -73,5 +73,9 @@ class UrlMappings {
         "/multidim/convert.$format" (controller: "multiDim"){
             action = [POST: "convertListToHdf5"]
         }
+
+        "/image/tile" (controller: "image") {
+            action = [GET:"tileZoomify"] //tileIIP
+        }
 	}
 }

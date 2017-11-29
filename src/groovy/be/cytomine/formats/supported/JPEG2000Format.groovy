@@ -21,6 +21,7 @@ import be.cytomine.exception.FormatException
 import grails.util.Holders
 import utils.FilesUtils
 import utils.ServerUtils
+import utils.URLBuilder
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -50,14 +51,25 @@ class JPEG2000Format extends SupportedImageFormat {
     }
 
     public BufferedImage thumb(int maxSize) {
-        //construct IIP2K URL
-        //maxSize currently ignored because we need to know width of the image with IIP
-        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&HEI=$maxSize&WID=$maxSize&CVT=jpeg&QLT=99"
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("HEI", "$maxSize")
+        iipRequest.addParameter("WID", "$maxSize")
+        iipRequest.addParameter("QLT", "99")
+        iipRequest.addParameter("CVT", "jpeg")
+        String thumbURL = iipRequest.toString()
+        println thumbURL
         return ImageIO.read(new URL(thumbURL))
     }
 
     public def properties() {
-        String propertiesURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&obj=IIP,1.0&obj=Max-size&obj=Tile-size&obj=Resolution-number"
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("obj", "IIP,1.0")
+        iipRequest.addParameter("obj", "Max-size")
+        iipRequest.addParameter("obj", "Tile-size")
+        iipRequest.addParameter("obj", "Resolution-number")
+        String propertiesURL = iipRequest.toString()
         String propertiesTextResponse = new URL(propertiesURL).text
         Integer width = null
         Integer height = null

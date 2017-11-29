@@ -21,7 +21,7 @@ import be.cytomine.formats.supported.SupportedImageFormat
 
 class TileService {
 
-    def getTileUrl(def params) {
+    def getTileUrlZoomify(def params) {
         String fif = params.zoomify
         /*remove the "/" at the end of the path injected by openlayers (OL2).
           I Did not find the way to avoid it from OL2 (BS)
@@ -30,6 +30,11 @@ class TileService {
             fif = fif.substring(0, fif.length()-1)
         String mimeType = params.mimeType
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params)
+        return imageFormat.tileURL(fif, params, true)
+    }
+
+    def getTileUrlIIP(def params) {
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
+        return imageFormat.tileURL(params.fif, params, false)
     }
 }

@@ -17,6 +17,7 @@ package be.cytomine.formats
  */
 
 import be.cytomine.exception.FormatException
+import be.cytomine.formats.archive.ArchiveFormat
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.heavyconvertable.OMETIFFFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
@@ -32,14 +33,10 @@ import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.HuronTIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.PlanarTIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.PhotoshopTIFFFormat
-import be.cytomine.formats.supported.VentanaTIFFFormat
 import be.cytomine.formats.supported.JPEG2000Format
-import be.cytomine.formats.supported.PhilipsTIFFFormat
 import be.cytomine.formats.supported.PyramidalTIFFFormat
-import be.cytomine.formats.supported.VentanaBIFFormat
 import be.cytomine.formats.supported.digitalpathology.*
 import be.cytomine.formats.supported.SupportedImageFormat
-import grails.util.Holders
 import org.apache.commons.lang.RandomStringUtils
 
 /**
@@ -78,12 +75,10 @@ public class FormatIdentifier {
                 new AperioSVSFormat(),
                 new HamamatsuNDPIFormat(),
                 new LeicaSCNFormat(),
-                //new SakuraSVSlideFormat(),
                 new PhilipsTIFFFormat(),
                 new CZITIFFFormat(),
                 new OMETIFFFormat(),
                 //common formats
-                new OMETIFFFormat(),
                 new PhotoshopTIFFFormat(),
                 new HuronTIFFFormat(),
                 new PlanarTIFFFormat(),

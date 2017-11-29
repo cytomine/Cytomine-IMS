@@ -1,4 +1,4 @@
-package be.cytomine.formats.supported
+package be.cytomine.formats.supported.digitalpathology
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -15,7 +15,8 @@ package be.cytomine.formats.supported
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
+
+import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
 import grails.util.Holders
 import utils.ProcUtils
 
@@ -25,16 +26,25 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 12/07/14.
  */
-class PhilipsTIFFFormat extends OpenSlideSingleFileFormat{
+class PhilipsTIFFFormat extends OpenSlideSingleFileFormat implements ILightConvertableImageFormat{
 
     public PhilipsTIFFFormat() {
-        extensions = ["tiff"]
+        extensions = ["tiff", "ptiff"]
         vendor = "philips"
         mimeType = "philips/tif"
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = null
+    }
+
+    @Override
+    def convert() {
+        String source = absoluteFilePath
+        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".ptiff"].join(File.separator)
+        //make a symbolic link to the original file with a special extension 'ptiff' in order to recognize the format within IIP.
+        "ln -s $source $target".execute()
+        return target
     }
 
     BufferedImage associated(String label) {
