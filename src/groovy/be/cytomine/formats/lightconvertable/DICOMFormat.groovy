@@ -36,7 +36,7 @@ class DICOMFormat extends CommonFormat implements ICommonFormat {
     @Override
     def properties() {
         def properties = super.properties()
-        def dictionnary = new CustomDicomDictionnary()
+        def dictionnary = new CustomDicomDictionary()
         def list = new AttributeList()
         list.read(absoluteFilePath)
         (list.values() as ArrayList).each {
@@ -50,7 +50,7 @@ class DICOMFormat extends CommonFormat implements ICommonFormat {
     }
 }
 
-class CustomDicomDictionnary extends DicomDictionary {
+class CustomDicomDictionary extends DicomDictionary {
     @Override
     protected void createNameByTag() {
         super.createNameByTag();
