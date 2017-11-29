@@ -1,9 +1,9 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.formats.ICommonFormat
+import be.cytomine.formats.IConvertableImageFormat
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,4 @@ import be.cytomine.formats.ICommonFormat
  * limitations under the License.
  */
 
-import grails.util.Holders
-import utils.ServerUtils
-
-/**
- * Created by stevben on 22/04/14.
- */
-class DICOMFormat extends CommonFormat implements ICommonFormat {
-
-    public DICOMFormat() {
-        extensions = ["dcm"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "DCM"
-//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
-    }
-}
+interface ILightConvertableImageFormat extends IConvertableImageFormat {}

@@ -103,8 +103,11 @@ class VisionController extends ImageResponseController {
             Color[] colorsArray = colors.toArray(new Color[colors.size()])
             ImagePlus result = CytomineRGBStackMerge.merge(images, colorsArray, false)
 
-            BufferedImage resultImage = result.getBufferedImage()
-            responseBufferedImage(resultImage)
+            BufferedImage bufferedImage = result.getBufferedImage()
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
         }
     }
 
@@ -343,18 +346,24 @@ class VisionController extends ImageResponseController {
             }
 
             /* Write response from BufferedImage */
-            responseBufferedImage(bufferedImage)
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
 
         } catch (Exception e) {
             log.error e.toString()
             BufferedImage bufferedImage = getImageFromURL("/images/notavailable.jpg")
-            responseBufferedImage(bufferedImage)
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
         }
     }
 
 
     def ij() {
-        String tileURL = tileService.getTileUrl(params)
+        String tileURL = tileService.getTileUrlZoomify(params)
         BufferedImage tile = getImageFromURL(tileURL)
         BufferedImage newTile = null
 
@@ -375,7 +384,10 @@ class VisionController extends ImageResponseController {
         else {
             newTile = tile
         }
-        responseBufferedImage(newTile)
+        withFormat {
+            png { responseBufferedImagePNG(newTile) }
+            jpg { responseBufferedImageJPG(newTile) }
+        }
     }
 
     /**

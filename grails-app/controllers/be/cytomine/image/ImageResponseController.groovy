@@ -55,36 +55,59 @@ class ImageResponseController {
      * Response an image as a HTTP response
      * @param bufferedImage Image
      */
-    def responseBufferedImage(BufferedImage bufferedImage) {
+    def responseBufferedImagePNG(BufferedImage bufferedImage) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        if(params.format.equals("png")){
-            if (request.method == 'HEAD') {
-                render(text: "", contentType: "image/png")
-            }
-            else {
-                ImageIO.write(bufferedImage, "png", baos);
-                byte[] bytesOut = baos.toByteArray();
-                response.contentLength = baos.size();
-                response.setHeader("Connection", "Keep-Alive")
-                response.setHeader("Accept-Ranges", "bytes")
-                response.setHeader("Content-Type", "image/png")
-                response.getOutputStream() << bytesOut
-                response.getOutputStream().flush()
-            }
-        } else {
-            if (request.method == 'HEAD') {
-                render(text: "", contentType: "image/jpeg");
-            }
-            else {
-                ImageIO.write(bufferedImage, "jpg", baos);
-                byte[] bytesOut = baos.toByteArray();
-                response.contentLength = baos.size();
-                response.setHeader("Connection", "Keep-Alive")
-                response.setHeader("Accept-Ranges", "bytes")
-                response.setHeader("Content-Type", "image/jpeg")
-                response.getOutputStream() << bytesOut
-                response.getOutputStream().flush()
-            }
+        log.info "Response Buffered Image png"
+        if (request.method == 'HEAD') {
+            render(text: "", contentType: "image/png")
+        }
+        else {
+            ImageIO.write(bufferedImage, "png", baos);
+            byte[] bytesOut = baos.toByteArray();
+            response.contentLength = baos.size();
+            response.setHeader("Connection", "Keep-Alive")
+            response.setHeader("Accept-Ranges", "bytes")
+            response.setHeader("Content-Type", "image/png")
+            response.getOutputStream() << bytesOut
+            response.getOutputStream().flush()
+        }
+        baos.close()
+    }
+
+    def responseBufferedImageJPG(BufferedImage bufferedImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        log.info "Response Buffered Image jpg"
+        if (request.method == 'HEAD') {
+            render(text: "", contentType: "image/jpeg");
+        }
+        else {
+            ImageIO.write(bufferedImage, "jpg", baos);
+            byte[] bytesOut = baos.toByteArray();
+            response.contentLength = baos.size();
+            response.setHeader("Connection", "Keep-Alive")
+            response.setHeader("Accept-Ranges", "bytes")
+            response.setHeader("Content-Type", "image/jpeg")
+            response.getOutputStream() << bytesOut
+            response.getOutputStream().flush()
+        }
+        baos.close()
+    }
+
+    def responseBufferedImageTIFF(BufferedImage bufferedImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        log.info "Response Buffered Image tiff"
+        if (request.method == 'HEAD') {
+            render(text: "", contentType: "image/tiff")
+        }
+        else {
+            ImageIO.write(bufferedImage, "tiff", baos)
+            byte[] bytesOut = baos.toByteArray()
+            response.contentLength = baos.size()
+            response.setHeader("Connection", "Keep-Alive")
+            response.setHeader("Accept-Ranges", "bytes")
+            response.setHeader("Content-Type", "image/tiff")
+            response.getOutputStream() << bytesOut
+            response.getOutputStream().flush()
         }
         baos.close()
     }
@@ -93,7 +116,7 @@ class ImageResponseController {
      * Response an image as a HTTP response
      * @param url Image url
      */
-    def responseImageFromUrl(String url) {
+    def responseJPGImageFromUrl(String url) {
         log.info "url=$url"
         URL source = new URL(url)
         URLConnection connection = source.openConnection()

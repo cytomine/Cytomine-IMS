@@ -60,7 +60,10 @@ class ImageController extends ImageResponseController {
         BufferedImage bufferedImage = imageFormat.thumb(maxSize)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
-            responseBufferedImage(bufferedImage)
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
         }
     }
 
@@ -81,7 +84,10 @@ class ImageController extends ImageResponseController {
         BufferedImage bufferedImage = imageFormat.associated(label)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
-            responseBufferedImage(bufferedImage)
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
         }
     }
 
@@ -148,11 +154,14 @@ class ImageController extends ImageResponseController {
             bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxWidth, maxHeight)
         }
 
-        responseBufferedImage(bufferedImage)
+        withFormat {
+            png { responseBufferedImagePNG(bufferedImage) }
+            jpg { responseBufferedImageJPG(bufferedImage) }
+        }
     }
 
 
-    @RestApiMethod(description="Get the crop of an image", extensions = ["jpg","png"])
+    @RestApiMethod(description="Get the crop of an image", extensions = ["jpg", "png", "tiff"])
     @RestApiParams(params=[
             @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
             @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
@@ -168,6 +177,10 @@ class ImageController extends ImageResponseController {
             @RestApiParam(name="draw", type="int", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
             @RestApiParam(name="mask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask", required = false),
             @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
+            @RestApiParam(name="colormap", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of a colormap file (see IIP format)"),
+            @RestApiParam(name="inverse", type="int", paramType = RestApiParamType.QUERY, description = "True if colors have to be inversed (see IIP format)"),
+            @RestApiParam(name="contrast", type="float", paramType = RestApiParamType.QUERY, description = "Multiply pixels by contrast (see IIP format)"),
+            @RestApiParam(name="gamma", type="float", paramType = RestApiParamType.QUERY, description = "Apply gamma correction (see IIP format)")
     ])
     def crop() {
         def savedWidth = params.double('width')
@@ -207,7 +220,6 @@ class ImageController extends ImageResponseController {
                 bufferedImage = ImageUtils.resize(bufferedImage, maxWidth, maxHeight)
             }
 
-
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
         }
 
@@ -218,7 +230,7 @@ class ImageController extends ImageResponseController {
 
             bufferedImage = ImageUtils.resize(bufferedImage, maxWidth, maxHeight)
         }
-		
+
         if(params.boolean('drawScaleBar')) {
 //            If the crop mage has been resized, the image may be "cut" (how to know that?).
                 //(we may have oldWidth/oldHeight <> newWidth/newHeight)
@@ -231,7 +243,12 @@ class ImageController extends ImageResponseController {
             bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution, ratioWidth, magnification)
         }
 
-        responseBufferedImage(bufferedImage)
+        withFormat {
+            png { responseBufferedImagePNG(bufferedImage) }
+            jpg { responseBufferedImageJPG(bufferedImage) }
+            tiff { responseBufferedImageTIFF(bufferedImage) }
+        }
+
     }
 
 
@@ -283,7 +300,7 @@ class ImageController extends ImageResponseController {
     }
 
 
-    @RestApiMethod(description="Get a tile of an image (following zoomify format)", extensions = ["jpg","png"])
+    @RestApiMethod(description="Get a tile of an image (following zoomify format)", extensions = ["jpg"])
     @RestApiParams(params=[
             @RestApiParam(name="zoomify", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
             @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
@@ -292,11 +309,26 @@ class ImageController extends ImageResponseController {
             @RestApiParam(name="x", type="int", paramType = RestApiParamType.QUERY, description = "The X index (see zoomify format)"),
             @RestApiParam(name="y", type="int", paramType = RestApiParamType.QUERY, description = "The Y index (see zoomify format)")
     ])
-    def tile() {
-        responseImageFromUrl(tileService.getTileUrl(params))
+    def tileZoomify() {
+        responseJPGImageFromUrl(tileService.getTileUrlZoomify(params))
     }
 
-    @RestApiMethod(description="Download an image", extensions = ["jpg","png"])
+    @RestApiMethod(description="Get a tile of an image (following IIP format)", extensions = ["jpg"])
+    @RestApiParams(params=[
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="tileIndex", type="int", paramType = RestApiParamType.QUERY, description = "The Tile Index (see IIP format)"),
+            @RestApiParam(name="z", type="int", paramType = RestApiParamType.QUERY, description = "The Z index (see IIP format)"),
+            @RestApiParam(name="colormap", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of a colormap file (see IIP format)"),
+            @RestApiParam(name="inverse", type="int", paramType = RestApiParamType.QUERY, description = "True if colors have to be inversed (see IIP format)"),
+            @RestApiParam(name="contrast", type="float", paramType = RestApiParamType.QUERY, description = "Multiply pixels by contrast (see IIP format)"),
+            @RestApiParam(name="gamma", type="float", paramType = RestApiParamType.QUERY, description = "Apply gamma correction (see IIP format)")
+    ])
+    def tileIIP() {
+        responseJPGImageFromUrl(tileService.getTileUrlIIP(params))
+    }
+
+    @RestApiMethod(description="Download an image")
     @RestApiParams(params=[
             @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
     ])

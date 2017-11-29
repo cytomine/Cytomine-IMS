@@ -21,6 +21,7 @@ import grails.util.Holders
 import org.springframework.util.StringUtils
 import utils.FilesUtils
 import utils.ServerUtils
+import utils.URLBuilder
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -33,7 +34,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
     public PyramidalTIFFFormat () {
         extensions = ["tif", "tiff"]
         mimeType = "image/pyrtiff"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
     }
 
     private excludeDescription = [
@@ -101,10 +102,15 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
 
 
     BufferedImage thumb(int maxSize) {
-        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&HEI=$maxSize&WID=$maxSize&CVT=jpeg&QLT=99"
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("HEI", "$maxSize")
+        iipRequest.addParameter("WID", "$maxSize")
+        iipRequest.addParameter("QLT", "99")
+        iipRequest.addParameter("CVT", "jpeg")
+        String thumbURL = iipRequest.toString()
         println thumbURL
 		return ImageIO.read(new URL(thumbURL))
-
     }
 
     //convert from pixel/unit to µm/pixel

@@ -1,8 +1,5 @@
-package be.cytomine.formats.supported
+package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
-import grails.util.Holders
-import utils.ServerUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -19,30 +16,31 @@ import utils.ServerUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.awt.image.BufferedImage
+
+import grails.util.Holders
+import utils.FilesUtils
+import utils.ServerUtils
 
 /**
- * Created by stevben on 28/04/14.
+ * Created by stevben on 19/06/14.
  */
-class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
+class VentanaBIFFormat extends OpenSlideSingleFileFormat {
 
-    public VentanaTIFFFormat() {
-        extensions = ["tif", "vtif"]
+    public VentanaBIFFormat(){
+        extensions = ["bif"]
         vendor = "ventana"
-        mimeType = "openslide/ventana"
+        mimeType = "openslide/bif"
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "openslide.objective-power"
+        resolutionProperty = "ventana.ScanRes"
+        magnificiationProperty = "ventana.Magnification"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
     }
 
-    BufferedImage associated(String label) {
-        BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro") {
-            return rotate90ToRight(bufferedImage)
-        } else {
-            return bufferedImage
-        }
+
+    @Override
+    boolean detect() {
+        String extension = FilesUtils.getExtensionFromFilename(absoluteFilePath)
+        return super.detect() && extensions.contains(extension)
     }
 }
