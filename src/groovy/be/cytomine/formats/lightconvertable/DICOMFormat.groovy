@@ -1,5 +1,9 @@
 package be.cytomine.formats.lightconvertable
 
+import com.pixelmed.dicom.AttributeList
+import com.pixelmed.dicom.AttributeTag
+import com.pixelmed.dicom.DicomDictionary
+
 import be.cytomine.formats.ICommonFormat
 
 /*
@@ -18,9 +22,6 @@ import be.cytomine.formats.ICommonFormat
  * limitations under the License.
  */
 
-import grails.util.Holders
-import utils.ServerUtils
-
 /**
  * Created by stevben on 22/04/14.
  */
@@ -30,5 +31,30 @@ class DICOMFormat extends CommonFormat implements ICommonFormat {
         extensions = ["dcm"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "DCM"
 //        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+    }
+
+    @Override
+    def properties() {
+        def properties = super.properties()
+        def dictionnary = new CustomDicomDictionnary()
+        def list = new AttributeList()
+        list.read(absoluteFilePath)
+        (list.values() as ArrayList).each {
+            def tag = dictionnary.getNameFromTag(it.getTag())
+            def value = it.getDelimitedStringValuesOrEmptyString()
+            if (!tag?.isEmpty() && !value?.isEmpty())
+                properties << [key: "dicom.$tag", value: value]
+        }
+
+        return properties
+    }
+}
+
+class CustomDicomDictionnary extends DicomDictionary {
+    @Override
+    protected void createNameByTag() {
+        super.createNameByTag();
+        this.nameByTag.put(new AttributeTag(119, 16), "PrivateCreator[0]");
+        this.nameByTag.put(new AttributeTag(119, 17), "PrivateCreator[1]");
     }
 }

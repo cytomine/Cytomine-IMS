@@ -32,6 +32,7 @@ import be.cytomine.formats.IConvertableImageFormat
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
 import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
+import be.cytomine.formats.lightconvertable.VIPSConvertable
 import grails.converters.JSON
 import utils.FilesUtils
 
