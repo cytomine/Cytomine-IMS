@@ -40,4 +40,8 @@ abstract class VIPSConvertable extends Format implements ILightConvertableImageF
             target
         }
     }
+
+    def properties() {
+        return []
+    }
 }

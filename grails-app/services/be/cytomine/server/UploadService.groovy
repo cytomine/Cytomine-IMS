@@ -29,6 +29,7 @@ import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
 import be.cytomine.formats.heavyconvertable.IHeavyConvertableImageFormat
 import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
+import be.cytomine.formats.lightconvertable.VIPSConvertable
 import grails.util.Holders
 import utils.FilesUtils
 
@@ -190,6 +191,15 @@ class UploadService {
         String originalName = new File(imageFormat.absoluteFilePath).name
 
         Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
+
+
+        // HACK to get properties from original file such as DICOM
+        if (imageFormat instanceof VIPSConvertable) {
+            log.info "prop"
+            log.info imageFormat.properties()
+            log.info imageFormat.properties().collectEntries() {[(it.key):it.value]}
+            properties += imageFormat.properties().collectEntries() {[(it.key):it.value]}
+        }
 
         if (imageFormat instanceof ILightConvertableImageFormat) {
             String newImage = imageFormat.convert()
