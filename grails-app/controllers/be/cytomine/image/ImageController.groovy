@@ -129,6 +129,9 @@ class ImageController extends ImageResponseController {
             @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
             @RestApiParam(name="zoom", type="int", paramType = RestApiParamType.QUERY, description = " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.", required = false),
             @RestApiParam(name="alphaMask", type="boolean", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
+            @RestApiParam(name="location", type="wkt", paramType = RestApiParamType.QUERY, description = "", required=false),
+            @RestApiParam(name="increaseArea", type="boolean",  paramType = RestApiParamType.QUERY, description = "", required=false),
+            @RestApiParam(name="safe", type="boolean", paramType = RestApiParamType.QUERY, description = "If true, skip too large ROI", required=false),
     ])
     def mask() {
         BufferedImage bufferedImage = readCropBufferedImage(params)
@@ -177,10 +180,16 @@ class ImageController extends ImageResponseController {
             @RestApiParam(name="draw", type="int", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
             @RestApiParam(name="mask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask", required = false),
             @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
-            @RestApiParam(name="colormap", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of a colormap file (see IIP format)"),
-            @RestApiParam(name="inverse", type="int", paramType = RestApiParamType.QUERY, description = "True if colors have to be inversed (see IIP format)"),
-            @RestApiParam(name="contrast", type="float", paramType = RestApiParamType.QUERY, description = "Multiply pixels by contrast (see IIP format)"),
-            @RestApiParam(name="gamma", type="float", paramType = RestApiParamType.QUERY, description = "Apply gamma correction (see IIP format)")
+            @RestApiParam(name="drawScaleBar", type="int", paramType = RestApiParamType.QUERY, description = "If true, draw a scale bar", required = false),
+            @RestApiParam(name="resolution", type="float", paramType = RestApiParamType.QUERY, description = "Resolution to print in scale bar if used", required=false),
+            @RestApiParam(name="magnification", type="float", paramType = RestApiParamType.QUERY, description = "Magnification to print in scale bar if used", required=false),
+            @RestApiParam(name="increaseArea", type="boolean",  paramType = RestApiParamType.QUERY, description = "", required=false),
+            @RestApiParam(name="safe", type="boolean", paramType = RestApiParamType.QUERY, description = "If true, skip too large ROI", required=false),
+            @RestApiParam(name="colormap", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of a colormap file (see IIP format)", required = false),
+            @RestApiParam(name="inverse", type="int", paramType = RestApiParamType.QUERY, description = "True if colors have to be inversed (see IIP format)", required = false),
+            @RestApiParam(name="contrast", type="float", paramType = RestApiParamType.QUERY, description = "Multiply pixels by contrast (see IIP format)", required = false),
+            @RestApiParam(name="gamma", type="float", paramType = RestApiParamType.QUERY, description = "Apply gamma correction (see IIP format)", required = false),
+            @RestApiParam(name="bits", type="int", paramType = RestApiParamType.QUERY, description = "Output bit depth per channel (see IIP format)", required = false)
     ])
     def crop() {
         def savedWidth = params.double('width')
