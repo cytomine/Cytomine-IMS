@@ -316,10 +316,6 @@ class ImageController extends ImageResponseController {
 
         boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto).containsAll(imageFormat.iipURL)
 
-        for (String format : ImageIO.getWriterFormatNames()) {
-            System.out.println("format = " + format);
-        }
-
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
         int i = 0
         while (bufferedImage == null && i < 3) {
