@@ -143,6 +143,11 @@ log4j = {
     }
 }
 
+// Rest API Doc plugin
+grails.plugins.restapidoc.docVersion = "0.1"
+grails.plugins.restapidoc.basePath = "demo-ims.cytomine.be"
+grails.plugins.restapidoc.grailsDomainDefaultType = "int"
+
 cytomine.storageBufferPath="/tmp/imageserver_buffer"
 
 //cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
