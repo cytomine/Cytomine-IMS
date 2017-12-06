@@ -107,7 +107,7 @@ public class ExtractDataImageIO extends ExtractData{
                 base.set((short)val, (int) (id / 256), id % 256, dim)
                 ++id
             }
-        return base;
+        return base as MDShortArray
     }
 
 }
