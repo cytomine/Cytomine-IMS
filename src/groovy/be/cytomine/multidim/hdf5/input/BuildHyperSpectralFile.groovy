@@ -76,7 +76,7 @@ public class BuildHyperSpectralFile {
         max_cube_x = ed.getImageWidth() / this.cube_width
         max_cube_y = ed.getImageHeight() / this. cube_height
         this.writer = HDF5Factory.open(fn);
-        this.ft = HDF5IntStorageFeatures.createDeflationUnsigned(HDF5IntStorageFeatures.MAX_DEFLATION_LEVEL);
+        this.ft = HDF5IntStorageFeatures.createDeflationUnsigned(HDF5IntStorageFeatures.DEFAULT_DEFLATION_LEVEL);
     }
 
     public BuildHyperSpectralFile(String filename, String root, def filename_list) {
