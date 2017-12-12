@@ -40,11 +40,8 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileFormat implements ILightConve
 
     @Override
     def convert() {
-        String source = absoluteFilePath
-        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".ptiff"].join(File.separator)
-        //make a symbolic link to the original file with a special extension 'ptiff' in order to recognize the format within IIP.
-        "ln -s $source $target".execute()
-        return target
+        fakeExtension(absoluteFilePath)
+        return absoluteFilePath
     }
 
     BufferedImage associated(String label) {
@@ -85,5 +82,23 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileFormat implements ILightConve
         }
         target.delete()
         return labelImage
+    }
+
+    String fakeExtension(def original) {
+        def renamed = new File(original.take(original.lastIndexOf('.')) + ".ptiff")
+        if (!renamed.exists())
+            "ln -s $original $renamed".execute()
+        return renamed
+    }
+
+    @Override
+    String tileURL(def fif, def params, def with_zoomify) {
+        return super.tileURL(fakeExtension(fif), params, with_zoomify)
+    }
+
+    @Override
+    String cropURL(def params, def charset) {
+        params.fif = fakeExtension(params.fif)
+        return super.cropURL(params, charset)
     }
 }
