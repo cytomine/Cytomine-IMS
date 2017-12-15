@@ -38,13 +38,9 @@ class BootStrap {
         log.info "iipImageServerCyto:" + grailsApplication.config.cytomine.iipImageServerCyto
 
         Holders.config.cytomine.maxCropSize = Integer.parseInt(Holders.config.cytomine.maxCropSize+"")
-        Holders.config.cytomine.hdf5.convertBurstSize = Integer.parseInt(Holders.config.cytomine.hdf5.convertBurstSize+"")
+        Holders.config.cytomine.hdf5.maxBurstSize = Integer.parseInt(Holders.config.cytomine.hdf5.maxBurstSize+"")
+        Holders.config.cytomine.hdf5.maxBlockSize = Integer.parseInt(Holders.config.cytomine.hdf5.maxBlockSize+"")
 
         DeleteImageFileJob.schedule(Long.parseLong(grailsApplication.config.cytomine.deleteImageFilesFrequency), -1, [:])
-    }
-
-    def destroy = {
-        log.info "Shutdown the multispectral cache"
-        FileReaderCache.getInstance().shutdown()
     }
 }
