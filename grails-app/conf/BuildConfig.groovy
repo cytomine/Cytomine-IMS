@@ -93,7 +93,7 @@ grails.project.dependency.resolution = {
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
-        //compile ":quartz:1.0.1"
+        compile ":quartz:1.0.1"
         //compile ":quartz-monitor:0.3-RC3"
 
 
