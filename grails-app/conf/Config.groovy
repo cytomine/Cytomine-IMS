@@ -174,8 +174,5 @@ cytomine.charset = "UTF-8"
 
 cytomine.maxCropSize = 5000
 
-cytomine.hdf5.scriptToFindFiles = "natives/scripts/relatedFiles.sh"
-cytomine.hdf5.convertBurstSize = 10
-cytomine.hdf5.size.maxHeigth = 256
-cytomine.hdf5.size.maxWidth = 256
-cytomine.hdf5.size.maxDepth = 256
+cytomine.hdf5.maxBurstSize = 512 // Mbytes
+cytomine.hdf5.maxBlockSize = 15 // Mbytes
