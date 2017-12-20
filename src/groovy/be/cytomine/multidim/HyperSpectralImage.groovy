@@ -62,7 +62,7 @@ class HyperSpectralImage {
         int[] pixels = new int[width * height * images.size()]
 
         images.eachWithIndex{ im, i ->
-            int[] channel = im.getSamples(x, y, width, height, 0, new int[width*height])
+            int[] channel = im.getSamples(x, y, width, height, 0, (int[]) null)
             System.arraycopy(channel, 0, pixels, (width * height * i), width * height)
         }
 

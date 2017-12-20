@@ -15,7 +15,6 @@
  */
 
 
-import be.cytomine.multidim.hdf5.output.FileReaderCache
 import grails.util.Holders
 
 class BootStrap {

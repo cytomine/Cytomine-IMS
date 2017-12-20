@@ -1,5 +1,7 @@
 package be.cytomine.multidim
 
+import be.cytomine.client.Cytomine
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -27,24 +29,32 @@ import org.restapidoc.pojo.RestApiParamType
 @RestApi(name = "Multidimensional services", description = "Methods to obtain the spectrum of a multidimensional image")
 class MultiDimController {
     def multiDimService
+    def backgroundService
+    def cytomineService
 
     @RestApiMethod(description="Create a multidimensional HDF5 file", extensions = ["json"])
     @RestApiParams(params=[
             @RestApiParam(name="files", type="list", paramType= RestApiParamType.QUERY, description="A list of image to convert"),
             @RestApiParam(name="dest", type="String", paramType= RestApiParamType.QUERY, description="The destination path of the HDF5 file"),
-            @RestApiParam(name="bpc", type="int", paramType= RestApiParamType.QUERY, description="The number of bit per channel in the images")
+            @RestApiParam(name="bpc", type="int", paramType= RestApiParamType.QUERY, description="The number of bit per channel in the images"),
+            @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = "The url of Cytomine Core"),
+            @RestApiParam(name="id", type="int", paramType = RestApiParamType.QUERY, description="The HDF5 image group ID")
     ])
     def convertListToHdf5(){
         def destination = params.dest
         def files = params.files
         def bpc = params.int('bpc', 8)
+        def id = params.int('id')
 
-        Thread.start {
-            multiDimService.convert(destination, files, bpc)
-        }
+        Cytomine cytomine = cytomineService.getCytomine(params.cytomine)
+        cytomine.testHostConnection()
 
         def data = [response: "Conversion launched"]
         render data as JSON
+
+        backgroundService.execute("convert", {
+            multiDimService.convert(cytomine, id, destination, files, bpc)
+        })
     }
 
 

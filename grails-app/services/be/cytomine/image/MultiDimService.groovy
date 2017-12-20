@@ -1,5 +1,7 @@
 package be.cytomine.image
 
+import be.cytomine.client.Cytomine
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -25,7 +27,7 @@ import grails.util.Holders
 
 class MultiDimService {
 
-    def convert(def filename, def images, def bpc) {
+    def convert(def cytomine, def idHDF5, def filename, def images, def bpc) {
         HyperSpectralImage hsImage = new HyperSpectralImage(images)
 
         long maxBlockSize = ((long) Holders.config.cytomine.hdf5.maxBlockSize as Long) * 1000000
@@ -34,7 +36,7 @@ class MultiDimService {
         int burstLength = Math.min(Math.ceil(maxBurstSize / hsImage.meanChannelsSize()), hsImage.depth)
         int nBursts = Math.ceil(hsImage.depth / burstLength)
 
-        int blockLength = Math.min(512, Math.floor(Math.sqrt(maxBlockSize / (hsImage.depth * bpc / 8))))
+        int blockLength = [512, Math.floor(Math.sqrt(maxBlockSize / (hsImage.depth * bpc / 8))), hsImage.width, hsImage.height].min()
         int nBlocksX = Math.ceil(hsImage.width / blockLength)
         int nBlocksY = Math.ceil(hsImage.height / blockLength)
         int nBlocks = nBlocksX * nBlocksY
@@ -47,90 +49,91 @@ class MultiDimService {
         log.info "Number of blocks along X axis: $nBlocksX"
         log.info "Number of blocks along Y axis: $nBlocksY"
 
-        // Open output file
-        IHDF5Writer hdf5 = HDF5Factory.open("${filename}.h5")
-        log.info "Starting to write HDFS file ${filename}.h5"
-        int[] meta = [blockLength, bpc, hsImage.depth, hsImage.width, hsImage.height]
-        hdf5.int32().writeArray("/meta", meta)
+        int progress = 0, progressCount = 0
+        cytomine.editImageGroupHDF5(idHDF5, Cytomine.JobStatus.RUNNING, 0)
 
-        for (def burst = 0; burst < nBursts; burst++) {
-            def startDepth = burst * burstLength
-            def endDepth = Math.min(startDepth + burstLength, hsImage.depth)
-            log.info "Starting burst ${burst+1}/$nBursts, width depths from $startDepth to $endDepth"
+        try {
+            // Open output file
+            IHDF5Writer hdf5 = HDF5Factory.open("${filename}")
+            log.info "Starting to write HDFS file ${filename}"
+            int[] meta = [blockLength, bpc, hsImage.depth, hsImage.width, hsImage.height]
+            hdf5.int32().writeArray("/meta", meta)
 
-            // Load images for this burst
-            def timeLoad = benchmark {
-                hsImage.loadChannels((startDepth..(endDepth - 1)))
-            }
-            log.info "Channels loading: ${endDepth - startDepth} opened in $timeLoad s"
+            for (def burst = 0; burst < nBursts; burst++) {
+                def startDepth = burst * burstLength
+                def endDepth = Math.min(startDepth + burstLength, hsImage.depth)
+                log.info "Starting burst ${burst+1}/$nBursts, width depths from $startDepth to $endDepth"
 
-            def timeRead = 0, timeWrite = 0
+                // Load images for this burst
+                def timeLoad = benchmark {
+                    hsImage.loadChannels((startDepth..(endDepth - 1)))
+                }
+                log.info "Channels loading: ${endDepth - startDepth} opened in $timeLoad s"
 
-            for (def block = 0; block < nBlocks; block++) {
-                def X = (int) (block / nBlocksY)
-                def Y = (int) (block % nBlocksY)
-                def x = X * blockLength
-                def y = Y * blockLength
+                def timeRead = 0, timeWrite = 0
+                for (def block = 0; block < nBlocks; block++) {
+                    def X = (int) (block / nBlocksY)
+                    def Y = (int) (block % nBlocksY)
+                    def x = X * blockLength
+                    def y = Y * blockLength
 
-                def width = (x + blockLength >= hsImage.width) ? hsImage.width - x : blockLength
-                def height = (y + blockLength >= hsImage.height) ? hsImage.height - y : blockLength
-                def blockSize = width * height * burstLength
+                    def width = (x + blockLength >= hsImage.width) ? hsImage.width - x : blockLength
+                    def height = (y + blockLength >= hsImage.height) ? hsImage.height - y : blockLength
+                    def blockSize = width * height * burstLength
 
-                def data, tRead, tWrite
-                tRead = benchmark {
-                    data = hsImage.extract(x, y, width, height)
+                    def data, tRead, tWrite
+                    tRead = benchmark {
+                        data = hsImage.extract(x, y, width, height)
+                    }
+
+                    tWrite = benchmark {
+                        // Create array block
+                        if (burst == 0) {
+                            if (bpc == 32) hdf5.int32().createArray("/b${X}_${Y}", 1, blockSize, features)
+                            else if (bpc == 16) hdf5.int16().createArray("/b${X}_${Y}", 1, blockSize, features)
+                            else hdf5.int8().createArray("/b${X}_${Y}", 1, blockSize, features)
+                        }
+
+                        // Write array block
+                        if (bpc == 32) {
+                            hdf5.int32().writeArrayBlock("/b${X}_${Y}", (int[]) data, burst)
+                        }
+                        else if (bpc == 16) {
+                            hdf5.int16().writeArrayBlock("/b${X}_${Y}", (short[]) data, burst)
+                        }
+                        else {
+                            hdf5.int8().writeArrayBlock("/b${X}_${Y}", (byte[]) data, burst)
+                        }
+                    }
+
+                    data = null
+
+                    timeRead += tRead
+                    timeWrite += tWrite
+
+                    log.info "Wrote block ${block+1}/$nBlocks (X=${X}, Y=${Y}) - Reading: $tRead s - Writing: $tWrite s"
+                    progressCount++
+                    int currentProgress = (int) (progressCount / (nBlocks * nBursts)) * 100
+                    if (progress < currentProgress) {
+                        cytomine.editImageGroupHDF5(idHDF5, Cytomine.JobStatus.RUNNING, currentProgress)
+                        progress = currentProgress
+                    }
+
                 }
 
-                tWrite = benchmark {
-                    // Create array block
-                    if (burst == 0) {
-                        if (bpc == 32) hdf5.int32().createArray("/b${X}_${Y}", 1, blockSize, features)
-                        else if (bpc == 16) hdf5.int16().createArray("/b${X}_${Y}", 1, blockSize, features)
-                        else hdf5.int8().createArray("/b${X}_${Y}", 1, blockSize, features)
-                    }
-
-                    // Write array block
-                    if (bpc == 32) {
-                        int[] result = data as Integer[]
-                        if (result.length < blockSize) {
-                            int[] tmp = new int[blockSize]
-                            System.arraycopy(result, 0, tmp, 0, result.length)
-                            result = tmp
-                        }
-                        hdf5.int32().writeArrayBlock("/b${X}_${Y}", result, burst)
-                    }
-                    else if (bpc == 16) {
-                        short[] result = data as Short[]
-                        if (result.length < blockSize) {
-                            short[] tmp = new short[blockSize]
-                            System.arraycopy(result, 0, tmp, 0, result.length)
-                            result = tmp
-                        }
-                        hdf5.int16().writeArrayBlock("/b${X}_${Y}", result, burst)
-                    }
-                    else {
-                        byte[] result = data as Byte[]
-                        if (result.length < blockSize) {
-                            byte[] tmp = new byte[blockSize]
-                            System.arraycopy(result, 0, tmp, 0, result.length)
-                            result = tmp
-                        }
-                        hdf5.int8().writeArrayBlock("/b${X}_${Y}", result, burst)
-                    }
-                }
-
-                timeRead += tRead
-                timeWrite += tWrite
-
-                log.info "Wrote block ${block+1}/$nBlocks (X=${X}, Y=${Y}) - Reading: $tRead s - Writing: $tWrite s"
+                log.info "Time for burst ${burst+1}: Reading: $timeRead s - Writing: $timeWrite s"
+                log.info "Mean time per block for burst ${burst+1}: Reading: ${timeRead/nBlocks} s - Writing: ${timeWrite/nBlocks}"
+                log.info "Total time for burst ${burst+1}: ${timeLoad + timeRead + timeWrite} s"
             }
 
-            log.info "Time for burst ${burst+1}: Reading: $timeRead s - Writing: $timeWrite s"
-            log.info "Mean time per block for burst ${burst+1}: Reading: ${timeRead/nBlocks} s - Writing: ${timeWrite/nBlocks}"
-            log.info "Total time for burst ${burst+1}: ${timeLoad + timeRead + timeWrite} s"
+            cytomine.editImageGroupHDF5(idHDF5, Cytomine.JobStatus.SUCCESS, 100)
+
+            hdf5.close()
+            hsImage.loadChannels([])
         }
-
-        hdf5.close()
+        catch (Exception e) {
+            cytomine.editImageGroupHDF5(idHDF5, Cytomine.JobStatus.FAILED, progress)
+        }
     }
 
     def pixelSpectrum(def file, def x, def y, def minChannel, def maxChannel) {

@@ -103,7 +103,4 @@ grails.project.dependency.resolution = {
     }
 }
 
-grails.war.resources = { stagingDir, args ->
-    copy(file: "natives/scripts/relatedFiles.sh",
-            tofile: "${stagingDir}/WEB-INF/scripts/relatedFiles.sh")
-}
+
