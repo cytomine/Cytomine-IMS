@@ -31,7 +31,7 @@ class CytomineService {
     def getCytomine(String cytomineUrl) {
         String publicKey = grailsApplication.config.cytomine.imageServerPublicKey
         String privateKey = grailsApplication.config.cytomine.imageServerPrivateKey
-        return new Cytomine(cytomineUrl, publicKey, privateKey, "./", false)
+        return new Cytomine(cytomineUrl, publicKey, privateKey)
     }
 
     public def tryAPIAuthentification(def cytomineUrl,def ISPubKey, def ISPrivKey, HttpServletRequest request) {
