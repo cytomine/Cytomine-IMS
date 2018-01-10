@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils
 
 class DeleteImageFileJob {
     static triggers = {
-        cron name: "DeleteImageTrigger", cronExpression: "0 0 1 * * ?"// execute job at 1 AM every day
+        cron name: "DeleteImageTrigger", cronExpression: "0 0 * * * ?"// execute job each hour
     }
 
     def grailsApplication
@@ -28,7 +28,7 @@ class DeleteImageFileJob {
         for(int i = 0; i<files.size(); i++) {
             UploadedFile file = files.get(i)
 
-            if ((new Date().time)-Long.parseLong(file.get("deleted")) >= 24*60*60*1000 && (new Date().time)-Long.parseLong(file.get("deleted")) < 48*60*60*1000){
+            if ((new Date().time)-Long.parseLong(file.get("deleted")) >= 24*60*60*1000 /*&& (new Date().time)-Long.parseLong(file.get("deleted")) < 48*60*60*1000*/){
 
                 File fileToDelete = new File(file.getAbsolutePath())
                 if(fileToDelete.exists()) {

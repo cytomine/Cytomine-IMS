@@ -25,7 +25,12 @@ class OMETIFFFormat extends BioFormatConvertable {
     public boolean detect() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        return tiffinfo.contains("OME-TIFF")
+        if(tiffinfo.contains("OME-TIFF")) return true;
+        if (tiffinfo.contains("hyperstack=true")){
+            if(Integer.parseInt(tiffinfo.split("\n").find{it.contains("images=")}.split("=")[1]) > 1 && !tiffinfo.contains("Tile Width")){
+                return true
+            }
+        }
     }
 
     boolean getGroup(){

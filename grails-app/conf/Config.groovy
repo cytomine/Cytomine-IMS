@@ -140,6 +140,7 @@ log4j = {
     }
 }
 
+cytomine.coreURL="http://localhost-core"
 cytomine.storageBufferPath="/tmp/imageserver_buffer"
 //cytomine.iipImageServer="http://localhost:8081/fcgi-bin/iipsrv.fcgi" //default path for iip image server
 //cytomine.iipJ2KImageServer="http://localhost:8082/fcgi-bin/iipsrv.fcgi"  //default path for iip image server J2K

@@ -1,9 +1,5 @@
 package be.cytomine.storage
 
-import be.cytomine.client.Cytomine
-import grails.converters.JSON
-import grails.util.Holders
-
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -19,6 +15,10 @@ import grails.util.Holders
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import be.cytomine.client.Cytomine
+import grails.converters.JSON
+import grails.util.Holders
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
@@ -34,8 +34,6 @@ import org.restapidoc.pojo.RestApiParamType
 @RestApi(name = "upload services", description = "Methods for uploading images")
 class StorageController {
 
-    def deployImagesService
-    def backgroundService
     def uploadService
     def cytomineService
 
@@ -112,6 +110,7 @@ class StorageController {
 
             render responseContent as JSON
         } catch (Exception e) {
+            e.printStackTrace()
             log.error e.toString()
             response.status = 400;
             render e
