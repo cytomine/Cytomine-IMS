@@ -151,7 +151,7 @@ grails.plugins.restapidoc.grailsDomainDefaultType = "int"
 cytomine.coreURL="http://localhost-core:8080"
 cytomine.storageBufferPath="/tmp/imageserver_buffer"
 
-//cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
 cytomine.Jpeg2000Enabled=false
 cytomine.iipImageServerJpeg2000="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
 cytomine.iipImageServerCyto="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
@@ -160,8 +160,8 @@ bioformat.application.enabled="true"
 bioformat.application.location="localhost"
 bioformat.application.port="4321"
 
-cytomine.imageServerPublicKey="d757ae3d-8191-4774-bcf1-ad68a6d2b9c9"
-cytomine.imageServerPrivateKey="e25565d6-816c-4228-b525-fd675afb3c56"
+cytomine.imageServerPublicKey="cc161593-37fe-4487-baec-f6d46e62959f"
+cytomine.imageServerPrivateKey="cb2955c6-631b-4039-8ebf-889aefe8ea0c"
 
 //image manipulation executable
 cytomine.vips = "/usr/local/bin/vips"
