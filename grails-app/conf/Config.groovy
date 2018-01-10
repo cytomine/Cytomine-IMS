@@ -175,4 +175,4 @@ cytomine.charset = "UTF-8"
 cytomine.maxCropSize = 5000
 
 cytomine.hdf5.maxBurstSize = 512 // Mbytes
-cytomine.hdf5.maxBlockSize = 15 // Mbytes
+cytomine.hdf5.maxBlockSize = 20 // Mbytes

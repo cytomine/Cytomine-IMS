@@ -1,7 +1,5 @@
 package be.cytomine.image
 
-import be.cytomine.client.Cytomine
-
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -18,12 +16,17 @@ import be.cytomine.client.Cytomine
  * limitations under the License.
  */
 
+import be.cytomine.client.Cytomine
 import be.cytomine.multidim.HyperSpectralImage
 import ch.systemsx.cisd.hdf5.HDF5Factory
 import ch.systemsx.cisd.hdf5.HDF5IntStorageFeatures
 import ch.systemsx.cisd.hdf5.IHDF5Reader
 import ch.systemsx.cisd.hdf5.IHDF5Writer
 import grails.util.Holders
+
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class MultiDimService {
 
@@ -40,6 +43,8 @@ class MultiDimService {
         int nBlocksX = Math.ceil(hsImage.width / blockLength)
         int nBlocksY = Math.ceil(hsImage.height / blockLength)
         int nBlocks = nBlocksX * nBlocksY
+
+        int nThreads = 4
 
         def features = new HDF5IntStorageFeatures.HDF5IntStorageFeatureBuilder().chunkedStorageLayout().compress().features()
 
@@ -70,7 +75,7 @@ class MultiDimService {
                 }
                 log.info "Channels loading: ${endDepth - startDepth} opened in $timeLoad s"
 
-                def timeRead = 0, timeWrite = 0
+                def timeRead = 0, timeWrite = 0, timeConvert = 0
                 for (def block = 0; block < nBlocks; block++) {
                     def X = (int) (block / nBlocksY)
                     def Y = (int) (block % nBlocksY)
@@ -81,49 +86,99 @@ class MultiDimService {
                     def height = (y + blockLength >= hsImage.height) ? hsImage.height - y : blockLength
                     def blockSize = width * height * burstLength
 
-                    def data, tRead, tWrite
+                    def data, tRead, tWrite, tConvert = 0
                     tRead = benchmark {
                         data = hsImage.extract(x, y, width, height)
                     }
 
-                    tWrite = benchmark {
-                        // Create array block
-                        if (burst == 0) {
-                            if (bpc == 32) hdf5.int32().createArray("/b${X}_${Y}", 1, blockSize, features)
-                            else if (bpc == 16) hdf5.int16().createArray("/b${X}_${Y}", 1, blockSize, features)
-                            else hdf5.int8().createArray("/b${X}_${Y}", 1, blockSize, features)
-                        }
-
-                        // Write array block
-                        if (bpc == 32) {
-                            hdf5.int32().writeArrayBlock("/b${X}_${Y}", (int[]) data, burst)
-                        }
-                        else if (bpc == 16) {
-                            hdf5.int16().writeArrayBlock("/b${X}_${Y}", (short[]) data, burst)
-                        }
-                        else {
-                            hdf5.int8().writeArrayBlock("/b${X}_${Y}", (byte[]) data, burst)
-                        }
+                    // Create array block
+                    if (burst == 0) {
+                        if (bpc == 32) hdf5.int32().createArray("/b${X}_${Y}", 0, blockSize, features)
+                        else if (bpc == 16) hdf5.int16().createArray("/b${X}_${Y}", 0, blockSize, features)
+                        else hdf5.int8().createArray("/b${X}_${Y}", 0, blockSize, features)
                     }
 
+                    if (bpc == 32) {
+                        tWrite = benchmark {
+                            hdf5.int32().writeArrayBlockWithOffset("/b${X}_${Y}", (int[]) data, data.length, blockSize * burst)
+                        }
+                    }
+                    else if (bpc == 16) {
+                        short[] result = new short[data.length]
+
+                        tConvert = benchmark {
+                            ExecutorService exec = Executors.newFixedThreadPool(nThreads)
+                            try {
+                                def chunkSize = data.length / nThreads
+                                for (int i = 0; i < nThreads; i++) {
+                                    final start = i * chunkSize
+                                    final end = (int) Math.min((double) (i + 1) * chunkSize, (double) data.length)
+                                    final lst = data
+                                    exec.submit(new Runnable() {
+                                        @Override
+                                        void run() {
+                                            for (int j = start; j < end; j++) {
+                                                result[j] = lst[j]
+                                            }
+                                        }
+                                    })
+                                }
+                            } finally {
+                                exec.shutdown()
+                                exec.awaitTermination(60, TimeUnit.SECONDS)
+                            }
+                        }
+                        tWrite = benchmark {
+                            hdf5.int16().writeArrayBlockWithOffset("/b${X}_${Y}", result, data.length, blockSize * burst)
+                        }
+                    }
+                    else {
+                        byte[] result = new byte[data.length]
+
+                        tConvert = benchmark {
+                            ExecutorService exec = Executors.newFixedThreadPool(nThreads)
+                            try {
+                                def chunkSize = data.length / nThreads
+                                for (int i = 0; i < nThreads; i++) {
+                                    final start = i * chunkSize
+                                    final end = (int) Math.min((double) (i + 1) * chunkSize, (double) data.length)
+                                    final lst = data
+                                    exec.submit(new Runnable() {
+                                        @Override
+                                        void run() {
+                                            for (int j = start; j < end; j++) {
+                                                result[j] = lst[j]
+                                            }
+                                        }
+                                    })
+                                }
+                            } finally {
+                                exec.shutdown()
+                                exec.awaitTermination(60, TimeUnit.SECONDS)
+                            }
+                        }
+                        tWrite = benchmark {
+                            hdf5.int8().writeArrayBlockWithOffset("/b${X}_${Y}", result, data.length, blockSize * burst)
+                        }
+                    }
                     data = null
 
                     timeRead += tRead
                     timeWrite += tWrite
+                    timeConvert += tConvert
 
-                    log.info "Wrote block ${block+1}/$nBlocks (X=${X}, Y=${Y}) - Reading: $tRead s - Writing: $tWrite s"
+                    log.debug "Wrote block ${block+1}/$nBlocks (X=${X}, Y=${Y}) - Reading: $tRead s - Writing: $tWrite s - Convert: $tConvert s"
                     progressCount++
                     int currentProgress = (int) (progressCount / (nBlocks * nBursts)) * 100
                     if (progress < currentProgress) {
                         cytomine.editImageGroupHDF5(idHDF5, Cytomine.JobStatus.RUNNING, currentProgress)
                         progress = currentProgress
                     }
-
                 }
 
-                log.info "Time for burst ${burst+1}: Reading: $timeRead s - Writing: $timeWrite s"
-                log.info "Mean time per block for burst ${burst+1}: Reading: ${timeRead/nBlocks} s - Writing: ${timeWrite/nBlocks}"
-                log.info "Total time for burst ${burst+1}: ${timeLoad + timeRead + timeWrite} s"
+                log.info "Time for burst ${burst+1}: Reading: $timeRead s - Writing: $timeWrite s - Converting: $timeConvert s"
+                log.info "Mean time per block for burst ${burst+1}: Reading: ${timeRead/nBlocks} s - Writing: ${timeWrite/nBlocks} - Converting: ${timeConvert/nBlocks}"
+                log.info "Total time for burst ${burst+1}: ${timeLoad + timeRead + timeWrite + timeConvert} s"
             }
 
             cytomine.editImageGroupHDF5(idHDF5, Cytomine.JobStatus.SUCCESS, 100)
@@ -132,6 +187,7 @@ class MultiDimService {
             hsImage.loadChannels([])
         }
         catch (Exception e) {
+            e.printStackTrace()
             cytomine.editImageGroupHDF5(idHDF5, Cytomine.JobStatus.FAILED, progress)
         }
     }
@@ -167,11 +223,16 @@ class MultiDimService {
         else reader = hdf5.int8()
         def block = reader.readArray("/b${X}_${Y}")
 
+        def mask
+        if (bpc == 32) mask = 0xFFFFFFFF
+        else if (bpc == 16) mask = 0xFFFF
+        else mask = 0xFF
+
         def res = []
         for (def k = minChannel; k < maxChannel; k++) {
             def i = x % blockWidth
             def j = y % blockHeight
-            res << (int) (block[i + blockWidth * j + blockWidth * blockHeight * k] & 0xFF)
+            res << (int) (block[i + blockWidth * j + blockWidth * blockHeight * k] & mask)
         }
 
         return [[x, y], res]
@@ -193,6 +254,11 @@ class MultiDimService {
         if (bpc == 32) reader = hdf5.int32()
         else if (bpc == 16) reader = hdf5.int16()
         else reader = hdf5.int8()
+
+        def mask
+        if (bpc == 32) mask = 0xFFFFFFFF
+        else if (bpc == 16) mask = 0xFFFF
+        else mask = 0xFF
 
         def xmin = Math.min(x, imageWidth)
         def ymin = Math.min(y, imageHeight)
@@ -227,7 +293,7 @@ class MultiDimService {
                         for (def k = minChannel; k < maxChannel; k++) {
                             def ii = i % blockWidth
                             def jj = j % blockHeight
-                            res << (int) (block[ii + blockWidth * jj + blockWidth * blockHeight * k] & 0xFF)
+                            res << (int) (block[ii + blockWidth * jj + blockWidth * blockHeight * k] & mask)
                         }
                         spectrum << [[i, j], res]
                     }
