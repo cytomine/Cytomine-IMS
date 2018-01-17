@@ -1,6 +1,7 @@
 package be.cytomine.processing
 
 import be.cytomine.image.ImageResponseController
+import be.cytomine.exception.MiddlewareException
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -19,7 +20,7 @@ import be.cytomine.image.ImageResponseController
  */
 
 import be.cytomine.processing.image.filters.Colour_Deconvolution
-import be.cytomine.processing.merge.CytomineRGBStackMerge
+import be.cytomine.processing.merge.CytomineStackMerge
 import ij.IJ
 import ij.ImagePlus
 import ij.plugin.ContrastEnhancer
@@ -66,19 +67,18 @@ class VisionController extends ImageResponseController {
         def paramsWithoutUrl = params.clone()
 
         def urls = extractParams("url")
-        int i = 0
-        urls = urls.collect {
-            paramsWithoutUrl.remove("url" + String.valueOf(i++))
-            return it + "&"
-        }
+        urls = urls.collect{ it + "&" }
+
         def colors = extractParams("color")
-        i = 0
-        colors = colors.collect {
-            paramsWithoutUrl.remove("color" + String.valueOf(i++))
-            int intValue = Integer.parseInt(it, 16);
-            return new Color(intValue);
+        colors = colors.collect{
+            int intValue = Integer.parseInt(it,16);
+            return new Color( intValue );
         }
 
+        for (int i=0;i<urls.size();i++){
+            paramsWithoutUrl.remove("url"+String.valueOf(i++))
+            paramsWithoutUrl.remove("color"+String.valueOf(i++))
+        }
         paramsWithoutUrl.remove("zoomify")
 
         log.info "paramsWithoutUrl=$paramsWithoutUrl"
@@ -95,13 +95,19 @@ class VisionController extends ImageResponseController {
             log.info "urls=$urls"
 
             ImagePlus[] images = new ImagePlus[urls.size()]
-            urls.eachWithIndex { url, index ->
-                log.info "load=${url + postParam}"
-                images[index] = new ImagePlus("Image$index", (java.awt.Image) ImageIO.read(new URL(url + "&" + postParam)))
+
+            for (int i=0;i<urls.size();i++){
+                String url = urls[i]
+                log.info "load=${url+postParam}"
+                ImagePlus im = new ImagePlus("Image$i",(java.awt.Image)ImageIO.read(new URL(url+"&"+postParam)))
+                if (im==null) throw new MiddlewareException("Unreachable url :"+url+"&"+postParam)
+                images[i] = im
             }
 
             Color[] colorsArray = colors.toArray(new Color[colors.size()])
-            ImagePlus result = CytomineRGBStackMerge.merge(images, colorsArray, false)
+            ImagePlus result = CytomineStackMerge.merge(images,colorsArray)
+
+            BufferedImage resultImage = result.getBufferedImage()
 
             BufferedImage bufferedImage = result.getBufferedImage()
             withFormat {

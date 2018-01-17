@@ -148,6 +148,7 @@ grails.plugins.restapidoc.docVersion = "0.1"
 grails.plugins.restapidoc.basePath = "demo-ims.cytomine.be"
 grails.plugins.restapidoc.grailsDomainDefaultType = "int"
 
+cytomine.coreURL="http://localhost-core"
 cytomine.storageBufferPath="/tmp/imageserver_buffer"
 
 //cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
