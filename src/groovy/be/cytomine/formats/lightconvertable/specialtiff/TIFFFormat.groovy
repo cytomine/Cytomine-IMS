@@ -26,8 +26,8 @@ abstract class TIFFFormat extends VIPSConvertable {
 
     public TIFFFormat() {
         extensions = ["tif", "tiff"]
-        //mimeType = "image/tiff"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+//        mimeType = "image/tiff"
+//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
     public String getTiffInfo() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo

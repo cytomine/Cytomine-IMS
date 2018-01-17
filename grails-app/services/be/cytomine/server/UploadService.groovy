@@ -1,4 +1,4 @@
-package be.cytomine.utils
+package be.cytomine.server
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -23,11 +23,12 @@ import be.cytomine.client.models.ImageSequence
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.exception.FormatException
-import be.cytomine.formats.ArchiveFormat
+import be.cytomine.formats.archive.ArchiveFormat
 import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
 import be.cytomine.formats.heavyconvertable.IHeavyConvertableImageFormat
+import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
 import be.cytomine.formats.lightconvertable.VIPSConvertable
 import grails.util.Holders
 import utils.FilesUtils
@@ -38,7 +39,8 @@ class UploadService {
     def deployImagesService
 
     // WARNING ! This function is recursive. Be careful !
-    def upload(Cytomine cytomine, String filename, Long idStorage, String contentType, def filePath, def projects, long currentUserId, def properties, long timestamp, boolean isSync){
+    def upload(Cytomine cytomine, String filename, Long idStorage, String contentType, def filePath,
+               def projects, long currentUserId, def properties, long timestamp, boolean isSync) {
 
         def uploadedFilePath = new File(filePath)
         log.info "filePath=$filePath"
@@ -49,8 +51,6 @@ class UploadService {
         }
         def size = uploadedFilePath.size()
         log.info "size=$size"
-
-
 
         log.info "Create an uploadedFile instance and copy it to its storages"
         String extension = FilesUtils.getExtensionFromFilename(filename).toLowerCase()
@@ -78,13 +78,13 @@ class UploadService {
 
         String storageBufferPath = Holders.config.cytomine.storageBufferPath
         log.info "Image are tmp convert in $storageBufferPath"
-        String originalFilenameFullPath = [ uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join("")
+        String originalFilenameFullPath = [uploadedFile.getStr("path"), uploadedFile.getStr("filename")].join("")
 
 
-        def imageFormats;
-        try{
+        def imageFormats
+        try {
             imageFormats = FormatIdentifier.getImageFormats(originalFilenameFullPath)
-        } catch(FormatException e){
+        } catch (FormatException e) {
             log.warn "Undetected format"
             log.warn e.toString()
             uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 3) // status ERROR FORMAT
@@ -92,7 +92,6 @@ class UploadService {
         }
 
         log.info "imageFormats = $imageFormats"
-
         if (imageFormats.size() == 0) { //not a file that we can recognize
             //todo: response error message
             uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 3) // status ERROR FORMAT
@@ -100,30 +99,34 @@ class UploadService {
         }
 
 
-        def heavyConvertableImageFormats = imageFormats.findAll {it.imageFormat==null || it.imageFormat instanceof IHeavyConvertableImageFormat}; // remove the check ==null
-        imageFormats = imageFormats - heavyConvertableImageFormats;
+        def heavyConvertableImageFormats = imageFormats.findAll {
+            it.imageFormat == null || it.imageFormat instanceof IHeavyConvertableImageFormat
+        }
+        imageFormats = imageFormats - heavyConvertableImageFormats
 
         def images = []
 
         def convertAndCreate = {
             cytomine.editUploadedFile(uploadedFile.id, 6) //to deploy
             imageFormats.each {
-                images << createImage(cytomine,it,filename,storage,contentType,projects,idStorage,currentUserId,properties, uploadedFile)
+                images << createImage(cytomine, it, filename, storage, contentType, projects, idStorage,
+                                      currentUserId, properties, uploadedFile)
             }
             cytomine.editUploadedFile(uploadedFile.id, 2) //deployed
-        };
+        }
 
         def conversion = { image ->
 
-            def files = image.imageFormat.convert();
+            def files = image.imageFormat.convert()
 
-            def tmpResponseContent = [];
+            def tmpResponseContent = []
             files.each { file ->
-                def path = file.path;
-                def nameNewFile = path.substring(path.lastIndexOf("/")+1)
+                def path = file.path
+                def nameNewFile = path.substring(path.lastIndexOf("/") + 1)
                 // maybe redetermine the contentType ?
                 // recursion
-                def tmp = upload(cytomine, nameNewFile,idStorage, contentType, path, projects, currentUserId, properties, timestamp, true)[0]
+                def tmp = upload(cytomine, nameNewFile, idStorage, contentType, path, projects,
+                                 currentUserId, properties, timestamp, true)[0]
                 tmp.z = file.z
                 tmp.t = file.t
                 tmp.c = file.c
@@ -131,9 +134,8 @@ class UploadService {
 
             }
 
-            if(image.imageFormat instanceof BioFormatConvertable && image.imageFormat.group) {
-
-                def newFiles = [];
+            if (image.imageFormat instanceof BioFormatConvertable && image.imageFormat.group) {
+                def newFiles = []
                 tmpResponseContent.each { tmp ->
                     def newFile = [:]
                     def outputImage = tmp.images[0]
@@ -146,52 +148,63 @@ class UploadService {
                 }
 
                 projects.each { project ->
-                    groupImages(cytomine, newFiles, project);
+                    groupImages(cytomine, newFiles, project)
                 }
             }
 
-            int status = tmpResponseContent.size() > 0 && tmpResponseContent?.status.unique() == [200] ? 1 : 4;
+            int status = tmpResponseContent.size() > 0 && tmpResponseContent?.status.unique() == [200] ? 1 : 4
             cytomine.editUploadedFile(uploadedFile.id, status) // converted or error conversion
-        };
+        }
 
-        if(isSync) {
+        if (isSync) {
             log.info "Execute convert & deploy NOT in background (sync=true!)"
-            convertAndCreate();
+            convertAndCreate()
             heavyConvertableImageFormats.each {
-                println "unsupported image "+it
-                conversion(it);
-            };
+                log.info "unsupported image " + it
+                conversion(it)
+            }
             log.info "image sync = $images"
-        } else {
+        }
+        else {
             log.info "Execute convert & deploy into background"
             backgroundService.execute("convertAndDeployImage", {
-                convertAndCreate();
+                convertAndCreate()
                 heavyConvertableImageFormats.each {
-                    println "unsupported image "+it
-                    conversion(it);
-                };
+                    log.info "unsupported image " + it
+                    conversion(it)
+                }
                 log.info "image async = $images"
             })
         }
 
-        def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(),images)]
-
-        return responseContent;
+        def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(), images)]
+        return responseContent
     }
 
-    private def createImage(Cytomine cytomine, def imageFormatsToDeploy, String filename, Storage storage,def contentType, List projects, long idStorage, long currentUserId, def properties, UploadedFile uploadedFile) {
+    private def createImage(Cytomine cytomine,
+                            def imageFormatsToDeploy, String filename, Storage storage,
+                            def contentType, List projects, long idStorage, long currentUserId,
+                            def properties, UploadedFile uploadedFile) {
         log.info "createImage $imageFormatsToDeploy"
 
         Format imageFormat = imageFormatsToDeploy.imageFormat
         String originalName = new File(imageFormat.absoluteFilePath).name
 
-
         Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
 
-        if(imageFormat instanceof VIPSConvertable) {
-            String newImage = imageFormat.convert();
+
+        // HACK to get properties from original file such as DICOM
+        if (imageFormat instanceof VIPSConvertable) {
+            log.info "prop"
+            log.info imageFormat.properties()
+            log.info imageFormat.properties().collectEntries() {[(it.key):it.value]}
+            properties += imageFormat.properties().collectEntries() {[(it.key):it.value]}
+        }
+
+        if (imageFormat instanceof ILightConvertableImageFormat) {
+            String newImage = imageFormat.convert()
             imageFormat = FormatIdentifier.getImageFormat(newImage)
-            imageFormatsToDeploy = [uploadedFilePath:newImage, imageFormat:imageFormat]
+            imageFormatsToDeploy = [uploadedFilePath: newImage, imageFormat: imageFormat]
         }
 
         // TODO find a way to unify absoluteFilePath & uploadedFilepath
@@ -201,7 +214,7 @@ class UploadService {
         def childUploadedFile = null
         if (parentImageFormat instanceof ArchiveFormat) {
             File f = new File(imageFormat.absoluteFilePath)
-            contentType = imageFormatsToDeploy.imageFormat.mimeType ?: URLConnection.guessContentTypeFromName(f.getName());
+            contentType = imageFormatsToDeploy.imageFormat.mimeType ?: URLConnection.guessContentTypeFromName(f.getName())
 
             childUploadedFile = cytomine.addUploadedFile(
                     originalName,
@@ -215,13 +228,14 @@ class UploadService {
                     currentUserId,
                     2, //DEPLOYED status
                     uploadedFile.id, // this is the parent
-                    )
+            )
 
         }
 
         UploadedFile finalParent = childUploadedFile ?: uploadedFile
 
-        def image = cytomine.addNewImage(finalParent.id, shortPath, finalParent.get('filename'), imageFormatsToDeploy.imageFormat.mimeType)
+        def image = cytomine.addNewImage(finalParent.id, shortPath, finalParent.get('filename') as String,
+                                         imageFormatsToDeploy.imageFormat.mimeType)
 
         log.info "properties"
         log.info properties
@@ -230,47 +244,49 @@ class UploadService {
             log.info it.key
             log.info "it.value"
             log.info it.value
-            cytomine.addDomainProperties(image.getStr("class"),image.getLong("id"),it.key.toString(),it.value.toString())
+            cytomine.addDomainProperties(image.getStr("class"), image.getLong("id"),
+                                         it.key.toString(), it.value.toString())
         }
         return image
     }
 
     private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
-        if(newFiles.size() == 1) return;
+        if (newFiles.size() == 1) return
         //Create one imagegroup for this multidim image
         ImageGroup imageGroup = cytomine.addImageGroup(idProject)
-        ImageInstanceCollection collection = cytomine.getImageInstances(idProject);
+        ImageInstanceCollection collection = cytomine.getImageInstances(idProject)
 
         newFiles.each { file ->
-            def path = file.path;
+            def path = file.path
             def idImage = 0L
             while (idImage == 0) {
-                log.info "Wait for " + path;
+                log.info "Wait for " + path
 
                 for (int i = 0; i < collection.size(); i++) {
-                    Long expected = file.id;
-                    Long current = collection.get(i).get("baseImage");
+                    Long expected = file.id
+                    Long current = collection.get(i).get("baseImage")
                     if (expected.equals(current)) {
-                        log.info "OK!";
-                        idImage = collection.get(i).getId();
+                        log.info "OK!"
+                        idImage = collection.get(i).getId()
                     }
                 }
 
-                if(idImage != 0) break;
+                if (idImage != 0) break
 
-                Thread.sleep(1000);
-                collection = cytomine.getImageInstances(idProject);
+                Thread.sleep(1000)
+                collection = cytomine.getImageInstances(idProject)
             }
             log.info "Uploaded ImageID: $idImage"
             //Add this image to current imagegroup
-            ImageSequence imageSequence = cytomine.addImageSequence(imageGroup.getId(), idImage, Integer.parseInt(file.z), 0, Integer.parseInt(file.t), Integer.parseInt(file.c));
-            log.info "new ImageSequence: " + imageSequence.get("id");
+            ImageSequence imageSequence = cytomine.addImageSequence(imageGroup.getId(), idImage,
+                    Integer.parseInt(file.z), 0, Integer.parseInt(file.t), Integer.parseInt(file.c))
+            log.info "new ImageSequence: " + imageSequence.get("id")
         }
     }
 
     private def createResponseContent(def filename, def size, def contentType, def uploadedFileJSON, def images) {
         def content = [:]
-        content.status = 200;
+        content.status = 200
         content.name = filename
         content.size = size
         content.type = contentType
@@ -278,6 +294,4 @@ class UploadService {
         content.images = images
         return content
     }
-
-
 }

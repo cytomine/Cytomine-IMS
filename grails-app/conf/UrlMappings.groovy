@@ -30,7 +30,7 @@ class UrlMappings {
             action = [POST:"upload"]
         }
 
-        "/download"(controller:"storage"){
+        "/download"(controller:"image"){
             action = [GET : "download"]
         }
 
@@ -62,7 +62,7 @@ class UrlMappings {
             action = [GET:"size"]
         }
 
-        /*"/multidim/pixel.$format" (controller:"multiDim"){
+        "/multidim/pixel.$format" (controller:"multiDim"){
             action = [GET:"getSpectraPixel"]
         }
 
@@ -72,6 +72,10 @@ class UrlMappings {
 
         "/multidim/convert.$format" (controller: "multiDim"){
             action = [POST: "convertListToHdf5"]
-        }*/
+        }
+
+        "/image/tile" (controller: "image") {
+            action = [GET:"tileZoomify"] //tileIIP
+        }
 	}
 }

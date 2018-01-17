@@ -1,4 +1,4 @@
-package be.cytomine.formats.supported
+package be.cytomine.formats.supported.digitalpathology
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -15,7 +15,8 @@ package be.cytomine.formats.supported
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
+
+import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
 import grails.util.Holders
 import utils.ProcUtils
 
@@ -25,16 +26,22 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 12/07/14.
  */
-class PhilipsTIFFFormat extends OpenSlideSingleFileFormat{
+class PhilipsTIFFFormat extends OpenSlideSingleFileFormat implements ILightConvertableImageFormat{
 
     public PhilipsTIFFFormat() {
-        extensions = ["tiff"]
+        extensions = ["tiff", "ptiff"]
         vendor = "philips"
         mimeType = "philips/tif"
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = null
+    }
+
+    @Override
+    def convert() {
+        fakeExtension(absoluteFilePath)
+        return absoluteFilePath
     }
 
     BufferedImage associated(String label) {
@@ -75,5 +82,23 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileFormat{
         }
         target.delete()
         return labelImage
+    }
+
+    String fakeExtension(def original) {
+        def renamed = new File(original.take(original.lastIndexOf('.')) + ".ptiff")
+        if (!renamed.exists())
+            "ln -s $original $renamed".execute()
+        return renamed
+    }
+
+    @Override
+    String tileURL(def fif, def params, def with_zoomify) {
+        return super.tileURL(fakeExtension(fif), params, with_zoomify)
+    }
+
+    @Override
+    String cropURL(def params, def charset) {
+        params.fif = fakeExtension(params.fif)
+        return super.cropURL(params, charset)
     }
 }

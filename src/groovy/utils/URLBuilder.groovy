@@ -1,3 +1,5 @@
+package utils
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -14,14 +16,32 @@
  * limitations under the License.
  */
 
-package be.cytomine.multidim.exceptions
+class URLBuilder {
+    def host
+    def charset
+    def parameters = [:]
 
-/**
- * Created by laurent on 22.01.17.
- */
-class CacheTooSmallException extends RuntimeException{
+    URLBuilder(host, charset) {
+        this.charset = charset
+        this.host = host
+    }
 
-    def CacheTooSmallException(){
-        super()
+    URLBuilder(host) {
+        charset = "UTF-8"
+        this.host = host
+    }
+
+    def addParameter(param, value, encode=false) {
+        if (encode)
+            parameters << [(param): URLEncoder.encode(value, charset)]
+        else
+            parameters << [(param): value]
+    }
+
+    String toString() {
+        if (parameters.isEmpty())
+            return host
+        else
+            return host + "?" + parameters.collect {p, v -> "$p=$v"}.join("&")
     }
 }

@@ -16,9 +16,6 @@ package be.cytomine.formats.lightconvertable
  * limitations under the License.
  */
 import grails.util.Holders
-import utils.FilesUtils
-import be.cytomine.formats.supported.PyramidalTIFFFormat
-import be.cytomine.formats.supported.VentanaTIFFFormat
 
 /**
  * Created by stevben on 22/04/14.

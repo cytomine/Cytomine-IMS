@@ -1,8 +1,4 @@
-package be.cytomine.formats.supported
-
-import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
-import grails.util.Holders
-import utils.ServerUtils
+package be.cytomine.formats.supported.digitalpathology
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -19,12 +15,16 @@ import utils.ServerUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.awt.image.BufferedImage
+import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
+import grails.util.Holders
+import utils.ServerUtils
 
 /**
  * Created by stevben on 28/04/14.
  */
-class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
+class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements ILightConvertableImageFormat {
 
     public VentanaTIFFFormat() {
         extensions = ["tif", "vtif"]
@@ -37,6 +37,12 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
     }
 
+    @Override
+    def convert() {
+        fakeExtension(absoluteFilePath)
+        return absoluteFilePath
+    }
+
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
         if (label == "macro") {
@@ -44,5 +50,23 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
         } else {
             return bufferedImage
         }
+    }
+
+    String fakeExtension(def original) {
+        def renamed = new File(original.take(original.lastIndexOf('.')) + ".vtif")
+        if (!renamed.exists())
+            "ln -s $original $renamed".execute()
+        return renamed
+    }
+
+    @Override
+    String tileURL(def fif, def params, def with_zoomify) {
+        return super.tileURL(fakeExtension(fif), params, with_zoomify)
+    }
+
+    @Override
+    String cropURL(def params, def charset) {
+        params.fif = fakeExtension(params.fif)
+        return super.cropURL(params, charset)
     }
 }

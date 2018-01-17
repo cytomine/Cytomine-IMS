@@ -1,3 +1,7 @@
+package be.cytomine.formats.lightconvertable
+
+import be.cytomine.formats.IConvertableImageFormat
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -13,31 +17,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package be.cytomine.multidim.hdf5.output
 
-/**
- * Created by laurent on 08.01.17.
- */
-trait HDF5Geometry {
-    private Boolean extract
-    def private data = []
-
-    def  getValues(){
-        if(extract)
-            return data
-        return null
-    }
-
-    public void setData(def data){
-        this.data = data
-        this.extract = true
-    }
-
-
-    public Boolean isDataPresent(){
-        return this.extract
-    }
-
-    def abstract getDataFromCache(ArrayList<HDF5CubeCache> array)
-    def abstract getDim()
-}
+interface ILightConvertableImageFormat extends IConvertableImageFormat {}

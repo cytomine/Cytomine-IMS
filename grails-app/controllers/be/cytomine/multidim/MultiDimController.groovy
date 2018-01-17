@@ -1,3 +1,7 @@
+package be.cytomine.multidim
+
+import be.cytomine.client.Cytomine
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -14,13 +18,7 @@
  * limitations under the License.
  */
 
-package be.cytomine.multidim
-
-import be.cytomine.multidim.exceptions.CacheTooSmallException
-import be.cytomine.multidim.hdf5.input.BuildHyperSpectralFile
-import be.cytomine.multidim.hdf5.output.FileReaderCache
 import grails.converters.JSON
-import ncsa.hdf.hdf5lib.exceptions.HDF5FileNotFoundException
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
@@ -28,119 +26,89 @@ import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
 
 
-@RestApi(name = "Multi dimentional services", description = "Methods for getting the spectra of geormetric forms")
+@RestApi(name = "Multidimensional services", description = "Methods to obtain the spectrum of a multidimensional image")
 class MultiDimController {
-    def cytomineMailService
+    def multiDimService
+    def backgroundService
+    def cytomineService
 
-    @RestApiMethod(description="Create a Multidim HDF5 file", extensions = [".json"])
+    @RestApiMethod(description="Create a multidimensional HDF5 file", extensions = ["json"])
     @RestApiParams(params=[
-            @RestApiParam(name="files", type="list", paramType= RestApiParamType.QUERY, description="A list of image to convert separate by ,"),
-            @RestApiParam(name="dest", type="String", paramType= RestApiParamType.QUERY, description="The destination of the outputfile" )
-
+            @RestApiParam(name="files", type="list", paramType= RestApiParamType.QUERY, description="A list of image to convert"),
+            @RestApiParam(name="dest", type="String", paramType= RestApiParamType.QUERY, description="The destination path of the HDF5 file"),
+            @RestApiParam(name="bpc", type="int", paramType= RestApiParamType.QUERY, description="The number of bit per channel in the images"),
+            @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = "The url of Cytomine Core"),
+            @RestApiParam(name="id", type="int", paramType = RestApiParamType.QUERY, description="The HDF5 image group ID")
     ])
-    //Nb this request is executed in background and just return a .json file
     def convertListToHdf5(){
-
-        println params
         def destination = params.dest
         def files = params.files
-        Thread.start {
+        def bpc = params.int('bpc', 8)
+        def id = params.int('id')
 
-            BuildHyperSpectralFile h5builder = new BuildHyperSpectralFile(destination, "", files)
-            h5builder.createFile(4)
-//            cytomineMailService.send(
-//                    cytomineMailService.NO_REPLY_EMAIL,
-//                    [email.getEmail()] as String[],
-//                    "",
-//                    "Your conversion into HDF5 is finished",
-//                    "The file has been created with success and can now be used")
-        }
-        def aMap = new HashMap()
-        aMap.put("respond", "Conversion launched")
-        render aMap as JSON
+        Cytomine cytomine = cytomineService.getCytomine(params.cytomine)
+        cytomine.testHostConnection()
 
+        def data = [response: "Conversion launched"]
+        render data as JSON
+
+        backgroundService.execute("convert", {
+            multiDimService.convert(cytomine, id, destination, files, bpc)
+        })
     }
 
-    @RestApiMethod(description="Get the spectra of  a pixel", extensions = [".json"])
-    @RestApiParams(params=[
-            @RestApiParam(name="fif", type="String", paramType= RestApiParamType.QUERY, description="The absolute path of a multispectral image"),
-            @RestApiParam(name="x", type="int", paramType= RestApiParamType.QUERY, description="The X coordinate" ),
-            @RestApiParam(name="y", type="int", paramType= RestApiParamType.QUERY, description="The y coordinate" )
 
+    @RestApiMethod(description="Get the spectrum of a pixel", extensions = ["json"])
+    @RestApiParams(params=[
+            @RestApiParam(name="fif", type="String", paramType= RestApiParamType.QUERY, description="The absolute path of a multidimensional image", required=true),
+            @RestApiParam(name="x", type="int", paramType= RestApiParamType.QUERY, description="The x coordinate (0 is left)", required=true),
+            @RestApiParam(name="y", type="int", paramType= RestApiParamType.QUERY, description="The y coordinate (0 is top)", required=true),
+            @RestApiParam(name="minChannel", type="int", paramType=RestApiParamType.QUERY, description="The minimum channel", required=false),
+            @RestApiParam(name="maxChannel", type="int", paramType=RestApiParamType.QUERY, description="The maximum channel", required=false),
     ])
     def getSpectraPixel(){
-        def aMap = new HashMap()
+        def fif = params.fif
+        def x = params.int('x')
+        def y = params.int('y')
+        def minChannel = params.int('minChannel', 0)
+        def maxChannel = params.int('maxChannel', Integer.MAX_VALUE)
 
-        try{
-            String name = params.fif
-            def coo = [Integer.parseInt(params.x) , Integer.parseInt(params.y)]
-            aMap.put("pxl", coo)
-            def read = FileReaderCache.getInstance().getReader(name)
-            def spectra = read.extractSpectraPixel(coo[0],coo[1])
-            if(spectra != null) {
-                aMap.put("spectra", spectra.getValues())
-            } else {
-                aMap.put("error", "Internal error try again")
-            }
-        }
-        catch(HDF5FileNotFoundException e){
-            aMap.put("error", "File Not found")
-        }
-        catch(IndexOutOfBoundsException e){
-            aMap.put("error", "Coordinates out of bounds")
-        }
-        catch(NumberFormatException e ){
-            aMap.put("error", "Bad/null number format")
-        }
+        def pixel, spectrum
+        (pixel, spectrum) = multiDimService.pixelSpectrum(fif, x, y, minChannel, maxChannel)
 
-        render aMap as JSON
+        def data = [:]
+        data << [pxl: pixel]
+        data << [spectra: spectrum]
+
+        render data as JSON
     }
 
 
-    @RestApiMethod(description="Get the spectra of  a rectangle", extensions = [".json"])
+    @RestApiMethod(description="Get the spectrum of a rectangle", extensions = ["json"])
     @RestApiParams(params=[
-            @RestApiParam(name="fif", type="String", paramType= RestApiParamType.QUERY, description="The absolute path of a multispectral image"),
-            @RestApiParam(name="x", type="int", paramType= RestApiParamType.QUERY, description="The X coordinate" ),
-            @RestApiParam(name="y", type="int", paramType= RestApiParamType.QUERY, description="The y coordinate" ),
-            @RestApiParam(name="w", type="int", paramType= RestApiParamType.QUERY, description="The width of the rectangle" ),
-            @RestApiParam(name="h", type="int", paramType= RestApiParamType.QUERY, description="The height of the rectangle" )
-
+            @RestApiParam(name="fif", type="String", paramType= RestApiParamType.QUERY, description="The absolute path of a multidimensional image"),
+            @RestApiParam(name="x", type="int", paramType= RestApiParamType.QUERY, description="The x coordinate of top-left corner (0 is left)"),
+            @RestApiParam(name="y", type="int", paramType= RestApiParamType.QUERY, description="The y coordinate of top-left corner (0 is top)"),
+            @RestApiParam(name="w", type="int", paramType= RestApiParamType.QUERY, description="The width of the rectangle"),
+            @RestApiParam(name="h", type="int", paramType= RestApiParamType.QUERY, description="The height of the rectangle"),
+            @RestApiParam(name="minChannel", type="int", paramType=RestApiParamType.QUERY, description="The minimum channel", required=false),
+            @RestApiParam(name="maxChannel", type="int", paramType=RestApiParamType.QUERY, description="The maximum channel", required=false),
     ])
     def getSpectraRectangle(){
-        def aMap = new HashMap()
+        def fif = params.fif
+        def x = params.int('x')
+        def y = params.int('y')
+        def width = params.int('w')
+        def height = params.int('h')
+        def minChannel = params.int('minChannel', 0)
+        def maxChannel = params.int('maxChannel', Integer.MAX_VALUE)
 
-        try{
-            String name = params.fif
-            def x = Integer.parseInt(params.x)
-            def y = Integer.parseInt(params.y)
-            def w = Integer.parseInt(params.w)
-            def h = Integer.parseInt(params.h)
-            def read = FileReaderCache.getInstance().getReader(name)
-            def spectra = read.extractSpectraRectangle(x,y,w,h)
-            def i = 0
-
-            spectra.getValues().each { pxl ->
-                def bMap = new HashMap()
-                bMap.put("pixel", pxl[0])
-                bMap.put("spectra", pxl[1])
-                aMap.put(i, bMap)
-                ++i
-            }
-        }
-        catch(HDF5FileNotFoundException e){
-            aMap.put("error", "File Not found")
-        }
-        catch(IndexOutOfBoundsException e){
-            aMap.put("error", "Coordinates out of bounds")
-        }
-        catch (CacheTooSmallException e){
-            aMap.put("error", "The figure is too big")
-        }
-        catch(NumberFormatException e ){
-            aMap.put("error", "Bad/null number format")
+        def data = []
+        multiDimService.rectangleSpectrum(fif, x, y, width, height, minChannel, maxChannel).each {
+            data << [pxl: it[0], spectra: it[1]]
         }
 
-        render aMap as JSON
+        def json = [collection: data]
+        render json  as JSON
     }
-
 }

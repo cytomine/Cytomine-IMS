@@ -1,3 +1,7 @@
+package be.cytomine.formats.archive
+
+import be.cytomine.formats.Format
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -14,21 +18,10 @@
  * limitations under the License.
  */
 
-
-package be.cytomine.multidim.hdf5.input;
-
-import ch.systemsx.cisd.base.mdarray.MDShortArray;
-
 /**
- * Created by laurent on 20.12.16.
+ * Created by stevben on 10/05/14.
  */
-public abstract class ExtractData {
+abstract class ArchiveFormat extends Format {
 
-    public abstract MDShortArray extract2DCube(int startX, int startY, int dim, int wid, int hei, MDShortArray base)
-    public abstract MDShortArray extract2DCube(int startX, int startY, int wid, int hei, int depth)
-    public abstract int getImageWidth();
-    public abstract int getImageHeight();
-    public abstract int getImageDepth();
-    public abstract void getImage(int i)
-
+    abstract public String[] extract(String destPath)
 }

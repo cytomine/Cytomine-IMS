@@ -1,4 +1,4 @@
-package cytomine.web
+package be.cytomine.server
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -16,22 +16,15 @@ package cytomine.web
  * limitations under the License.
  */
 
+import utils.ProcUtils
 
-class ImageServerService {
+class FileSystemService {
 
-    def start() {
-        log.info("Start IIP instances...")
-
-        /*String fcgiPath = System.properties['base.dir'] + "/fcgi-bin/iipsrv.fcgi"
-        String command = "$fcgiPath --bind 127.0.0.1:9000"
-        println command
-        command.execute()*/
-
+    def makeLocalDirectory(String path) {
+        int value = ProcUtils.executeOnShell("mkdir -p " + path)
+        ProcUtils.executeOnShell("chmod -R 777 " + path)
+        return value
     }
 
-    def stop() {
-        log.info("Stop IIP instances...")
 
-
-    }
 }

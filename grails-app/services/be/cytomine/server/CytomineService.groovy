@@ -1,4 +1,4 @@
-package cytomine.web
+package be.cytomine.server
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -17,7 +17,6 @@ package cytomine.web
  */
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.models.User
 import be.cytomine.exception.AuthenticationException
 import org.springframework.security.crypto.codec.Base64
 
@@ -32,7 +31,7 @@ class CytomineService {
     def getCytomine(String cytomineUrl) {
         String publicKey = grailsApplication.config.cytomine.imageServerPublicKey
         String privateKey = grailsApplication.config.cytomine.imageServerPrivateKey
-        return new Cytomine(cytomineUrl, publicKey, privateKey, "./", false)
+        return new Cytomine(cytomineUrl, publicKey, privateKey)
     }
 
     public def tryAPIAuthentification(def cytomineUrl,def ISPubKey, def ISPrivKey, HttpServletRequest request) {

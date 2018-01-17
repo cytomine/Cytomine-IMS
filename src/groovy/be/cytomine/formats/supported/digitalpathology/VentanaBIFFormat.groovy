@@ -1,6 +1,5 @@
-package be.cytomine.formats.supported
+package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.

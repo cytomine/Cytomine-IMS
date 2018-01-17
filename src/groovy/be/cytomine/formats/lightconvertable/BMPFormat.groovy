@@ -27,7 +27,7 @@ class BMPFormat extends CommonFormat {
     public BMPFormat() {
         extensions = ["bmp"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "BMP"
-        //mimeType = "image/bmp"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+//        mimeType = "image/bmp"
+//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 }
