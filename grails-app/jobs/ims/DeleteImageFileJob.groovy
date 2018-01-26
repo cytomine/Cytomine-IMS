@@ -1,13 +1,14 @@
 package ims
 
 import be.cytomine.client.Cytomine
+import be.cytomine.client.models.AbstractImage
 import be.cytomine.client.models.UploadedFile
 import org.apache.commons.io.FileUtils
 
 
 class DeleteImageFileJob {
     static triggers = {
-        cron name: "DeleteImageTrigger", cronExpression: "0 0 * * * ?"// execute job each hour
+        cron name: "DeleteImageTrigger", cronExpression: "0 */5 * * * ?"// execute job each hour
     }
 
     def grailsApplication
@@ -32,13 +33,28 @@ class DeleteImageFileJob {
 
                 File fileToDelete = new File(file.getAbsolutePath())
                 if(fileToDelete.exists()) {
-                    fileToDelete.delete();
-                    /*fileToDelete = fileToDelete.parentFile
-                    // delete the folder if no more file exists
+                    fileToDelete.delete()
+                }
+
+                if(file.getLong("image")) {
+                    AbstractImage ai = cytomine.getAbstractImage(file.getLong("image"))
+                    fileToDelete = new File(ai.get("fullPath"))
+                    if(fileToDelete.exists()) {
+                        fileToDelete.delete()
+                    }
+                }
+
+                fileToDelete = fileToDelete.parentFile
+                // delete the folder if no more file exists
+
+                if(fileToDelete.exists()){
+
                     if(fileToDelete.listFiles().collect{it.isDirectory()}.size() == fileToDelete.listFiles().size()){
                         FileUtils.deleteDirectory(fileToDelete);
-                    }*/
+                    }
                 }
+
+
             }
         }
     }
