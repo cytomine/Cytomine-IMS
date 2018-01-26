@@ -40,7 +40,7 @@ class UploadService {
 
     // WARNING ! This function is recursive. Be careful !
     def upload(Cytomine cytomine, String filename, Long idStorage, String contentType, def filePath,
-               def projects, long currentUserId, def properties, long timestamp, boolean isSync) {
+               def projects, long currentUserId, def properties, long timestamp, boolean isSync, Long idParent = null) {
 
         def uploadedFilePath = new File(filePath)
         log.info "filePath=$filePath"
@@ -70,7 +70,7 @@ class UploadService {
                 [idStorage],
                 currentUserId,
                 0, // UPLOADED status
-                null // idParent
+                idParent
         )
 
         deployImagesService.copyUploadedFile(cytomine, uploadedFilePath.absolutePath, uploadedFile, [storage])
@@ -126,7 +126,7 @@ class UploadService {
                 // maybe redetermine the contentType ?
                 // recursion
                 def tmp = upload(cytomine, nameNewFile, idStorage, contentType, path, projects,
-                                 currentUserId, properties, timestamp, true)[0]
+                                 currentUserId, properties, timestamp, true, uploadedFile.id)[0]
                 tmp.z = file.z
                 tmp.t = file.t
                 tmp.c = file.c
