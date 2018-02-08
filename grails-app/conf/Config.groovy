@@ -157,7 +157,7 @@ cytomine.iipImageServerJpeg2000="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcg
 cytomine.iipImageServerCyto="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
 
 bioformat.application.enabled="true"
-bioformat.application.location="localhost"
+bioformat.application.location="bioformat"
 bioformat.application.port="4321"
 
 cytomine.imageServerPublicKey="d757ae3d-8191-4774-bcf1-ad68a6d2b9c9"

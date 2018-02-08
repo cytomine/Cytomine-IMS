@@ -247,7 +247,7 @@ class MultiDimService {
         def imageWidth = meta[3]
         def imageHeight = meta[4]
 
-        minChannel = Math.max(depth, minChannel)
+        minChannel = Math.max(0, minChannel)
         maxChannel = Math.min(depth, maxChannel)
 
         def reader
