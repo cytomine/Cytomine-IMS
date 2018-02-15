@@ -87,7 +87,7 @@ grails.project.dependency.resolution = {
         //runtime ":jquery:1.8.0"
         //runtime ":resources:1.1.6"
         runtime ":resources:1.2.8"
-        runtime ':background-thread:1.6'
+        //runtime ':background-thread:1.6'
         compile ":rest-api-doc:0.6.1"
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
