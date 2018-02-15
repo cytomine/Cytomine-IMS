@@ -25,11 +25,13 @@ import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
 
+import java.util.concurrent.Callable
+
 
 @RestApi(name = "Multidimensional services", description = "Methods to obtain the spectrum of a multidimensional image")
 class MultiDimController {
     def multiDimService
-    def backgroundService
+    def executorService
     def cytomineService
 
     @RestApiMethod(description="Create a multidimensional HDF5 file", extensions = ["json"])
@@ -52,9 +54,9 @@ class MultiDimController {
         def data = [response: "Conversion launched"]
         render data as JSON
 
-        backgroundService.execute("convert", {
+        executorService.submit({
             multiDimService.convert(cytomine, id, destination, files, bpc)
-        })
+        } as Callable)
     }
 
 

@@ -33,9 +33,11 @@ import be.cytomine.formats.lightconvertable.VIPSConvertable
 import grails.util.Holders
 import utils.FilesUtils
 
+import java.util.concurrent.Callable
+
 class UploadService {
 
-    def backgroundService
+    def executorService
     def deployImagesService
 
     // WARNING ! This function is recursive. Be careful !
@@ -167,14 +169,14 @@ class UploadService {
         }
         else {
             log.info "Execute convert & deploy into background"
-            backgroundService.execute("convertAndDeployImage", {
+            executorService.submit({
                 convertAndCreate()
                 heavyConvertableImageFormats.each {
                     log.info "unsupported image " + it
                     conversion(it)
                 }
                 log.info "image async = $images"
-            })
+            } as Callable)
         }
 
         def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(), images)]
