@@ -108,7 +108,7 @@ class MultiDimController {
             data << [pxl: it[0], spectra: it[1]]
         }
 
-        def json = [collection: data]
+        def json = [collection: data, offset: 0, perPage: data.size(), size: data.size(), totalPages: 1]
         render json  as JSON
     }
 }
