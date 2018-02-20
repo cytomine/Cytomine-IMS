@@ -34,7 +34,7 @@ import utils.FilesUtils
 
 class UploadService {
 
-    def backgroundService
+    def executorService
     def deployImagesService
 
     // WARNING ! This function is recursive. Be careful !
@@ -164,14 +164,14 @@ class UploadService {
             log.info "image sync = $images"
         } else {
             log.info "Execute convert & deploy into background"
-            backgroundService.execute("convertAndDeployImage", {
+            runAsync {
                 convertAndCreate();
                 heavyConvertableImageFormats.each {
                     println "unsupported image "+it
                     conversion(it);
                 };
                 log.info "image async = $images"
-            })
+            }
         }
 
         def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(),images)]

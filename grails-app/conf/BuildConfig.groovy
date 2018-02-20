@@ -96,6 +96,7 @@ grails.project.dependency.resolution = {
         //compile ":quartz:1.0.1"
         //compile ":quartz-monitor:0.3-RC3"
 
+        compile ':executor:0.3'
 
         //runtime ":database-migration:1.1"
 
