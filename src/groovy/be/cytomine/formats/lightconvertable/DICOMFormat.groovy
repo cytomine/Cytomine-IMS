@@ -36,25 +36,72 @@ class DICOMFormat extends CommonFormat implements ICommonFormat {
     @Override
     def properties() {
         def properties = super.properties()
-        def dictionnary = new CustomDicomDictionary()
+        def dictionary = new PropertyDictionary()
         def list = new AttributeList()
         list.read(absoluteFilePath)
         (list.values() as ArrayList).each {
-            def tag = dictionnary.getNameFromTag(it.getTag())
+            def tag = dictionary.getNameFromTag(it.getTag())
             def value = it.getDelimitedStringValuesOrEmptyString()
-            if (!tag?.isEmpty() && !value?.isEmpty())
+            if (!tag?.isEmpty() && tag != "null" && !value?.isEmpty())
                 properties << [key: "dicom.$tag", value: value]
         }
 
         return properties
     }
+
+    def annotations() {
+        def annotations = super.annotations()
+        def dictionary = new AnnotationDictionary();
+        AttributeList list = new AttributeList()
+        list.read(absoluteFilePath)
+        def dicomAnnotations = list.get(dictionary.getTagFromName("Annotation.Definition"))
+        for (int i=0; i < dicomAnnotations.getNumberOfItems(); i++) {
+            AttributeList annotation = dicomAnnotations.getItem(i).getAttributeList()
+            def polygon = annotation.get(dictionary.getTagFromName("Annotation.Polygon")).getDelimitedStringValuesOrEmptyString()
+            def term = annotation.get(dictionary.getTagFromName("Annotation.Indication")).getDelimitedStringValuesOrEmptyString()
+
+            def properties = [:]
+            properties << [severity: annotation.get(dictionary.getTagFromName("Annotation.Severity")).getDelimitedStringValuesOrEmptyString()]
+            properties << [row: annotation.get(dictionary.getTagFromName("Annotation.Row")).getDelimitedStringValuesOrEmptyString()]
+            properties << [col: annotation.get(dictionary.getTagFromName("Annotation.Col")).getDelimitedStringValuesOrEmptyString()]
+
+            if (!polygon?.isEmpty())
+                annotations << [location: polygon, term: term, properties: properties]
+        }
+        return annotations
+    }
 }
 
-class CustomDicomDictionary extends DicomDictionary {
+class PropertyDictionary extends DicomDictionary {
     @Override
     protected void createNameByTag() {
         super.createNameByTag();
         this.nameByTag.put(new AttributeTag(119, 16), "PrivateCreator[0]");
         this.nameByTag.put(new AttributeTag(119, 17), "PrivateCreator[1]");
+    }
+}
+
+class AnnotationDictionary extends DicomDictionary {
+    @Override
+    protected void createNameByTag() {
+        super.createNameByTag();
+        this.nameByTag.put(new AttributeTag(119, 6400), "Annotation.Number")
+        this.nameByTag.put(new AttributeTag(119, 6401), "Annotation.Definition")
+        this.nameByTag.put(new AttributeTag(119, 6418), "Annotation.Row")
+        this.nameByTag.put(new AttributeTag(119, 6419), "Annotation.Col")
+        this.nameByTag.put(new AttributeTag(119, 6403), "Annotation.Indication")
+        this.nameByTag.put(new AttributeTag(119, 6404), "Annotation.Severity")
+        this.nameByTag.put(new AttributeTag(119, 6417), "Annotation.Polygon")
+    }
+
+    protected void createTagByName() {
+        super.createTagByName()
+        this.tagByName.put("Annotation.Number", new AttributeTag(119, 6400))
+        this.tagByName.put("Annotation.Definition", new AttributeTag(119, 6401))
+        this.tagByName.put("Annotation.Row", new AttributeTag(119, 6418))
+        this.tagByName.put("Annotation.Col", new AttributeTag(119, 6419))
+        this.tagByName.put("Annotation.Indication", new AttributeTag(119, 6403))
+        this.tagByName.put("Annotation.Severity", new AttributeTag(119, 6404))
+        this.tagByName.put("Annotation.Polygon", new AttributeTag(119, 6417))
     }
 }
