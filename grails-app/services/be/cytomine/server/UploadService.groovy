@@ -187,6 +187,7 @@ class UploadService {
                             def imageFormatsToDeploy, String filename, Storage storage,
                             def contentType, List projects, long idStorage, long currentUserId,
                             def properties, UploadedFile uploadedFile) {
+        def annotations = []
         log.info "createImage $imageFormatsToDeploy"
 
         Format imageFormat = imageFormatsToDeploy.imageFormat
@@ -199,8 +200,11 @@ class UploadService {
         if (imageFormat instanceof VIPSConvertable) {
             log.info "prop"
             log.info imageFormat.properties()
-            log.info imageFormat.properties().collectEntries() {[(it.key):it.value]}
             properties += imageFormat.properties().collectEntries() {[(it.key):it.value]}
+
+            log.info "annotations"
+            log.info imageFormat.annotations()
+            annotations += imageFormat.annotations()
         }
 
         if (imageFormat instanceof ILightConvertableImageFormat) {
@@ -249,6 +253,39 @@ class UploadService {
             cytomine.addDomainProperties(image.getStr("class"), image.getLong("id"),
                                          it.key.toString(), it.value.toString())
         }
+
+        if (projects && annotations.size() > 0) {
+            log.info "annotations"
+            projects.each { idProject ->
+                def project = cytomine.getProject(idProject)
+                def ontology = cytomine.getOntology(project?.ontology)
+                def terms = ontology?.children?.collectEntries {[(it.name): it.id]}
+                def imageInstances = cytomine.getImageInstances(idProject).getList()
+
+                def imageInstance = null
+                while (imageInstance == null) {
+                    imageInstance = imageInstances.find{it.baseImage == image.getLong("id")}
+                    if (imageInstance) break
+                    Thread.sleep(1000)
+                }
+
+                annotations.each { annotation ->
+                    def idTerm = terms.find{it.key == annotation.term}?.value
+                    if (!idTerm) {
+                        def term = cytomine.addTerm(annotation.term, "#AAAAAA", ontology?.id)
+                        terms << [(term?.name): term?.id]
+                        idTerm = term?.id
+                    }
+                    def annot = cytomine.addAnnotation(annotation.location, imageInstance?.id)
+                    log.info annot
+                    cytomine.addAnnotationTerm(annot?.id, idTerm)
+                    annotation.properties.each { key, value ->
+                        cytomine.addDomainProperties("annotation", annot?.id, key, value)
+                    }
+                }
+            }
+        }
+
         return image
     }
 
