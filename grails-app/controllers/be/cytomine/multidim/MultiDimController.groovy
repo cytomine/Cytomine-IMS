@@ -31,7 +31,7 @@ import java.util.concurrent.Callable
 @RestApi(name = "Multidimensional services", description = "Methods to obtain the spectrum of a multidimensional image")
 class MultiDimController {
     def multiDimService
-    def executorService
+    def backgroundService
     def cytomineService
 
     @RestApiMethod(description="Create a multidimensional HDF5 file", extensions = ["json"])
@@ -54,9 +54,9 @@ class MultiDimController {
         def data = [response: "Conversion launched"]
         render data as JSON
 
-        executorService.submit({
+        backgroundService.execute("convert", {
             multiDimService.convert(cytomine, id, destination, files, bpc)
-        } as Callable)
+        })
     }
 
 
