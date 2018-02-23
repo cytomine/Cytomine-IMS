@@ -37,7 +37,7 @@ import java.util.concurrent.Callable
 
 class UploadService {
 
-    def executorService
+    def backgroundService
     def deployImagesService
 
     // WARNING ! This function is recursive. Be careful !
@@ -169,14 +169,14 @@ class UploadService {
         }
         else {
             log.info "Execute convert & deploy into background"
-            executorService.submit({
+            backgroundService.execute("convertAndDeployImage", {
                 convertAndCreate()
                 heavyConvertableImageFormats.each {
                     log.info "unsupported image " + it
                     conversion(it)
                 }
                 log.info "image async = $images"
-            } as Callable)
+            })
         }
 
         def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(), images)]
@@ -194,7 +194,6 @@ class UploadService {
         String originalName = new File(imageFormat.absoluteFilePath).name
 
         Format parentImageFormat = imageFormatsToDeploy.parent?.imageFormat
-
 
         // HACK to get properties from original file such as DICOM
         if (imageFormat instanceof VIPSConvertable) {
