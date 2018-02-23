@@ -3,6 +3,9 @@ package be.cytomine.formats.lightconvertable
 import com.pixelmed.dicom.AttributeList
 import com.pixelmed.dicom.AttributeTag
 import com.pixelmed.dicom.DicomDictionary
+import com.vividsolutions.jts.geom.util.AffineTransformation
+import com.vividsolutions.jts.io.WKTReader
+import com.vividsolutions.jts.io.WKTWriter
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -37,7 +40,7 @@ class DICOMFormat extends CommonFormat {
         (list.values() as ArrayList).each {
             def tag = dictionary.getNameFromTag(it.getTag())
             def value = it.getDelimitedStringValuesOrEmptyString()
-            if (!tag?.isEmpty() && tag != "null" && !value?.isEmpty())
+            if (!tag?.isEmpty() && tag != "null" && tag && !value?.isEmpty())
                 properties << [key: "dicom.$tag", value: value]
         }
 
@@ -50,19 +53,28 @@ class DICOMFormat extends CommonFormat {
         AttributeList list = new AttributeList()
         list.read(absoluteFilePath)
         def dicomAnnotations = list.get(dictionary.getTagFromName("Annotation.Definition"))
-        for (int i=0; i < dicomAnnotations.getNumberOfItems(); i++) {
-            AttributeList annotation = dicomAnnotations.getItem(i).getAttributeList()
-            def polygon = annotation.get(dictionary.getTagFromName("Annotation.Polygon")).getDelimitedStringValuesOrEmptyString()
-            def term = annotation.get(dictionary.getTagFromName("Annotation.Indication")).getDelimitedStringValuesOrEmptyString()
+        if (dicomAnnotations) {
+            def imageHeight = list.get(dictionary.getTagFromName("Columns")).getDelimitedStringValuesOrEmptyString()
+            for (int i=0; i < dicomAnnotations.getNumberOfItems(); i++) {
+                AttributeList annotation = dicomAnnotations.getItem(i).getAttributeList()
+                def wkt = annotation.get(dictionary.getTagFromName("Annotation.Polygon")).getDelimitedStringValuesOrEmptyString()
+                def polygon = new WKTReader().read(wkt)
+                def transformation = new AffineTransformation(0, 1, 0, -1, 0, Double.parseDouble(imageHeight))
+                polygon.apply(transformation)
+                def location = new WKTWriter().write(polygon)
 
-            def properties = [:]
-            properties << [severity: annotation.get(dictionary.getTagFromName("Annotation.Severity")).getDelimitedStringValuesOrEmptyString()]
-            properties << [row: annotation.get(dictionary.getTagFromName("Annotation.Row")).getDelimitedStringValuesOrEmptyString()]
-            properties << [col: annotation.get(dictionary.getTagFromName("Annotation.Col")).getDelimitedStringValuesOrEmptyString()]
+                def term = annotation.get(dictionary.getTagFromName("Annotation.Indication")).getDelimitedStringValuesOrEmptyString()
 
-            if (!polygon?.isEmpty())
-                annotations << [location: polygon, term: term, properties: properties]
+                def properties = [:]
+                properties << [severity: annotation.get(dictionary.getTagFromName("Annotation.Severity")).getDelimitedStringValuesOrEmptyString()]
+                properties << [row: annotation.get(dictionary.getTagFromName("Annotation.Row")).getDelimitedStringValuesOrEmptyString()]
+                properties << [col: annotation.get(dictionary.getTagFromName("Annotation.Col")).getDelimitedStringValuesOrEmptyString()]
+
+                if (!location?.isEmpty())
+                    annotations << [location: location, term: term, properties: properties]
+            }
         }
+
         return annotations
     }
 }
