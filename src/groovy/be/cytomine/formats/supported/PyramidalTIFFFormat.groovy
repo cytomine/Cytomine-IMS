@@ -71,6 +71,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
             maxWidth = Math.max(maxWidth, width)
             maxHeight = Math.max(maxHeight, height)
         }
+
         Double resolution;
         String unit;
         def resolutions = infos.findAll {
@@ -86,10 +87,37 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
                 unit = tokens.get(4)
             }
         }
+
+        int maxDepth = 0
+        infos.findAll {
+            it.contains 'Bits/Sample:'
+        }.each {
+            def tokens = it.tokenize(" ")
+            int depth = Integer.parseInt(tokens.get(1))
+            maxDepth = Math.max(maxDepth, depth)
+        }
+
+        String colorspace
+        def colorspaces = infos.findAll {
+            it.contains 'Photometric Interpretation:'
+        }.unique()
+        if (colorspaces.size() == 1) {
+            def tokens = colorspaces[0].tokenize(":")
+            def value = tokens.get(1).trim().toLowerCase()
+            if (value == "min-is-black" || value == "grayscale")
+                colorspace = "grayscale"
+            else if (value.contains("rgb"))
+                colorspace = "rgb"
+            else
+                colorspace = value
+        }
+
         properties << [ key : "cytomine.width", value : maxWidth ]
         properties << [ key : "cytomine.height", value : maxHeight ]
         properties << [ key : "cytomine.resolution", value : null/*unitConverter(resolution, unit)*/ ]
         properties << [ key : "cytomine.magnification", value : null ]
+        properties << [ key : "cytomine.bitdepth", value : maxDepth]
+        properties << [ key : "cytomine.colorspace", value : colorspace]
         return properties
 
     }

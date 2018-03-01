@@ -19,7 +19,7 @@ package utils
 class URLBuilder {
     def host
     def charset
-    def parameters = [:]
+    def parameters = []
 
     URLBuilder(host, charset) {
         this.charset = charset
@@ -33,15 +33,15 @@ class URLBuilder {
 
     def addParameter(param, value, encode=false) {
         if (encode)
-            parameters << [(param): URLEncoder.encode(value, charset)]
+            parameters << [key: param, value: URLEncoder.encode(value, charset)]
         else
-            parameters << [(param): value]
+            parameters << [key: param, value: value]
     }
 
     String toString() {
         if (parameters.isEmpty())
             return host
         else
-            return host + "?" + parameters.collect {p, v -> "$p=$v"}.join("&")
+            return host + "?" + parameters.collect {"${it.key}=${it.value}"}.join("&")
     }
 }

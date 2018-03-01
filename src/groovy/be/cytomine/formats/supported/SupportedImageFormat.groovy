@@ -52,6 +52,8 @@ abstract class SupportedImageFormat extends Format {
         properties << [key: "cytomine.height", value: bufferedImage.getHeight()]
         properties << [key: "cytomine.resolution", value: null]
         properties << [key: "cytomine.magnification", value: null]
+        properties << [key: "cytomine.bitdepth", value: 8]
+        properties << [key: "cytomine.colorspace", value: null]
         return properties
     }
 
