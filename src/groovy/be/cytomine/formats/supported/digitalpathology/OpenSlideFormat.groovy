@@ -19,6 +19,9 @@ package be.cytomine.formats.supported.digitalpathology
 import be.cytomine.formats.supported.SupportedImageFormat
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
+import utils.ServerUtils
+import utils.URLBuilder
+
 import java.awt.image.BufferedImage
 
 abstract class OpenSlideFormat extends SupportedImageFormat {
@@ -78,7 +81,6 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         }catch(Exception e) {
             println e
         }
-        println properties
         if (widthProperty && properties.find { it.key == widthProperty}?.value != null)
             properties << [ key : "cytomine.width", value : Integer.parseInt(properties.find { it.key == widthProperty}?.value) ]
         if (heightProperty && properties.find { it.key == heightProperty}?.value != null)
@@ -88,6 +90,37 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         if (magnificiationProperty && properties.find { it.key == magnificiationProperty}?.value != null)
             properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value).intValue() ]
 
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("obj", "IIP,1.0")
+        iipRequest.addParameter("obj", "bits-per-channel")
+        iipRequest.addParameter("obj", "colorspace")
+        String propertiesURL = iipRequest.toString()
+        String propertiesTextResponse = new URL(propertiesURL).text
+        Integer depth = null
+        String colorspace = null
+        propertiesTextResponse.eachLine { line ->
+            if (line.isEmpty()) return
+
+            def args = line.split(":")
+            if (args.length != 2) return
+
+            if (args[0].equals('Bits-per-channel'))
+                depth = Integer.parseInt(args[1])
+
+            if (args[0].contains('Colorspace')) {
+                def tokens = args[1].split(' ')
+                if (tokens[2] == "1") {
+                    colorspace = "grayscale"
+                } else if (tokens[2] == "3") {
+                    colorspace = "rgb"
+                } else {
+                    colorspace = "cielab"
+                }
+            }
+        }
+        properties << [ key : "cytomine.bitdepth", value : depth]
+        properties << [ key : "cytomine.colorspace", value: colorspace]
         return properties
     }
 
@@ -96,8 +129,5 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         BufferedImage thumbnail = openSlide.createThumbnailImage(0, 0, openSlide.getLevel0Width(), openSlide.getLevel0Height(), maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
         openSlide.close()
         return thumbnail
-
     }
-
-
 }
