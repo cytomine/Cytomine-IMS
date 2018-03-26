@@ -18,6 +18,10 @@ package be.cytomine.formats.heavyconvertable
 class ZeissCZIFormat extends BioFormatConvertable {
     final String CZI_MAGIC_STRING = "ZISRAWFILE";
 
+    ZeissCZIFormat(){
+        mimeType = "zeiss/czi"
+    }
+
     @Override
     boolean detect() {
 

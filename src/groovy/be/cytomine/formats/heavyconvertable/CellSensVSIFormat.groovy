@@ -18,6 +18,10 @@ import be.cytomine.formats.Format
  */
 class CellSensVSIFormat extends BioFormatConvertable {
 
+    CellSensVSIFormat(){
+        mimeType = "olympus/vsi"
+    }
+
     @Override
     boolean detect() {
         File folder = new File(absoluteFilePath)

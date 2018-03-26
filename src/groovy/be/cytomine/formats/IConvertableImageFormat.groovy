@@ -20,5 +20,5 @@ package be.cytomine.formats
  * Created by hoyoux on 29.04.15.
  */
 interface IConvertableImageFormat {
-    def convert()
+    String[] convert()
 }

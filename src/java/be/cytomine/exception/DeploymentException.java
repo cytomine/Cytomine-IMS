@@ -1,7 +1,4 @@
-package be.cytomine.formats.lightconvertable
-
-import be.cytomine.exception.MiddlewareException
-import be.cytomine.formats.ICommonFormat
+package be.cytomine.exception;
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -19,19 +16,13 @@ import be.cytomine.formats.ICommonFormat
  * limitations under the License.
  */
 
-import grails.util.Holders
-import org.openslide.OpenSlide
-import utils.ServerUtils
-
-/**
- * Created by stevben on 22/04/14.
- */
-public class JPEGFormat extends CommonFormat implements ICommonFormat {
-
-    public JPEGFormat () {
-        extensions = ["jpg", "jpeg"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "JPEG"
-        mimeType = "image/jpeg"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+public class DeploymentException extends CytomineException {
+    /**
+     * Message map with this exception
+     *
+     * @param msg  Message
+     */
+    public DeploymentException(String msg) {
+        super(msg, 500);
     }
 }

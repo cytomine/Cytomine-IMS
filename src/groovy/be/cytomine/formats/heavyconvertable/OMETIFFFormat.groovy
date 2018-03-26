@@ -1,5 +1,6 @@
 package be.cytomine.formats.heavyconvertable
 
+import be.cytomine.formats.ITIFFFormat
 import grails.util.Holders
 
 /*
@@ -18,14 +19,19 @@ import grails.util.Holders
  * limitations under the License.
  */
 
-class OMETIFFFormat extends BioFormatConvertable {
+class OMETIFFFormat extends BioFormatConvertable implements ITIFFFormat {
 
     boolean group = true;
 
-    public boolean detect() {
+    OMETIFFFormat(){
+        mimeType = "ome/ome-tiff"
+    }
+
+
+    boolean detect() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        return tiffinfo.contains("OME-TIFF")
+        return this.detect(tiffinfo)
     }
 
     boolean getGroup(){
@@ -35,5 +41,9 @@ class OMETIFFFormat extends BioFormatConvertable {
     @Override
     boolean getOnlyBiggestSerie() {
         return false
+    }
+
+    boolean detect(String tiffinfo) {
+        return tiffinfo.contains("OME-TIFF")
     }
 }

@@ -15,7 +15,7 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
     public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
 
     @Override
-    def convert() {
+    String[] convert() {
         String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         String source = absoluteFilePath
         String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
@@ -37,7 +37,7 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
 
         if (success) {
-            target
+            return [target]
         }
     }
 }

@@ -43,7 +43,6 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
             println "can not read $absoluteFilePath "
             return false
         }
-
     }
 
     public BufferedImage associated(String label) { //should be abstract

@@ -16,14 +16,13 @@ package be.cytomine.formats.lightconvertable
  * limitations under the License.
  */
 import grails.util.Holders
-import utils.FilesUtils
-import be.cytomine.formats.supported.PyramidalTIFFFormat
-import be.cytomine.formats.supported.VentanaTIFFFormat
+import be.cytomine.formats.ICommonFormat
+
 
 /**
  * Created by stevben on 22/04/14.
  */
-public abstract class CommonFormat extends VIPSConvertable {
+public abstract class CommonFormat extends VIPSConvertable  implements ICommonFormat {
 
     public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
@@ -33,7 +32,10 @@ public abstract class CommonFormat extends VIPSConvertable {
         def proc = command.execute()
         proc.waitFor()
         String stdout = proc.in.text
-        if(stdout.split(" ").size() < 2) return false;
-        return stdout.split(" ")[1].contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
+        return detect(stdout)
+    }
+    public boolean detect(String imageMagikInfo) {
+        if(imageMagikInfo.split(" ").size() < 2) return false;
+        return imageMagikInfo.split(" ")[1].contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
     }
 }

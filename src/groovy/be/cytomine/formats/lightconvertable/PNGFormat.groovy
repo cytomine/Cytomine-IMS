@@ -1,5 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.formats.ICommonFormat
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -22,12 +24,12 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-class PNGFormat extends CommonFormat {
+class PNGFormat extends CommonFormat implements ICommonFormat {
 
     public PNGFormat() {
         extensions = ["png"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "PNG"
-        //mimeType = "image/png"
+        mimeType = "image/png"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 }

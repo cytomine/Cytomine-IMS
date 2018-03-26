@@ -1,4 +1,7 @@
 package be.cytomine.formats.lightconvertable.specialtiff
+
+import be.cytomine.formats.ITIFFFormat
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -15,7 +18,7 @@ package be.cytomine.formats.lightconvertable.specialtiff
  * limitations under the License.
  */
 
-class CZITIFFFormat extends TIFFFormat {
+class CZITIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
 
 
     public CZITIFFFormat () {
@@ -24,6 +27,10 @@ class CZITIFFFormat extends TIFFFormat {
 
     public boolean detect() {
         String tiffinfo = getTiffInfo()
+        return this.detect(tiffinfo)
+    }
+
+    boolean detect(String tiffinfo) {
         return tiffinfo.contains("ImageDescription: Label") && tiffinfo.contains("ImageDescription: SlidePreview")
     }
 }

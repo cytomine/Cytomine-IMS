@@ -22,6 +22,10 @@ import be.cytomine.formats.Format
  */
 class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
 
+    DotSlideFormat() {
+        mimeType = "olympus/.slide"
+    }
+
     @Override
     boolean detect() {
         String mainFile = "ExtendedProps.xml"
@@ -38,7 +42,7 @@ class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
     }
 
     @Override
-    def convert() {
+    String[] convert() {
         println "Conversion DotSlide : begin"
         String name = new File(absoluteFilePath).name
 
@@ -47,6 +51,6 @@ class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
         dotslidebuild.Main.main("-f", "$absoluteFilePath/fp.txt", "-io", "$absoluteFilePath/$name")
 
         println "Conversion DotSlide : end"
-        return [[path:absoluteFilePath+"/"+name+".tif"]]
+        return [absoluteFilePath+"/"+name+".tif"]
     }
 }

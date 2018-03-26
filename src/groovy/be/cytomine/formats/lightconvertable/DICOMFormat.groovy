@@ -1,5 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.formats.ICommonFormat
+
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
  *
@@ -22,7 +24,7 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-class DICOMFormat extends CommonFormat {
+class DICOMFormat extends CommonFormat implements ICommonFormat {
 
     public DICOMFormat() {
         extensions = []

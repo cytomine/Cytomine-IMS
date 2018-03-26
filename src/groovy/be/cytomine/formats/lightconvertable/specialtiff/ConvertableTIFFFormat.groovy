@@ -22,11 +22,11 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-abstract class TIFFFormat extends VIPSConvertable {
+abstract class ConvertableTIFFFormat extends VIPSConvertable {
 
-    public TIFFFormat() {
+    public ConvertableTIFFFormat() {
         extensions = ["tif", "tiff"]
-        //mimeType = "image/tiff"
+        mimeType = "image/tiff"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
     public String getTiffInfo() {
