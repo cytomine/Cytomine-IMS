@@ -50,7 +50,7 @@ class JPEG2000Format extends SupportedImageFormat {
         return thumb(256);
     }
 
-    public BufferedImage thumb(int maxSize) {
+    public BufferedImage thumb(int maxSize, def params=null) {
         def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
         iipRequest.addParameter("FIF", absoluteFilePath, true)
         iipRequest.addParameter("HEI", "$maxSize")

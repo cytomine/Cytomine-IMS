@@ -40,23 +40,29 @@ class ImageController extends ImageResponseController {
     def imageProcessingService
     def tileService
 
-    @RestApiMethod(description="Get the thumb of an image", extensions = ["jpg","png"])
+    @RestApiMethod(description="Get the thumb of an image", extensions = ["jpg","png", "tiff"])
     @RestApiParams(params=[
-    @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-    @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
-    @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = "The max width or height of the generated thumb", required = false)
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = "The max width or height of the generated thumb", required = false),
+            @RestApiParam(name="colormap", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of a colormap file (see IIP format)", required = false),
+            @RestApiParam(name="inverse", type="int", paramType = RestApiParamType.QUERY, description = "True if colors have to be inversed (see IIP format)", required = false),
+            @RestApiParam(name="contrast", type="float", paramType = RestApiParamType.QUERY, description = "Multiply pixels by contrast (see IIP format)", required = false),
+            @RestApiParam(name="gamma", type="float", paramType = RestApiParamType.QUERY, description = "Apply gamma correction (see IIP format)", required = false),
+            @RestApiParam(name="bits", type="int", paramType = RestApiParamType.QUERY, description = "Output bit depth per channel (see IIP format)", required = false)
     ])
     def thumb() {
         String fif = params.fif
         int maxSize = params.int('maxSize', 512)
         String mimeType = params.mimeType
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        BufferedImage bufferedImage = imageFormat.thumb(maxSize)
+        BufferedImage bufferedImage = imageFormat.thumb(maxSize, params)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
             withFormat {
                 png { responseBufferedImagePNG(bufferedImage) }
                 jpg { responseBufferedImageJPG(bufferedImage) }
+                tiff { responseBufferedImageTIFF(bufferedImage) }
             }
         }
     }
@@ -81,6 +87,7 @@ class ImageController extends ImageResponseController {
             withFormat {
                 png { responseBufferedImagePNG(bufferedImage) }
                 jpg { responseBufferedImageJPG(bufferedImage) }
+                tiff { responseBufferedImageTIFF(bufferedImage) }
             }
         }
     }
@@ -109,7 +116,7 @@ class ImageController extends ImageResponseController {
         render imageFormat.properties() as JSON
     }
 
-    @RestApiMethod(description="Get the mask of a crop image", extensions = ["jpg","png"])
+    @RestApiMethod(description="Get the mask of a crop image", extensions = ["jpg","png", "tiff"])
     @RestApiResponseObject(objectIdentifier =  "[location : wkt]")
     @RestApiParams(params=[
     @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
@@ -154,6 +161,7 @@ class ImageController extends ImageResponseController {
         withFormat {
             png { responseBufferedImagePNG(bufferedImage) }
             jpg { responseBufferedImageJPG(bufferedImage) }
+            tiff { responseBufferedImageTIFF(bufferedImage) }
         }
     }
 

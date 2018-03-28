@@ -39,7 +39,7 @@ abstract class SupportedImageFormat extends Format {
 
     abstract BufferedImage associated(String label)
 
-    abstract BufferedImage thumb(int maxSize)
+    abstract BufferedImage thumb(int maxSize, def params=null)
 
     String[] associated() {
         return ["macro"]
@@ -140,7 +140,12 @@ abstract class SupportedImageFormat extends Format {
         if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
         if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
         if (inverse) iipRequest.addParameter("INV", "true")
-        if (params.bits) iipRequest.addParameter("BIT", params.bits)
+        if (params.bits) {
+            def bits= params.int("bits", 8)
+            if (bits > 16) iipRequest.addParameter("BIT", 32)
+            else if (bits > 8) iipRequest.addParameter("BIT", 16)
+            else iipRequest.addParameter("BIT", 8)
+        }
         iipRequest.addParameter("CVT", params.format)
         return iipRequest.toString()
     }
