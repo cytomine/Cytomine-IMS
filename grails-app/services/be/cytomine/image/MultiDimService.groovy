@@ -18,6 +18,7 @@ package be.cytomine.image
 
 import be.cytomine.client.Cytomine
 import be.cytomine.multidim.HyperSpectralImage
+import be.cytomine.server.FileSystemService
 import ch.systemsx.cisd.hdf5.HDF5Factory
 import ch.systemsx.cisd.hdf5.HDF5IntStorageFeatures
 import ch.systemsx.cisd.hdf5.IHDF5Reader
@@ -29,8 +30,13 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class MultiDimService {
+    def fileSystemService
 
     def convert(def cytomine, def idHDF5, def filename, def images, def bpc) {
+
+        def path = new File(filename).parent
+        fileSystemService.makeLocalDirectory(path)
+
         HyperSpectralImage hsImage = new HyperSpectralImage(images)
 
         long maxBlockSize = ((long) Holders.config.cytomine.hdf5.maxBlockSize as Long) * 1000000
@@ -125,7 +131,7 @@ class MultiDimService {
                                 }
                             } finally {
                                 exec.shutdown()
-                                exec.awaitTermination(60, TimeUnit.SECONDS)
+                                exec.awaitTermination(600, TimeUnit.SECONDS)
                             }
                         }
                         tWrite = benchmark {
@@ -154,7 +160,7 @@ class MultiDimService {
                                 }
                             } finally {
                                 exec.shutdown()
-                                exec.awaitTermination(60, TimeUnit.SECONDS)
+                                exec.awaitTermination(600, TimeUnit.SECONDS)
                             }
                         }
                         tWrite = benchmark {
