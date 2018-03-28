@@ -245,16 +245,17 @@ class UploadService {
         log.info "properties"
         log.info properties
         properties.each {
-            log.info "it.key"
-            log.info it.key
-            log.info "it.value"
-            log.info it.value
+//            log.info "it.key"
+//            log.info it.key
+//            log.info "it.value"
+//            log.info it.value
             cytomine.addDomainProperties(image.getStr("class"), image.getLong("id"),
                                          it.key.toString(), it.value.toString())
         }
 
         if (projects && annotations.size() > 0) {
-            log.info "annotations"
+            log.info "${image.getStr("originalFilename")} annotations==="
+            log.info annotations
             projects.each { idProject ->
                 def project = cytomine.getProject(idProject)
                 def ontology = cytomine.getOntology(project?.ontology)
@@ -281,6 +282,7 @@ class UploadService {
                     annotation.properties.each { key, value ->
                         cytomine.addDomainProperties("annotation", annot?.id, key, value)
                     }
+                    Thread.sleep(1800)
                 }
             }
         }

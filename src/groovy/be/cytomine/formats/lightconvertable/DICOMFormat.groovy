@@ -54,7 +54,7 @@ class DICOMFormat extends CommonFormat {
         list.read(absoluteFilePath)
         def dicomAnnotations = list.get(dictionary.getTagFromName("Annotation.Definition"))
         if (dicomAnnotations) {
-            def imageHeight = list.get(dictionary.getTagFromName("Columns")).getDelimitedStringValuesOrEmptyString()
+            def imageHeight = list.get(dictionary.getTagFromName("Rows")).getDelimitedStringValuesOrEmptyString()
             for (int i=0; i < dicomAnnotations.getNumberOfItems(); i++) {
                 AttributeList annotation = dicomAnnotations.getItem(i).getAttributeList()
                 def wkt = annotation.get(dictionary.getTagFromName("Annotation.Polygon")).getDelimitedStringValuesOrEmptyString()
