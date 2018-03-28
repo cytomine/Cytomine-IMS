@@ -129,13 +129,34 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
     }
 
 
-    BufferedImage thumb(int maxSize) {
+    BufferedImage thumb(int maxSize, def params) {
         def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
         iipRequest.addParameter("FIF", absoluteFilePath, true)
         iipRequest.addParameter("HEI", "$maxSize")
         iipRequest.addParameter("WID", "$maxSize")
-        iipRequest.addParameter("QLT", "99")
-        iipRequest.addParameter("CVT", "jpeg")
+
+        def format = "jpg"
+        if(params) {
+            boolean inverse = params.boolean("inverse", false)
+            if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
+            if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
+            if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
+            if (inverse) iipRequest.addParameter("INV", "true")
+            if (params.bits) {
+                def bits= params.int("bits", 8)
+                if (bits > 16) iipRequest.addParameter("BIT", 32)
+                else if (bits > 8) iipRequest.addParameter("BIT", 16)
+                else iipRequest.addParameter("BIT", 8)
+            }
+            if (params.format) format = params.format
+        }
+
+        if(format == "jpg" || format == "jpeg") {
+            iipRequest.addParameter("QLT", "99")
+        }
+
+        iipRequest.addParameter("CVT", format)
+
         String thumbURL = iipRequest.toString()
         println thumbURL
 		return ImageIO.read(new URL(thumbURL))

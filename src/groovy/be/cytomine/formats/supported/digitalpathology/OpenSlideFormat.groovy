@@ -123,7 +123,7 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         return properties
     }
 
-    public BufferedImage thumb(int maxSize) {
+    public BufferedImage thumb(int maxSize, def params=null) {
         OpenSlide openSlide = new OpenSlide(new File(absoluteFilePath))
         BufferedImage thumbnail = openSlide.createThumbnailImage(0, 0, openSlide.getLevel0Width(), openSlide.getLevel0Height(), maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
         openSlide.close()
