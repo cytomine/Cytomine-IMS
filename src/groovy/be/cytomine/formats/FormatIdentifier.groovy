@@ -166,7 +166,7 @@ public class FormatIdentifier {
 
     }
 
-    static public Format getImageFormat(String uploadedFile) {
+    /*static public Format getImageFormat(String uploadedFile) {
         def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
 
         //hack to avoid running detect on ndpi
@@ -194,9 +194,9 @@ public class FormatIdentifier {
 
         if(!result) throw new FormatException("Undetected Format")
         return result
-    }
+    }*/
 
-    static public Format testGetImageFormat(String filePath) {
+    static public Format getImageFormat(String filePath) {
 
         def format;
 

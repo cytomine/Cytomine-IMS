@@ -18,13 +18,12 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
     String[] convert() {
         String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         String source = absoluteFilePath
-        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
-        String intermediate = [new File(absoluteFilePath).getParent(), "_tmp.tif"].join(File.separator)
+        File current = new File(absoluteFilePath)
+        String target = current.parent+"/" + current.name.substring(0,current.name.lastIndexOf("."))+"_pyr.tif"
 
         println "ext : $ext"
         println "source : $source"
         println "target : $target"
-        println "intermediate : $intermediate"
 
         //1. Look for vips executable
         def vipsExecutable = Holders.config.cytomine.vips

@@ -38,8 +38,6 @@ class BrokenTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
     }
 
     boolean detect(String tiffinfo) {
-        println "tiffinfo"
-        println tiffinfo
         if (tiffinfo.contains("not a valid IFD offset.")) return true;
         if (tiffinfo.contains("MissingRequired")) return true;
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")

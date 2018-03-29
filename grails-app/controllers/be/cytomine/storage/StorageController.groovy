@@ -17,6 +17,7 @@ package be.cytomine.storage
  */
 
 import be.cytomine.client.Cytomine
+import be.cytomine.exception.DeploymentException
 import grails.converters.JSON
 import grails.util.Holders
 import org.restapidoc.annotation.RestApi
@@ -34,7 +35,6 @@ import org.restapidoc.pojo.RestApiParamType
 @RestApi(name = "upload services", description = "Methods for uploading images")
 class StorageController {
 
-    def deployImagesService
     def uploadService
     def cytomineService
 
@@ -98,16 +98,31 @@ class StorageController {
 
             String filename = (String) params['files[].name']
             def filePath = (String) params['files[].path']
-            String contentType = params['files[].content_type']
 
             log.info "idStorage=$idStorage"
             log.info "projects=$projects"
             log.info "filename=$filename"
             log.info "filePath=$filePath"
-            log.info "contentType=$contentType"
             long timestamp = new Date().getTime()
 
-            def responseContent = uploadService.upload(cytomine, filename, idStorage, contentType, filePath, projects, currentUserId, properties, timestamp, isSync);
+            def responseContent = [:]
+            try {
+                responseContent.status = 200;
+                responseContent.name = filename
+                def uploadResult = uploadService.upload(cytomine, filename, idStorage, filePath, projects, currentUserId, properties, timestamp, isSync)
+
+                responseContent.uploadFile = uploadResult.uploadedFile
+                responseContent.images = uploadResult.images
+
+
+            } catch(DeploymentException e){
+                response.status = 500;
+                responseContent.status = 500;
+                responseContent.error = e.getMessage()
+                responseContent.files = [[name:"test", size:55, error:"mes fesses"]]
+            }
+
+            responseContent = [responseContent]
 
             render responseContent as JSON
         } catch (Exception e) {
