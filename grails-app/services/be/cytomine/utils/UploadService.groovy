@@ -22,6 +22,7 @@ import be.cytomine.client.collections.ImageInstanceCollection
 import be.cytomine.client.models.AbstractImage
 import be.cytomine.client.models.ImageGroup
 import be.cytomine.client.models.ImageSequence
+import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.exception.DeploymentException
 import be.cytomine.exception.FormatException
@@ -29,6 +30,7 @@ import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.IConvertableImageFormat
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
+import be.cytomine.formats.supported.digitalpathology.MiraxMRXSFormat
 import grails.converters.JSON
 import utils.FilesUtils
 
@@ -69,12 +71,12 @@ class UploadService {
 
         String extension = FilesUtils.getExtensionFromFilename(filename).toLowerCase()
         String destPath = File.separator + timestamp.toString() + File.separator + FilesUtils.correctFileName(filename)
-        def storage = cytomine.getStorage(idStorage)
+        Storage storage = new Storage().fetch(idStorage)
 
         log.info "storage.getStr(basePath) : " + storage.getStr("basePath")
 
         // no parent
-        def uploadedFile = cytomine.addUploadedFile(
+        UploadedFile uploadedFile = new UploadedFile(
                 filename,
                 destPath,
                 storage.getStr("basePath"),
@@ -84,9 +86,10 @@ class UploadService {
                 projects,
                 [idStorage],
                 currentUserId,
-                0, // UPLOADED status
+                UploadedFile.Status.UPLOADED,
                 null // idParent
-        )
+                ).save();
+
 
         deployImagesService.copyUploadedFile(cytomine, tmpUploadedFilePath.absolutePath, uploadedFile, [storage])
 
@@ -124,7 +127,7 @@ class UploadService {
             result.images = deployed.images
 
             projects.each { project ->
-                groupImages(cytomine, result.groups, project);
+                groupImages(cytomine, deployed.groups, project);
             }
 
             log.info "properties"
@@ -142,7 +145,7 @@ class UploadService {
         } catch(DeploymentException | CytomineException e) {
             int status = uploadedFile.get("status")
             if (status != 3 && status != 8 && status != 9){
-                cytomine.editUploadedFile(uploadedFile.id, 9) // status ERROR_DEPLOYMENT
+                uploadedFile.changeStatus(UploadedFile.Status.ERROR_DEPLOYMENT)
             }
             if(isSync) {
                 throw new DeploymentException(e.getMessage())
@@ -197,19 +200,24 @@ class UploadService {
 //
             String destPath = currentFile.path.replace(uploadedFileParent.getStr("path"),"")
 
-            uploadedFile = cytomine.addUploadedFile(
+            Long size = currentFile.size()
+            if(currentFile.isDirectory()){
+                size = currentFile.directorySize()
+            }
+
+            uploadedFile = new UploadedFile(
                     filename,
                     destPath,
                     uploadedFileParent.getStr("path"),
-                    currentFile.size(),
+                    size,
                     (String) FilesUtils.getExtensionFromFilename(currentFile.path).toLowerCase(),
                     "undetermined", //contentType,
                     uploadedFileParent.getList("projects"),
                     uploadedFileParent.getList("storages"),
                     uploadedFileParent.getLong("user"),
-                    6L, // TODEPLOY status
+                    UploadedFile.Status.TO_DEPLOY,
                     uploadedFileParent.id // idParent
-            )
+            ).save()
         }
 
         Format format
@@ -218,17 +226,17 @@ class UploadService {
         } catch(FormatException e){
             log.warn "Undetected format"
             log.warn e.toString()
-            cytomine.editUploadedFile(uploadedFile.id, 3) // status ERROR FORMAT
+            uploadedFile.changeStatus(UploadedFile.Status.ERROR_FORMAT)
             throw new DeploymentException(e)
         }
 
         log.info "Format = $format"
 
         uploadedFile.set("contentType", format.mimeType);
-        uploadedFile = (UploadedFile) cytomine.updateModel(uploadedFile)
+        uploadedFile = (UploadedFile) uploadedFile.update()
 
         if(format instanceof IConvertableImageFormat){
-            cytomine.editUploadedFile(uploadedFile.id, 7) // status TO_CONVERT
+            uploadedFile.changeStatus(UploadedFile.Status.TO_CONVERT)
             boolean errorFlag = false
             String errorMsg = "";
             def files = []
@@ -242,6 +250,8 @@ class UploadService {
                 def newFiles = [];
                 files.each { file ->
                     file = JSON.parse(file)
+
+                    //sort par file path !!!
 
                     def imgs = [];
                     try {
@@ -279,19 +289,31 @@ class UploadService {
             }
 
             if(errorFlag){
-                cytomine.editUploadedFile(uploadedFile.id, 8) // status ERROR CONVERSION
+                uploadedFile.changeStatus(UploadedFile.Status.ERROR_CONVERSION)
                 throw new DeploymentException()
             } else {
-                cytomine.editUploadedFile(uploadedFile.id, 1) // status CONVERTED
+                uploadedFile.changeStatus(UploadedFile.Status.CONVERTED)
             }
-        } else {
+        }
+        else {
+
+            if(format instanceof MiraxMRXSFormat) {
+                File root = ((MiraxMRXSFormat) format).getRootFile(currentFile)
+
+                uploadedFile.set("originalFilename", root.name)
+                uploadedFile.set("filename", root.absolutePath.replace(uploadedFile.getStr("path"),""))
+                uploadedFile = uploadedFile.update()
+            }
+
             //creation AbstractImage
             try {
                 AbstractImage image = cytomine.addNewImage(uploadedFile.id, uploadedFile.get('filename'), uploadedFile.get('filename'), format.mimeType)
-                cytomine.editUploadedFile(uploadedFile.id, 2) // status DEPLOYED
+                // fetch to get the last uploadedFile with the image
+                uploadedFile.fetch(uploadedFile.id)
+                uploadedFile.changeStatus(UploadedFile.Status.DEPLOYED)
                 return [images : [image], groups: []]
             } catch(CytomineException e) {
-                cytomine.editUploadedFile(uploadedFile.id, 9) // status ERROR_DEPLOYMENT
+                uploadedFile.changeStatus(UploadedFile.Status.ERROR_DEPLOYMENT)
                 throw new DeploymentException(e)
             }
         }
@@ -302,7 +324,7 @@ class UploadService {
     private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
         if(newFiles.size() == 1) return;
         //Create one imagegroup for this multidim image
-        ImageGroup imageGroup = cytomine.addImageGroup(idProject)
+        ImageGroup imageGroup = new ImageGroup(idProject).save()
         ImageInstanceCollection collection = cytomine.getImageInstances(idProject);
 
         newFiles.each { file ->
@@ -327,7 +349,7 @@ class UploadService {
             }
             log.info "Uploaded ImageID: $idImage"
             //Add this image to current imagegroup
-            ImageSequence imageSequence = cytomine.addImageSequence(imageGroup.getId(), idImage, Integer.parseInt(file.z), 0, Integer.parseInt(file.t), Integer.parseInt(file.c));
+            ImageSequence imageSequence = new ImageSequence(imageGroup.getId(), idImage, Integer.parseInt(file.z), 0, Integer.parseInt(file.t), Integer.parseInt(file.c)).save()
             log.info "new ImageSequence: " + imageSequence.get("id");
         }
     }

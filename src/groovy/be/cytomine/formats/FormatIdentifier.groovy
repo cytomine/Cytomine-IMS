@@ -166,36 +166,6 @@ public class FormatIdentifier {
 
     }
 
-    /*static public Format getImageFormat(String uploadedFile) {
-        def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
-
-        //hack to avoid running detect on ndpi
-        //running detect on ndpi trigger a identity process that takes all memory for a big image
-        try {
-            int dot = uploadedFile.lastIndexOf('.');
-            if(uploadedFile.substring(dot + 1).toLowerCase().equals("ndpi")) {
-                HamamatsuNDPIFormat f = new HamamatsuNDPIFormat()
-                f.absoluteFilePath = uploadedFile
-                return f
-            }
-        } catch(Exception e) {
-            println e
-        }
-
-
-
-        imageFormats.each {
-            it.absoluteFilePath = uploadedFile
-        }
-
-        def result = imageFormats.find {
-            it.detect()
-        }
-
-        if(!result) throw new FormatException("Undetected Format")
-        return result
-    }*/
-
     static public Format getImageFormat(String filePath) {
 
         def format;

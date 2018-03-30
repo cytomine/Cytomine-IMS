@@ -36,13 +36,17 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
     @Override
     boolean detect() {
         File uploadedFile = new File(absoluteFilePath);
-        File mrxs = uploadedFile.listFiles(). find { it.name.endsWith('.mrxs')}
+        File mrxs = getRootFile(uploadedFile)
 
         if(mrxs){
             absoluteFilePath = mrxs.absolutePath
             return super.detect()
         }
         return false
+    }
+
+    File getRootFile(File folder){
+        return folder.listFiles(). find { it.name.endsWith('.mrxs')}
     }
 
     BufferedImage associated(String label) {

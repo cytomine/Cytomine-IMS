@@ -34,7 +34,6 @@ class DeployImagesService {
             }
 
         }
-        uploadedFile = cytomine.editUploadedFile(uploadedFile.id,Cytomine.UploadStatus.DEPLOYED)
         return uploadedFile
     }
 }

@@ -63,9 +63,8 @@ class StorageController {
             long currentUserId = user.id
 
             log.info "init cytomine..."
-            Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
-
-            cytomine.testHostConnection();
+            Cytomine.connection((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
+            Cytomine cytomine = Cytomine.getInstance()
 
             def idStorage = Integer.parseInt(params['idStorage'] + "")
             def projects = []
