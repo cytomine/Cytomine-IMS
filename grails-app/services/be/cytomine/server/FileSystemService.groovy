@@ -1,4 +1,4 @@
-package be.cytomine.formats.lightconvertable
+package be.cytomine.server
 
 /*
  * Copyright (c) 2009-2017. Authors: see NOTICE file.
@@ -16,18 +16,15 @@ package be.cytomine.formats.lightconvertable
  * limitations under the License.
  */
 
-import grails.util.Holders
-import utils.ServerUtils
+import utils.ProcUtils
 
-/**
- * Created by stevben on 22/04/14.
- */
-class PNGFormat extends CommonFormat {
+class FileSystemService {
 
-    public PNGFormat() {
-        extensions = ["png"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "PNG"
-//        mimeType = "image/png"
-//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+    def makeLocalDirectory(String path) {
+        int value = ProcUtils.executeOnShell("mkdir -p " + path)
+        ProcUtils.executeOnShell("chmod -R 777 " + path)
+        return value
     }
+
+
 }

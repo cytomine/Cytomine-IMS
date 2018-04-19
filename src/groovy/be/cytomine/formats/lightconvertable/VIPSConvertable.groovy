@@ -10,7 +10,7 @@ import utils.ServerUtils
 /**
  * Created by hoyoux on 25.09.15.
  */
-abstract class VIPSConvertable extends Format implements IConvertableImageFormat {
+abstract class VIPSConvertable extends Format implements ILightConvertableImageFormat {
     public String[] extensions = null
     public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
 
@@ -39,5 +39,13 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
         if (success) {
             target
         }
+    }
+
+    def properties() {
+        return []
+    }
+
+    def annotations() {
+        return []
     }
 }

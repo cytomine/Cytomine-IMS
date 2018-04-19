@@ -52,7 +52,7 @@ class StorageController {
 
         try {
 
-            String cytomineUrl =  params['cytomine']//grailsApplication.config.grails.cytomineUrl
+            String cytomineUrl = params['cytomine']
             String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
             String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
 
@@ -64,8 +64,7 @@ class StorageController {
 
             log.info "init cytomine..."
             Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
-
-            cytomine.testHostConnection();
+            cytomine.testHostConnection()
 
             def idStorage = Integer.parseInt(params['idStorage'] + "")
             def projects = []
@@ -73,7 +72,7 @@ class StorageController {
                 try {
                     projects << Integer.parseInt(params['idProject'] + "")
                 } catch (NumberFormatException e) {
-                    log.error "Integer parse Exception : "+params['idProject']
+                    log.error "Integer parse Exception : " + params['idProject']
                 }
             }
 
@@ -82,19 +81,21 @@ class StorageController {
             def values = []
             log.info "keys=" + params["keys"]
             log.info "values=" + params["values"]
-            if(params["keys"]!=null && params["keys"]!="") {
+            if (params["keys"] != null && params["keys"] != "") {
                 keys = params["keys"].split(",")
                 values = params["values"].split(",")
             }
-            if(keys.size()!=values.size()) {
-                throw new Exception("Key.size <> Value.size!");
+
+            if (keys.size() != values.size()) {
+                throw new Exception("Key.size <> Value.size!")
             }
+
             keys.eachWithIndex { key, index ->
-                properties[key]=values[index];
+                properties[key] = values[index]
             }
 
             boolean isSync = params.boolean('sync')
-            log.info "sync="+isSync
+            log.info "sync=" + isSync
 
             String filename = (String) params['files[].name']
             def filePath = (String) params['files[].path']
@@ -107,20 +108,20 @@ class StorageController {
             log.info "contentType=$contentType"
             long timestamp = new Date().getTime()
 
-            def responseContent = uploadService.upload(cytomine, filename, idStorage, contentType, filePath, projects, currentUserId, properties, timestamp, isSync);
+            def responseContent = uploadService.upload(cytomine, filename, idStorage, contentType, filePath, projects,
+                                                       currentUserId, properties, timestamp, isSync)
 
             render responseContent as JSON
         } catch (Exception e) {
-            log.error e.toString()
             e.printStackTrace()
+            log.error e.toString()
             response.status = 400;
             render e
-            return
         }
     }
 
-    @RestApiMethod(description="Method for getting used and free space of the image storage")
-    def size () {
+    @RestApiMethod(description = "Method for getting used and free space of the image storage")
+    def size() {
 
         def result = [:]
 
@@ -128,40 +129,38 @@ class StorageController {
         def proc = "df $storagePath".execute()
         proc.waitFor()
 
-        String[] out = proc.text.split("\n")[1].trim().replaceAll("\\s+"," ").split(" ")
+        String[] out = proc.text.split("\n")[1].trim().replaceAll("\\s+", " ").split(" ")
 
-        boolean nfs;
-        if(out[0].contains(":")) nfs = true;
+        boolean nfs
+        if (out[0].contains(":")) nfs = true
 
         Long used = Long.parseLong(out[2])
         Long available = Long.parseLong(out[3])
-        result.put("used",used)
-        result.put("available",available)
-        result.put("usedP",(double)(used/(used+available)))
+        result.put("used", used)
+        result.put("available", available)
+        result.put("usedP", (double) (used / (used + available)))
         String hostname = ""
         String mount = ""
 
-        if(nfs){
+        if (nfs) {
             hostname = out[0].split(":")[0]
-            mount= out[0].split(":")[1]
+            mount = out[0].split(":")[1]
         } else {
             hostname = "hostname".execute().text.split("\n")[0]
             mount = out[5]
         }
 
-        result.put("hostname",hostname.hashCode())
-        result.put("mount",mount)
+        result.put("hostname", hostname.hashCode())
+        result.put("mount", mount)
 
         String ip = "host $hostname".execute().text
-        if(ip.contains("not found")) {
+        if (ip.contains("not found")) {
             ip = null
-        }
-        else {
+        } else {
             ip = ip.split(" ").last().hashCode()
         }
-        result.put("ip",ip)
+        result.put("ip", ip)
 
         render result as JSON
-
     }
 }

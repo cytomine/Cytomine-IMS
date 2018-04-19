@@ -19,6 +19,7 @@ import grails.util.Holders
 import org.springframework.util.StringUtils
 import utils.FilesUtils
 import utils.ServerUtils
+import utils.URLBuilder
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -31,7 +32,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
     public PyramidalTIFFFormat () {
         extensions = ["tif", "tiff"]
         mimeType = "image/pyrtiff"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
     }
 
     private excludeDescription = [
@@ -102,6 +103,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
             maxWidth = Math.max(maxWidth, width)
             maxHeight = Math.max(maxHeight, height)
         }
+
         Double resolution;
         String unit;
         def resolutions = infos.findAll {
@@ -117,10 +119,37 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
                 unit = tokens.get(4)
             }
         }
+
+        int maxDepth = 0
+        infos.findAll {
+            it.contains 'Bits/Sample:'
+        }.each {
+            def tokens = it.tokenize(" ")
+            int depth = Integer.parseInt(tokens.get(1))
+            maxDepth = Math.max(maxDepth, depth)
+        }
+
+        String colorspace
+        def colorspaces = infos.findAll {
+            it.contains 'Photometric Interpretation:'
+        }.unique()
+        if (colorspaces.size() == 1) {
+            def tokens = colorspaces[0].tokenize(":")
+            def value = tokens.get(1).trim().toLowerCase()
+            if (value == "min-is-black" || value == "grayscale")
+                colorspace = "grayscale"
+            else if (value.contains("rgb"))
+                colorspace = "rgb"
+            else
+                colorspace = value
+        }
+
         properties << [ key : "cytomine.width", value : maxWidth ]
         properties << [ key : "cytomine.height", value : maxHeight ]
         properties << [ key : "cytomine.resolution", value : null/*unitConverter(resolution, unit)*/ ]
         properties << [ key : "cytomine.magnification", value : null ]
+        properties << [ key : "cytomine.bitdepth", value : maxDepth]
+        properties << [ key : "cytomine.colorspace", value : colorspace]
         return properties
 
     }
@@ -132,11 +161,37 @@ class PyramidalTIFFFormat extends SupportedImageFormat {
     }
 
 
-    BufferedImage thumb(int maxSize) {
-        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&HEI=$maxSize&WID=$maxSize&CVT=jpeg&QLT=99"
+    BufferedImage thumb(int maxSize, def params) {
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("HEI", "$maxSize")
+        iipRequest.addParameter("WID", "$maxSize")
+
+        def format = "jpg"
+        if(params) {
+            boolean inverse = params.boolean("inverse", false)
+            if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
+            if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
+            if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
+            if (inverse) iipRequest.addParameter("INV", "true")
+            if (params.bits) {
+                def bits= params.int("bits", 8)
+                if (bits > 16) iipRequest.addParameter("BIT", 32)
+                else if (bits > 8) iipRequest.addParameter("BIT", 16)
+                else iipRequest.addParameter("BIT", 8)
+            }
+            if (params.format) format = params.format
+        }
+
+        if(format == "jpg" || format == "jpeg") {
+            iipRequest.addParameter("QLT", "99")
+        }
+
+        iipRequest.addParameter("CVT", format)
+
+        String thumbURL = iipRequest.toString()
         println thumbURL
 		return ImageIO.read(new URL(thumbURL))
-
     }
 
     //convert from pixel/unit to µm/pixel

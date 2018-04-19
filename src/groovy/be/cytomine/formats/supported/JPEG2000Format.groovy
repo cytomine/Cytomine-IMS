@@ -21,6 +21,7 @@ import be.cytomine.exception.FormatException
 import grails.util.Holders
 import utils.FilesUtils
 import utils.ServerUtils
+import utils.URLBuilder
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -49,18 +50,33 @@ class JPEG2000Format extends SupportedImageFormat {
         return thumb(256);
     }
 
-    public BufferedImage thumb(int maxSize) {
-        //construct IIP2K URL
-        //maxSize currently ignored because we need to know width of the image with IIP
-        String thumbURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&SDS=0,90&CNT=1.0&HEI=$maxSize&WID=$maxSize&CVT=jpeg&QLT=99"
+    public BufferedImage thumb(int maxSize, def params=null) {
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("HEI", "$maxSize")
+        iipRequest.addParameter("WID", "$maxSize")
+        iipRequest.addParameter("QLT", "99")
+        iipRequest.addParameter("CVT", "jpeg")
+        String thumbURL = iipRequest.toString()
+        println thumbURL
         return ImageIO.read(new URL(thumbURL))
     }
 
     public def properties() {
-        String propertiesURL = "${ServerUtils.getServer(iipURL)}?fif=$absoluteFilePath&obj=IIP,1.0&obj=Max-size&obj=Tile-size&obj=Resolution-number"
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
+        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("obj", "IIP,1.0")
+        iipRequest.addParameter("obj", "Max-size")
+        iipRequest.addParameter("obj", "Tile-size")
+        iipRequest.addParameter("obj", "Resolution-number")
+        iipRequest.addParameter("obj", "bits-per-channel")
+        iipRequest.addParameter("obj", "colorspace")
+        String propertiesURL = iipRequest.toString()
         String propertiesTextResponse = new URL(propertiesURL).text
         Integer width = null
         Integer height = null
+        Integer depth = null
+        String colorspace = null
         propertiesTextResponse.eachLine { line ->
             if (line.isEmpty()) return;
 
@@ -72,6 +88,20 @@ class JPEG2000Format extends SupportedImageFormat {
                 width = Integer.parseInt(sizes[0])
                 height = Integer.parseInt(sizes[1])
             }
+
+            if (args[0].equals('Bits-per-channel'))
+                depth = Integer.parseInt(args[1])
+
+            if (args[0].contains('Colorspace')) {
+                def tokens = args[1].split(' ')
+                if (tokens[2] == "1") {
+                    colorspace = "grayscale"
+                } else if (tokens[2] == "3") {
+                    colorspace = "rgb"
+                } else {
+                    colorspace = "cielab"
+                }
+            }
         }
         assert(width)
         assert(height)
@@ -80,6 +110,8 @@ class JPEG2000Format extends SupportedImageFormat {
         properties << [ key : "cytomine.height", value : height ]
         properties << [ key : "cytomine.resolution", value : null ]
         properties << [ key : "cytomine.magnification", value : null ]
+        properties << [ key : "cytomine.bitdepth", value : depth]
+        properties << [ key : "cytomine.colorspace", value: colorspace]
         return properties
     }
 

@@ -20,7 +20,7 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/latest.war"
 grails.project.dependency.resolver = "maven"
 //grails.project.fork = [ test: false, run: false, war: false, console: false ]
 grails.project.fork = [
@@ -87,13 +87,14 @@ grails.project.dependency.resolution = {
         //runtime ":jquery:1.8.0"
         //runtime ":resources:1.1.6"
         runtime ":resources:1.2.8"
-        //runtime ':background-thread:1.6'
+        runtime ':background-thread:1.6'
+//        runtime ":executor:0.3"
         compile ":rest-api-doc:0.6.1"
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
-        //compile ":quartz:1.0.1"
+        compile ":quartz:1.0.1"
         //compile ":quartz-monitor:0.3-RC3"
 
         compile ':executor:0.3'
@@ -104,7 +105,4 @@ grails.project.dependency.resolution = {
     }
 }
 
-grails.war.resources = { stagingDir, args ->
-    copy(file: "natives/scripts/relatedFiles.sh",
-            tofile: "${stagingDir}/WEB-INF/scripts/relatedFiles.sh")
-}
+
