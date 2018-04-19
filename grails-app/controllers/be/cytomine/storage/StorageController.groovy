@@ -34,6 +34,7 @@ import org.restapidoc.pojo.RestApiParamType
 @RestApi(name = "upload services", description = "Methods for uploading images")
 class StorageController {
 
+    def deployImagesService
     def uploadService
     def cytomineService
 
@@ -114,7 +115,7 @@ class StorageController {
         } catch (Exception e) {
             e.printStackTrace()
             log.error e.toString()
-            response.status = 400
+            response.status = 400;
             render e
         }
     }

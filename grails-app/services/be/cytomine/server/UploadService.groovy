@@ -37,7 +37,7 @@ import java.util.concurrent.Callable
 
 class UploadService {
 
-    def backgroundService
+    def executorService
     def deployImagesService
 
     // WARNING ! This function is recursive. Be careful !
@@ -176,7 +176,7 @@ class UploadService {
                     conversion(it)
                 }
                 log.info "image async = $images"
-            })
+            }
         }
 
         def responseContent = [createResponseContent(filename, size, contentType, uploadedFile.toJSON(), images)]
