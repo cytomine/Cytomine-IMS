@@ -30,6 +30,7 @@ import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.IConvertableImageFormat
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
+import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
 import grails.converters.JSON
 import utils.FilesUtils
@@ -56,6 +57,7 @@ class UploadService {
      */
     def upload(Cytomine cytomine, String filename, Long idStorage, def filePath, def projects, long currentUserId, def properties, long timestamp, boolean isSync){
 
+        if(!filePath) throw new FileNotFoundException("Got an invalid file. Disk can be full.")
         def tmpUploadedFilePath = new File(filePath)
 
         log.info "filePath=$filePath"
@@ -69,7 +71,6 @@ class UploadService {
         log.info "size=$size"
         log.info "Create an uploadedFile instance and copy it to its storages"
 
-        String extension = FilesUtils.getExtensionFromFilename(filename).toLowerCase()
         String destPath = File.separator + timestamp.toString() + File.separator + FilesUtils.correctFileName(filename)
         Storage storage = new Storage().fetch(idStorage)
 
@@ -81,14 +82,14 @@ class UploadService {
                 destPath,
                 storage.getStr("basePath"),
                 size,
-                extension,
+                FilesUtils.getExtensionFromFilename(filename).toLowerCase(),
                 "undetermined",//contentType,
                 projects,
                 [idStorage],
                 currentUserId,
                 UploadedFile.Status.UPLOADED,
                 null // idParent
-                ).save();
+        ).save();
 
 
         deployImagesService.copyUploadedFile(cytomine, tmpUploadedFilePath.absolutePath, uploadedFile, [storage])
@@ -302,7 +303,7 @@ class UploadService {
 
             //creation AbstractImage
             try {
-                AbstractImage image = cytomine.addNewImage(uploadedFile.id, uploadedFile.get('filename'), uploadedFile.get('filename'), format.mimeType)
+                AbstractImage image = createAbstractImage(cytomine, uploadedFile, uploadedFileParent,format)
                 // fetch to get the last uploadedFile with the image
                 uploadedFile.fetch(uploadedFile.id)
                 uploadedFile.changeStatus(UploadedFile.Status.DEPLOYED)
@@ -314,6 +315,25 @@ class UploadService {
         }
 
         return result
+    }
+
+    private AbstractImage createAbstractImage(Cytomine cytomine, UploadedFile uploadedFile, UploadedFile uploadedFileParent, def format) {
+        String originalFilename
+
+        if(format instanceof PyramidalTIFFFormat){
+            if(uploadedFileParent.get("contentType").equals("application/zip")) {
+                originalFilename = uploadedFile.get('originalFilename')
+            }
+            else
+                originalFilename = uploadedFileParent.get('originalFilename')
+        } else
+            originalFilename = uploadedFile.get('originalFilename')
+
+        AbstractImage image = cytomine.addNewImage(uploadedFile.id, uploadedFile.get('filename'), originalFilename, format.mimeType)
+        long idImg = image.getId()
+        image = new AbstractImage().fetch(idImg)
+        image.set("originalFilename",originalFilename)
+        image.update()
     }
 
     private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
