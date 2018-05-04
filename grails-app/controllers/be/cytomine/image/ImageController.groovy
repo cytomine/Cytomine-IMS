@@ -49,9 +49,9 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Get the thumb of an image", extensions = ["jpg","png"])
     @RestApiParams(params=[
-    @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-    @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
-    @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = "The max width or height of the generated thumb", required = false)
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = "The max width or height of the generated thumb", required = false)
     ])
     def thumb() {
         String fif = params.fif
@@ -69,10 +69,10 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Get a nested (or associated) image (e.g. macro) of an image", extensions = ["jpg","png"])
     @RestApiParams(params=[
-    @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-    @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
-    @RestApiParam(name="label", type="String", paramType = RestApiParamType.QUERY, description = "The requested nested image, identified by label (e.g. macro)"),
-    @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false)
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="label", type="String", paramType = RestApiParamType.QUERY, description = "The requested nested image, identified by label (e.g. macro)"),
+            @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false)
     ])
     def nested() {
         String fif = params.fif
@@ -93,8 +93,8 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Get the list of nested (or associated) images available of an image", extensions = ["json"])
     @RestApiParams(params=[
-    @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-    @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
     ])
     def associated() {
         String fif = params.fif
@@ -105,8 +105,8 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Get the available properties (with, height, resolution, magnitude, ...) of an image", extensions = ["json"])
     @RestApiParams(params=[
-    @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-    @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
     ])
     def properties() {
         String fif = params.fif
@@ -158,20 +158,20 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Get the crop of an image", extensions = ["jpg","png"])
     @RestApiParams(params=[
-    @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-    @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
-    @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left X value of the requested ROI"),
-    @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left Y value of the requested ROI"),
-    @RestApiParam(name="width", type="int", paramType = RestApiParamType.QUERY, description = "The width of the ROI (in pixels)"),
-    @RestApiParam(name="height", type="int", paramType = RestApiParamType.QUERY, description = "The height of the ROI (in pixels)"),
-    @RestApiParam(name="imageWidth", type="int", paramType = RestApiParamType.QUERY, description = "The image width of the whole image"),
-    @RestApiParam(name="imageHeight", type="int", paramType = RestApiParamType.QUERY, description = "The image height of the whole image"),
-    @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
-    @RestApiParam(name="zoom", type="int", paramType = RestApiParamType.QUERY, description = " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.", required = false),
-    @RestApiParam(name="location", type="int", paramType = RestApiParamType.QUERY, description = " A geometry in WKT Format (Well-known text)", required = false),
-    @RestApiParam(name="draw", type="int", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
-    @RestApiParam(name="mask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask", required = false),
-    @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left X value of the requested ROI"),
+            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left Y value of the requested ROI"),
+            @RestApiParam(name="width", type="int", paramType = RestApiParamType.QUERY, description = "The width of the ROI (in pixels)"),
+            @RestApiParam(name="height", type="int", paramType = RestApiParamType.QUERY, description = "The height of the ROI (in pixels)"),
+            @RestApiParam(name="imageWidth", type="int", paramType = RestApiParamType.QUERY, description = "The image width of the whole image"),
+            @RestApiParam(name="imageHeight", type="int", paramType = RestApiParamType.QUERY, description = "The image height of the whole image"),
+            @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
+            @RestApiParam(name="zoom", type="int", paramType = RestApiParamType.QUERY, description = " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.", required = false),
+            @RestApiParam(name="location", type="int", paramType = RestApiParamType.QUERY, description = " A geometry in WKT Format (Well-known text)", required = false),
+            @RestApiParam(name="draw", type="int", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
+            @RestApiParam(name="mask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask", required = false),
+            @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
     ])
     def crop() {
 
@@ -201,17 +201,17 @@ class ImageController extends ImageUtilsController {
             String location = params.location
             Geometry geometry = new WKTReader().read(location)
 
-           if (params.zoom) {
-               int zoom = params.int('zoom', 0)
-               int maxWidth = savedWidth / Math.pow(2, zoom)
-               int maxHeight = savedHeight / Math.pow(2, zoom)
-               //resize and preserve png transparency for alpha mask
+            if (params.zoom) {
+                int zoom = params.int('zoom', 0)
+                int maxWidth = savedWidth / Math.pow(2, zoom)
+                int maxHeight = savedHeight / Math.pow(2, zoom)
+                //resize and preserve png transparency for alpha mask
 //            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
 //                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
-               // Create new (blank) image of required (scaled) size
+                // Create new (blank) image of required (scaled) size
 
-               bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
-           }
+                bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
+            }
 
 
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
@@ -241,14 +241,14 @@ class ImageController extends ImageUtilsController {
 
             bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
         }
-		
+
         if(params.boolean('drawScaleBar')) {
 //            if(proport1==porpert2) {
-                //If the crop mage has been resized, the image may be "cut" (how to know that?).
-                //(we may have oldWidth/oldHeight <> newWidth/newHeight)
-                //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
-                //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
-                //but if the image is cut , its not possible to compute the good width size
+            //If the crop mage has been resized, the image may be "cut" (how to know that?).
+            //(we may have oldWidth/oldHeight <> newWidth/newHeight)
+            //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
+            //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
+            //but if the image is cut , its not possible to compute the good width size
             double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
             Double resolution = params.double('resolution')
             Double magnification = params.double('magnification')
@@ -366,12 +366,12 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Get a tile of an image (following zoomify format)", extensions = ["jpg","png"])
     @RestApiParams(params=[
-    @RestApiParam(name="zoomify", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-    @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
-    @RestApiParam(name="tileGroup", type="int", paramType = RestApiParamType.QUERY, description = "The Tile Group (see zoomify format)"),
-    @RestApiParam(name="z", type="int", paramType = RestApiParamType.QUERY, description = "The Z index (see zoomify format)"),
-    @RestApiParam(name="x", type="int", paramType = RestApiParamType.QUERY, description = "The X index (see zoomify format)"),
-    @RestApiParam(name="y", type="int", paramType = RestApiParamType.QUERY, description = "The Y index (see zoomify format)")
+            @RestApiParam(name="zoomify", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="tileGroup", type="int", paramType = RestApiParamType.QUERY, description = "The Tile Group (see zoomify format)"),
+            @RestApiParam(name="z", type="int", paramType = RestApiParamType.QUERY, description = "The Z index (see zoomify format)"),
+            @RestApiParam(name="x", type="int", paramType = RestApiParamType.QUERY, description = "The X index (see zoomify format)"),
+            @RestApiParam(name="y", type="int", paramType = RestApiParamType.QUERY, description = "The Y index (see zoomify format)")
     ])
     def tile() {
         responseImageFromUrl(tileService.getTileUrl(params))
@@ -379,7 +379,7 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Download an image", extensions = ["jpg","png"])
     @RestApiParams(params=[
-    @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
     ])
     def download() {
         String fif = params.get("fif")
@@ -419,15 +419,11 @@ class ImageController extends ImageUtilsController {
             String filename = file.name.substring(0,file.name.lastIndexOf('.'))+".zip"
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}\""
-
             response.outputStream << baos.toByteArray()
             response.outputStream.flush()
             zipFile.close()
         } else {
             responseFile(file)
         }
-
     }
-
-
 }
