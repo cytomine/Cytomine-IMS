@@ -54,4 +54,8 @@ class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
             properties << [ key : "cytomine.resolution", value : resolution]
         }
     }
+
+    File getRootFile(File folder) {
+        return folder.listFiles(). find { it.name.endsWith('.vms')}
+    }
 }

@@ -20,5 +20,6 @@ package be.cytomine.formats.supported.digitalpathology
  */
 abstract class OpenSlideMultipleFileFormat extends OpenSlideFormat {
 
+    abstract File getRootFile(File folder)
 
 }

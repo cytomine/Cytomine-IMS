@@ -30,7 +30,7 @@ import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.IConvertableImageFormat
 import be.cytomine.formats.heavyconvertable.BioFormatConvertable
-import be.cytomine.formats.supported.digitalpathology.MiraxMRXSFormat
+import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
 import grails.converters.JSON
 import utils.FilesUtils
 
@@ -292,8 +292,8 @@ class UploadService {
         }
         else {
 
-            if(format instanceof MiraxMRXSFormat) {
-                File root = ((MiraxMRXSFormat) format).getRootFile(currentFile)
+            if(format instanceof OpenSlideMultipleFileFormat) {
+                File root = ((OpenSlideMultipleFileFormat) format).getRootFile(currentFile)
 
                 uploadedFile.set("originalFilename", root.name)
                 uploadedFile.set("filename", root.absolutePath.replace(uploadedFile.getStr("path"),""))

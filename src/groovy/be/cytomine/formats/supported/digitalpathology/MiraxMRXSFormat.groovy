@@ -45,10 +45,6 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
         return false
     }
 
-    File getRootFile(File folder){
-        return folder.listFiles(). find { it.name.endsWith('.mrxs')}
-    }
-
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
         if (label == "macro"){
@@ -59,4 +55,7 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
         }
     }
 
+    File getRootFile(File folder) {
+        return folder.listFiles(). find { it.name.endsWith('.mrxs')}
+    }
 }
