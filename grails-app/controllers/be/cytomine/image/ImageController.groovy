@@ -18,6 +18,7 @@ package be.cytomine.image
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.SupportedImageFormat
 import be.cytomine.exception.MiddlewareException
+import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
@@ -37,6 +38,8 @@ import org.restapidoc.annotation.RestApiResponseObject
 import org.restapidoc.pojo.RestApiParamType
 import utils.ImageUtils
 import utils.ServerUtils
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 @RestApi(name = "image services", description = "Methods for images (thumb, tile, property, ...)")
 class ImageController extends ImageUtilsController {
@@ -380,7 +383,50 @@ class ImageController extends ImageUtilsController {
     ])
     def download() {
         String fif = params.get("fif")
-        responseFile(new File(fif))
+        String mimeType = params.get("mimeType")
+        SupportedImageFormat format = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
+
+        File file = new File(fif)
+
+        if(format instanceof OpenSlideMultipleFileFormat) {
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream()
+            ZipOutputStream zipFile = new ZipOutputStream(baos)
+
+            File current = file.parentFile
+
+            Deque<File> queue = new LinkedList<File>();
+            queue.push(current)
+            URI base = current.toURI();
+
+            while(!queue.isEmpty()){
+                current = queue.pop()
+                for (File kid : current.listFiles()) {
+                    String name = base.relativize(kid.toURI()).getPath();
+                    if(kid.isDirectory()){
+                        zipFile.putNextEntry(new ZipEntry(name+"/"))
+                        queue.push(kid)
+                    } else {
+                        zipFile.putNextEntry(new ZipEntry(name));
+                        zipFile << kid.bytes
+                        zipFile.closeEntry();
+                    }
+                }
+            }
+
+            zipFile.finish();
+            response.setContentType("APPLICATION/ZIP");
+            String filename = file.name.substring(0,file.name.lastIndexOf('.'))+".zip"
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}\""
+
+            response.outputStream << baos.toByteArray()
+            response.outputStream.flush()
+            zipFile.close()
+        } else {
+            responseFile(file)
+        }
+
     }
 
 
