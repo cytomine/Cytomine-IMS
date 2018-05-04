@@ -1,7 +1,7 @@
 package be.cytomine.image
 
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,37 +59,33 @@ class ImageUtilsController {
      */
     protected def responseBufferedImage(BufferedImage bufferedImage) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        withFormat {
-
-            png {
-                if (request.method == 'HEAD') {
-                    render(text: "", contentType: "image/png")
-                }
-                else {
-                    ImageIO.write(bufferedImage, "png", baos);
-                    byte[] bytesOut = baos.toByteArray();
-                    response.contentLength = baos.size();
-                    response.setHeader("Connection", "Keep-Alive")
-                    response.setHeader("Accept-Ranges", "bytes")
-                    response.setHeader("Content-Type", "image/png")
-                    response.getOutputStream() << bytesOut
-                    response.getOutputStream().flush()
-                }
+        if(params.format.equals("png")){
+            if (request.method == 'HEAD') {
+                render(text: "", contentType: "image/png")
             }
-            jpg {
-                if (request.method == 'HEAD') {
-                    render(text: "", contentType: "image/jpeg");
-                }
-                else {
-                    ImageIO.write(bufferedImage, "jpg", baos);
-                    byte[] bytesOut = baos.toByteArray();
-                    response.contentLength = baos.size();
-                    response.setHeader("Connection", "Keep-Alive")
-                    response.setHeader("Accept-Ranges", "bytes")
-                    response.setHeader("Content-Type", "image/jpeg")
-                    response.getOutputStream() << bytesOut
-                    response.getOutputStream().flush()
-                }
+            else {
+                ImageIO.write(bufferedImage, "png", baos);
+                byte[] bytesOut = baos.toByteArray();
+                response.contentLength = baos.size();
+                response.setHeader("Connection", "Keep-Alive")
+                response.setHeader("Accept-Ranges", "bytes")
+                response.setHeader("Content-Type", "image/png")
+                response.getOutputStream() << bytesOut
+                response.getOutputStream().flush()
+            }
+        } else {
+            if (request.method == 'HEAD') {
+                render(text: "", contentType: "image/jpeg");
+            }
+            else {
+                ImageIO.write(bufferedImage, "jpg", baos);
+                byte[] bytesOut = baos.toByteArray();
+                response.contentLength = baos.size();
+                response.setHeader("Connection", "Keep-Alive")
+                response.setHeader("Accept-Ranges", "bytes")
+                response.setHeader("Content-Type", "image/jpeg")
+                response.getOutputStream() << bytesOut
+                response.getOutputStream().flush()
             }
         }
         baos.close()
