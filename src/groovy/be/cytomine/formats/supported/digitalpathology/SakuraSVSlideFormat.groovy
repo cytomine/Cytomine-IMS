@@ -27,4 +27,7 @@ class SakuraSVSlideFormat extends OpenSlideMultipleFileFormat {
         mimeType = "sakura/svslide"
     }
 
+    File getRootFile(File folder) {
+        return folder
+    }
 }
