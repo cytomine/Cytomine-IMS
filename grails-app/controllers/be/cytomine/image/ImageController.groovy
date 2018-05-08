@@ -1,5 +1,8 @@
 package be.cytomine.image
 
+import be.cytomine.client.Cytomine
+import be.cytomine.exception.DeploymentException
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -23,6 +26,7 @@ import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
 import grails.util.Holders
+import org.json.simple.JSONValue
 import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics
@@ -46,6 +50,8 @@ class ImageController extends ImageUtilsController {
 
     def imageProcessingService
     def tileService
+    def uploadService
+    def cytomineService
 
     @RestApiMethod(description="Get the thumb of an image", extensions = ["jpg","png"])
     @RestApiParams(params=[
@@ -216,12 +222,6 @@ class ImageController extends ImageUtilsController {
 
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
         }
-        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
-        println "bufferedImage.getType()"+bufferedImage.getType()
-        println new Color(bufferedImage.getRGB(0, 0)).alpha;
-        println bufferedImage.getRGB(0, 0);
-        println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
 
         //resize if necessary
         if (params.maxSize) {
@@ -256,15 +256,61 @@ class ImageController extends ImageUtilsController {
 //            }
         }
 
-        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
-        println "bufferedImage.getType()"+bufferedImage.getType()
-        println new Color(bufferedImage.getRGB(0, 0)).alpha;
-        println bufferedImage.getRGB(0, 0);
-        println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
         responseBufferedImage(bufferedImage)
     }
 
+    @RestApiMethod(description="Extract a crop into an image")
+    @RestApiParams(params=[
+            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left X value of the requested ROI"),
+            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left Y value of the requested ROI"),
+            @RestApiParam(name="width", type="int", paramType = RestApiParamType.QUERY, description = "The width of the ROI (in pixels)"),
+            @RestApiParam(name="height", type="int", paramType = RestApiParamType.QUERY, description = "The height of the ROI (in pixels)"),
+            @RestApiParam(name="imageWidth", type="int", paramType = RestApiParamType.QUERY, description = "The image width of the whole image"),
+            @RestApiParam(name="imageHeight", type="int", paramType = RestApiParamType.QUERY, description = "The image height of the whole image"),
+            @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
+            @RestApiParam(name="cytomine", type="int", paramType = RestApiParamType.QUERY, description = " The URL of the related Cytomine-Core"),
+            @RestApiParam(name="name", type="int", paramType = RestApiParamType.QUERY, description = " The name of the generated image")
+    ])
+    def uploadCrop() {
+
+        String cytomineUrl =  params['cytomine']//grailsApplication.config.grails.cytomineUrl
+        String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
+        String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
+
+        def user = cytomineService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
+        long currentUserId = user.id
+
+
+        log.info "init cytomine..."
+        Cytomine.connection((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
+        Cytomine cytomine = Cytomine.getInstance()
+
+        def idStorage = Integer.parseInt(params['storage'] + "")
+
+        def parameters = cytomine.doGet("/api/annotation/"+params.annotation+"/cropParameters.json")
+
+        params.putAll(JSONValue.parse(parameters))
+
+        BufferedImage bufferedImage = readCropBufferedImage(params)
+
+        File output = new File(params.name ?: "testxx")
+        ImageIO.write(bufferedImage, "jpg", output)
+
+
+        def responseContent = [:]
+        responseContent.status = 200;
+        def uploadResult
+        try{
+            uploadResult = uploadService.upload(cytomine, output.name, idStorage, output.path, [Integer.parseInt(params['project'] + "")], currentUserId, null, new Date().getTime(), true)
+        } catch (Exception e){
+            e.printStackTrace()
+        }
+        responseContent.uploadFile = uploadResult.uploadedFile
+        responseContent.images = uploadResult.images
+        render responseContent as JSON
+    }
     public void drawPoint(BufferedImage image) {
         Graphics g = image.createGraphics();
         g.setColor(Color.RED);
@@ -416,7 +462,11 @@ class ImageController extends ImageUtilsController {
 
             zipFile.finish();
             response.setContentType("APPLICATION/ZIP");
-            String filename = file.name.substring(0,file.name.lastIndexOf('.'))+".zip"
+            String filename;
+            if(file.name.lastIndexOf('.') > -1)
+                filename = file.name.substring(0,file.name.lastIndexOf('.'))+".zip"
+            else
+                filename = file.name+".zip"
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}\""
             response.outputStream << baos.toByteArray()

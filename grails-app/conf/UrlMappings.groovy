@@ -30,6 +30,10 @@ class UrlMappings {
             action = [POST:"upload"]
         }
 
+        "/uploadCrop" (controller:"image") {
+            action = [POST:"uploadCrop"]
+        }
+
         "/download"(controller:"storage"){
             action = [GET : "download"]
         }
