@@ -270,8 +270,8 @@ class ImageController extends ImageUtilsController {
             @RestApiParam(name="imageWidth", type="int", paramType = RestApiParamType.QUERY, description = "The image width of the whole image"),
             @RestApiParam(name="imageHeight", type="int", paramType = RestApiParamType.QUERY, description = "The image height of the whole image"),
             @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
-            @RestApiParam(name="cytomine", type="int", paramType = RestApiParamType.QUERY, description = " The URL of the related Cytomine-Core"),
-            @RestApiParam(name="name", type="int", paramType = RestApiParamType.QUERY, description = " The name of the generated image")
+            @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = " The URL of the related Cytomine-Core"),
+            @RestApiParam(name="name", type="String", paramType = RestApiParamType.QUERY, description = " The name of the generated image")
     ])
     def uploadCrop() {
 
@@ -295,7 +295,7 @@ class ImageController extends ImageUtilsController {
 
         BufferedImage bufferedImage = readCropBufferedImage(params)
 
-        File output = new File(params.name ?: "testxx")
+        File output = new File("/tmp/"+params.name)
         ImageIO.write(bufferedImage, "jpg", output)
 
 
