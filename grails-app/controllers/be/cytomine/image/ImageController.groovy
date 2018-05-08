@@ -1,5 +1,8 @@
 package be.cytomine.image
 
+import be.cytomine.client.Cytomine
+import be.cytomine.exception.DeploymentException
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -216,12 +219,6 @@ class ImageController extends ImageUtilsController {
 
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
         }
-        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
-        println "bufferedImage.getType()"+bufferedImage.getType()
-        println new Color(bufferedImage.getRGB(0, 0)).alpha;
-        println bufferedImage.getRGB(0, 0);
-        println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
 
         //resize if necessary
         if (params.maxSize) {
@@ -256,12 +253,6 @@ class ImageController extends ImageUtilsController {
 //            }
         }
 
-        /*println "bufferedImage.isAlphaPremultiplied()"+bufferedImage.isAlphaPremultiplied()
-        println "bufferedImage.getType()"+bufferedImage.getType()
-        println new Color(bufferedImage.getRGB(0, 0)).alpha;
-        println bufferedImage.getRGB(0, 0);
-        println bufferedImage
-        println new Color(bufferedImage.getRGB(0, 0)).transparency;*/
         responseBufferedImage(bufferedImage)
     }
 
@@ -416,7 +407,11 @@ class ImageController extends ImageUtilsController {
 
             zipFile.finish();
             response.setContentType("APPLICATION/ZIP");
-            String filename = file.name.substring(0,file.name.lastIndexOf('.'))+".zip"
+            String filename;
+            if(file.name.lastIndexOf('.') > -1)
+                filename = file.name.substring(0,file.name.lastIndexOf('.'))+".zip"
+            else
+                filename = file.name+".zip"
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}\""
             response.outputStream << baos.toByteArray()
