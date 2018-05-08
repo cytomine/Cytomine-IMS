@@ -240,6 +240,7 @@ class UploadService {
                 files = format.convert() // try catch et status conversion ERROR
             } catch (Exception e) {
                 errorFlag = true
+                errorMsg += e.getMessage()
             }
 
             if(format instanceof BioFormatConvertable && format.group) {
@@ -286,7 +287,7 @@ class UploadService {
 
             if(errorFlag){
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_CONVERSION)
-                throw new DeploymentException()
+                throw new DeploymentException(errorMsg)
             } else {
                 uploadedFile.changeStatus(UploadedFile.Status.CONVERTED)
             }
@@ -310,7 +311,7 @@ class UploadService {
                 return [images : [image], groups: []]
             } catch(CytomineException e) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_DEPLOYMENT)
-                throw new DeploymentException(e)
+                throw new DeploymentException(e.getMsg())
             }
         }
 

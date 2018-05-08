@@ -19,7 +19,11 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
         String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         String source = absoluteFilePath
         File current = new File(absoluteFilePath)
-        String target = current.parent+"/" + current.name.substring(0,current.name.lastIndexOf("."))+"_pyr.tif"
+        String target
+        if(current.name.lastIndexOf(".") > -1)
+            target = current.parent+"/" + current.name.substring(0,current.name.lastIndexOf("."))+"_pyr.tif"
+        else
+            target = current.parent+"/" + current.name+"_pyr.tif"
 
         println "ext : $ext"
         println "source : $source"
