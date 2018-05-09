@@ -338,7 +338,7 @@ class UploadService {
     }
 
     private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
-        if(newFiles.size() == 1) return;
+        if(newFiles.size() < 2) return;
         //Create one imagegroup for this multidim image
         ImageGroup imageGroup = new ImageGroup(idProject).save()
         ImageInstanceCollection collection = cytomine.getImageInstances(idProject);
