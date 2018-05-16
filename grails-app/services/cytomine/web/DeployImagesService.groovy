@@ -3,6 +3,7 @@ package cytomine.web
 import be.cytomine.client.Cytomine
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
+import be.cytomine.exception.DeploymentException
 import utils.ProcUtils
 
 /**
@@ -30,7 +31,7 @@ class DeployImagesService {
 
             if(!new File(destFilename).exists()) {
                 log.error new File(destFilename).absolutePath + " created = " + new File(destFilename).exists()
-                throw new Exception(new File(destFilename).absolutePath + " is not created! ")
+                throw new DeploymentException(new File(destFilename).absolutePath + " is not created! ")
             }
 
         }
