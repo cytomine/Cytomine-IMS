@@ -330,7 +330,6 @@ class UploadService {
         } else
             originalFilename = uploadedFile.get('originalFilename')
 
-
         AbstractImage image = cytomine.addNewImage(uploadedFile.id, uploadedFile.get('filename'), uploadedFile.get('filename'), originalFilename, format.mimeType)
         return image
     }

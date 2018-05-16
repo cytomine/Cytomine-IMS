@@ -118,7 +118,7 @@ class StorageController {
                 response.status = 500;
                 responseContent.status = 500;
                 responseContent.error = e.getMessage()
-                responseContent.files = [[name:"test", size:55, error:"mes fesses"]]
+                responseContent.files = [[name:filename, size:0, error:responseContent.error]]
             }
 
             responseContent = [responseContent]
