@@ -330,11 +330,8 @@ class UploadService {
         } else
             originalFilename = uploadedFile.get('originalFilename')
 
-        AbstractImage image = cytomine.addNewImage(uploadedFile.id, uploadedFile.get('filename'), uploadedFile.get('filename'), format.mimeType)
-        long idImg = image.getId()
-        image = new AbstractImage().fetch(idImg)
-        image.set("originalFilename",originalFilename)
-        image.update()
+        AbstractImage image = cytomine.addNewImage(uploadedFile.id, uploadedFile.get('filename'), uploadedFile.get('filename'), originalFilename, format.mimeType)
+        return image
     }
 
     private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
