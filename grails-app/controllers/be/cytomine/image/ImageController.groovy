@@ -261,17 +261,11 @@ class ImageController extends ImageUtilsController {
 
     @RestApiMethod(description="Extract a crop into an image")
     @RestApiParams(params=[
-            @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
-            @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
-            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left X value of the requested ROI"),
-            @RestApiParam(name="topLeftX", type="int", paramType = RestApiParamType.QUERY, description = "The top left Y value of the requested ROI"),
-            @RestApiParam(name="width", type="int", paramType = RestApiParamType.QUERY, description = "The width of the ROI (in pixels)"),
-            @RestApiParam(name="height", type="int", paramType = RestApiParamType.QUERY, description = "The height of the ROI (in pixels)"),
-            @RestApiParam(name="imageWidth", type="int", paramType = RestApiParamType.QUERY, description = "The image width of the whole image"),
-            @RestApiParam(name="imageHeight", type="int", paramType = RestApiParamType.QUERY, description = "The image height of the whole image"),
-            @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
             @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = " The URL of the related Cytomine-Core"),
-            @RestApiParam(name="name", type="String", paramType = RestApiParamType.QUERY, description = " The name of the generated image")
+            @RestApiParam(name="name", type="String", paramType = RestApiParamType.QUERY, description = " The name of the generated image"),
+            @RestApiParam(name="storage", type="long", paramType = RestApiParamType.QUERY, description = "The id of the targeted storage"),
+            @RestApiParam(name="annotation", type="long", paramType = RestApiParamType.QUERY, description = "The id of the annotation"),
+            @RestApiParam(name="project", type="long", paramType = RestApiParamType.QUERY, description = " The id of the targeted project", required = false),
     ])
     def uploadCrop() {
 
