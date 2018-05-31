@@ -150,6 +150,8 @@ class UploadService {
             }
             if(isSync) {
                 throw new DeploymentException(e.getMessage())
+            } else {
+                e.printStackTrace()
             }
         }
     }
@@ -322,7 +324,7 @@ class UploadService {
         String originalFilename
 
         if(format instanceof PyramidalTIFFFormat){
-            if(uploadedFileParent.get("contentType").equals("application/zip")) {
+            if(!uploadedFileParent || uploadedFileParent.get("contentType").equals("application/zip")) {
                 originalFilename = uploadedFile.get('originalFilename')
             }
             else
