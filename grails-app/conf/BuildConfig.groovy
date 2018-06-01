@@ -20,7 +20,7 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/latest.war"
 grails.project.dependency.resolver = "maven"
 //grails.project.fork = [ test: false, run: false, war: false, console: false ]
 grails.project.fork = [
@@ -80,9 +80,9 @@ grails.project.dependency.resolution = {
         compile ":grails-melody:1.49.0"
 
         build ':tomcat:7.0.54'
-		compile (':hibernate:3.6.10.17') {
-			excludes('hibernate-ehcache')
-		}
+        compile (':hibernate:3.6.10.17') {
+            excludes('hibernate-ehcache')
+        }
 
         //runtime ":jquery:1.8.0"
         //runtime ":resources:1.1.6"
@@ -93,7 +93,7 @@ grails.project.dependency.resolution = {
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
-        //compile ":quartz:1.0.1"
+        compile ":quartz:1.0.1"
         //compile ":quartz-monitor:0.3-RC3"
 
         compile ':executor:0.3'
