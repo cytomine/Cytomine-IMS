@@ -278,8 +278,8 @@ class ImageController extends ImageUtilsController {
 
 
         log.info "init cytomine..."
-        Cytomine.connection((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
-        Cytomine cytomine = Cytomine.getInstance()
+
+        Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
 
         def idStorage = Integer.parseInt(params['storage'] + "")
 

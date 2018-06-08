@@ -105,8 +105,7 @@ class CytomineService {
 
         log.info "Connection Cytomine: $cytomineUrl $ISPubKey $ISPrivKey"
 
-        Cytomine.connection(cytomineUrl, ISPubKey,ISPrivKey)
-        Cytomine cytomine = Cytomine.getInstance()
+        Cytomine cytomine = new Cytomine(cytomineUrl, ISPubKey,ISPrivKey)
 
         log.info "cytomine.getUser($accessKey)"
 

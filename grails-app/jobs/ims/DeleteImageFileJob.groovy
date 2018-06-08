@@ -20,17 +20,14 @@ class DeleteImageFileJob {
         String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
         String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
 
-        Cytomine.connection((String) cytomineUrl, pubKey, privKey)
+        Cytomine cytomine = new Cytomine((String) cytomineUrl, pubKey, privKey)
 
-        Collection<DeleteCommand> commands = new Collection<>(DeleteCommand.class, 0, 0);
-        commands.addParams("domain","uploadedFile");
+        long timeMargin = Long.parseLong(grailsApplication.config.cytomine.deleteImageFilesFrequency)*2
 
-        long timeMargin = grailsApplication.config.cytomine.deleteImageFilesFrequency*2
         //max between frequency*2 and 48h
         timeMargin = Math.max(timeMargin, 172800000L)
 
-        commands.addParams("after",(new Date().time-timeMargin).toString())
-        commands.fetch()
+        DeleteCommandCollection commands = cytomine.getDeleteCommandByDomainAndAfterDate("uploadedFile", (new Date().time-timeMargin).toString())
 
         for(int i = 0; i<commands.size(); i++) {
             DeleteCommand command = commands.get(i)
