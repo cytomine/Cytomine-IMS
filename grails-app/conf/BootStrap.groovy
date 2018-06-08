@@ -40,7 +40,7 @@ class BootStrap {
         Holders.config.cytomine.maxCropSize = Integer.parseInt(Holders.config.cytomine.maxCropSize+"")
         Holders.config.cytomine.hdf5.convertBurstSize = Integer.parseInt(Holders.config.cytomine.hdf5.convertBurstSize+"")
 
-        DeleteImageFileJob.schedule(((Long)grailsApplication.config.cytomine.deleteImageFilesFrequency), -1, [:])
+        DeleteImageFileJob.schedule(Long.parseLong(grailsApplication.config.cytomine.deleteImageFilesFrequency), -1, [:])
     }
 
     def destroy = {
