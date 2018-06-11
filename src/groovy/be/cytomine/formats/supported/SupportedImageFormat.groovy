@@ -80,7 +80,7 @@ abstract class SupportedImageFormat extends Format {
 
         if (x > 1 || y > 1) return ""
 
-        int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
+        int maxWidthOrHeight = new Integer(Holders.config.cytomine.maxCropSize)
         if (params.maxSize) {
             int maxSize = params.int('maxSize', 256)
             if (maxWidthOrHeight > maxSize) {
