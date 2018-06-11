@@ -160,14 +160,14 @@ bioformat.application.enabled="true"
 bioformat.application.location="bioformat"
 bioformat.application.port="4321"
 
-cytomine.imageServerPublicKey="cc161593-37fe-4487-baec-f6d46e62959f"
-cytomine.imageServerPrivateKey="cb2955c6-631b-4039-8ebf-889aefe8ea0c"
+cytomine.imageServerPublicKey="XXX"
+cytomine.imageServerPrivateKey="XXX"
 
 //image manipulation executable
-cytomine.vips = "/usr/local/bin/vips"
+cytomine.vips = "vips"
 cytomine.tiffinfo = "tiffinfo"
 cytomine.identify = "identify"
-cytomine.vipsthumbnail = "/usr/local/bin/vipsthumbnail"
+cytomine.vipsthumbnail = "vipsthumbnail"
 
 cytomine.maxAnnotationOnImageWidth = 200000
 
