@@ -85,6 +85,7 @@ class PropertyDictionary extends DicomDictionary {
         super.createNameByTag();
         this.nameByTag.put(new AttributeTag(119, 16), "PrivateCreator[0]");
         this.nameByTag.put(new AttributeTag(119, 17), "PrivateCreator[1]");
+        this.nameByTag.put(new AttributeTag(119, 6400), "Annotation.Number")
     }
 }
 
