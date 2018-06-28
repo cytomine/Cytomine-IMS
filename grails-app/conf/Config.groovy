@@ -160,8 +160,8 @@ bioformat.application.enabled="true"
 bioformat.application.location="bioformat"
 bioformat.application.port="4321"
 
-cytomine.imageServerPublicKey="XXX"
-cytomine.imageServerPrivateKey="XXX"
+cytomine.imageServerPublicKey="DEF"
+cytomine.imageServerPrivateKey="ABC"
 
 //image manipulation executable
 cytomine.vips = "vips"

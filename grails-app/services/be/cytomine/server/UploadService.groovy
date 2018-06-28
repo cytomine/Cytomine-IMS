@@ -18,8 +18,10 @@ package be.cytomine.server
 
 import be.cytomine.client.Cytomine
 import be.cytomine.client.collections.ImageInstanceCollection
+import be.cytomine.client.models.Annotation
 import be.cytomine.client.models.ImageGroup
 import be.cytomine.client.models.ImageSequence
+import be.cytomine.client.models.Property
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
 import be.cytomine.exception.FormatException
@@ -39,6 +41,7 @@ class UploadService {
 
     def backgroundService
     def deployImagesService
+    def grailsApplication
 
     // WARNING ! This function is recursive. Be careful !
     def upload(Cytomine cytomine, String filename, Long idStorage, String contentType, def filePath,
@@ -243,48 +246,83 @@ class UploadService {
                                          imageFormatsToDeploy.imageFormat.mimeType)
 
         log.info "properties"
-        log.info properties
+        def props = []
+        def property
         properties.each {
-//            log.info "it.key"
-//            log.info it.key
-//            log.info "it.value"
-//            log.info it.value
-            cytomine.addDomainProperties(image.getStr("class"), image.getLong("id"),
-                                         it.key.toString(), it.value.toString())
+            property = new Property()
+            property.set("domainClassName", image.getStr("class"))
+            property.set("domainIdent", image.getLong("id"))
+            property.set("key", it.key.toString())
+            property.set("value", it.value.toString())
+            props << property
         }
+        def result = cytomine.addMultipleDomainProperties(props)
+        log.info(result)
 
         if (projects && annotations.size() > 0) {
             log.info "${image.getStr("originalFilename")} annotations==="
             log.info annotations
-            projects.each { idProject ->
-                def project = cytomine.getProject(idProject)
-                def ontology = cytomine.getOntology(project?.ontology)
-                def terms = ontology?.children?.collectEntries {[(it.name): it.id]}
-                def imageInstances = cytomine.getImageInstances(idProject).getList()
+            try {
+                projects.each { idProject ->
+                    def project = cytomine.getProject(idProject)
+                    def ontology = cytomine.getOntology(project?.ontology)
+                    def terms = ontology?.children?.collectEntries {[(it.name): it.id]}
+                    def imageInstances = cytomine.getImageInstances(idProject).getList()
 
-                def imageInstance = null
-                while (imageInstance == null) {
-                    imageInstance = imageInstances.find{it.baseImage == image.getLong("id")}
-                    if (imageInstance) break
-                    Thread.sleep(1000)
-                }
+                    def imageInstance = null
+                    while (imageInstance == null) {
+                        imageInstance = imageInstances.find{it.baseImage == image.getLong("id")}
+                        if (imageInstance) break
+                        Thread.sleep(1000)
+                    }
 
-                annotations.each { annotation ->
-                    def idTerm = terms.find{it.key == annotation.term}?.value
-                    if (!idTerm) {
-                        def term = cytomine.addTerm(annotation.term, "#AAAAAA", ontology?.id)
-                        terms << [(term?.name): term?.id]
-                        idTerm = term?.id
+                    def annots = []
+                    def annot
+                    annotations.each { annotation ->
+                        def idTerm = terms.find{it.key == annotation.term}?.value
+                        if (!idTerm) {
+                            //TODO: Simple user should be able to add a new term !
+                            String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
+                            String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
+                            Cytomine cytomine2 = new Cytomine(cytomine.getHost(), pubKey, privKey)
+                            def term = cytomine2.addTerm(annotation.term, "#AAAAAA", ontology?.id)
+                            terms << [(term?.name): term?.id]
+                            idTerm = term?.id
+                        }
+
+                        def propertiesList = []
+                        annotation.properties.collectEntries {
+                            propertiesList << [key: it.key, value: it.value]
+                        }
+
+                        annot = new Annotation()
+                        annot.set("location", annotation.location as String)
+                        annot.set("image", imageInstance?.id as Long)
+                        annot.set("project", idProject)
+                        annot.set("term", idTerm ? [idTerm as Long] : null)
+                        annot.set("properties", propertiesList)
+                        annots << annot
                     }
-                    def annot = cytomine.addAnnotation(annotation.location, imageInstance?.id)
-                    log.info annot
-                    cytomine.addAnnotationTerm(annot?.id, idTerm)
-                    annotation.properties.each { key, value ->
-                        cytomine.addDomainProperties("annotation", annot?.id, key, value)
+
+                    def success = false, count  = 0
+                    while (!success && count < 100) {
+                        try  {
+                            result = cytomine.addMultipleAnnotations(annots)
+                            log.info "${result} for image instance ${imageInstance?.id}"
+                            success = true
+                        }
+                        catch(Exception e) {
+                            log.error("ERROR DURING ANNOTATION ADD: " + e.printStackTrace())
+                            Thread.sleep(1800)
+                        }
+                        count++
                     }
-                    Thread.sleep(1800)
                 }
+            } catch(Exception e) {
+                log.error("ERROR DURING ANNOTATION ADD (2): " + e.printStackTrace())
             }
+
+            Thread.sleep(1800)
         }
 
         return image
