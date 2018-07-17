@@ -153,7 +153,7 @@ class UploadService {
                 }
 
                 projects.each { project ->
-                    groupImages(cytomine, newFiles, project)
+                    groupImages(cytomine, newFiles, project, uploadedFile)
                 }
             }
 
@@ -328,10 +328,10 @@ class UploadService {
         return image
     }
 
-    private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
+    private void groupImages(Cytomine cytomine, def newFiles, Long idProject, def uploadedParent) {
         if (newFiles.size() == 1) return
         //Create one imagegroup for this multidim image
-        ImageGroup imageGroup = cytomine.addImageGroup(idProject)
+        ImageGroup imageGroup = cytomine.addImageGroup(idProject, uploadedParent.originalFilename)
         ImageInstanceCollection collection = cytomine.getImageInstances(idProject)
 
         newFiles.each { file ->
