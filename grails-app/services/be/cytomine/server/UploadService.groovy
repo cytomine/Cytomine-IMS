@@ -266,7 +266,6 @@ class UploadService {
                 projects.each { idProject ->
                     def project = cytomine.getProject(idProject)
                     def ontology = cytomine.getOntology(project?.ontology)
-                    def terms = ontology?.children?.collectEntries {[(it.name): it.id]}
                     def imageInstances = cytomine.getImageInstances(idProject).getList()
 
                     def imageInstance = null
@@ -278,6 +277,7 @@ class UploadService {
 
                     def annots = []
                     def annot
+                    def terms = ontology?.children?.collectEntries {[(it.name): it.id]}
                     annotations.each { annotation ->
                         def idTerm = terms.find{it.key == annotation.term}?.value
                         if (!idTerm) {
