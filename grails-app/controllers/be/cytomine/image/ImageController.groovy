@@ -60,7 +60,7 @@ class ImageController extends ImageUtilsController {
             @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = "The max width or height of the generated thumb", required = false)
     ])
     def thumb() {
-        String fif = params.fif
+        String fif = URLDecoder.decode(params.fif,"UTF-8")
         int maxSize = params.int('maxSize', 512)
         String mimeType = params.mimeType
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
@@ -81,7 +81,7 @@ class ImageController extends ImageUtilsController {
             @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false)
     ])
     def nested() {
-        String fif = params.fif
+        String fif = URLDecoder.decode(params.fif,"UTF-8")
         String label = params.label
         String mimeType = params.mimeType
         int maxSize = params.int('maxSize', 512)
@@ -103,7 +103,7 @@ class ImageController extends ImageUtilsController {
             @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
     ])
     def associated() {
-        String fif = params.fif
+        String fif = URLDecoder.decode(params.fif,"UTF-8")
         String mimeType = params.mimeType
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         render imageFormat.associated() as JSON
@@ -115,7 +115,7 @@ class ImageController extends ImageUtilsController {
             @RestApiParam(name="mimeType", type="String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
     ])
     def properties() {
-        String fif = params.fif
+        String fif = URLDecoder.decode(params.fif,"UTF-8")
         String mimeType = params.mimeType
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         render imageFormat.properties() as JSON
@@ -184,7 +184,7 @@ class ImageController extends ImageUtilsController {
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
 
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
+        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(URLDecoder.decode(params.fif,"UTF-8"), params.mimeType)
 
         boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
 
