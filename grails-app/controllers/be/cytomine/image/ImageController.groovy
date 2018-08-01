@@ -422,7 +422,7 @@ class ImageController extends ImageUtilsController {
             @RestApiParam(name="fif", type="String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
     ])
     def download() {
-        String fif = params.get("fif")
+        String fif = URLDecoder.decode(params.get("fif"),"UTF-8")
         String mimeType = params.get("mimeType")
         SupportedImageFormat format = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
 
