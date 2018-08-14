@@ -424,9 +424,13 @@ class ImageController extends ImageUtilsController {
     def download() {
         String fif = URLDecoder.decode(params.get("fif"),"UTF-8")
         String mimeType = params.get("mimeType")
-        SupportedImageFormat format = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-
         File file = new File(fif)
+
+        if(!mimeType) {
+            responseFile(file)
+            return
+        }
+        SupportedImageFormat format = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
 
         if(format instanceof OpenSlideMultipleFileFormat) {
 
