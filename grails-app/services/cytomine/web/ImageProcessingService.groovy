@@ -1,8 +1,5 @@
 package cytomine.web
 
-import be.cytomine.processing.image.filters.Auto_Threshold
-import com.vividsolutions.jts.geom.Coordinate
-
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -18,6 +15,9 @@ import com.vividsolutions.jts.geom.Coordinate
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import be.cytomine.processing.image.filters.Auto_Threshold
+import com.vividsolutions.jts.geom.Coordinate
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.geom.GeometryCollection
 import com.vividsolutions.jts.geom.LineString
@@ -46,15 +46,6 @@ class ImageProcessingService {
         return ipThresholded.getBufferedImage()
     }
 
-
-    public BufferedImage resizeImage(BufferedImage image, int width, int height) {
-        int type = image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : image.getType();
-        BufferedImage resizedImage = new BufferedImage(width, height,type);
-        Graphics2D g = resizedImage.createGraphics();
-        g.drawImage(image, 0, 0, width, height, null);
-        g.dispose();
-        return resizedImage;
-    }
 
     //deprecated
     public BufferedImage rotate90ToRight( BufferedImage inputImage ){

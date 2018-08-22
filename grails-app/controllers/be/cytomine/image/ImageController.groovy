@@ -30,8 +30,6 @@ import org.json.simple.JSONValue
 import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import org.restapidoc.annotation.RestApi
@@ -216,7 +214,7 @@ class ImageController extends ImageUtilsController {
 //                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
                 // Create new (blank) image of required (scaled) size
 
-                bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
+                bufferedImage = ImageUtils.resize(bufferedImage, maxWidth, maxHeight)
             }
 
 
@@ -234,12 +232,8 @@ class ImageController extends ImageUtilsController {
             int zoom = params.int('zoom', 0)
             int maxWidth = savedWidth / Math.pow(2, zoom)
             int maxHeight = savedHeight / Math.pow(2, zoom)
-            //resize and preserve png transparency for alpha mask
-//            bufferedImage = Scalr.resize(bufferedImage,  Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH,
-//                    maxWidth, maxHeight, Scalr.OP_ANTIALIAS);
-            // Create new (blank) image of required (scaled) size
 
-            bufferedImage = resizeImage(maxWidth, maxHeight, bufferedImage)
+            bufferedImage = ImageUtils.resize(bufferedImage, maxWidth, maxHeight)
         }
 
         if(params.boolean('drawScaleBar')) {
@@ -317,23 +311,6 @@ class ImageController extends ImageUtilsController {
         g.drawLine(x, y-length, x, y+length);
         g.drawLine(x-length,y,x+length,y);
         g.dispose();
-    }
-
-    public BufferedImage resizeImage(int maxWidth, int maxHeight, BufferedImage bufferedImage) {
-        BufferedImage scaledImage = new BufferedImage(
-                maxWidth, maxHeight, BufferedImage.TYPE_INT_ARGB);
-
-// Paint scaled version of image to new image
-
-        Graphics2D graphics2D = scaledImage.createGraphics();
-        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        graphics2D.drawImage(bufferedImage, 0, 0, maxWidth, maxHeight, null);
-
-// clean up
-
-        graphics2D.dispose();
-        return scaledImage;
     }
 
     public BufferedImage readCropBufferedImage(def params) {
