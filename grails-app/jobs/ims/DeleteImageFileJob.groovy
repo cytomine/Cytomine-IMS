@@ -30,7 +30,7 @@ class DeleteImageFileJob {
         DeleteCommandCollection commands = cytomine.getDeleteCommandByDomainAndAfterDate("uploadedFile", (new Date().time-timeMargin))
 
         for(int i = 0; i<commands.size(); i++) {
-            DeleteCommand command = commands.get(i)
+            DeleteCommand command = commands.list.get(i)
 
             JSONElement j = JSON.parse(command.get("data"));
 
