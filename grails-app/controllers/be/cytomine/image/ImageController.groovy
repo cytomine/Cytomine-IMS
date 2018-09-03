@@ -184,8 +184,6 @@ class ImageController extends ImageUtilsController {
 
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(URLDecoder.decode(params.fif,"UTF-8"), params.mimeType)
 
-        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
-
         BufferedImage bufferedImage = readCropBufferedImage(params)
 
         if(params.boolean("point")) {
@@ -221,14 +219,7 @@ class ImageController extends ImageUtilsController {
             bufferedImage = imageProcessingService.createMask(bufferedImage, geometry, params, true)
         }
 
-        //resize if necessary
-        if (params.maxSize) {
-            //useless with new iipversion
-            if(!exactSize) {
-                int maxSize = params.int('maxSize', 256)
-                bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
-            }
-        } else if (params.zoom && !params.alphaMask) {
+        if (params.zoom && !params.alphaMask) {
             int zoom = params.int('zoom', 0)
             int maxWidth = savedWidth / Math.pow(2, zoom)
             int maxHeight = savedHeight / Math.pow(2, zoom)
@@ -334,8 +325,6 @@ class ImageController extends ImageUtilsController {
         String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
         log.info cropURL
 
-        boolean exactSize = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase).containsAll(imageFormat.iipURL);
-
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
 
         int i = 0
@@ -355,15 +344,6 @@ class ImageController extends ImageUtilsController {
          * We may loose precision and the size could be w+-1 * h+-1.
          * If the difference is < as threshold, we rescale
          */
-        if(!exactSize) {
-            int threshold = 10
-            boolean imageDifferentSize = (savedWidth != bufferedImage.width) || (savedHeight != bufferedImage.height)
-            // TODO so if increase area is set, it is possible than we have no effect :s ==> fix with increaseArea
-            if (imageDifferentSize && (Math.abs(savedWidth - bufferedImage.width) < threshold && Math.abs(savedHeight - bufferedImage.height) < threshold)) {
-                bufferedImage = ImageUtils.resize(bufferedImage, (int) savedWidth, (int) savedHeight)
-            }
-        }
-
         log.info "time=${System.currentTimeMillis() - start}"
 
         params.topLeftX = savedTopX
