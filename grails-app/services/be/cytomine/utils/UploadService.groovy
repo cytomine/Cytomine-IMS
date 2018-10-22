@@ -168,6 +168,8 @@ class UploadService {
     // WARNING ! This function is recursive. Be careful !
     private def deploy(Cytomine cytomine, File currentFile, UploadedFile uploadedFile, UploadedFile uploadedFileParent){
 
+        log.info "deploy $currentFile"
+
         def result = [:]
         result.images = []
         result.groups = []
@@ -203,6 +205,7 @@ class UploadService {
                 size = currentFile.directorySize()
             }
 
+            log.info "create uploadedFile $filename"
             uploadedFile = cytomine.addUploadedFile(
                     filename,
                     destPath,
@@ -272,6 +275,9 @@ class UploadService {
                 }
                 result.groups = newFiles
             } else {
+                if(format instanceof BioFormatConvertable) {
+                    files = files.collect{JSON.parse(it).path}
+                }
                 files.each { file ->
                     try {
                         def deployed = deploy(cytomine, new File(file), null, uploadedFile)
