@@ -175,4 +175,4 @@ cytomine.hdf5.size.maxHeigth = 256
 cytomine.hdf5.size.maxWidth = 256
 cytomine.hdf5.size.maxDepth = 256
 
-cytomine.deleteImageFilesFrequency = "60000"
+cytomine.deleteImageFilesFrequency = "600000"
