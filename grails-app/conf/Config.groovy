@@ -163,6 +163,8 @@ cytomine.tiffinfo = "tiffinfo"
 cytomine.identify = "identify"
 cytomine.vipsthumbnail = "/usr/local/bin/vipsthumbnail"
 
+cytomine.imageConversionAlgorithm = "lzw"
+
 cytomine.maxAnnotationOnImageWidth = 200000
 
 cytomine.charset = "UTF-8"
