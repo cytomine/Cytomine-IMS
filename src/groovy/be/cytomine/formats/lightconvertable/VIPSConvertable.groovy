@@ -16,15 +16,17 @@ abstract class VIPSConvertable extends Format implements ILightConvertableImageF
 
     @Override
     def convert() {
-        String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         String source = absoluteFilePath
         String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
-        String intermediate = [new File(absoluteFilePath).getParent(), "_tmp.tif"].join(File.separator)
+        return convertToPyramidalTIFF(source, target)
+    }
+
+    static def convertToPyramidalTIFF(source, target) {
+        String ext = FilesUtils.getExtensionFromFilename(source).toLowerCase()
 
         println "ext : $ext"
         println "source : $source"
         println "target : $target"
-        println "intermediate : $intermediate"
 
         //1. Look for vips executable
         def vipsExecutable = Holders.config.cytomine.vips
