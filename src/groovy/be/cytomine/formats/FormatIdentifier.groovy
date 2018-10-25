@@ -28,6 +28,8 @@ import be.cytomine.formats.lightconvertable.DICOMFormat
 import be.cytomine.formats.lightconvertable.JPEGFormat
 import be.cytomine.formats.lightconvertable.PGMFormat
 import be.cytomine.formats.lightconvertable.PNGFormat
+import be.cytomine.formats.lightconvertable.geospatial.GeoJPEG2000Format
+import be.cytomine.formats.lightconvertable.geospatial.GeoTIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.BrokenTIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.CZITIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.HuronTIFFFormat
@@ -70,6 +72,8 @@ public class FormatIdentifier {
     static public getAvailableSingleFileImageFormats() {
         //check the extension and or content in order to identify the right Format
         return [
+                new GeoTIFFFormat(),
+                new GeoJPEG2000Format(),
                 new JPEG2000Format(),
                 new ZeissCZIFormat(),
                 //openslide compatibles formats

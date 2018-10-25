@@ -168,6 +168,8 @@ cytomine.vips = "vips"
 cytomine.tiffinfo = "tiffinfo"
 cytomine.identify = "identify"
 cytomine.vipsthumbnail = "vipsthumbnail"
+cytomine.gdalinfo = "gdalinfo"
+cytomine.gdaltranslate = "gdal_translate"
 
 cytomine.maxAnnotationOnImageWidth = 200000
 
