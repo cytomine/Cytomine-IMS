@@ -1,7 +1,6 @@
 package be.cytomine.formats.archive
 
 import be.cytomine.exception.FormatException
-import be.cytomine.formats.ArchiveFormat
 import org.apache.commons.lang.RandomStringUtils
 import utils.FilesUtils
 import utils.ProcUtils

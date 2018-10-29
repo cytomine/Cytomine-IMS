@@ -1,11 +1,11 @@
 package be.cytomine.formats.lightconvertable.geospatial
 
-import be.cytomine.formats.lightconvertable.specialtiff.TIFFFormat
+import be.cytomine.formats.lightconvertable.specialtiff.ConvertableTIFFFormat
 import grails.converters.JSON
 import grails.util.Holders
 import utils.ProcUtils
 
-class GeoTIFFFormat extends TIFFFormat {
+class GeoTIFFFormat extends ConvertableTIFFFormat {
 
     GeoTIFFFormat() {
         extensions = ["tif", "tiff"]
@@ -21,7 +21,7 @@ class GeoTIFFFormat extends TIFFFormat {
     }
 
     @Override
-    def convert() {
+    String[] convert() {
         // 1. Get bit depth
         def gdalinfoExecutable = Holders.config.cytomine.gdalinfo
         def gdalinfo = new ProcessBuilder("$gdalinfoExecutable", absoluteFilePath).redirectErrorStream(true).start().text

@@ -1,6 +1,7 @@
 package be.cytomine.formats.archive
 
 import be.cytomine.formats.Format
+import be.cytomine.formats.IConvertableImageFormat
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.

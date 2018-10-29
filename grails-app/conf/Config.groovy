@@ -151,7 +151,7 @@ grails.plugins.restapidoc.grailsDomainDefaultType = "int"
 cytomine.coreURL="http://localhost-core:8080"
 cytomine.storageBufferPath="/tmp/imageserver_buffer"
 
-cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerBase="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
 cytomine.Jpeg2000Enabled=false
 cytomine.iipImageServerJpeg2000="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
 cytomine.iipImageServerCyto="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"

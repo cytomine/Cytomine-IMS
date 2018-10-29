@@ -39,6 +39,7 @@ import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.*
 import be.cytomine.formats.supported.SupportedImageFormat
+import grails.util.Holders
 import org.apache.commons.lang.RandomStringUtils
 import org.openslide.OpenSlide
 

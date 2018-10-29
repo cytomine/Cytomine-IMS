@@ -8,6 +8,8 @@ import com.vividsolutions.jts.io.WKTReader
 import com.vividsolutions.jts.io.WKTWriter
 
 import be.cytomine.formats.ICommonFormat
+import grails.util.Holders
+import utils.ServerUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -33,7 +35,8 @@ class DICOMFormat extends CommonFormat implements ICommonFormat {
     public DICOMFormat() {
         extensions = ["dcm"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "DCM"
-//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        mimeType = "application/dicom"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 
     @Override

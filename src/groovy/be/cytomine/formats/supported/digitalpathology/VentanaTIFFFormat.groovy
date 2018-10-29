@@ -38,9 +38,9 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements ILightConve
     }
 
     @Override
-    def convert() {
+    String[] convert() {
         fakeExtension(absoluteFilePath)
-        return absoluteFilePath
+        return [absoluteFilePath]
     }
 
     BufferedImage associated(String label) {
