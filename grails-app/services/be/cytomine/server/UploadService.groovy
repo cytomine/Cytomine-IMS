@@ -35,6 +35,7 @@ import be.cytomine.formats.heavyconvertable.BioFormatConvertable
 import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
 import be.cytomine.formats.lightconvertable.VIPSConvertable
+import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileTIFFFormat
 import grails.converters.JSON
 import utils.FilesUtils
 
@@ -319,6 +320,11 @@ class UploadService {
 
                 uploadedFile.set("originalFilename", root.name)
                 uploadedFile.set("filename", root.absolutePath.replace(uploadedFile.getStr("path"),""))
+                cytomine.updateModel(uploadedFile)
+            }
+            else if (format instanceof OpenSlideSingleFileTIFFFormat) {
+                File renamed = ((OpenSlideSingleFileTIFFFormat) format).rename()
+                uploadedFile.set("filename", renamed.absolutePath.replace(uploadedFile.getStr("path"),""))
                 cytomine.updateModel(uploadedFile)
             }
 
