@@ -6,6 +6,7 @@ import utils.FilesUtils
 
 class GeoJPEG2000Format extends GeoTIFFFormat {
     GeoJPEG2000Format() {
+        mimeType = "image/jp2"
         extensions = ["jp2"]
     }
 

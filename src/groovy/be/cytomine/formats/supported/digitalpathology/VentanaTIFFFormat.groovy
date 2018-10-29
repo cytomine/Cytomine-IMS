@@ -17,14 +17,13 @@ package be.cytomine.formats.supported.digitalpathology
  */
 
 import java.awt.image.BufferedImage
-import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
 import grails.util.Holders
 import utils.ServerUtils
 
 /**
  * Created by stevben on 28/04/14.
  */
-class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements ILightConvertableImageFormat {
+class VentanaTIFFFormat extends OpenSlideSingleFileTIFFFormat {
 
     public VentanaTIFFFormat() {
         extensions = ["tif", "vtif"]
@@ -35,12 +34,7 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements ILightConve
         resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = "openslide.objective-power"
         iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
-    }
-
-    @Override
-    def convert() {
-        fakeExtension(absoluteFilePath)
-        return absoluteFilePath
+        fakeExtension = "vtif"
     }
 
     BufferedImage associated(String label) {
@@ -52,21 +46,16 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat implements ILightConve
         }
     }
 
-    String fakeExtension(def original) {
-        def renamed = new File(original.take(original.lastIndexOf('.')) + ".vtif")
-        if (!renamed.exists())
-            "ln -s $original $renamed".execute()
-        return renamed
-    }
-
     @Override
     String tileURL(def fif, def params, def with_zoomify) {
-        return super.tileURL(fakeExtension(fif), params, with_zoomify)
+        absoluteFilePath = fif
+        return super.tileURL(rename(), params, with_zoomify)
     }
 
     @Override
     String cropURL(def params, def charset) {
-        params.fif = fakeExtension(params.fif)
+        absoluteFilePath = params.fif
+        params.fif = rename()
         return super.cropURL(params, charset)
     }
 }
