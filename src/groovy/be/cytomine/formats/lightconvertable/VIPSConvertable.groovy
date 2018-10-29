@@ -10,19 +10,20 @@ import utils.ServerUtils
 /**
  * Created by hoyoux on 25.09.15.
  */
-abstract class VIPSConvertable extends Format implements ILightConvertableImageFormat {
+abstract class VIPSConvertable extends Format implements IConvertableImageFormat {
     public String[] extensions = null
     public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
 
     @Override
-    def convert() {
+    String[] convert() {
+        String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
         String source = absoluteFilePath
-        String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
-        return convertToPyramidalTIFF(source, target)
-    }
-
-    static def convertToPyramidalTIFF(source, target) {
-        String ext = FilesUtils.getExtensionFromFilename(source).toLowerCase()
+        File current = new File(absoluteFilePath)
+        String target
+        if(current.name.lastIndexOf(".") > -1)
+            target = current.parent+"/" + current.name.substring(0,current.name.lastIndexOf("."))+"_pyr.tif"
+        else
+            target = current.parent+"/" + current.name+"_pyr.tif"
 
         println "ext : $ext"
         println "source : $source"
@@ -39,15 +40,7 @@ abstract class VIPSConvertable extends Format implements ILightConvertableImageF
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
 
         if (success) {
-            target
+            return [target]
         }
-    }
-
-    def properties() {
-        return []
-    }
-
-    def annotations() {
-        return []
     }
 }

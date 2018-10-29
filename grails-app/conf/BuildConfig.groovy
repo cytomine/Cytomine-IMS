@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,9 +80,9 @@ grails.project.dependency.resolution = {
         compile ":grails-melody:1.49.0"
 
         build ':tomcat:7.0.54'
-		compile (':hibernate:3.6.10.17') {
-			excludes('hibernate-ehcache')
-		}
+        compile (':hibernate:3.6.10.17') {
+            excludes('hibernate-ehcache')
+        }
 
         //runtime ":jquery:1.8.0"
         //runtime ":resources:1.1.6"

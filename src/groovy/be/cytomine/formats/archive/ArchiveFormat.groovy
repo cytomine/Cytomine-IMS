@@ -3,7 +3,7 @@ package be.cytomine.formats.archive
 import be.cytomine.formats.Format
 
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import be.cytomine.formats.Format
 /**
  * Created by stevben on 10/05/14.
  */
-abstract class ArchiveFormat extends Format {
+abstract class ArchiveFormat extends Format implements IConvertableImageFormat {
 
-    abstract public String[] extract(String destPath)
+    //abstract public String[] extract(String destPath)
 }

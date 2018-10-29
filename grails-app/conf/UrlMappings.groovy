@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,11 @@ class UrlMappings {
             action = [POST:"upload"]
         }
 
-        "/download"(controller:"image"){
+        "/uploadCrop" (controller:"image") {
+            action = [POST:"uploadCrop"]
+        }
+
+        "/download"(controller:"storage"){
             action = [GET : "download"]
         }
 
@@ -62,7 +66,7 @@ class UrlMappings {
             action = [GET:"size"]
         }
 
-        "/multidim/pixel.$format" (controller:"multiDim"){
+        /*"/multidim/pixel.$format" (controller:"multiDim"){
             action = [GET:"getSpectraPixel"]
         }
 
@@ -72,10 +76,6 @@ class UrlMappings {
 
         "/multidim/convert.$format" (controller: "multiDim"){
             action = [POST: "convertListToHdf5"]
-        }
-
-        "/image/tile" (controller: "image") {
-            action = [GET:"tileZoomify"] //tileIIP
-        }
+        }*/
 	}
 }

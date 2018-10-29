@@ -1,12 +1,13 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
+import be.cytomine.formats.ITIFFFormat
 import org.springframework.util.StringUtils
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,7 @@ import java.util.regex.Pattern
 /**
  * Created by hoyoux on 16.02.15.
  */
-class BrokenTIFFFormat extends TIFFFormat{
+class BrokenTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
 
     public BrokenTIFFFormat () {
         extensions = ["tif", "tiff"]
@@ -33,7 +34,10 @@ class BrokenTIFFFormat extends TIFFFormat{
 
     public boolean detect() {
         String tiffinfo = getTiffInfo()
+        return this.detect(tiffinfo)
+    }
 
+    boolean detect(String tiffinfo) {
         if (tiffinfo.contains("not a valid IFD offset.")) return true;
         if (tiffinfo.contains("MissingRequired")) return true;
         int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")

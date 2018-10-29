@@ -1,7 +1,9 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.formats.ICommonFormat
+
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +24,12 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-class BMPFormat extends CommonFormat {
+class BMPFormat extends CommonFormat implements ICommonFormat {
 
     public BMPFormat() {
         extensions = ["bmp"]
         IMAGE_MAGICK_FORMAT_IDENTIFIER = "BMP"
-//        mimeType = "image/bmp"
-//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        mimeType = "image/bmp"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 }

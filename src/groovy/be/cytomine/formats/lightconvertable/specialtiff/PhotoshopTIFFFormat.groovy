@@ -1,6 +1,9 @@
 package be.cytomine.formats.lightconvertable.specialtiff
+
+import be.cytomine.formats.ITIFFFormat
+
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +22,7 @@ package be.cytomine.formats.lightconvertable.specialtiff
 /**
  * Created by hoyoux on 16.02.15.
  */
-class PhotoshopTIFFFormat extends TIFFFormat {
+class PhotoshopTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
 
     public PhotoshopTIFFFormat () {
         extensions = ["tif", "tiff"]
@@ -27,6 +30,10 @@ class PhotoshopTIFFFormat extends TIFFFormat {
 
     public boolean detect() {
         String tiffinfo = getTiffInfo()
+        return this.detect(tiffinfo)
+    }
+
+    boolean detect(String tiffinfo) {
         return tiffinfo.contains("Software: Adobe Photoshop");
     }
 }

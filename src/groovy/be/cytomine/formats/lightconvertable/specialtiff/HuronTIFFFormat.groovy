@@ -1,6 +1,9 @@
 package be.cytomine.formats.lightconvertable.specialtiff
+
+import be.cytomine.formats.ITIFFFormat
+
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +18,17 @@ package be.cytomine.formats.lightconvertable.specialtiff
  * limitations under the License.
  */
 
-public class HuronTIFFFormat extends TIFFFormat {
+public class HuronTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
     public HuronTIFFFormat () {
         extensions = ["tif", "tiff"]
     }
 
     public boolean detect() {
         String tiffinfo = getTiffInfo()
+        return this.detect(tiffinfo)
+    }
 
+    boolean detect(String tiffinfo) {
         return !tiffinfo.contains("Compression Scheme: JPEG") && !tiffinfo.contains("Photometric Interpretation: YCbCr") &&
                 tiffinfo.contains("Compression Scheme: None") && tiffinfo.contains("Photometric Interpretation: RGB color") &&
                 tiffinfo.contains("Source = Bright Field")
