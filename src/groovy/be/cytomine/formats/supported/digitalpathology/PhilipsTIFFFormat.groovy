@@ -81,13 +81,13 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileTIFFFormat {
     @Override
     String tileURL(def fif, def params, def with_zoomify) {
         absoluteFilePath = fif
-        return super.tileURL(rename(), params, with_zoomify)
+        return super.tileURL(rename().absolutePath, params, with_zoomify)
     }
 
     @Override
     String cropURL(def params, def charset) {
         absoluteFilePath = params.fif
-        params.fif = rename()
+        params.fif = rename().absolutePath
         return super.cropURL(params, charset)
     }
 }
