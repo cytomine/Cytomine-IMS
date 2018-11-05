@@ -42,7 +42,7 @@ import utils.FilesUtils
 class UploadService {
 
     def executorService //used for the runAsync
-    def backgroundService
+//    def backgroundService
     def deployImagesService
     def grailsApplication
 
@@ -109,12 +109,12 @@ class UploadService {
             log.info "Sync upload"
             deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
         } else {
-//            runAsync {
-            backgroundService.execute("deployImagesAndGroups", {
+            runAsync {
+//            backgroundService.execute("deployImagesAndGroups", {
                 log.info "Async upload"
                 deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
-            })
-//            }
+//            })
+            }
         }
 
         return result

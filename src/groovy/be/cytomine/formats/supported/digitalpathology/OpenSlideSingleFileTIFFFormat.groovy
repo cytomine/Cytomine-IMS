@@ -3,7 +3,7 @@ package be.cytomine.formats.supported.digitalpathology
 class OpenSlideSingleFileTIFFFormat extends OpenSlideSingleFileFormat {
     def fakeExtension = ""
 
-    def rename() {
+    File rename() {
         String filename
         if(absoluteFilePath.lastIndexOf('.') > -1)
             filename = absoluteFilePath.substring(0, absoluteFilePath.lastIndexOf('.')) + "." + fakeExtension

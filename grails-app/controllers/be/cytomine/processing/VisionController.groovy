@@ -1,7 +1,7 @@
 package be.cytomine.processing
 
-import be.cytomine.image.ImageResponseController
 import be.cytomine.exception.MiddlewareException
+import be.cytomine.image.ImageResponseController
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -81,20 +81,21 @@ class VisionController extends ImageResponseController {
         }
         paramsWithoutUrl.remove("zoomify")
 
+
         log.info "paramsWithoutUrl=$paramsWithoutUrl"
         log.info "Urls=$urls"
         log.info "Colors=$colors"
 
-        def postParam = paramsWithoutUrl.collect { it.key + "=" + it.value }.join("&")
+        def postParam = paramsWithoutUrl.collect{it.key+"="+it.value}.join("&")
 
-        if (urls.isEmpty()) {
+        if(urls.isEmpty()) {
             render "url argument is missing (start with url0=)!"
             response.status = 400
-        }
-        else {
+        } else {
             log.info "urls=$urls"
 
             ImagePlus[] images = new ImagePlus[urls.size()]
+
 
             for (int i=0;i<urls.size();i++){
                 String url = urls[i]
@@ -108,8 +109,6 @@ class VisionController extends ImageResponseController {
             ImagePlus result = CytomineStackMerge.merge(images,colorsArray)
 
             BufferedImage resultImage = result.getBufferedImage()
-
-            BufferedImage bufferedImage = result.getBufferedImage()
             withFormat {
                 png { responseBufferedImagePNG(bufferedImage) }
                 jpg { responseBufferedImageJPG(bufferedImage) }

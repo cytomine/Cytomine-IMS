@@ -20,7 +20,7 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-grails.project.war.file = "target/latest.war"
+grails.project.war.file = "IMS.war"
 grails.project.dependency.resolver = "maven"
 //grails.project.fork = [ test: false, run: false, war: false, console: false ]
 grails.project.fork = [
@@ -57,51 +57,26 @@ grails.project.dependency.resolution = {
 
         mavenLocal()
         mavenCentral()
-
-        // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
-
-//        mavenRepo "http://maven.thebuzzmedia.com"
+        mavenRepo "https://packagecloud.io/cytomine-uliege/Cytomine-java-client/maven2"
     }
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-
-        // runtime 'mysql:mysql-connector-java:5.1.20'
-
-//        compile 'org.imgscalr:imgscalr-lib:4.2'
-
+        compile 'be.cytomine.client:cytomine-java-client:1.3.0'
+        compile 'com.vividsolutions:jts:1.13'
+        compile 'net.imagej:ij:1.51h'
+        compile 'com.github.jai-imageio:jai-imageio-core:1.4.0'
     }
 
     plugins {
-
         compile ":grails-melody:1.49.0"
-
         build ':tomcat:7.0.54'
         compile (':hibernate:3.6.10.17') {
             excludes('hibernate-ehcache')
         }
-
-        //runtime ":jquery:1.8.0"
-        //runtime ":resources:1.1.6"
         runtime ":resources:1.2.8"
-        runtime ':background-thread:1.6'
-//        runtime ":executor:0.3"
+//        runtime ':background-thread:1.6'
+        runtime ":executor:0.3"
         compile ":rest-api-doc:0.6.1"
-        // Uncomment these (or add new ones) to enable additional resources capabilities
-        //runtime ":zipped-resources:1.0"
-        //runtime ":cached-resources:1.0"
-        //runtime ":yui-minify-resources:0.1.4"
         compile ":quartz:1.0.1"
-        //compile ":quartz-monitor:0.3-RC3"
-
-//        compile ':executor:0.3'
-
-        //runtime ":database-migration:1.1"
-
-//        compile ':cache:1.0.0'
     }
 }
 

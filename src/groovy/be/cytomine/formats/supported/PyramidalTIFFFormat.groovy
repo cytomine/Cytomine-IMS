@@ -34,7 +34,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
     public PyramidalTIFFFormat () {
         extensions = ["tif", "tiff"]
         mimeType = "image/pyrtiff"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 
     private excludeDescription = [

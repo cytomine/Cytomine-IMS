@@ -39,6 +39,7 @@ import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.*
 import be.cytomine.formats.supported.SupportedImageFormat
+import grails.util.Holders
 import org.apache.commons.lang.RandomStringUtils
 import org.openslide.OpenSlide
 
@@ -99,6 +100,22 @@ public class FormatIdentifier {
         ]
     }
 
+    static public getSupportedImageFormats() {
+        return [
+                new JPEG2000Format(),
+                new PyramidalTIFFFormat(),
+                new AperioSVSFormat(),
+                new HamamatsuNDPIFormat(),
+                new HamamatsuVMSFormat(),
+                new LeicaSCNFormat(),
+                new MiraxMRXSFormat(),
+                new SakuraSVSlideFormat(),
+                new PhilipsTIFFFormat(),
+                new VentanaBIFFormat(),
+                new VentanaTIFFFormat()
+        ]
+    }
+
     static public def getImageFormats(String uploadedFilePath, def imageFormats = [], def parent = null) {
 
         File uploadedFile = new File(uploadedFilePath);
@@ -155,7 +172,7 @@ public class FormatIdentifier {
     }
 
     static public SupportedImageFormat getImageFormatByMimeType(String fif, String mimeType) {
-        def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
+        def imageFormats = getSupportedImageFormats()
 
         SupportedImageFormat imageFormat =  imageFormats.find {
             it.mimeType == mimeType
@@ -177,6 +194,17 @@ public class FormatIdentifier {
         } else {
 
             Format testedFormat = new ZipFormat()
+            testedFormat.absoluteFilePath = filePath
+            if(testedFormat.detect())
+                return testedFormat
+
+            // GeoJP2 tested before classic JP2 as GeoJP2 is a JP2 with some metadata
+            testedFormat = new GeoJPEG2000Format()
+            testedFormat.absoluteFilePath = filePath
+            if(testedFormat.detect())
+                return testedFormat
+
+            testedFormat = new GeoTIFFFormat()
             testedFormat.absoluteFilePath = filePath
             if(testedFormat.detect())
                 return testedFormat
