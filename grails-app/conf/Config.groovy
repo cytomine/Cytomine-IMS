@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,10 +48,7 @@ grails.mime.types = [
         multipartForm: 'multipart/form-data',
         rss:           'application/rss+xml',
         text:          'text/plain',
-        xml:           ['text/xml', 'application/xml'],
-        jpg:           'image/jpeg',
-        png:           'image/png',
-        tiff:          'image/tiff'
+        xml:           ['text/xml', 'application/xml']
 ]
 
 // URL Mapping Cache Max Size, defaults to 5000
@@ -143,39 +140,39 @@ log4j = {
     }
 }
 
-// Rest API Doc plugin
-grails.plugins.restapidoc.docVersion = "0.1"
-grails.plugins.restapidoc.basePath = "demo-ims.cytomine.be"
-grails.plugins.restapidoc.grailsDomainDefaultType = "int"
-
-cytomine.coreURL="http://localhost-core"
+cytomine.coreURL="http://localhost-core:8080"
 cytomine.storageBufferPath="/tmp/imageserver_buffer"
+//cytomine.iipImageServer="http://localhost:8081/fcgi-bin/iipsrv.fcgi" //default path for iip image server
+//cytomine.iipJ2KImageServer="http://localhost:8082/fcgi-bin/iipsrv.fcgi"  //default path for iip image server J2K
 
-//cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
+cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
 cytomine.Jpeg2000Enabled=false
 cytomine.iipImageServerJpeg2000="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
 cytomine.iipImageServerCyto="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
 
 bioformat.application.enabled="true"
-bioformat.application.location="bioformat"
+bioformat.application.location="localhost"
 bioformat.application.port="4321"
 
-cytomine.imageServerPublicKey="DEF"
-cytomine.imageServerPrivateKey="ABC"
+cytomine.imageServerPublicKey="cc161593-37fe-4487-baec-f6d46e62959f"
+cytomine.imageServerPrivateKey="cb2955c6-631b-4039-8ebf-889aefe8ea0c"
 
 //image manipulation executable
-cytomine.vips = "vips"
+cytomine.vips = "/usr/local/bin/vips"
 cytomine.tiffinfo = "tiffinfo"
 cytomine.identify = "identify"
-cytomine.vipsthumbnail = "vipsthumbnail"
-cytomine.gdalinfo = "gdalinfo"
-cytomine.gdaltranslate = "gdal_translate"
+cytomine.vipsthumbnail = "/usr/local/bin/vipsthumbnail"
 
 cytomine.maxAnnotationOnImageWidth = 200000
 
 cytomine.charset = "UTF-8"
 
-cytomine.maxCropSize = 5000
+cytomine.maxCropSize = 15000
 
-cytomine.hdf5.maxBurstSize = 512 // Mbytes
-cytomine.hdf5.maxBlockSize = 20 // Mbytes
+cytomine.hdf5.scriptToFindFiles = "natives/scripts/relatedFiles.sh"
+cytomine.hdf5.convertBurstSize = 10
+cytomine.hdf5.size.maxHeigth = 256
+cytomine.hdf5.size.maxWidth = 256
+cytomine.hdf5.size.maxDepth = 256
+
+cytomine.deleteImageFilesFrequency = "600000"

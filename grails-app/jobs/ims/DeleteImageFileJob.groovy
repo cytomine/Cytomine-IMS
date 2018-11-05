@@ -1,20 +1,20 @@
 package ims
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.models.AbstractImage
-import be.cytomine.client.models.UploadedFile
-import org.apache.commons.io.FileUtils
+import be.cytomine.client.collections.DeleteCommandCollection
+import be.cytomine.client.models.DeleteCommand
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONElement
 
 
 class DeleteImageFileJob {
     static triggers = {
-        cron name: "DeleteImageTrigger", cronExpression: "0 */5 * * * ?"// execute job each hour
     }
 
     def grailsApplication
 
     def execute() {
-        // execute job
+
         String cytomineUrl = grailsApplication.config.cytomine.coreURL
 
         String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
@@ -22,40 +22,25 @@ class DeleteImageFileJob {
 
         Cytomine cytomine = new Cytomine((String) cytomineUrl, pubKey, privKey)
 
-        cytomine.testHostConnection();
+        long timeMargin = Long.parseLong(grailsApplication.config.cytomine.deleteImageFilesFrequency)*2
 
-        def files = cytomine.getUploadedFiles(true);
+        //max between frequency*2 and 48h
+        timeMargin = Math.max(timeMargin, 172800000L)
 
-        for(int i = 0; i<files.size(); i++) {
-            UploadedFile file = files.get(i)
+        DeleteCommandCollection commands = cytomine.getDeleteCommandByDomainAndAfterDate("uploadedFile", (new Date().time-timeMargin))
 
-            if ((new Date().time)-Long.parseLong(file.get("deleted")) >= 24*60*60*1000 /*&& (new Date().time)-Long.parseLong(file.get("deleted")) < 48*60*60*1000*/){
+        for(int i = 0; i<commands.size(); i++) {
+            DeleteCommand command = commands.list.get(i)
 
-                File fileToDelete = new File(file.getAbsolutePath())
-                if(fileToDelete.exists()) {
-                    fileToDelete.delete()
-                }
+            JSONElement j = JSON.parse(command.get("data"));
 
-                if(file.getLong("image")) {
-                    AbstractImage ai = cytomine.getAbstractImage(file.getLong("image"))
-                    fileToDelete = new File(ai.get("fullPath"))
-                    if(fileToDelete.exists()) {
-                        fileToDelete.delete()
-                    }
-                }
+            File fileToDelete = new File(j.path+j.filename)
 
-                fileToDelete = fileToDelete.parentFile
-                // delete the folder if no more file exists
-
-                if(fileToDelete.exists()){
-
-                    if(fileToDelete.listFiles().collect{it.isDirectory()}.size() == fileToDelete.listFiles().size()){
-                        FileUtils.deleteDirectory(fileToDelete);
-                    }
-                }
-
-
+            if(fileToDelete.exists()) {
+                log.info "DELETE file "+fileToDelete.absolutePath
+                fileToDelete.delete()
             }
+
         }
     }
 }

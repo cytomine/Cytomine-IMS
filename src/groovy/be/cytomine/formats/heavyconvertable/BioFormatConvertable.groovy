@@ -10,7 +10,7 @@ import grails.util.Holders
  */
 abstract class BioFormatConvertable extends Format implements IHeavyConvertableImageFormat {
     @Override
-    def convert() {
+    String[] convert() {
         if(!Boolean.parseBoolean(Holders.config.bioformat.application.enabled)) throw new MiddlewareException("Convertor BioFormat not enabled");
 
         println "BIOFORMAT called !"

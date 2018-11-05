@@ -1,7 +1,7 @@
 package be.cytomine.exception;
 
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,17 +29,12 @@ public abstract class CytomineException extends RuntimeException{
     public int code;
 
     /**
-     * Message for exception
-     */
-    public String msg;
-
-    /**
      * Message map with this exception
      * @param msg Message
      * @param code Http code
      */
     public CytomineException(String msg, int code) {
-        this.msg=msg;
+        super(msg);
         this.code = code;
     }
 }

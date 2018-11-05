@@ -5,7 +5,7 @@ import grails.util.Holders
 import utils.ServerUtils
 
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-abstract class TIFFFormat extends VIPSConvertable {
+abstract class ConvertableTIFFFormat extends VIPSConvertable {
 
-    public TIFFFormat() {
+    public ConvertableTIFFFormat() {
         extensions = ["tif", "tiff"]
-//        mimeType = "image/tiff"
-//        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        mimeType = "image/tiff"
+        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
     public String getTiffInfo() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo

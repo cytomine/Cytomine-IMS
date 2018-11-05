@@ -1,6 +1,9 @@
 package be.cytomine.formats.lightconvertable.specialtiff
+
+import be.cytomine.formats.ITIFFFormat
+
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +24,7 @@ import org.springframework.util.StringUtils
 /**
  * Created by stevben on 28/04/14.
  */
-class PlanarTIFFFormat extends TIFFFormat {
+class PlanarTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
 
     private excludeDescription = [
             "Not a TIFF",
@@ -36,7 +39,10 @@ class PlanarTIFFFormat extends TIFFFormat {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
         String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
         //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
+        return this.detect(tiffinfo)
+    }
 
+    boolean detect(String tiffinfo) {
         boolean notTiff = false
         excludeDescription.each {
             notTiff |= tiffinfo.contains(it)

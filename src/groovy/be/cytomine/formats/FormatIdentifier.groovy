@@ -1,7 +1,7 @@
 package be.cytomine.formats
 
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.*
 import be.cytomine.formats.supported.SupportedImageFormat
 import org.apache.commons.lang.RandomStringUtils
+import org.openslide.OpenSlide
 
 /**
  * Created by stevben on 22/04/14.
@@ -165,33 +166,137 @@ public class FormatIdentifier {
 
     }
 
-    static public Format getImageFormat(String uploadedFile) {
-        def imageFormats = getAvailableSingleFileImageFormats() + getAvailableMultipleImageFormats()
+    static public Format getImageFormat(String filePath) {
 
-        //hack to avoid running detect on ndpi
-        //running detect on ndpi trigger a identity process that takes all memory for a big image
-        try {
-            int dot = uploadedFile.lastIndexOf('.');
-            if(uploadedFile.substring(dot + 1).toLowerCase().equals("ndpi")) {
-                HamamatsuNDPIFormat f = new HamamatsuNDPIFormat()
-                f.absoluteFilePath = uploadedFile
-                return f
-            }
-        } catch(Exception e) {
-            println e
+        def format;
+
+        if (new File(filePath).isDirectory()) {
+
+            return getMultiFileFormat(filePath)
+
+        } else {
+
+            Format testedFormat = new ZipFormat()
+            testedFormat.absoluteFilePath = filePath
+            if(testedFormat.detect())
+                return testedFormat
+
+            testedFormat = new JPEG2000Format()
+            testedFormat.absoluteFilePath = filePath
+            if(testedFormat.detect())
+                return testedFormat
+
+            testedFormat = new ZeissCZIFormat()
+            testedFormat.absoluteFilePath = filePath
+            if(testedFormat.detect())
+                return testedFormat
+
+            format = getOpenSlideFormat(filePath)
+            if (format) return format
+
+            format = getTIFFFormat(filePath)
+            if (format) return format
+
+            format = getImageMagikFormat(filePath)
+            if (format) return format
+
         }
 
+        throw new FormatException("Undetected Format");
+    }
+
+    private static Format getTIFFFormat(String filePath) {
+
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
+        String tiffinfo = new ProcessBuilder("$tiffinfoExecutable", filePath).redirectErrorStream(true).start().text
+
+        def formats = [new CZITIFFFormat(),
+                       new OMETIFFFormat(),
+                       new PhotoshopTIFFFormat(),
+                       new HuronTIFFFormat(),
+                       new PlanarTIFFFormat(),
+                       new BrokenTIFFFormat(),
+                       new PyramidalTIFFFormat()
+        ]
 
 
-        imageFormats.each {
-            it.absoluteFilePath = uploadedFile
+        formats.each {
+            it.absoluteFilePath = filePath
         }
 
-        def result = imageFormats.find {
+        def result = formats.find {
+            it.detect(tiffinfo)
+        }
+
+        return result
+    }
+    private static Format getOpenSlideFormat(String filePath) {
+
+        //String vendor = OpenSlide.detectVendor(new File(filePath))
+
+        def formats = [
+                               new AperioSVSFormat(),
+                               new HamamatsuNDPIFormat(),
+                               new LeicaSCNFormat(),
+                               //new SakuraSVSlideFormat(),
+                               new PhilipsTIFFFormat(),
+                               //common formats
+                               new VentanaBIFFormat(),
+                               new VentanaTIFFFormat()
+        ]
+
+
+        formats.each {
+            it.absoluteFilePath = filePath
+        }
+
+        def result = formats.find {
             it.detect()
         }
 
-        if(!result) throw new FormatException("Undetected Format")
         return result
+    }
+    private static Format getImageMagikFormat(String filePath) {
+
+        def identifyExecutable = Holders.config.cytomine.identify
+        def command = ["$identifyExecutable", filePath]
+        def proc = command.execute()
+        proc.waitFor()
+        String identifyInfo = proc.in.text
+
+        def formats = [        new DICOMFormat(),
+                               new JPEGFormat(),
+                               new PGMFormat(),
+                               new PNGFormat(),
+                               new BMPFormat()
+        ]
+
+
+        formats.each {
+            it.absoluteFilePath = filePath
+        }
+
+        def result = formats.find {
+            it.detect(identifyInfo)
+        }
+
+        return result
+    }
+
+    private static Format getMultiFileFormat(String filePath) {
+
+        def formats = getAvailableMultipleImageFormats() + getAvailableHierarchicalMultipleImageFormats()
+
+        formats.each {
+            it.absoluteFilePath = filePath
+        }
+
+        return formats.find {
+            it.detect()
+        }
+    }
+    public static boolean isClassicFolder(String filePath){
+        if(!new File(filePath).isDirectory()) return false
+        return getMultiFileFormat(filePath) == null
     }
 }

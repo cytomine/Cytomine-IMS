@@ -3,7 +3,7 @@ package be.cytomine.formats.supported.digitalpathology
 import org.openslide.OpenSlide
 
 /*
- * Copyright (c) 2009-2017. Authors: see NOTICE file.
+ * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,5 +53,9 @@ class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
             def resolution = physicalWidthProperty / widthProperty / 1000
             properties << [ key : "cytomine.resolution", value : resolution]
         }
+    }
+
+    File getRootFile(File folder) {
+        return folder.listFiles(). find { it.name.endsWith('.vms')}
     }
 }
