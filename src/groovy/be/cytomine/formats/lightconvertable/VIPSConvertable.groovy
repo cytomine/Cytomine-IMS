@@ -25,6 +25,7 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
         else
             target = current.parent+"/" + current.name+"_pyr.tif"
 
+        target = target.replace(" ","_")
         println "ext : $ext"
         println "source : $source"
         println "target : $target"

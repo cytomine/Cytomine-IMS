@@ -144,6 +144,7 @@ class UploadService {
             }
 
         } catch(DeploymentException | CytomineException e) {
+            uploadedFile = cytomine.getUploadedFile(uploadedFile.id)
             int status = uploadedFile.get("status")
             if (status != 3 && status != 8 && status != 9){
                 cytomine.editUploadedFile(uploadedFile.id, 9) // status ERROR_DEPLOYMENT
@@ -254,7 +255,7 @@ class UploadService {
                     file = JSON.parse(file)
 
                     try {
-                        imgs = deploy(cytomine, new File(file.path), null, uploadedFile).images
+                        def imgs = deploy(cytomine, new File(file.path), null, uploadedFile).images
                         result.images.addAll(imgs)
 
                         assert imgs.size() == 1
@@ -291,7 +292,7 @@ class UploadService {
             }
 
             if(errorFlag){
-                cytomine.editUploadedFile(uploadedFile.id, 8) // status ERROR CONVERSION
+                uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 8) // status ERROR CONVERSION
                 throw new DeploymentException(errorMsg)
             } else {
                 cytomine.editUploadedFile(uploadedFile.id, 1) // status CONVERTED
