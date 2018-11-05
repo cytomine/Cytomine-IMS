@@ -171,6 +171,8 @@ cytomine.vipsthumbnail = "vipsthumbnail"
 cytomine.gdalinfo = "gdalinfo"
 cytomine.gdaltranslate = "gdal_translate"
 
+cytomine.imageConversionAlgorithm = "lzw"
+
 cytomine.maxAnnotationOnImageWidth = 200000
 
 cytomine.charset = "UTF-8"

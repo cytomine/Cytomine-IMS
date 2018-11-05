@@ -31,6 +31,7 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
     static def convertToPyramidalTIFF(source, target) {
         String ext = FilesUtils.getExtensionFromFilename(source).toLowerCase()
 
+        target = target.replace(" ","_")
         println "ext : $ext"
         println "source : $source"
         println "target : $target"
@@ -39,7 +40,10 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
         def vipsExecutable = Holders.config.cytomine.vips
 
         //2. Pyramid command
-        def pyramidCommand = """$vipsExecutable tiffsave "$source" "$target" --tile --pyramid --compression lzw --tile-width 256 --tile-height 256 --bigtiff"""
+        def pyramidCommand = """$vipsExecutable tiffsave "$source" "$target" --tile --pyramid --compression """
+        if(Holders.config.cytomine.imageConversionAlgorithm.equals("lzw")) pyramidCommand += "lzw"
+        else pyramidCommand += "jpeg -Q 95"
+        pyramidCommand += " --tile-width 256 --tile-height 256 --bigtiff"
 
         boolean success = true
 
