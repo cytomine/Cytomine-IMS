@@ -14,5 +14,5 @@ if [[ ! $(git tag -l v$VERSION) ]]; then
     ./grailsw war
     cp restapidoc.json docker/
     cp IMS.war docker/
-    docker build --build-arg WAR_PATH="." -t cytomineuliege/ims:latest -t cytomineuliege/ims:v$VERSION docker/
+    docker build --build-arg RELEASE_PATH="." -t cytomineuliege/ims:latest -t cytomineuliege/ims:v$VERSION docker/
 fi;
