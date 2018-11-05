@@ -16,7 +16,6 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-import be.cytomine.formats.lightconvertable.ILightConvertableImageFormat
 import grails.util.Holders
 import utils.ProcUtils
 
@@ -26,7 +25,7 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 12/07/14.
  */
-class PhilipsTIFFFormat extends OpenSlideSingleFileFormat implements ILightConvertableImageFormat{
+class PhilipsTIFFFormat extends OpenSlideSingleFileTIFFFormat {
 
     public PhilipsTIFFFormat() {
         extensions = ["tiff", "ptiff"]
@@ -36,12 +35,7 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileFormat implements ILightConve
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
         magnificiationProperty = null
-    }
-
-    @Override
-    def convert() {
-        fakeExtension(absoluteFilePath)
-        return absoluteFilePath
+        fakeExtension = "ptiff"
     }
 
     BufferedImage associated(String label) {
@@ -84,21 +78,16 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileFormat implements ILightConve
         return labelImage
     }
 
-    String fakeExtension(def original) {
-        def renamed = new File(original.take(original.lastIndexOf('.')) + ".ptiff")
-        if (!renamed.exists())
-            "ln -s $original $renamed".execute()
-        return renamed
-    }
-
     @Override
     String tileURL(def fif, def params, def with_zoomify) {
-        return super.tileURL(fakeExtension(fif), params, with_zoomify)
+        absoluteFilePath = fif
+        return super.tileURL(rename().absolutePath, params, with_zoomify)
     }
 
     @Override
     String cropURL(def params, def charset) {
-        params.fif = fakeExtension(params.fif)
+        absoluteFilePath = params.fif
+        params.fif = rename().absolutePath
         return super.cropURL(params, charset)
     }
 }

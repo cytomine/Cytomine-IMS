@@ -25,6 +25,12 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
         else
             target = current.parent+"/" + current.name+"_pyr.tif"
 
+        return convertToPyramidalTIFF(source, target)
+    }
+
+    static def convertToPyramidalTIFF(source, target) {
+        String ext = FilesUtils.getExtensionFromFilename(source).toLowerCase()
+
         println "ext : $ext"
         println "source : $source"
         println "target : $target"
@@ -42,5 +48,13 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
         if (success) {
             return [target]
         }
+    }
+
+    def properties() {
+        return []
+    }
+
+    def annotations() {
+        return []
     }
 }

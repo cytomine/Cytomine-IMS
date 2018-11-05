@@ -44,6 +44,13 @@ class OMETIFFFormat extends BioFormatConvertable implements ITIFFFormat {
     }
 
     boolean detect(String tiffinfo) {
-        return tiffinfo.contains("OME-TIFF")
+        if (tiffinfo.contains("OME-TIFF"))
+            return true
+
+        if (tiffinfo.contains("hyperstack=true")){
+            if(Integer.parseInt(tiffinfo.split("\n").find{it.contains("images=")}.split("=")[1]) > 1 && !tiffinfo.contains("Tile Width")){
+                return true
+            }
+        }
     }
 }

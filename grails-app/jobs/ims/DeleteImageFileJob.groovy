@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.web.json.JSONElement
 
 class DeleteImageFileJob {
     static triggers = {
+        // cron name: "DeleteImageTrigger", cronExpression: "0 0 1 * * ?"// execute job at 1 AM every day
     }
 
     def grailsApplication
