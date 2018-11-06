@@ -36,7 +36,7 @@ deploy:
     on:
       condition: $DEPLOY = true
   - provider: script
-    script: source continuous_integration/docker_push.sh
+    script: ./continuous_integration/docker_push.sh
     skip_cleanup: true
     on:
       condition: $DEPLOY = true

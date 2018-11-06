@@ -9,6 +9,7 @@ if [[ ! $(git tag -l v$VERSION) ]]; then
     git config --local user.email "$(git log -1 --pretty=format:'%ae')"
     git tag "v$VERSION"
     export DEPLOY=true
+    echo "Deploy with version $VERSION"
 
     ./grailsw rest-api-doc
     ./grailsw war
