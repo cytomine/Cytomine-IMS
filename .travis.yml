@@ -26,17 +26,20 @@ after_success:
   - source continuous_integration/deploy.sh
 
 deploy:
+  - provider: script
+    script:
+      - echo "Push to Docker Hub with version $VERSION"
+      - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+      - docker push cytomineuliege/ims:v$VERSION
+    skip_cleanup: true
+    on:
+      condition: $DEPLOY = true
   - provider: releases
     api_key:
       secure: dPfdUgb6U+CjQRvQ3gXBJB7o+hfUrriWJMi9RosygZNRs5HP3BP84utV4sn4vBT1ypYOXR0dYQgL/Acvbxe1tFGg40E4xQjRzih1iKtnhu2/IvARf1gAP6Md5z8T90qo0RTJVYFPgCbUn7cJa0b9FNU6rwFPCemOuY2OiU+d5jb8mW1ZpjYiKWEcALYu+g82bf6pi5mSHvyGqPNUxzMMc+c3n/v1ou5KiEP5qkoNjcAu/p4gVrGjJSw0hxqAuJxf/vgguiTUxNHAzL1FM2uC7XwDtfhedfkiImxbzX6UzGMp5DsKWnQTRdn0yhK3QzHjkuTRiApWo1dabuhWVftUelob79bNw56hnX1aohyQUPM3+ycq4M1nmdwmRBKgV7F1YugfF/6/c9uiKpljjz7nGVCkbEDq/MV5Bsy6gXAbcOtNtPmOGJufLnuRmiG6U0FQA7zT2uvWwuWWnVfYlKQ/0g+TC6LqG+lTG25NvyN66DxqDVoUTqpe2Je4nEiGGDXG1waMvSVBB/jJSnYT/4LUkRQhaYjRzDGSnVaS8WDWTxXwUszEax5A/BeJPkRmc9UxCcu2uALAfvRz9rzewUtgn5JH8ZSSZfnM+uDfYW4d8C7KOrU36kSYz6j4fXEFGNp9rVQ8RlnQcB5h1bl/TqjZ2KM164uUGij/Z7Y64R6s9AQ=
     file:
       - IMS.war
       - restapidoc.json
-    skip_cleanup: true
-    on:
-      condition: $DEPLOY = true
-  - provider: script
-    script: ./continuous_integration/docker_push.sh
     skip_cleanup: true
     on:
       condition: $DEPLOY = true
