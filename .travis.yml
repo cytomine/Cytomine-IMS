@@ -27,10 +27,7 @@ after_success:
 
 deploy:
   - provider: script
-    script:
-      - echo "Push to Docker Hub with version $VERSION"
-      - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-      - docker push cytomineuliege/ims:v$VERSION
+    script: echo $VERSION && docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" && docker push cytomineuliege/ims:v$VERSION
     skip_cleanup: true
     on:
       condition: $DEPLOY = true
