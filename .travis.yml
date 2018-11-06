@@ -23,7 +23,7 @@ script: true
 # - ./grailsw test-app ## Skip tests for now.
 
 after_success:
-  - bash continuous_integration/deploy.sh
+  - source continuous_integration/deploy.sh
 
 deploy:
   - provider: releases
@@ -36,7 +36,7 @@ deploy:
     on:
       condition: $DEPLOY = true
   - provider: script
-    script: bash continuous_integration/docker_push.sh
+    script: source continuous_integration/docker_push.sh
     skip_cleanup: true
     on:
       condition: $DEPLOY = true
