@@ -100,7 +100,9 @@ ARG RELEASE_PATH=https://github.com/${NAMESPACE}/Cytomine-IMS/releases/download/
 ADD ${RELEASE_PATH}/IMS.war /var/lib/tomcat7/webapps/ROOT.war
 ADD ${RELEASE_PATH}/restapidoc.json /var/lib/tomcat7/webapps/restapidoc.json
 
+RUN mkdir -p /usr/share/tomcat7/.grails
 
+RUN touch /tmp/addHosts.sh
 COPY setenv.sh /usr/share/tomcat7/bin/setenv.sh
 RUN chmod +x /usr/share/tomcat7/bin/setenv.sh
 COPY deploy.sh /tmp/deploy.sh

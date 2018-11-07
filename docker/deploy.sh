@@ -18,6 +18,7 @@
 bash /tmp/addHosts.sh
 
 chown -R tomcat7:tomcat7 $IMS_STORAGE_PATH
+chown -R tomcat7:tomcat7 $FAST_DATA_PATH
 
 service tomcat7 start
 
