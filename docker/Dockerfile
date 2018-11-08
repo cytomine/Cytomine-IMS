@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM cytomine/tomcat7:v1.2.0
+FROM cytomineuliege/tomcat7:v1.2.0
 
 RUN apt-get -y update && apt-get install --no-install-recommends --no-install-suggests -y ant \
       automake \
@@ -93,6 +93,8 @@ RUN cd /tmp && \
 RUN add-apt-repository ppa:ubuntugis/ppa -y && apt-get update -y && \
     apt-get install --no-install-recommends --no-install-suggests -y gdal-bin && \
     rm -rf /var/lib/apt/lists/*
+
+RUN rm -r /var/lib/tomcat7/webapps/*
 
 ARG VERSION
 ARG NAMESPACE=Cytomine-ULiege
