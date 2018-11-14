@@ -78,6 +78,10 @@ class ImageUtilsController {
                 render(text: "", contentType: "image/jpeg");
             }
             else {
+                BufferedImage convertedImg = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+                convertedImg.getGraphics().drawImage(bufferedImage, 0, 0, null);
+                bufferedImage = convertedImg
+
                 ImageIO.write(bufferedImage, "jpg", baos);
                 byte[] bytesOut = baos.toByteArray();
                 response.contentLength = baos.size();
