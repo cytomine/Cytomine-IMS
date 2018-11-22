@@ -115,5 +115,71 @@ class JPEG2000Format extends SupportedImageFormat {
         return properties
     }
 
+    String cropURL(def params, def charset = "UTF-8") {
+        int topLeftX = params.int('topLeftX')
+        int topLeftY = params.int('topLeftY')
+        double width = params.double('width')
+        double height = params.double('height')
+        double imageWidth = params.double('imageWidth')
+        double imageHeight = params.double('imageHeight')
+//        boolean inverse = params.boolean("inverse", false)
 
+        //All values x,y,w & h should be in ratios 0-1.0 [RGN=x,y,w,h]
+        def x = (topLeftX == 0) ? 0 : 1 / (imageWidth / topLeftX)
+        def y = ((imageHeight - topLeftY) == 0) ? 0 : 1 / (imageHeight / (imageHeight - topLeftY))
+        double w = (width == 0) ? 0d : 1d / (imageWidth / width)
+        double h = (height == 0) ? 0d : 1d / (imageHeight / height)
+
+        if (x > 1 || y > 1) return ""
+
+        int maxWidthOrHeight = new Integer(Holders.config.cytomine.maxCropSize)
+        if (params.maxSize) {
+            int maxSize = params.int('maxSize', 256)
+            if (maxWidthOrHeight > maxSize) {
+                maxWidthOrHeight = maxSize
+            }
+        }
+
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL), charset)
+        iipRequest.addParameter("FIF", params.fif, true)
+        iipRequest.addParameter("RGN", "$x,$y,$w,$h")
+
+        if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
+            int tmpWidth = width
+            int tmpHeight = height
+            while (tmpWidth > maxWidthOrHeight || tmpHeight > maxWidthOrHeight) {
+                tmpWidth = tmpWidth / 2
+                tmpHeight = tmpHeight / 2
+            }
+            /*
+            Ruven P. (author of IIP Image)
+            In fact, the region is calculated from the WID or HEI given, not from
+            the full image size. So you get the requested region on the virtual
+            750px resize. I guess you were expecting to get a region exactly of size
+            WID?
+
+            This is something that seems to have caused confusion with others also
+            and perhaps the way it works in counter intuitive, so I'm considering
+            changing the behaviour in the 1.0 release and have WID or HEI define the
+            final region size rather than the virtual image size. In the meantime,
+            the way to get around it is to calculate the appropriate WID that the
+            full image would be. So if your image is x pixels wide, give WID the
+            value of x/2 to get a 750px wide image.
+            */
+            int hei = imageHeight / (height / tmpHeight)
+            iipRequest.addParameter("HEI", "$hei")
+        }
+        if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
+        if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
+//        if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
+//        if (inverse) iipRequest.addParameter("INV", "true")
+//        if (params.bits) {
+//            def bits= params.int("bits", 8)
+//            if (bits > 16) iipRequest.addParameter("BIT", 32)
+//            else if (bits > 8) iipRequest.addParameter("BIT", 16)
+//            else iipRequest.addParameter("BIT", 8)
+//        }
+        iipRequest.addParameter("CVT", params.format)
+        return iipRequest.toString()
+    }
 }
