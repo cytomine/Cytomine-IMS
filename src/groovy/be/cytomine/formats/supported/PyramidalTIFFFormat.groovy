@@ -82,7 +82,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
 
             tokens.each {println it}
 
-            resolution = Double.parseDouble(tokens.get(1))
+            resolution = Double.parseDouble(tokens.get(1).replaceAll(",","."))
             if(tokens.size() >= 5 && !tokens.get(3).contains("unitless")){
                 unit = tokens.get(4)
             }

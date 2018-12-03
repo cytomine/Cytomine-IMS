@@ -47,8 +47,8 @@ class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
     def properties() {
         def properties = super.properties()
 
-        float physicalWidthProperty = Float.parseFloat(properties.find { it.key == "hamamatsu.PhysicalWidth"}.value)
-        float widthProperty = (float) properties.find { it.key == "cytomine.width"}.value
+        float physicalWidthProperty = Float.parseFloat(properties.find { it.key == "hamamatsu.PhysicalWidth"}.value.replaceAll(",","."))
+        float widthProperty = Float.parseFloat(properties.find { it.key == "cytomine.width"}.value.replaceAll(",", "."))
         if (physicalWidthProperty && widthProperty) {
             def resolution = physicalWidthProperty / widthProperty / 1000
             properties << [ key : "cytomine.resolution", value : resolution]

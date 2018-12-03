@@ -67,7 +67,7 @@ class DICOMFormat extends CommonFormat implements ICommonFormat {
                 AttributeList annotation = dicomAnnotations.getItem(i).getAttributeList()
                 def wkt = annotation.get(dictionary.getTagFromName("Annotation.Polygon")).getDelimitedStringValuesOrEmptyString()
                 def polygon = new WKTReader().read(wkt)
-                def transformation = new AffineTransformation(0, 1, 0, -1, 0, Double.parseDouble(imageHeight))
+                def transformation = new AffineTransformation(0, 1, 0, -1, 0, Double.parseDouble(imageHeight.replaceAll(",",".")))
                 polygon.apply(transformation)
                 def location = new WKTWriter().write(polygon)
 

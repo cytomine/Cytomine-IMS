@@ -85,9 +85,9 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         if (heightProperty && properties.find { it.key == heightProperty}?.value != null)
             properties << [ key : "cytomine.height", value : Integer.parseInt(properties.find { it.key == heightProperty}?.value) ]
         if (resolutionProperty && properties.find { it.key == resolutionProperty}?.value != null)
-            properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value) ]
+            properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value?.replaceAll(",",".")) ]
         if (magnificiationProperty && properties.find { it.key == magnificiationProperty}?.value != null)
-            properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value).intValue() ]
+            properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value?.replaceAll(",",".")).intValue() ]
 
         def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
         iipRequest.addParameter("FIF", absoluteFilePath, true)

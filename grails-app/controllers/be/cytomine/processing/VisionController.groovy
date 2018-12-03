@@ -313,8 +313,8 @@ class VisionController extends ImageResponseController {
             }
 
             if (params.brightness != null && params.contrast != null) {
-                double brightness = Double.parseDouble(params.brightness)
-                double contrast = Double.parseDouble(params.contrast)
+                double brightness = Double.parseDouble(params.brightness.replaceAll(",","."))
+                double contrast = Double.parseDouble(params.contrast.replaceAll(",","."))
                 ImagePlus ip = new ImagePlus(imageURL, bufferedImage)
                 double defaultMin = ip.getDisplayRangeMin()
                 double defaultMax = ip.getDisplayRangeMax()
