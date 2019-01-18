@@ -44,6 +44,10 @@ import java.text.DecimalFormat
 class ImageProcessingService {
     static transactional = false
 
+    Color getColorFromString(String name) {
+        return (name && Color.metaClass.hasProperty(Color, name)) ? (Color) Color.metaClass.getProperty(Color, name) : Color.BLACK
+    }
+
     BufferedImage createCropWithDraw(BufferedImage image, Geometry geometry, def params) {
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
@@ -52,12 +56,13 @@ class ImageProcessingService {
         int imageHeight = params.int('imageHeight')
         double x_ratio = image.getWidth() / width
         double y_ratio = image.getHeight() / height
-        int borderWidth = (int) Math.round(((double) width / (15000 / 250d)) * x_ratio)
+        int borderWidth = params.int('strokeWidth', (int) Math.round(((double) width / (15000 / 250d)) * x_ratio))
+        Color color = getColorFromString(params.strokeColor)
 
         return drawGeometries(
                 image,
                 [geometry],
-                Color.BLACK,
+                color,
                 borderWidth,
                 topLeftX,
                 imageHeight - topLeftY,
