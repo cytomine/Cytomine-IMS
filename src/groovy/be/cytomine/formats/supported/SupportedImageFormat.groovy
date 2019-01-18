@@ -66,47 +66,36 @@ abstract class SupportedImageFormat extends Format {
         double imageHeight = params.double('imageHeight')
         boolean inverse = params.boolean("inverse", false)
 
-        //All values x,y,w & h should be in ratios 0-1.0 [RGN=x,y,w,h]
-        def x = (topLeftX == 0) ? 0 : 1 / (imageWidth / topLeftX)
-        def y = ((imageHeight - topLeftY) == 0) ? 0 : 1 / (imageHeight / (imageHeight - topLeftY))
-        double w = (width == 0) ? 0d : 1d / (imageWidth / width)
-        double h = (height == 0) ? 0d : 1d / (imageHeight / height)
-
-        // TODO perf: replace the previous assignment by the following
-        /*def x = topLeftX/imageWidth
+        def x = topLeftX/imageWidth
         def y = (imageHeight - topLeftY)/imageHeight
         double w = width/imageWidth
-        double h = height/imageHeight*/
+        double h = height/imageHeight
 
         if (x > 1 || y > 1) return ""
 
-        int maxWidthOrHeight = new Integer(Holders.config.cytomine.maxCropSize)
+        double computedWidth = width
+        double computedHeight = height
         if (params.maxSize) {
             int maxSize = params.int('maxSize', 256)
-            if (maxWidthOrHeight > maxSize) {
-                maxWidthOrHeight = maxSize
-            }
+            computedWidth = Math.min(computedWidth, maxSize)
+            computedHeight = Math.min(computedHeight, maxSize)
+        } else if (params.zoom) {
+            int zoom = params.int('zoom', 0)
+            computedWidth /= Math.pow(2, zoom)
+            computedHeight /= Math.pow(2, zoom)
+        }
+
+        if (params.safe) {
+            int maxCropSize = new Integer(Holders.config.cytomine.maxCropSize)
+            computedWidth = Math.min(computedWidth, maxCropSize)
+            computedHeight = Math.min(computedHeight, maxCropSize)
         }
 
         def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL), charset)
         iipRequest.addParameter("FIF", params.fif, true)
         iipRequest.addParameter("RGN", "$x,$y,$w,$h")
-
-        if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
-            iipRequest.addParameter("HEI", "$maxWidthOrHeight")
-            iipRequest.addParameter("WID", "$maxWidthOrHeight")
-        }
-        else if (params.maxSize) {
-            int maxSize = params.int('maxSize', 256)
-            iipRequest.addParameter("HEI", "$maxSize")
-            iipRequest.addParameter("WID", "$maxSize")
-        }
-        else {
-            iipRequest.addParameter("HEI", "$height")
-            iipRequest.addParameter("WID", "$width")
-        }
-
-
+        iipRequest.addParameter("HEI", "$computedHeight")
+        iipRequest.addParameter("WID", "$computedWidth")
         if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
         if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
         if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)

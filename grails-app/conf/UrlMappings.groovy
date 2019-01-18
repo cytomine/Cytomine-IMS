@@ -43,7 +43,7 @@ class UrlMappings {
         }
 
         "/image/nested.$format" (controller:"image") {
-            action = [GET:"nested"]
+            action = [GET:"nested", POST:"nested"]
         }
 
         "/image/properties" (controller:"image") {
@@ -51,15 +51,11 @@ class UrlMappings {
         }
 
         "/image/thumb.$format" (controller:"image") {
-            action = [GET:"thumb"]
+            action = [GET:"thumb", POST:"thumb"]
         }
 
         "/image/crop.$format" (controller:"image") {
             action = [GET:"crop", POST:"crop"]
-        }
-
-        "/image/mask.$format" (controller:"image") {
-            action = [GET:"mask",POST:"mask"]
         }
 
         "/storage/size.$format"(controller:"storage"){
