@@ -24,6 +24,7 @@ package utils
  */
 class FilesUtils {
 
+    static String[] badChars = [" " , "(" , ")" , "+" , "*" , "/" , "@" , "'" , '"' , '$' , '€' , '£' , '°' , '`' , '[' , ']', '#', '?']
     /**
      * Get the extension of a filename
      */
@@ -42,22 +43,9 @@ class FilesUtils {
      */
     public static String correctFileName(def originalFilename) {
         String newFilename = originalFilename
-        newFilename = newFilename.replace(" ", "_")
-        newFilename = newFilename.replace("(", "_")
-        newFilename = newFilename.replace(")", "_")
-        newFilename = newFilename.replace("+", "_")
-        newFilename = newFilename.replace("*", "_")
-        newFilename = newFilename.replace("/", "_")
-        newFilename = newFilename.replace("@", "_")
-        newFilename = newFilename.replace("'", "_")
-        newFilename = newFilename.replace('"', "_")
-        newFilename = newFilename.replace('$', "_")
-        newFilename = newFilename.replace('€', "_")
-        newFilename = newFilename.replace('£', "_")
-        newFilename = newFilename.replace('°', "_")
-        newFilename = newFilename.replace('`', "_")
-        newFilename = newFilename.replace('[', "_")
-        newFilename = newFilename.replace(']', "_")
+        for(String badChar : badChars) {
+            newFilename = newFilename.replace(badChar, "_")
+        }
         return newFilename
     }
 
