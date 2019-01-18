@@ -169,6 +169,7 @@ class ImageProcessingService {
         int width = params.int('width')
         int height = params.int('height')
         int imageHeight = params.int('imageHeight')
+        int alphaPercentage = params.int('alpha', 0)
         double x_ratio = image.getWidth() / width
         double y_ratio = image.getHeight() / height
 
@@ -184,14 +185,15 @@ class ImageProcessingService {
         )
 
         if (withAlpha) {
-            return applyMaskToAlpha(image, mask)
+            return applyMaskToAlpha(image, mask, alphaPercentage)
         }
         else {
             return mask
         }
     }
 
-    BufferedImage applyMaskToAlpha(BufferedImage image, BufferedImage mask) {
+    BufferedImage applyMaskToAlpha(BufferedImage image, BufferedImage mask, int alphaPercentage = 0) {
+        def alpha = Math.round(2.55 * alphaPercentage)
         int width = image.getWidth()
         int height = image.getHeight()
         int[] imagePixels = image.getRGB(0, 0, width, height, null, 0, width)
@@ -199,7 +201,7 @@ class ImageProcessingService {
         int black_rgb = Color.BLACK.getRGB()
         for (int i = 0; i < imagePixels.length; i++) {
             int color = imagePixels[i] & 0x00FFFFFF // mask away any alpha present
-            int alphaValue = (maskPixels[i] == black_rgb) ? 0x00 : 0xFF
+            int alphaValue = (maskPixels[i] == black_rgb) ? alpha : 0xFF
             int maskColor = alphaValue << 24 // shift value into alpha bits
             imagePixels[i] = color | maskColor
         }
