@@ -96,6 +96,7 @@ abstract class SupportedImageFormat extends Format {
         iipRequest.addParameter("RGN", "$x,$y,$w,$h")
         iipRequest.addParameter("HEI", "$computedHeight")
         iipRequest.addParameter("WID", "$computedWidth")
+        if (params.jpegQuality) iipRequest.addParameter("QLT", "$params.jpegQuality")
         if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
         if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
         if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
