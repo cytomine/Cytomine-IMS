@@ -81,8 +81,8 @@ abstract class SupportedImageFormat extends Format {
             computedHeight = Math.min(computedHeight, maxSize)
         } else if (params.zoom) {
             int zoom = params.int('zoom', 0)
-            computedWidth /= Math.pow(2, zoom)
-            computedHeight /= Math.pow(2, zoom)
+            computedWidth *= Math.pow(2, zoom)
+            computedHeight *= Math.pow(2, zoom)
         }
 
         if (params.safe) {
