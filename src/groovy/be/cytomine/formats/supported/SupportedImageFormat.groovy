@@ -77,8 +77,8 @@ abstract class SupportedImageFormat extends Format {
         double computedHeight = height
         if (params.maxSize) {
             int maxSize = params.int('maxSize', 256)
-            computedWidth = Math.min(computedWidth, maxSize)
-            computedHeight = Math.min(computedHeight, maxSize)
+            computedWidth = maxSize //Math.min(computedWidth, maxSize)
+            computedHeight = maxSize //Math.min(computedHeight, maxSize)
         } else if (params.zoom) {
             int zoom = params.int('zoom', 0)
             computedWidth *= Math.pow(2, zoom)
