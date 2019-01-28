@@ -46,7 +46,7 @@ class UrlMappings {
             action = [GET:"nested", POST:"nested"]
         }
 
-        "/image/properties" (controller:"image") {
+        "/image/properties.$format" (controller:"image") {
             action = [GET:"properties"]
         }
 
