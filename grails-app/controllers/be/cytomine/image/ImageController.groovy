@@ -2,6 +2,7 @@ package be.cytomine.image
 
 import be.cytomine.client.Cytomine
 import be.cytomine.exception.DeploymentException
+import be.cytomine.exception.ObjectNotFoundException
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -86,11 +87,11 @@ class ImageController extends ImageUtilsController {
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
         log.info "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)
-        bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
+            bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
             responseBufferedImage(bufferedImage)
         } else {
-            //return 404 image
+            throw new ObjectNotFoundException(params.label+" not found")
         }
 
     }
