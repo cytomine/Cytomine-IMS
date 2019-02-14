@@ -38,6 +38,7 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
         }
 
         println "bioformat returns"
+        println files.size()
         println files
 
         if(files ==[] || files == null) {
