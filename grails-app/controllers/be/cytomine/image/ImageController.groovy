@@ -1,6 +1,9 @@
 package be.cytomine.image
 
 import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.client.Cytomine
+import be.cytomine.exception.DeploymentException
+import be.cytomine.exception.ObjectNotFoundException
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -90,14 +93,18 @@ class ImageController extends ImageResponseController {
         NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
         log.info "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)
-        bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
+            bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
             withFormat {
                 png { responseBufferedImagePNG(bufferedImage) }
                 jpg { responseBufferedImageJPG(bufferedImage) }
                 tiff { responseBufferedImageTIFF(bufferedImage) }
             }
         }
+        else {
+            throw new ObjectNotFoundException(params.label+" not found")
+        }
+    }
     }
 
     @RestApiMethod(description="Get the list of nested (or associated) images available of an image", extensions = ["json"])
