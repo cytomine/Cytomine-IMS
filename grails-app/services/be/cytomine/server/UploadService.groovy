@@ -39,6 +39,9 @@ import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileTIFFFor
 import grails.converters.JSON
 import utils.FilesUtils
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 class UploadService {
 
     def executorService //used for the runAsync
@@ -186,6 +189,12 @@ class UploadService {
     private def deploy(Cytomine cytomine, File currentFile, UploadedFile uploadedFile, UploadedFile uploadedFileParent, def metadata){
 
         log.info "deploy $currentFile"
+        if(!currentFile.name.equals(FilesUtils.correctFileName(currentFile.name))){
+            String newPath = currentFile.toPath().getParent().toString()
+            newPath += File.separator + FilesUtils.correctFileName(currentFile.name)
+            Files.move(currentFile.toPath(), Paths.get(newPath))
+            currentFile = new File(newPath)
+        }
 
         def result = [:]
         result.images = []
