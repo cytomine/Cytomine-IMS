@@ -347,14 +347,25 @@ class ImageProcessingService {
         double x_ratio = bufferedImage.getWidth() / width
         double y_ratio = bufferedImage.getHeight() / height
         //int borderWidth = ((double)annotation.getArea()/(100000000d/50d))
-        int borderWidth = ((double)width/(15000/250d))*x_ratio
+        int borderWidth;
+
+        Integer thickness = params.int('thickness')
+        if(!thickness) {
+            borderWidth = ((double)width/(15000/250d))*x_ratio
+        } else {
+            borderWidth = thickness
+        }
+
+        Color color = Color.BLACK;
+        if(params.color) color = new Color(Integer.parseInt(params.color.replace("0x",""),16))
+
 
         //AbstractImage image, BufferedImage window, Collection<Geometry> geometryCollection, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio
         bufferedImage = drawPolygons(
                 params,
                 bufferedImage,
                 [geometry],
-                Color.BLACK,
+                color,
                 borderWidth,
                 topLeftX,
                 imageHeight - topLeftY,
