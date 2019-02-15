@@ -214,6 +214,9 @@ class ImageProcessingService {
             double yLocal = Math.min((imageHeight - coordinate.y - y) * y_ratio, window.getHeight());
             yLocal = Math.max(0, yLocal)
 
+            if(Math.round(xLocal) == window.width) xLocal--;
+            if(Math.round(yLocal) == window.height) yLocal--;
+
             if(isFirst) {
                 regionOfInterest.moveTo(xLocal,yLocal);
                 isFirst = false;
