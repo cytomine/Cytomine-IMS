@@ -174,7 +174,10 @@ class ImageController extends ImageUtilsController {
             @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
             @RestApiParam(name="zoom", type="int", paramType = RestApiParamType.QUERY, description = " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.", required = false),
             @RestApiParam(name="location", type="int", paramType = RestApiParamType.QUERY, description = " A geometry in WKT Format (Well-known text)", required = false),
-            @RestApiParam(name="draw", type="int", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
+            @RestApiParam(name="draw", type="boolean", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
+            @RestApiParam(name="thickness", type="int", paramType = RestApiParamType.QUERY, description = " If draw used, set the thickness of the geometry contour on the crop.", required = false),
+            @RestApiParam(name="color", type="String", paramType = RestApiParamType.QUERY, description = " If draw used, set the color of the geometry contour on the crop.", required = false),
+            @RestApiParam(name="square", type="boolean", paramType = RestApiParamType.QUERY, description = " If draw used, try to extends the ROI around the crop to have a square.", required = false),
             @RestApiParam(name="mask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask", required = false),
             @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
     ])
@@ -315,12 +318,50 @@ class ImageController extends ImageUtilsController {
 
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
+        int topLeftX = Integer.parseInt(params.topLeftX)
+        int topLeftY = Integer.parseInt(params.topLeftY)
+        int imageWidth = Integer.parseInt(params.imageWidth)
+        int imageHeight = Integer.parseInt(params.imageHeight)
 
         if (params.double('increaseArea')) {
             params.width = params.int('width') * params.double("increaseArea")
             params.height = params.int('height') * params.double("increaseArea")
             params.topLeftX = params.int('topLeftX') - ((params.double('width') - savedWidth) / 2)
             params.topLeftY = params.int('topLeftY') + ((params.double('height') - savedHeight) / 2)
+        }
+
+        //we will increase the missing direction to make a square
+        if(Boolean.parseBoolean(params.square)){
+            if(savedWidth < savedHeight){
+                int delta = savedHeight - savedWidth
+                int deltaToAdd = delta
+
+                if(topLeftX - delta/2 < 0){
+                    delta = 2*(topLeftX)
+                }
+
+                deltaToAdd -= delta
+                params.topLeftX = (topLeftX-(delta/2)).toString()
+
+                Integer tmp = (savedWidth + delta + deltaToAdd)
+                tmp = Math.min(tmp, imageWidth)
+                params.width = tmp.toString()
+            } else if(savedWidth > savedHeight) {
+                int delta = savedWidth - savedHeight
+                int deltaToAdd = delta
+
+                if(topLeftY + (delta/2) > imageHeight){
+                    delta = 2*(imageHeight - topLeftY)
+                }
+                delta = Math.max(delta,0)
+
+                deltaToAdd -= delta
+                params.topLeftY = (topLeftY+(delta/2)).toString()
+
+                Integer tmp = (savedHeight + delta + deltaToAdd)
+                tmp = Math.min(tmp, imageHeight)
+                params.height = tmp.toString()
+            }
         }
 
         String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
@@ -346,11 +387,12 @@ class ImageController extends ImageUtilsController {
          * If the difference is < as threshold, we rescale
          */
         log.info "time=${System.currentTimeMillis() - start}"
-
+/*
         params.topLeftX = savedTopX
         params.topLeftY = savedTopY
         params.width = savedWidth
         params.height = savedHeight
+*/
 
         if (params.safe) {
             //if safe mode, skip annotation too large
