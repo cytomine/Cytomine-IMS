@@ -29,9 +29,23 @@
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
-grails.config.locations = ["file:${userHome}/.grails/imageserverconfig.properties"]
 
-println grails.config.locations
+/******************************************************************************
+ * EXTERNAL configuration
+ ******************************************************************************/
+grails.config.locations = [""]
+environments {
+    production {
+        grails.config.locations = ["file:${userHome}/.grails/imageserverconfig.properties"]
+    }
+    development {
+        // Update the file path so that it matches the generated configuration file in your bootstrap
+        grails.config.locations = ["file:${userHome}/Cytomine-ULiege/Cytomine-bootstrap/configs/ims/imageserverconfig.properties"]
+    }
+}
+println "External configuration file : ${grails.config.locations}"
+File configFile = new File(grails.config.locations.first().minus("file:") as String)
+println "Found configuration file ? ${configFile.exists()}"
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
@@ -160,8 +174,8 @@ bioformat.application.enabled="true"
 bioformat.application.location="bioformat"
 bioformat.application.port="4321"
 
-cytomine.imageServerPublicKey="DEF"
-cytomine.imageServerPrivateKey="ABC"
+cytomine.imageServerPublicKey="5dfc4920-7675-4183-9136-13be1c2b8201"
+cytomine.imageServerPrivateKey="6d735308-42d2-4ec5-9ebf-73b6e4cc96b7"
 
 //image manipulation executable
 cytomine.vips = "vips"
