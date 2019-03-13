@@ -35,6 +35,6 @@ class TileService {
 
     def getTileUrlIIP(def params) {
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
-        return imageFormat.tileURL(params.fif, params, false)
+        return imageFormat.tileURL(params.zoomify, params, false)
     }
 }

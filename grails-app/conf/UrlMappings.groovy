@@ -81,5 +81,9 @@ class UrlMappings {
         "/image/tile" (controller: "image") {
             action = [GET:"tileZoomify"] //tileIIP
         }
+
+        "/image/tileIIP" (controller: "image") {
+            action = [GET:"tileIIP"] //tileIIP
+        }
 	}
 }
