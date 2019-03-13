@@ -311,59 +311,56 @@ class ImageController extends ImageUtilsController {
     public BufferedImage readCropBufferedImage(def params) {
         String fif = params.fif
         String mimeType = params.mimeType
-        def savedTopX = params.topLeftX
-        def savedTopY = params.topLeftY
 
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
 
-        def savedWidth = params.double('width')
-        def savedHeight = params.double('height')
-        int topLeftX = Integer.parseInt(params.topLeftX)
-        int topLeftY = Integer.parseInt(params.topLeftY)
+        int width = params.int('width')
+        int height = params.int('height')
+        int topLeftX = params.int('topLeftX')
+        int topLeftY = params.int('topLeftY')
         int imageWidth = Integer.parseInt(params.imageWidth)
         int imageHeight = Integer.parseInt(params.imageHeight)
 
-        if (params.double('increaseArea')) {
-            params.width = params.int('width') * params.double("increaseArea")
-            params.height = params.int('height') * params.double("increaseArea")
-            params.topLeftX = params.int('topLeftX') - ((params.double('width') - savedWidth) / 2)
-            params.topLeftY = params.int('topLeftY') + ((params.double('height') - savedHeight) / 2)
+        if (params.increaseArea) {
+            double increaseArea = params.double("increaseArea")
+            topLeftX -= width * (increaseArea - 1) / 2
+            topLeftY += height * (increaseArea - 1) / 2
+            width *= increaseArea
+            height *= increaseArea
         }
 
         //we will increase the missing direction to make a square
         if(Boolean.parseBoolean(params.square)){
-            if(savedWidth < savedHeight){
-                int delta = savedHeight - savedWidth
-                int deltaToAdd = delta
+            if(width < height) {
+                double delta = height - width
+                topLeftX -= delta/2
+                width += delta
 
-                if(topLeftX - delta/2 < 0){
-                    delta = 2*(topLeftX)
+                if(topLeftX < 0) {
+                    topLeftX = 0
+                } else {
+                    topLeftX = Math.min(topLeftX, imageWidth - width)
                 }
+            } else if(width > height) {
+                double delta = width - height
+                topLeftY += delta/2
+                height += delta
 
-                deltaToAdd -= delta
-                params.topLeftX = (topLeftX-(delta/2)).toString()
-
-                Integer tmp = (savedWidth + delta + deltaToAdd)
-                tmp = Math.min(tmp, imageWidth)
-                params.width = tmp.toString()
-            } else if(savedWidth > savedHeight) {
-                int delta = savedWidth - savedHeight
-                int deltaToAdd = delta
-
-                if(topLeftY + (delta/2) > imageHeight){
-                    delta = 2*(imageHeight - topLeftY)
+                if(topLeftY > imageHeight){
+                    topLeftY = imageHeight
                 }
-                delta = Math.max(delta,0)
-
-                deltaToAdd -= delta
-                params.topLeftY = (topLeftY+(delta/2)).toString()
-
-                Integer tmp = (savedHeight + delta + deltaToAdd)
-                tmp = Math.min(tmp, imageHeight)
-                params.height = tmp.toString()
+                else {
+                    topLeftY = Math.max(topLeftY, height)
+                }
             }
         }
 
+        params.topLeftX = topLeftX.toString()
+        params.topLeftY = topLeftY.toString()
+        params.width = width.toString()
+        params.height = height.toString()
+
+        log.info(params)
         String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
         log.info cropURL
 
@@ -378,21 +375,6 @@ class ImageController extends ImageUtilsController {
         if (bufferedImage == null) {
             throw new MiddlewareException("Not a valid image: ${cropURL}")
         }
-
-        Long start = System.currentTimeMillis()
-
-        /*
-         * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for old IIP server request. Same for h.
-         * We may loose precision and the size could be w+-1 * h+-1.
-         * If the difference is < as threshold, we rescale
-         */
-        log.info "time=${System.currentTimeMillis() - start}"
-/*
-        params.topLeftX = savedTopX
-        params.topLeftY = savedTopY
-        params.width = savedWidth
-        params.height = savedHeight
-*/
 
         if (params.safe) {
             //if safe mode, skip annotation too large
