@@ -112,7 +112,12 @@ class UploadService {
             runAsync {
 //            backgroundService.execute("deployImagesAndGroups", {
                 log.info "Async upload"
-                deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
+                try {
+                    deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
+                }
+                catch (Exception e) {
+                    e.printStackTrace()
+                }
 //            })
             }
         }

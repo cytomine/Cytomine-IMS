@@ -28,13 +28,15 @@ abstract class BioFormatConvertable extends Format implements IHeavyConvertableI
                     new BufferedReader(
                             new InputStreamReader(echoSocket.getInputStream()));
 
-            out.println('{path:"'+absoluteFilePath+'",group:'+this.group+',onlyBiggestSerie:'+this.onlyBiggestSerie+'}');
+            out.println('{"path":"'+absoluteFilePath+'","group":"'+this.group+'","onlyBiggestSerie":"'+this.onlyBiggestSerie+'"}');
             String result = inp.readLine();
             def json  = JSON.parse(result);
             files = json.files
             error = json.error;
         } catch (UnknownHostException e) {
             System.err.println(e.toString());
+        } catch (Exception e) {
+            e.printStackTrace()
         }
 
         println "bioformat returns"
