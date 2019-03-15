@@ -204,14 +204,16 @@ class UploadService {
             boolean errorFlag = false
             String errorMsg = "";
             currentFile.listFiles().each {
-                try{
-                    //a simple folder will not create an UploadedFile object
-                    def deployed = deploy(cytomine, it, null, uploadedFile ?: uploadedFileParent, metadata)
-                    result.images.addAll(deployed.images)
-                    result.groups.addAll(deployed.groups)
-                } catch(DeploymentException e){
-                    errorFlag = true
-                    errorMsg += e.getMessage()+"\n"
+                if(!it.name.equals("__MACOSX")){
+                    try{
+                        //a simple folder will not create an UploadedFile object
+                        def deployed = deploy(cytomine, it, null, uploadedFile ?: uploadedFileParent, metadata)
+                        result.images.addAll(deployed.images)
+                        result.groups.addAll(deployed.groups)
+                    } catch(DeploymentException e){
+                        errorFlag = true
+                        errorMsg += e.getMessage()+"\n"
+                    }
                 }
             }
             if(errorFlag){
