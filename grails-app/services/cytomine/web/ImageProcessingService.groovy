@@ -328,16 +328,16 @@ class ImageProcessingService {
     public BufferedImage createCropWithDraw(BufferedImage bufferedImage, Geometry geometry, def params) {
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
-        int width = params.int('width')
-        int height = params.int('height')
+        int width = bufferedImage.getWidth()
+        int height = bufferedImage.getHeight()
 
-        double x_ratio = bufferedImage.getWidth() / width
-        double y_ratio = bufferedImage.getHeight() / height
+        double x_ratio = width / params.int('width')
+        double y_ratio = height / params.int('height')
 
         int borderWidth
         Integer thickness = params.int('thickness')
         if(!thickness) {
-            borderWidth = ((double)width/(15000/250d))*x_ratio
+            borderWidth = Math.round(2 + ((double) Math.max(width, height)) / 1000d)
         } else {
             borderWidth = thickness
         }
