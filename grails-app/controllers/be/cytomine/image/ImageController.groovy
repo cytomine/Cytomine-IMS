@@ -335,24 +335,26 @@ class ImageController extends ImageUtilsController {
                 double delta = height - width
                 topLeftX -= delta/2
                 width += delta
-
-                if(topLeftX < 0) {
-                    topLeftX = 0
-                } else {
-                    topLeftX = Math.min(topLeftX, imageWidth - width)
-                }
             } else if(width > height) {
                 double delta = width - height
                 topLeftY += delta/2
                 height += delta
-
-                if(topLeftY > imageHeight){
-                    topLeftY = imageHeight
-                }
-                else {
-                    topLeftY = Math.max(topLeftY, height)
-                }
             }
+        }
+
+        width = Math.min(width, imageWidth)
+        if(topLeftX < 0) {
+            topLeftX = 0
+        } else {
+            topLeftX = Math.min(topLeftX, imageWidth - width)
+        }
+
+        height = Math.min(height, imageHeight)
+        if(topLeftY > imageHeight){
+            topLeftY = imageHeight
+        }
+        else {
+            topLeftY = Math.max(topLeftY, height)
         }
 
         params.topLeftX = topLeftX.toString()

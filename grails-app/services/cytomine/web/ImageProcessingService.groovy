@@ -143,16 +143,16 @@ class ImageProcessingService {
 
     }
 
-    public BufferedImage drawPolygons(def params, BufferedImage bufferedImage, Collection<Geometry> geometryCollection, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio) {
+    public BufferedImage drawPolygons(BufferedImage bufferedImage, Collection<Geometry> geometryCollection, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
         for (geometry in geometryCollection) {
 
             if (geometry instanceof MultiPolygon) {
                 MultiPolygon multiPolygon = (MultiPolygon) geometry;
                 for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-                    bufferedImage = drawPolygon(params, bufferedImage, multiPolygon.getGeometryN(i),c,borderWidth, x, y, x_ratio, y_ratio)
+                    bufferedImage = drawPolygon(bufferedImage, multiPolygon.getGeometryN(i), c, borderWidth, x, y, x_ratio, y_ratio)
                 }
             } else {
-                bufferedImage = drawPolygon(params, bufferedImage, geometry,c,borderWidth, x, y, x_ratio, y_ratio)
+                bufferedImage = drawPolygon(bufferedImage, geometry, c, borderWidth, x, y, x_ratio, y_ratio)
             }
         }
 
@@ -182,40 +182,39 @@ class ImageProcessingService {
         return newImage;
     }
 
-    public BufferedImage drawPolygon(def params, BufferedImage window,  Geometry geometry, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio) {
-        if (geometry instanceof com.vividsolutions.jts.geom.Polygon) {
-            com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geometry;
-            window = drawPolygon(params, window, polygon,c,borderWidth, x, y, x_ratio, y_ratio)
+    public BufferedImage drawPolygon(BufferedImage window, Geometry geometry, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        if(geometry instanceof com.vividsolutions.jts.geom.Polygon) {
+            com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geometry
+            window = drawPolygon(window, polygon, c, borderWidth, x, y, x_ratio, y_ratio)
         }
 
         return window
     }
 
-    public BufferedImage drawPolygon(def params, BufferedImage window, com.vividsolutions.jts.geom.Polygon polygon, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio) {
-        window = drawPolygon(params, window, polygon.getExteriorRing(), c,borderWidth, x, y, x_ratio, y_ratio)
+    public BufferedImage drawPolygon(BufferedImage window, com.vividsolutions.jts.geom.Polygon polygon, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        window = drawPolygon(window, polygon.getExteriorRing(), c,borderWidth, x, y, x_ratio, y_ratio)
         for (def j = 0; j < polygon.getNumInteriorRing(); j++) {
-            window = drawPolygon(params, window, polygon.getInteriorRingN(j), c,borderWidth, x, y, x_ratio, y_ratio)
+            window = drawPolygon(window, polygon.getInteriorRingN(j), c,borderWidth, x, y, x_ratio, y_ratio)
         }
 
         return window
     }
 
-    public BufferedImage drawPolygon(def params, BufferedImage window, LineString lineString, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+    public BufferedImage drawPolygon(BufferedImage window, LineString lineString, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
 
-        int imageHeight = params.int('imageHeight')
         Path2D.Float regionOfInterest = new Path2D.Float();
         boolean isFirst = true;
 
         Coordinate[] coordinates = lineString.getCoordinates();
 
-        for(Coordinate coordinate:coordinates) {
-            double xLocal = Math.min((coordinate.x - x) * x_ratio, window.getWidth());
-            xLocal = Math.max(0, xLocal)
-            double yLocal = Math.min((imageHeight - coordinate.y - y) * y_ratio, window.getHeight());
-            yLocal = Math.max(0, yLocal)
+        int width = window.getWidth()
+        int height = window.getHeight()
 
-            if(Math.round(xLocal) == window.width) xLocal--;
-            if(Math.round(yLocal) == window.height) yLocal--;
+        for(Coordinate coordinate:coordinates) {
+            double xLocal = Math.min((coordinate.x - x)*x_ratio, width - 1);
+            xLocal = Math.max(0, xLocal)
+            double yLocal = Math.min((y - coordinate.y)*y_ratio, height - 1);
+            yLocal = Math.max(0, yLocal)
 
             if(isFirst) {
                 regionOfInterest.moveTo(xLocal,yLocal);
@@ -230,7 +229,6 @@ class ImageProcessingService {
 
         g2d.draw(regionOfInterest);
         window
-
     }
 
     public BufferedImage drawScaleBar(BufferedImage image, Double resolution, Double ratioWith, Double magnification) {
@@ -328,30 +326,15 @@ class ImageProcessingService {
 
     }
     public BufferedImage createCropWithDraw(BufferedImage bufferedImage, Geometry geometry, def params) {
-        //AbstractImage image, BufferedImage window, LineString lineString, Color color, int x, int y, double x_ratio, double y_ratio
-//        int topLeftX = params.int('topLeftX')-200
-//        int topLeftY = params.int('topLeftY')+200
-//        int width = params.int('width')+400
-//        int height = params.int('height')+400
-
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         int width = params.int('width')
         int height = params.int('height')
 
-        if(params.double('increaseArea')) {
-            width = params.int('width')*params.double("increaseArea")
-            height = params.int('height')*params.double("increaseArea")
-            topLeftX = params.int('topLeftX')-((width-params.int('width'))/2)
-            topLeftY = params.int('topLeftY')+((height-params.int('height'))/2)
-        }
-
-        int imageHeight = params.int('imageHeight')
         double x_ratio = bufferedImage.getWidth() / width
         double y_ratio = bufferedImage.getHeight() / height
-        //int borderWidth = ((double)annotation.getArea()/(100000000d/50d))
-        int borderWidth;
 
+        int borderWidth
         Integer thickness = params.int('thickness')
         if(!thickness) {
             borderWidth = ((double)width/(15000/250d))*x_ratio
@@ -362,16 +345,13 @@ class ImageProcessingService {
         Color color = Color.BLACK;
         if(params.color) color = new Color(Integer.parseInt(params.color.replace("0x",""),16))
 
-
-        //AbstractImage image, BufferedImage window, Collection<Geometry> geometryCollection, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio
         bufferedImage = drawPolygons(
-                params,
                 bufferedImage,
                 [geometry],
                 color,
                 borderWidth,
                 topLeftX,
-                imageHeight - topLeftY,
+                topLeftY,
                 x_ratio,
                 y_ratio
         )
