@@ -94,9 +94,8 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
     }
 
     public BufferedImage associated(String label) { //should be abstract
-        if (label == "macro") {
-            return thumb(256)
-        }
+        if (label == "macro")  return null
+        return thumb(256)
     }
 
 

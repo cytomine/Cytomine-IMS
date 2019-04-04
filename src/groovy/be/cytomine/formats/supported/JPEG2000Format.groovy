@@ -46,7 +46,8 @@ class JPEG2000Format extends SupportedImageFormat {
 
     @Override
     BufferedImage associated(String label) {
-        return thumb(256);
+        if (label == "macro")  return null
+        return thumb(256)
     }
 
     public BufferedImage thumb(int maxSize) {
