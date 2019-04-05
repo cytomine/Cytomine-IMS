@@ -16,22 +16,22 @@
 
 
 
-// locations to search for config files that get merged into the main config;
-// config files can be ConfigSlurper scripts, Java properties files, or classes
-// in the classpath in ConfigSlurper format
-
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
-
-// if (System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
-
-grails.config.locations = ["file:${userHome}/.grails/imageserverconfig.properties"]
-
-println grails.config.locations
+/******************************************************************************
+ * EXTERNAL configuration
+ ******************************************************************************/
+grails.config.locations = [""]
+environments {
+    production {
+        grails.config.locations = ["file:${userHome}/.grails/imageserverconfig.properties"]
+    }
+    development {
+        // Update the file path so that it matches the generated configuration file in your bootstrap
+        grails.config.locations = ["file:${userHome}/Cytomine-ULiege/Cytomine-bootstrap/configs/ims/imageserverconfig.properties"]
+    }
+}
+println "External configuration file : ${grails.config.locations}"
+File configFile = new File(grails.config.locations.first().minus("file:") as String)
+println "Found configuration file ? ${configFile.exists()}"
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
