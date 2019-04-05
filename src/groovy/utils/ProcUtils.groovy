@@ -1,5 +1,7 @@
 package utils
 
+import groovy.util.logging.Log
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -22,6 +24,7 @@ package utils
  * GIGA-ULg
  *
  */
+@Log
 class ProcUtils {
 
     static def executeOnShell(String command) {
@@ -29,16 +32,18 @@ class ProcUtils {
     }
 
     static def executeOnShell(String command, File workingDir) {
-        println command
+        log.info("Will execute $command")
+
         def process = new ProcessBuilder(addShellPrefix(command))
                 .directory(workingDir)
                 .redirectErrorStream(true)
                 .start()
 
-        process.inputStream.eachLine { println it }
-        process.waitFor();
+        process.inputStream.eachLine { log.debug("-- $it") }
+        process.waitFor()
+
         int value = process.exitValue()
-        println "Command return value = $value"
+        log.info("Command exited with $value")
         return value
     }
 
