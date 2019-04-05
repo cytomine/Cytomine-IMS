@@ -26,8 +26,10 @@ import be.cytomine.client.models.ImageSequence
 import be.cytomine.client.models.Property
 import be.cytomine.client.models.Storage
 import be.cytomine.client.models.UploadedFile
+import be.cytomine.client.models.User
 import be.cytomine.exception.DeploymentException
 import be.cytomine.exception.FormatException
+import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.IConvertableImageFormat
@@ -39,12 +41,16 @@ import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileTIFFFor
 import grails.converters.JSON
 import utils.FilesUtils
 
+import java.nio.file.Paths
+
 class UploadService {
 
     def executorService //used for the runAsync
 //    def backgroundService
     def deployImagesService
     def grailsApplication
+    def cytomineService
+    def fileSystemService
 
     /**
      * Upload a file on Cytomine.
@@ -61,61 +67,50 @@ class UploadService {
      * @param isSync : boolean. true if we wait the end of deployment before returning an HTTP response
      * @return A map with the original uploadedFile and all the AbstractImages generated
      */
-    def upload(Cytomine cytomine, String filename, Long idStorage, def filePath, def projects, long currentUserId, def properties, long timestamp, boolean isSync){
-
-        if(!filePath) throw new FileNotFoundException("Got an invalid file. Disk can be full.")
-        def tmpUploadedFilePath = new File(filePath)
-
-        log.info "filePath=$filePath"
-        log.info "absoluteFilePath=${tmpUploadedFilePath.absolutePath}"
-
-        if (!tmpUploadedFilePath.exists()) {
-            throw new FileNotFoundException(tmpUploadedFilePath.absolutePath + " NOT EXIST!")
+    def upload(User user, Storage storage, String filename, def filePath, boolean isSync, def projects,  def properties){
+        if (!filePath) {
+            throw new FileNotFoundException("Got an invalid file. Disk can be full.")
         }
-        def size = tmpUploadedFilePath.size()
 
-        log.info "size=$size"
+        def temporaryFile = new File(filePath)
+        if (!temporaryFile.exists()) {
+            throw new FileNotFoundException(temporaryFile.absolutePath + " NOT EXIST!")
+        }
+
+        def imsServer = cytomineService.getThisImageServer()
+        if (!imsServer)
+            throw new MiddlewareException("IMS reference not found in core.")
+
+        log.info "ImageServer: $imsServer"
+
         log.info "Create an uploadedFile instance and copy it to its storages"
+        log.info "filePath=$filePath"
+        log.info "absoluteFilePath=${temporaryFile.absolutePath}"
 
-        String destPath = File.separator + timestamp.toString() + File.separator + FilesUtils.correctFileName(filename)
-        def storage = cytomine.getStorage(idStorage)
+        // Root UF
+        def size = temporaryFile.size()
+        def extension = FilesUtils.getExtensionFromFilename(filename).toLowerCase()
+        def status = UploadedFile.Status.UPLOADED
+        def destinationPath = Paths.get(new Date().getTime().toString(), FilesUtils.correctFileName(filename))
+        def uploadedFile = new UploadedFile(imsServer, filename, destinationPath.toString(), size, extension, "undetermined", projects, storage, user, status, null).save()
 
-        log.info "storage.getStr(basePath) : " + storage.getStr("basePath")
-
-        // no parent
-        def uploadedFile = cytomine.addUploadedFile(
-                filename,
-                destPath,
-                storage.getStr("basePath"),
-                size,
-                FilesUtils.getExtensionFromFilename(filename).toLowerCase(),
-                "undetermined",//contentType,
-                projects,
-                [idStorage],
-                currentUserId,
-                0, // UPLOADED status
-                null // idParent
-        )
-
-
-        deployImagesService.copyUploadedFile(cytomine, tmpUploadedFilePath.absolutePath, uploadedFile, [storage])
-
-        File currentFile = new File(storage.getStr("basePath") + File.separator + uploadedFile.getStr("filename"))
+        File file = new File((String) uploadedFile.get('path'))
+        fileSystemService.move(temporaryFile, file)
 
         def result = [:]
         result.uploadedFile = uploadedFile
 
-        if(isSync) {
-            log.info "Sync upload"
-            deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
-        } else {
-            runAsync {
+//        if(isSync) {
+//            log.info "Sync upload"
+//            deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
+//        } else {
+//            runAsync {
 //            backgroundService.execute("deployImagesAndGroups", {
-                log.info "Async upload"
-                deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
+//                log.info "Async upload"
+//                deployImagesAndGroups(cytomine, currentFile, uploadedFile, projects, properties, isSync, result)
 //            })
-            }
-        }
+//            }
+//        }
 
         return result
     }

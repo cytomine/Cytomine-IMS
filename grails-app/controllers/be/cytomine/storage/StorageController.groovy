@@ -17,6 +17,13 @@ package be.cytomine.storage
  */
 
 import be.cytomine.client.Cytomine
+import be.cytomine.client.CytomineConnection
+import be.cytomine.client.CytomineException
+import be.cytomine.client.collections.Collection
+import be.cytomine.client.models.Project
+import be.cytomine.client.models.Storage
+import be.cytomine.client.models.User
+import be.cytomine.exception.AuthenticationException
 import be.cytomine.exception.DeploymentException
 import grails.converters.JSON
 import grails.util.Holders
@@ -26,12 +33,6 @@ import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
 
-/**
- * Cytomine @ GIGA-ULG
- * User: lrollus
- * Date: 16/09/13
- * Time: 12:25
- */
 @RestApi(name = "upload services", description = "Methods for uploading images")
 class StorageController {
 
@@ -40,96 +41,105 @@ class StorageController {
 
     @RestApiMethod(description="Method for uploading an image")
     @RestApiParams(params=[
-            @RestApiParam(name="files[]", type="data", paramType = RestApiParamType.QUERY, description = "The files content (Multipart)"),
-            @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = "The url of Cytomine"),
-            @RestApiParam(name="idStorage", type="int", paramType = RestApiParamType.QUERY, description = "The id of the targeted storage"),
-            @RestApiParam(name="sync", type="boolean", paramType = RestApiParamType.QUERY, description = "Indicates if operations are done synchronously or not (false by default)", required = false),
-            @RestApiParam(name="idProject", type="int", paramType = RestApiParamType.QUERY, description = " The id of the targeted project", required = false),
-            @RestApiParam(name="keys", type="String", paramType = RestApiParamType.QUERY, description = "The keys of the properties you want to link with your files (e.g. : key1,key2, ...)", required = false),
-            @RestApiParam(name="values", type="String", paramType = RestApiParamType.QUERY, description = "The values of the properties you want to link with your files (e.g. : key1,key2, ...)", required = false)
+            @RestApiParam(name="files[]", type="data", paramType = RestApiParamType.QUERY, description = "The file content (Multipart)"),
+            @RestApiParam(name="core", type = "String", paramType = RestApiParamType.QUERY, description = "URL of linked Cytomine-core"),
+            @RestApiParam(name="storage", type="int", paramType = RestApiParamType.QUERY, description = "The id of the targeted storage"),
+            @RestApiParam(name="projects", type="int", paramType = RestApiParamType.QUERY, description = " The ids of the targeted projects", required = false),
+            @RestApiParam(name="sync", type="boolean", paramType = RestApiParamType.QUERY, description = "Whether operations are done synchronously or not (false by default)", required = false),
+            @RestApiParam(name="keys", type="String", paramType = RestApiParamType.QUERY, description = "The keys of the properties to link with image, separated by comma", required = false),
+            @RestApiParam(name="values", type="String", paramType = RestApiParamType.QUERY, description = "The values of the properties link with image, separated by comma", required = false)
     ])
     def upload () {
-
         try {
+            // Backwards compatibility
+            if (params.cytomine) params.core = params.cytomine
+            if (params.idStorage) params.storage = params.idStorage
+            if (params.idProject) params.projects = params.idProject
 
-            String cytomineUrl = params['cytomine']
-            String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
-            String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
+            String coreURL = params.core
+            String ISPublicKey = grailsApplication.config.cytomine.imageServerPublicKey
+            String ISPrivateKey = grailsApplication.config.cytomine.imageServerPrivateKey
+            log.info "Upload is made on Cytomine = $coreURL with image server $ISPublicKey/$ISPrivateKey key pair"
+            CytomineConnection imsConnection = Cytomine.connection(coreURL, ISPublicKey, ISPrivateKey)
 
-            log.info "Upload is made on Cytomine = $cytomineUrl"
-            log.info "We use $pubKey/$privKey to connect"
+            // Check user authentication
+            def authorization = cytomineService.getAuthorizationFromRequest(request)
+            def messageToSign = cytomineService.getMessageToSignFromRequest(request)
 
-            def user = cytomineService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
-            long currentUserId = user.id
+            def keys = Cytomine.getInstance().getKeys(authorization.publicKey)
+            log.info (keys.getAttr())
+            if (!keys)
+                throw new AuthenticationException("Auth failed: User not found! May be ImageServer user is not an admin!")
 
-            log.info "init cytomine..."
-            Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
+            if (!cytomineService.testSignature(keys.get('privateKey'), authorization.signature, messageToSign))
+                throw new AuthenticationException("Auth failed.")
 
-            def idStorage = Integer.parseInt(params['idStorage'] + "")
-            def projects = []
-            if (params['idProject']) {
-                try {
-                    projects << Integer.parseInt(params['idProject'] + "")
-                } catch (NumberFormatException e) {
-                    log.error "Integer parse Exception : " + params['idProject']
-                }
+            CytomineConnection userConnection = Cytomine.connection(coreURL, (String) keys.get('publicKey'), (String) keys.get('privateKey'))
+            def user = Cytomine.getInstance().getCurrentUser()
+
+            // Check and get storage
+            def storage = new Storage().fetch(userConnection, params.long('storage'))
+
+            // Check and get projects
+            def projects = new Collection(Project.class, 0, 0)
+            params.list('projects').each {
+                projects.add(new Project().fetch(userConnection, Long.parseLong(it)))
             }
 
-            def properties = [:]
-            def keys = []
-            def values = []
-            log.info "keys=" + params["keys"]
-            log.info "values=" + params["values"]
-            if (params["keys"] != null && params["keys"] != "") {
-                keys = params["keys"].split(",")
-                values = params["values"].split(",")
-            }
-
-            if (keys.size() != values.size()) {
+            // Get properties
+            def propertyKeys = params.list("keys")
+            def values = params.list("values")
+            if (propertyKeys.size() != values.size()) {
                 throw new Exception("Key.size <> Value.size!")
             }
+            def properties = [propertyKeys, values].transpose().collectEntries()
 
-            keys.eachWithIndex { key, index ->
-                properties[key] = values[index]
-            }
-
+            // Get other parameters
             boolean isSync = params.boolean('sync')
-            log.info "sync=" + isSync
-
             String filename = (String) params['files[].name']
             def filePath = (String) params['files[].path']
 
-            log.info "idStorage=$idStorage"
-            log.info "projects=$projects"
-            log.info "filename=$filename"
-            log.info "filePath=$filePath"
-            long timestamp = new Date().getTime()
+            log.info "Upload request"
+            log.info "---> User: $user"
+            log.info "---> Storage: $storage"
+            log.info "---> Projects: $projects"
+            log.info "---> Properties: $properties"
+            log.info "---> Synchronous: $isSync"
+            log.info "---> Filename: $filename"
+            log.info "---> Filepath: $filePath"
 
             def responseContent = [:]
             try {
                 responseContent.status = 200;
                 responseContent.name = filename
-                def uploadResult = uploadService.upload(cytomine, filename, idStorage, filePath, projects, currentUserId, properties, timestamp, isSync)
-
+                def uploadResult = uploadService.upload(user as User, storage as Storage, filename, filePath, isSync, projects, properties)
+//
                 responseContent.uploadFile = uploadResult.uploadedFile
-                responseContent.images = uploadResult.images
+//                responseContent.images = uploadResult.images
 
 
             } catch(DeploymentException e){
                 response.status = 500;
                 responseContent.status = 500;
                 responseContent.error = e.getMessage()
-                responseContent.files = [[name:filename, size:0, error:responseContent.error]]
+//                responseContent.files = [[name:filename, size:0, error:responseContent.error]]
             }
 
             responseContent = [responseContent]
 
             render responseContent as JSON
-        } catch (Exception e) {
-            log.error e.toString()
-            e.printStackTrace()
-            response.status = 400
+        }
+        catch (CytomineException e) {
+            log.error(e.toString())
+            log.error(e.printStackTrace())
+            response.status = e.getHttpCode()
             render e
+        }
+        catch (Exception e) {
+            log.error(e.toString())
+            log.error(e.printStackTrace())
+            response.status = 400
+            render e.getCause().toString()
         }
     }
 

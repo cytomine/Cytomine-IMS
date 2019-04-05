@@ -183,3 +183,5 @@ cytomine.hdf5.maxBurstSize = 512 // Mbytes
 cytomine.hdf5.maxBlockSize = 15 // Mbytes
 
 cytomine.deleteImageFilesFrequency = "600000"
+
+cytomine.imageServerURL="http://localhost-ims"

@@ -274,7 +274,7 @@ class ImageController extends ImageResponseController {
         responseContent.status = 200;
         def uploadResult
         try{
-            uploadResult = uploadService.upload(cytomine, output.name, idStorage, output.path, params['project']?[Integer.parseInt(params['project'] + "")]:null, currentUserId, null, new Date().getTime(), true)
+//            uploadResult = uploadService.upload(cytomine, output.name, idStorage, output.path, params['project']?[Integer.parseInt(params['project'] + "")]:null, currentUserId, null, new Date().getTime(), true)
         } catch (Exception e){
             e.printStackTrace()
         }
