@@ -51,16 +51,18 @@ grails.project.dependency.resolution = {
     repositories {
         inherits true // Whether to inherit repository definitions from plugins
 
+        mavenLocal()
+        mavenCentral()
+        mavenRepo "https://packagecloud.io/cytomine-uliege/Cytomine-java-client/maven2"
+
         grailsPlugins()
         grailsHome()
         grailsCentral()
 
-        mavenLocal()
-        mavenCentral()
-        mavenRepo "https://packagecloud.io/cytomine-uliege/Cytomine-java-client/maven2"
+
     }
     dependencies {
-        compile 'be.cytomine.client:cytomine-java-client:1.3.0'
+        compile 'be.cytomine.client:cytomine-java-client:2.0-SNAPSHOT'
         compile 'com.vividsolutions:jts:1.13'
         compile 'net.imagej:ij:1.51h'
         compile 'com.github.jai-imageio:jai-imageio-core:1.4.0'
