@@ -1,5 +1,11 @@
 package be.cytomine.formats.supported.digitalpathology
 
+
+import be.cytomine.formats.CytomineFile
+import be.cytomine.formats.MultipleFilesFormat
+import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.MimeTypeUtils
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -21,26 +27,27 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 22/04/14.
  */
-class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
+class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
+
+    String vendor = "mirax"
 
     public MiraxMRXSFormat() {
         extensions = ["mrxs"]
-        vendor = "mirax"
-        mimeType = "openslide/mrxs"
+        mimeType = MimeTypeUtils.MIMETYPE_MRXS
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "mirax.GENERAL.OBJECTIVE_MAGNIFICATION"
+        magnificationProperty = "mirax.GENERAL.OBJECTIVE_MAGNIFICATION"
     }
 
     @Override
     boolean detect() {
-        File uploadedFile = new File(absoluteFilePath);
-        File mrxs = getRootFile(uploadedFile)
+        File mrxs = getRootFile(this.file)
 
         if(mrxs){
-            absoluteFilePath = mrxs.absolutePath
-            return super.detect()
+            this.file = new CytomineFile(mrxs.absolutePath)
+            return OpenSlideDetector.super.detect()
         }
         return false
     }
@@ -56,6 +63,10 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
     }
 
     File getRootFile(File folder) {
-        return folder.listFiles(). find { it.name.endsWith('.mrxs')}
+        return folder.listFiles().find {file ->
+            extensions.any {ext ->
+                file.name.endsWith(".$ext")
+            }
+        }
     }
 }

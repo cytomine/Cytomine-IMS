@@ -20,6 +20,7 @@ import be.cytomine.exception.FormatException
 
 import grails.util.Holders
 import utils.FilesUtils
+import utils.MimeTypeUtils
 import utils.ServerUtils
 import utils.URLBuilder
 
@@ -29,30 +30,29 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 22/04/14.
  */
-class JPEG2000Format extends SupportedImageFormat {
+class JPEG2000Format extends NativeFormat {
 
     public JPEG2000Format() {
         extensions = ["jp2"]
-        mimeType = "image/jp2"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerJpeg2000)
+        mimeType = MimeTypeUtils.MIMETYPE_JP2
+        iipUrls = ServerUtils.getServers(Holders.config.cytomine.iipImageServerJpeg2000)
     }
 
     public boolean detect() {
         //I check the extension for the moment because did not find an another way
-        boolean detect = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase() == "jp2"
+        boolean detect = extensions.any { it == this.file.extension() }
         if(detect && !Holders.config.cytomine.Jpeg2000Enabled) throw new FormatException("JPEG2000 disabled");
 
         return detect
     }
 
-    @Override
     BufferedImage associated(String label) {
         return thumb(256);
     }
 
     public BufferedImage thumb(int maxSize, def params=null) {
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipUrls))
+        iipRequest.addParameter("FIF", this.file.absolutePath, true)
         iipRequest.addParameter("HEI", "$maxSize")
         iipRequest.addParameter("WID", "$maxSize")
         iipRequest.addParameter("QLT", "99")
@@ -62,9 +62,24 @@ class JPEG2000Format extends SupportedImageFormat {
         return ImageIO.read(new URL(thumbURL))
     }
 
+    @Override
+    BufferedImage thumb(Object params) {
+        return null
+    }
+
+    @Override
+    BufferedImage associated(Object label) {
+        return null
+    }
+
+    @Override
+    String associated() {
+        return null
+    }
+
     public def properties() {
         def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("FIF", this.file.absolutePath, true)
         iipRequest.addParameter("obj", "IIP,1.0")
         iipRequest.addParameter("obj", "Max-size")
         iipRequest.addParameter("obj", "Tile-size")
@@ -181,5 +196,10 @@ class JPEG2000Format extends SupportedImageFormat {
 //        }
         iipRequest.addParameter("CVT", params.format)
         return iipRequest.toString()
+    }
+
+    @Override
+    String tileURL(Object params) {
+        return null
     }
 }

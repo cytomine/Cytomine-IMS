@@ -30,65 +30,134 @@ import be.cytomine.formats.lightconvertable.geospatial.GeoTIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.*
 import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.PyramidalTIFFFormat
-import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.formats.supported.digitalpathology.*
-import grails.util.Holders
-import org.apache.commons.lang.RandomStringUtils
+import groovy.util.logging.Log
 
-/**
- * Created by stevben on 22/04/14.
- */
+@Log
 class FormatIdentifier {
+
+    private def formats
+    private CytomineFile file
+
+    FormatIdentifier(CytomineFile file) {
+        initializeFormats()
+        setFile(file)
+    }
+
+    def setFile(file) {
+        this.file = file
+        this.formats.each {
+            it.file = this.file
+        }
+    }
+
+    def initializeFormats() {
+        this.formats = [
+                // Fast detections
+                new ZipFormat(),
+                new JPEGFormat(),
+                new PGMFormat(),
+                new PNGFormat(),
+                new BMPFormat(),
+                new DICOMFormat(),
+                new PhotoshopTIFFFormat(),
+                new HuronTIFFFormat(),
+                new CZITIFFFormat(),
+                new OMETIFFFormat(),
+                new GeoTIFFFormat(),
+                new GeoJPEG2000Format(),
+
+                // Slow detections that must come before others
+                new HamamatsuNDPIFormat(),
+                new VentanaTIFFFormat(),
+                new PhilipsTIFFFormat(),
+
+                // Fast detections that must go last (large detection criteria)
+                new JPEG2000Format(), // Accept any JPEG2000
+                new PyramidalTIFFFormat(), // Accept any pyramidal TIFF
+                new PlanarTIFFFormat(), // Accept any planar TIFF
+                new BrokenTIFFFormat(), // Accept any TIFF
+
+                // Slow detections
+                new AperioSVSFormat(),
+                new HamamatsuVMSFormat(),
+                new LeicaSCNFormat(),
+                new MiraxMRXSFormat(),
+                new SakuraSVSlideFormat(),
+                new VentanaBIFFormat(),
+                new CellSensVSIFormat(),
+                new DotSlideFormat(),
+                new ZeissCZIFormat(),
+        ]
+    }
+
+    def getArchiveFormats() {
+        return this.formats.findAll { it instanceof ArchiveFormat }
+    }
+
+    def getNativeFormats() {
+        return this.formats.findAll { it instanceof NativeFormat }
+    }
+
+    def getMultipleFilesFormats() {
+        return this.formats.findAll { it instanceof MultipleFilesFormat }
+    }
+
+    def getSingleFileFormats() {
+        return this.formats.findAll { !(it instanceof MultipleFilesFormat) }
+    }
+
+    Format identify() {
+        def formatsToTest = (file.isDirectory()) ? getMultipleFilesFormats() : getSingleFileFormats()
+
+        Format detected = formatsToTest.find {
+            it.detect()
+        }
+
+        if (!detected)
+            throw new FormatException("Format not found.")
+
+        log.info("Detected format for $file is $detected")
+        return detected
+    }
+
+    Format identify(String mimeType, def onlyNative = true) {
+        def formatsToTest = (onlyNative) ? getNativeFormats() : this.formats
+
+        Format detected = formatsToTest.find {
+            it.mimeType == mimeType
+        }
+
+        if (!detected)
+            throw new FormatException("Format not found.")
+
+        log.info("Detected format for $file is $detected")
+        return detected
+    }
+
+    boolean isClassicFolder() {
+        if (!file.isDirectory())
+            return false
+
+        def detected
+        try {
+            detected = identify()
+        } catch(FormatException ignored) {}
+
+        return detected == null
+    }
+
+
+
+
+
+
+
 
     static getAvailableArchiveFormats() {
         return [
                 new ZipFormat()
-        ]
-    }
-
-    static getAvailableMultipleImageFormats() {
-        return [
-                //openslide compatibles formats
-                new HamamatsuVMSFormat(),
-                new MiraxMRXSFormat(),
-                new SakuraSVSlideFormat()
-        ]
-    }
-
-    static getAvailableHierarchicalMultipleImageFormats() {
-        return [
-                new DotSlideFormat(),
-                new CellSensVSIFormat()
-        ]
-    }
-
-    static getAvailableSingleFileImageFormats() {
-        //check the extension and or content in order to identify the right Format
-        return [
-                new GeoTIFFFormat(),
-                new GeoJPEG2000Format(),
-                new JPEG2000Format(),
-                new ZeissCZIFormat(),
-                //openslide compatibles formats
-                new AperioSVSFormat(),
-                new HamamatsuNDPIFormat(),
-                new LeicaSCNFormat(),
-                new PhilipsTIFFFormat(),
-                new CZITIFFFormat(),
-                new OMETIFFFormat(),
-                //common formats
-                new PhotoshopTIFFFormat(),
-                new HuronTIFFFormat(),
-                new PlanarTIFFFormat(),
-                new BrokenTIFFFormat(),
-                new PyramidalTIFFFormat(),
-                new VentanaBIFFormat(),
-                new VentanaTIFFFormat(),
-                new DICOMFormat(),
-                new JPEGFormat(),
-                new PGMFormat(),
-                new PNGFormat(),
-                new BMPFormat()
         ]
     }
 
@@ -109,212 +178,128 @@ class FormatIdentifier {
     }
 
     static def getImageFormats(String uploadedFilePath, def imageFormats = [], def parent = null) {
-
-        File uploadedFile = new File(uploadedFilePath)
-
-        if (uploadedFile.isDirectory()) {
-            println "$uploadedFilePath is a directory"
-
-            if (uploadedFile.name == "__MACOSX") return
-            // check if it is a folder containing one multipleFileImage
-            def multipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats() + getAvailableMultipleImageFormats()
-
-            def format = multipleFileImageFormats.find { imageFormat ->
-                imageFormat.absoluteFilePath = uploadedFilePath
-                return imageFormat.detect()
-            }
-
-            if (format) {
-                imageFormats << [
-                        absoluteFilePath: format.absoluteFilePath,
-                        imageFormat     : format,
-                        parent          : parent
-                ]
-            } else {
-                for (File child : uploadedFile.listFiles()) getImageFormats(child.absolutePath, imageFormats, parent)
-            }
-            return imageFormats
-        }
-
-        def archiveFormats = getAvailableArchiveFormats()
-
-        archiveFormats.each {
-            it.absoluteFilePath = uploadedFilePath
-        }
-
-        ArchiveFormat detectedArchiveFormat = archiveFormats.find {
-            it.detect()
-        }
-
-        if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
-
-            String dest = uploadedFile.getParent() + "/" + RandomStringUtils.random(13, (('A'..'Z') + ('0'..'0')).join().toCharArray())
-            detectedArchiveFormat.extract(dest)
-
-            getImageFormats(dest, imageFormats, [absoluteFilePath: uploadedFilePath, imageFormat: detectedArchiveFormat])
-
-        } else {
-            imageFormats << [
-                    uploadedFilePath: uploadedFilePath,
-                    imageFormat     : getImageFormat(uploadedFilePath),
-                    parent          : parent
-            ]
-        }
-        return imageFormats
+//
+//        File uploadedFile = new File(uploadedFilePath)
+//
+//        if (uploadedFile.isDirectory()) {
+//            println "$uploadedFilePath is a directory"
+//
+//            if (uploadedFile.name == "__MACOSX") return
+//            // check if it is a folder containing one multipleFileImage
+//            def multipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats() + getAvailableMultipleImageFormats()
+//
+//            def format = multipleFileImageFormats.find { imageFormat ->
+//                imageFormat.file = new CytomineFile(uploadedFilePath)
+//                return imageFormat.detect()
+//            }
+//
+//            if (format) {
+//                imageFormats << [
+//                        absoluteFilePath: format.file.absolutePath,
+//                        imageFormat     : format,
+//                        parent          : parent
+//                ]
+//            } else {
+//                for (File child : uploadedFile.listFiles()) getImageFormats(child.absolutePath, imageFormats, parent)
+//            }
+//            return imageFormats
+//        }
+//
+//        def archiveFormats = getAvailableArchiveFormats()
+//
+//        archiveFormats.each {
+//            it.file = new CytomineFile(uploadedFilePath)
+//        }
+//
+//        ArchiveFormat detectedArchiveFormat = archiveFormats.find {
+//            it.detect()
+//        }
+//
+//        if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
+//
+//            String dest = uploadedFile.getParent() + "/" + RandomStringUtils.random(13, (('A'..'Z') + ('0'..'0')).join().toCharArray())
+//            detectedArchiveFormat.extract(dest)
+//
+//            getImageFormats(dest, imageFormats, [absoluteFilePath: uploadedFilePath, imageFormat: detectedArchiveFormat])
+//
+//        } else {
+//            imageFormats << [
+//                    uploadedFilePath: uploadedFilePath,
+//                    imageFormat     : getImageFormat(new CytomineFile(uploadedFilePath)),
+//                    parent          : parent
+//            ]
+//        }
+//        return imageFormats
     }
 
-    static SupportedImageFormat getSupportedImageFormatByMimeType(String fif, String mimeType) {
+    static NativeFormat getSupportedImageFormatByMimeType(String fif, String mimeType) {
         def imageFormats = getSupportedImageFormats()
 
-        SupportedImageFormat imageFormat = imageFormats.find {
+        NativeFormat imageFormat = imageFormats.find {
             it.mimeType == mimeType
         }
 
-        imageFormat.absoluteFilePath = fif
+        imageFormat.setFile(new CytomineFile(fif))
         return imageFormat
 
     }
 
-    static Format getImageFormat(String filePath) {
+    static Format getImageFormat(def file) {
 
-        def format
-
-        if (new File(filePath).isDirectory()) {
-
-            return getMultiFileFormat(filePath)
-
-        }
-        else {
-            Format testedFormat = new ZipFormat()
-            testedFormat.absoluteFilePath = filePath
-            if (testedFormat.detect()) return testedFormat
-
-            // GeoJP2 tested before classic JP2 as GeoJP2 is a JP2 with some metadata
-            testedFormat = new GeoJPEG2000Format()
-            testedFormat.absoluteFilePath = filePath
-            if (testedFormat.detect()) return testedFormat
-
-            testedFormat = new GeoTIFFFormat()
-            testedFormat.absoluteFilePath = filePath
-            if (testedFormat.detect()) return testedFormat
-
-            testedFormat = new JPEG2000Format()
-            testedFormat.absoluteFilePath = filePath
-            if (testedFormat.detect()) return testedFormat
-
-            testedFormat = new ZeissCZIFormat()
-            testedFormat.absoluteFilePath = filePath
-            if (testedFormat.detect()) return testedFormat
-
-            format = getOpenSlideFormat(filePath)
-            if (format) return format
-
-            format = getTIFFFormat(filePath)
-            if (format) return format
-
-            format = getImageMagickFormat(filePath)
-            if (format) return format
-
-        }
-
-        throw new FormatException("Undetected Format")
+//        def format
+//
+//        if (file.isDirectory()) {
+//
+//            return getMultiFileFormat(file)
+//
+//        }
+//        else {
+//
+//            Format testedFormat = new ZipFormat()
+//            testedFormat.file = file
+//            if (testedFormat.detect()) return testedFormat
+//
+//            testedFormat = getAvailableSingleFileImageFormats().find {
+//                println file.class.simpleName
+//                it.file = file
+//                it.detect()
+//            }
+////            println "123"
+////            testedFormat = new JPEGFormat()
+////            println "456"
+////            testedFormat.setFile(file)
+////            println "789"
+//            if (testedFormat.detect()) return testedFormat
+//
+//            // GeoJP2 tested before classic JP2 as GeoJP2 is a JP2 with some metadata
+////            testedFormat = new GeoJPEG2000Format()
+////            testedFormat.file = file
+////            if (testedFormat.detect()) return testedFormat
+////
+////            testedFormat = new GeoTIFFFormat()
+////            testedFormat.file = file
+////            if (testedFormat.detect()) return testedFormat
+////
+////            testedFormat = new JPEG2000Format()
+////            testedFormat.file = file
+////            if (testedFormat.detect()) return testedFormat
+////
+////            testedFormat = new ZeissCZIFormat()
+////            testedFormat.file = file
+////            if (testedFormat.detect()) return testedFormat
+////
+////            format = getOpenSlideFormat(filePath)
+////            if (format) return format
+////
+////            format = getTIFFFormat(filePath)
+////            if (format) return format
+////
+////            format = getImageMagickFormat(filePath)
+////            if (format) return format
+//
+//        }
+//
+//        throw new FormatException("Undetected Format")
     }
 
-    private static Format getTIFFFormat(String filePath) {
-
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = new ProcessBuilder("$tiffinfoExecutable", filePath).redirectErrorStream(true).start().text
-
-        def formats = [new CZITIFFFormat(),
-                       new OMETIFFFormat(),
-                       new PhotoshopTIFFFormat(),
-                       new HuronTIFFFormat(),
-                       new PlanarTIFFFormat(),
-                       new BrokenTIFFFormat(),
-                       new PyramidalTIFFFormat()
-        ]
-
-
-        formats.each {
-            it.absoluteFilePath = filePath
-        }
-
-        def result = formats.find {
-            it.detect(tiffinfo)
-        }
-
-        return result
-    }
-
-    private static Format getOpenSlideFormat(String filePath) {
-
-        //String vendor = OpenSlide.detectVendor(new File(filePath))
-
-        def formats = [
-                new AperioSVSFormat(),
-                new HamamatsuNDPIFormat(),
-                new LeicaSCNFormat(),
-                //new SakuraSVSlideFormat(),
-                new PhilipsTIFFFormat(),
-                //common formats
-                new VentanaBIFFormat(),
-                new VentanaTIFFFormat()
-        ]
-
-
-        formats.each {
-            it.absoluteFilePath = filePath
-        }
-
-        def result = formats.find {
-            it.detect()
-        }
-
-        return result
-    }
-
-    private static Format getImageMagickFormat(String filePath) {
-
-        def identifyExecutable = Holders.config.cytomine.identify
-        def command = ["$identifyExecutable", filePath]
-        def proc = command.execute()
-        proc.waitFor()
-        String identifyInfo = proc.in.text
-
-        def formats = [new DICOMFormat(),
-                       new JPEGFormat(),
-                       new PGMFormat(),
-                       new PNGFormat(),
-                       new BMPFormat()
-        ]
-
-
-        formats.each {
-            it.absoluteFilePath = filePath
-        }
-
-        def result = formats.find {
-            it.detect(identifyInfo)
-        }
-
-        return result
-    }
-
-    private static Format getMultiFileFormat(String filePath) {
-
-        def formats = getAvailableMultipleImageFormats() + getAvailableHierarchicalMultipleImageFormats()
-
-        formats.each {
-            it.absoluteFilePath = filePath
-        }
-
-        return formats.find {
-            it.detect()
-        }
-    }
-
-    static boolean isClassicFolder(String filePath) {
-        if (!new File(filePath).isDirectory()) return false
-        return getMultiFileFormat(filePath) == null
-    }
 }

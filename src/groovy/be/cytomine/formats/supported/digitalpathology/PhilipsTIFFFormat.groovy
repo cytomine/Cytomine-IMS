@@ -1,5 +1,8 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.CustomExtensionFormat
+import be.cytomine.formats.detectors.OpenSlideDetector
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -17,6 +20,7 @@ package be.cytomine.formats.supported.digitalpathology
  */
 
 import grails.util.Holders
+import utils.MimeTypeUtils
 import utils.ProcUtils
 
 import javax.imageio.ImageIO
@@ -25,22 +29,24 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 12/07/14.
  */
-class PhilipsTIFFFormat extends OpenSlideSingleFileTIFFFormat {
+class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
+
+    String vendor = "philips"
+    String customExtension = "ptiff"
 
     public PhilipsTIFFFormat() {
-        extensions = ["tiff", "ptiff"]
-        vendor = "philips"
-        mimeType = "philips/tif"
+        extensions = ["tiff", customExtension]
+        mimeType = MimeTypeUtils.MIMETYPE_PTIFF
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = null
-        fakeExtension = "ptiff"
+        magnificationProperty = null
     }
 
     BufferedImage associated(String label) {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
+        String tiffinfo = "$tiffinfoExecutable ${this.file.absolutePath}".execute().text
         int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
         if (label == "label") {
             //last directory
@@ -56,7 +62,7 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileTIFFFormat {
         boolean convertSuccessfull = true
 
         println ImageIO.getReaderFormatNames()
-        String source = absoluteFilePath
+        String source = this.file.absolutePath
         File target = File.createTempFile("label", ".jpg")
         String targetPath = target.absolutePath
 
@@ -78,15 +84,13 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileTIFFFormat {
         return labelImage
     }
 
-    @Override
     String tileURL(def fif, def params, def with_zoomify) {
-        absoluteFilePath = fif
+        def absoluteFilePath = fif
         return super.tileURL(rename().absolutePath, params, with_zoomify)
     }
 
-    @Override
     String cropURL(def params, def charset) {
-        absoluteFilePath = params.fif
+        def absoluteFilePath = params.fif
         params.fif = rename().absolutePath
         return super.cropURL(params, charset)
     }

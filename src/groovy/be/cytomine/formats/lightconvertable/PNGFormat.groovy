@@ -1,6 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
 import be.cytomine.formats.ICommonFormat
+import be.cytomine.formats.detectors.ImageMagickDetector
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -19,17 +20,18 @@ import be.cytomine.formats.ICommonFormat
  */
 
 import grails.util.Holders
+import utils.MimeTypeUtils
 import utils.ServerUtils
 
 /**
  * Created by stevben on 22/04/14.
  */
-class PNGFormat extends CommonFormat implements ICommonFormat {
+class PNGFormat extends CommonFormat implements ImageMagickDetector {
+
+    String IMAGE_MAGICK_FORMAT_IDENTIFIER = "PNG"
 
     public PNGFormat() {
         extensions = ["png"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "PNG"
-        mimeType = "image/png"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        mimeType = MimeTypeUtils.MIMETYPE_PNG
     }
 }

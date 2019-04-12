@@ -1,5 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.formats.detectors.ImageMagickDetector
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -22,20 +24,8 @@ import be.cytomine.formats.ICommonFormat
 /**
  * Created by stevben on 22/04/14.
  */
-public abstract class CommonFormat extends VIPSConvertable  implements ICommonFormat {
+public abstract class CommonFormat extends VIPSConvertable  /*implements ImageMagickDetector*/ {
 
-    public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
+    String IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
-    public boolean detect() {
-        def identifyExecutable = Holders.config.cytomine.identify
-        def command = ["$identifyExecutable", absoluteFilePath]
-        def proc = command.execute()
-        proc.waitFor()
-        String stdout = proc.in.text
-        return detect(stdout)
-    }
-    public boolean detect(String imageMagikInfo) {
-        if(imageMagikInfo.split(" ").size() < 2) return false;
-        return imageMagikInfo.split(" ")[1].contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
-    }
 }

@@ -1,7 +1,8 @@
 package be.cytomine.formats.heavyconvertable
 
-import be.cytomine.formats.ITIFFFormat
-import grails.util.Holders
+
+import be.cytomine.formats.detectors.TiffInfoDetector
+import utils.MimeTypeUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -19,38 +20,38 @@ import grails.util.Holders
  * limitations under the License.
  */
 
-class OMETIFFFormat extends BioFormatConvertable implements ITIFFFormat {
+class OMETIFFFormat extends BioFormatConvertable implements TiffInfoDetector {
 
-    boolean group = true;
+    def possibleKeywords = [
+            "OME-TIFF"
+    ]
 
-    OMETIFFFormat(){
-        mimeType = "ome/ome-tiff"
+    boolean group = true
+
+    OMETIFFFormat() {
+        extensions = ["ome.tiff"]
+        mimeType = MimeTypeUtils.MIMETYPE_OMETIFF
     }
 
 
     boolean detect() {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        return this.detect(tiffinfo)
+        if (TiffInfoDetector.super.detect())
+            return true
+
+        String tiffinfo = file.getTiffInfoOutput()
+        if (tiffinfo.contains("hyperstack=true")
+                && Integer.parseInt(tiffinfo.split("\n").find { it.contains("images=") }.split("=")[1]) > 1
+                && !tiffinfo.contains("Tile Width")) {
+            return true
+        }
     }
 
-    boolean getGroup(){
-        return true;
+    boolean getGroup() {
+        return true
     }
 
     @Override
     boolean getOnlyBiggestSerie() {
         return false
-    }
-
-    boolean detect(String tiffinfo) {
-        if (tiffinfo.contains("OME-TIFF"))
-            return true
-
-        if (tiffinfo.contains("hyperstack=true")){
-            if(Integer.parseInt(tiffinfo.split("\n").find{it.contains("images=")}.split("=")[1]) > 1 && !tiffinfo.contains("Tile Width")){
-                return true
-            }
-        }
     }
 }

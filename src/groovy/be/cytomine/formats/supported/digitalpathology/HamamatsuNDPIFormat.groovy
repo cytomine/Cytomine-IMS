@@ -1,5 +1,9 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.detectors.OpenSlideDetector
+import org.openslide.OpenSlide
+import utils.MimeTypeUtils
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -15,31 +19,26 @@ package be.cytomine.formats.supported.digitalpathology
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import org.openslide.OpenSlide
-import utils.FilesUtils
-
 /**
  * Created by stevben on 22/04/14.
  */
-class HamamatsuNDPIFormat extends OpenSlideSingleFileFormat {
+class HamamatsuNDPIFormat extends OpenSlideFormat implements OpenSlideDetector {
 
-    public HamamatsuNDPIFormat() {
+    String vendor = "hamamatsu"
+
+    HamamatsuNDPIFormat() {
         extensions = ["ndpi"]
-        vendor = "hamamatsu"
-        mimeType = "openslide/ndpi"
+        mimeType = MimeTypeUtils.MIMETYPE_NDPI
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "hamamatsu.SourceLens"
+        magnificationProperty = "hamamatsu.SourceLens"
     }
 
     boolean detect() {
-        if (!super.detect()) return false //not an hamamatsu format
-        if(FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase().equals("tif")) return false //hack: if convert ndpi to tif => still hamamatsu metadata
-        return !new OpenSlide(new File(absoluteFilePath)).properties.keySet().contains("hamamatsu.MapFile")
-
-
-
+        if (!OpenSlideDetector.super.detect()) return false //not an hamamatsu format
+        if (file.extension() == "tif") return false //hack: if convert ndpi to tif => still hamamatsu metadata
+        return !new OpenSlide(file).properties.keySet().contains("hamamatsu.MapFile")
     }
 }

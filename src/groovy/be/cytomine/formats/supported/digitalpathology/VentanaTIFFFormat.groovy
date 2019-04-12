@@ -1,5 +1,9 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.CustomExtensionFormat
+import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.MimeTypeUtils
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -23,18 +27,23 @@ import utils.ServerUtils
 /**
  * Created by stevben on 28/04/14.
  */
-class VentanaTIFFFormat extends OpenSlideSingleFileTIFFFormat {
+class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
+
+    String vendor = "ventana"
+    String customExtension = "vtif"
 
     public VentanaTIFFFormat() {
-        extensions = ["tif", "vtif"]
-        vendor = "ventana"
-        mimeType = "openslide/ventana"
+        extensions = ["tif", customExtension]
+        mimeType = MimeTypeUtils.MIMETYPE_VTIFF
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "openslide.objective-power"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
-        fakeExtension = "vtif"
+        magnificationProperty = "openslide.objective-power"
+    }
+
+    boolean detect() {
+        return OpenSlideDetector.super.detect() && extensions.contains(file.extension())
     }
 
     BufferedImage associated(String label) {
@@ -46,15 +55,13 @@ class VentanaTIFFFormat extends OpenSlideSingleFileTIFFFormat {
         }
     }
 
-    @Override
     String tileURL(def fif, def params, def with_zoomify) {
-        absoluteFilePath = fif
+        def absoluteFilePath = fif
         return super.tileURL(rename().absolutePath, params, with_zoomify)
     }
 
-    @Override
     String cropURL(def params, def charset) {
-        absoluteFilePath = params.fif
+        def absoluteFilePath = params.fif
         params.fif = rename().absolutePath
         return super.cropURL(params, charset)
     }

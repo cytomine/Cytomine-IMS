@@ -1,6 +1,11 @@
 package be.cytomine.formats.heavyconvertable
 
+import be.cytomine.exception.ConversionException
+import be.cytomine.formats.CytomineFile
 import be.cytomine.formats.Format
+import be.cytomine.formats.MultipleFilesFormat
+import be.cytomine.formats.NotNativeFormat
+import utils.MimeTypeUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -20,18 +25,15 @@ import be.cytomine.formats.Format
 /**
  * Created by hoyoux on 28.04.15.
  */
-class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
+class DotSlideFormat extends NotNativeFormat implements IHeavyConvertableImageFormat, MultipleFilesFormat {
 
     DotSlideFormat() {
-        mimeType = "olympus/.slide"
+        mimeType = MimeTypeUtils.MIMETYPE_DOTSLIDE
     }
 
     @Override
     boolean detect() {
-        String mainFile = "ExtendedProps.xml"
-        File folder = new File(absoluteFilePath)
-
-        File target = folder.listFiles().find {it.name.equals(mainFile)}
+        File target = getRootFile(file)
         if(!target) return false
 
         String command = "cat  "+target.absolutePath
@@ -42,15 +44,31 @@ class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
     }
 
     @Override
-    String[] convert() {
+    def convert() {
         println "Conversion DotSlide : begin"
-        String name = new File(absoluteFilePath).name
+        String name = this.file.name
 
         // call the dotslide lib
-        dotslide.Main.main("-fi", "$absoluteFilePath/fi", "-fp", "$absoluteFilePath/fp" , "-p", "$absoluteFilePath/");
-        dotslidebuild.Main.main("-f", "$absoluteFilePath/fp.txt", "-io", "$absoluteFilePath/$name")
+        dotslide.Main.main("-fi", "${this.file.absolutePath}/fi",
+                "-fp", "${this.file.absolutePath}/fp",
+                "-p", "${this.file.absolutePath}/")
+
+        dotslidebuild.Main.main("-f", "${this.file.absolutePath}/fp.txt",
+                "-io", "${this.file.absolutePath}/$name")
 
         println "Conversion DotSlide : end"
-        return [absoluteFilePath+"/"+name+".tif"]
+
+        File target = new CytomineFile(this.file.parent, name + ".tif")
+        if (!target)
+            throw new ConversionException()
+
+        return [target]
+    }
+
+    @Override
+    File getRootFile(File folder) {
+        return folder.listFiles().find {file ->
+            file.isFile() && file.name == "ExtendedProps.xml"
+        }
     }
 }

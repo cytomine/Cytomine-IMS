@@ -1,6 +1,9 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-import be.cytomine.formats.ITIFFFormat
+
+import be.cytomine.formats.detectors.TiffInfoDetector
+import be.cytomine.formats.lightconvertable.VIPSConvertable
+import utils.MimeTypeUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -18,19 +21,15 @@ import be.cytomine.formats.ITIFFFormat
  * limitations under the License.
  */
 
-class CZITIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
+class CZITIFFFormat extends VIPSConvertable implements TiffInfoDetector {
 
+    def requiredKeywords = [
+            "ImageDescription: Label",
+            "ImageDescription: SlidePreview"
+    ]
 
-    public CZITIFFFormat () {
+    CZITIFFFormat() {
         extensions = ["tif", "tiff"]
-    }
-
-    public boolean detect() {
-        String tiffinfo = getTiffInfo()
-        return this.detect(tiffinfo)
-    }
-
-    boolean detect(String tiffinfo) {
-        return tiffinfo.contains("ImageDescription: Label") && tiffinfo.contains("ImageDescription: SlidePreview")
+        mimeType = MimeTypeUtils.MIMETYPE_TIFF
     }
 }

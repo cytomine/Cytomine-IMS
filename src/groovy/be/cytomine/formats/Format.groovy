@@ -16,16 +16,44 @@ package be.cytomine.formats
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 22/04/14.
- */
 abstract class Format {
 
     public String[] extensions = null
+
+    /**
+     * The file path used in processing methods.
+     */
+    public CytomineFile file = null
+
+    /**
+     * The format mime type
+     */
     public String mimeType = null
-    public String absoluteFilePath
+
+    /**
+     * The degree of complexity of the detection method.
+     */
+    protected int detectionComplexity = 0
+
+    public String toString() {
+        return this.class.simpleName
+    }
 
     abstract public boolean detect()
 
+    CytomineFile getFile() {
+        return file
+    }
 
+    void setFile(CytomineFile file) {
+        this.file = file
+    }
+
+    def properties() {
+        return []
+    }
+
+    def annotations() {
+        return []
+    }
 }

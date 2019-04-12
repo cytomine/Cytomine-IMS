@@ -1,6 +1,9 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-import be.cytomine.formats.ITIFFFormat
+
+import be.cytomine.formats.detectors.TiffInfoDetector
+import be.cytomine.formats.lightconvertable.VIPSConvertable
+import utils.MimeTypeUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -18,19 +21,21 @@ import be.cytomine.formats.ITIFFFormat
  * limitations under the License.
  */
 
-public class HuronTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
-    public HuronTIFFFormat () {
+class HuronTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
+
+    def requiredKeywords = [
+            "Compression Scheme: None",
+            "Photometric Interpretation: RGB color",
+            "Source = Bright Field"
+    ]
+
+    def forbiddenKeywords = [
+            "Compression Scheme: JPEG",
+            "Photometric Interpretation: YCbCr"
+    ]
+
+    HuronTIFFFormat() {
         extensions = ["tif", "tiff"]
-    }
-
-    public boolean detect() {
-        String tiffinfo = getTiffInfo()
-        return this.detect(tiffinfo)
-    }
-
-    boolean detect(String tiffinfo) {
-        return !tiffinfo.contains("Compression Scheme: JPEG") && !tiffinfo.contains("Photometric Interpretation: YCbCr") &&
-                tiffinfo.contains("Compression Scheme: None") && tiffinfo.contains("Photometric Interpretation: RGB color") &&
-                tiffinfo.contains("Source = Bright Field")
+        mimeType = MimeTypeUtils.MIMETYPE_TIFF
     }
 }

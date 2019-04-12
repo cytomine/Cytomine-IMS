@@ -1,6 +1,8 @@
 package be.cytomine.formats.supported
 
-import be.cytomine.formats.ITIFFFormat
+
+import be.cytomine.formats.detectors.TiffInfoDetector
+import grails.util.Holders
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -17,51 +19,87 @@ import be.cytomine.formats.ITIFFFormat
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import grails.util.Holders
+
 import org.springframework.util.StringUtils
-import utils.FilesUtils
+import utils.MimeTypeUtils
 import utils.ServerUtils
 import utils.URLBuilder
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 28/04/14.
- */
-class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
+class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
 
-    public PyramidalTIFFFormat () {
+    PyramidalTIFFFormat() {
         extensions = ["tif", "tiff"]
-        mimeType = "image/pyrtiff"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        mimeType = MimeTypeUtils.MIMETYPE_PYRTIFF
+        iipUrls = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
     }
 
-    private excludeDescription = [
+    def forbiddenKeywords = [
             "Not a TIFF",
             "<iScan",
             //"Hamamatsu",
             "Aperio",
             "Leica",
             "PHILIPS",
-            "OME-XML",
+//            "OME-XML",
             "Software: Adobe Photoshop"
     ]
 
-    public boolean detect() {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        //we have a TIFF, but what kind ? flat, pyramid, multi-page, ventana ?
-        return this.detect(tiffinfo)
+    boolean detect() {
+        boolean detected = TiffInfoDetector.super.detect()
+        if (!detected) return false
+
+        if (file.getTiffInfoOutput().contains("Hamamatsu") && file.extension() == "tif") {
+            return false //otherwise its a tiff file converted from ndpi
+        }
+
+        //pyramid or multi-page, sufficient ?
+        int nbTiffDirectory = StringUtils.countOccurrencesOf(file.getTiffInfoOutput(), "TIFF Directory")
+        if (nbTiffDirectory > 1)
+            return true
+        else if (nbTiffDirectory == 1) { //check if very small tiff
+            //get width & height from tiffinfo...
+            int maxWidth = 0
+            int maxHeight = 0
+            file.getTiffInfoOutput().tokenize('\n').findAll {
+                it.contains 'Image Width:'
+            }.each {
+                def tokens = it.tokenize(" ")
+                int width = Integer.parseInt(tokens.get(2))
+                int height = Integer.parseInt(tokens.get(5))
+                maxWidth = Math.max(maxWidth, width)
+                maxHeight = Math.max(maxHeight, height)
+            }
+
+            return (maxWidth <= 256 && maxHeight <= 256)
+        } else
+            return false
+    }
+
+    @Override
+    BufferedImage thumb(Object params) {
+        return null
+    }
+
+    @Override
+    BufferedImage associated(Object label) {
+        return null
+    }
+
+    @Override
+    String associated() {
+        return null
     }
 
     def properties() {
         def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable $absoluteFilePath".execute().text
-        def properties = [[key : "mimeType", value : mimeType]]
+        String tiffinfo = "$tiffinfoExecutable ${this.file.absolutePath}".execute().text
+        def properties = [[key: "mimeType", value: mimeType]]
         int maxWidth = 0
         int maxHeight = 0
-        def infos = tiffinfo.tokenize( '\n' );
+        def infos = tiffinfo.tokenize('\n')
         infos.findAll {
             it.contains 'Image Width:'
         }.each {
@@ -72,18 +110,18 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
             maxHeight = Math.max(maxHeight, height)
         }
 
-        Double resolution;
-        String unit;
+        Double resolution
+        String unit
         def resolutions = infos.findAll {
             it.contains 'Resolution:'
-        }.unique();
-        if(resolutions.size() == 1){
+        }.unique()
+        if (resolutions.size() == 1) {
             def tokens = resolutions[0].tokenize(" ,/")
 
-            tokens.each {println it}
+            tokens.each { println it }
 
-            resolution = Double.parseDouble(tokens.get(1).replaceAll(",","."))
-            if(tokens.size() >= 5 && !tokens.get(3).contains("unitless")){
+            resolution = Double.parseDouble(tokens.get(1).replaceAll(",", "."))
+            if (tokens.size() >= 5 && !tokens.get(3).contains("unitless")) {
                 unit = tokens.get(4)
             }
         }
@@ -112,17 +150,26 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
                 colorspace = value
         }
 
-        properties << [ key : "cytomine.width", value : maxWidth ]
-        properties << [ key : "cytomine.height", value : maxHeight ]
-        properties << [ key : "cytomine.resolution", value : null/*unitConverter(resolution, unit)*/ ]
-        properties << [ key : "cytomine.magnification", value : null ]
-        properties << [ key : "cytomine.bitdepth", value : maxDepth]
-        properties << [ key : "cytomine.colorspace", value : colorspace]
+        properties << [key: "cytomine.width", value: maxWidth]
+        properties << [key: "cytomine.height", value: maxHeight]
+        properties << [key: "cytomine.resolution", value: null/*unitConverter(resolution, unit)*/]
+        properties << [key: "cytomine.magnification", value: null]
+        properties << [key: "cytomine.bitdepth", value: maxDepth]
+        properties << [key: "cytomine.colorspace", value: colorspace]
         return properties
-
     }
 
-    public BufferedImage associated(String label) { //should be abstract
+    @Override
+    String cropURL(Object params) {
+        return null
+    }
+
+    @Override
+    String tileURL(Object params) {
+        return null
+    }
+
+    BufferedImage associated(String label) { //should be abstract
         if (label == "macro") {
             return thumb(256)
         }
@@ -130,20 +177,20 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
 
 
     BufferedImage thumb(int maxSize, def params) {
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        def iipRequest = new URLBuilder(ServerUtils.getServer(iipUrls))
+        iipRequest.addParameter("FIF", this.file.absolutePath, true)
         iipRequest.addParameter("HEI", "$maxSize")
         iipRequest.addParameter("WID", "$maxSize")
 
         def format = "jpg"
-        if(params) {
+        if (params) {
             boolean inverse = params.boolean("inverse", false)
             if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
             if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
             if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
             if (inverse) iipRequest.addParameter("INV", "true")
             if (params.bits) {
-                def bits= params.int("bits", 8)
+                def bits = params.int("bits", 8)
                 if (bits > 16) iipRequest.addParameter("BIT", 32)
                 else if (bits > 8) iipRequest.addParameter("BIT", 16)
                 else iipRequest.addParameter("BIT", 8)
@@ -151,7 +198,7 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
             if (params.format) format = params.format
         }
 
-        if(format == "jpg" || format == "jpeg") {
+        if (format == "jpg" || format == "jpeg") {
             iipRequest.addParameter("QLT", "99")
         }
 
@@ -159,58 +206,23 @@ class PyramidalTIFFFormat extends SupportedImageFormat implements ITIFFFormat {
 
         String thumbURL = iipRequest.toString()
         println thumbURL
-		return ImageIO.read(new URL(thumbURL))
+        return ImageIO.read(new URL(thumbURL))
     }
 
     //convert from pixel/unit to µm/pixel
-    private Double unitConverter(Double res, String unit){
-        if(res == null) return null;
-        Double resOutput = res;
-        if(unit == "inch"){
+    private Double unitConverter(Double res, String unit) {
+        if (res == null) return null
+        Double resOutput = res
+        if (unit == "inch") {
             resOutput /= 2.54
             unit = "cm"
         }
-        if(unit == "cm"){
-            resOutput = 1/resOutput
-            resOutput*=10000
-        } else{
+        if (unit == "cm") {
+            resOutput = 1 / resOutput
+            resOutput *= 10000
+        } else {
             return null
         }
         return resOutput
-    }
-
-    boolean detect(String tiffinfo) {
-        boolean notTiff = false
-        excludeDescription.each {
-            notTiff |= tiffinfo.contains(it)
-        }
-        println "${tiffinfo.contains("Hamamatsu")}"
-        println "${!FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase().equals("tif")}"
-        println "notTiff=${notTiff}"
-        if(tiffinfo.contains("Hamamatsu") && !FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase().equals("tif")) {
-            return false //otherwise its a tiff file converted from ndpi
-        }
-        if (notTiff) return false
-
-        int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
-
-        //pyramid or multi-page, sufficient ?
-        if (nbTiffDirectory > 1) return true
-        else if (nbTiffDirectory == 1) { //check if very small tiff
-            //get width & height from tiffinfo...
-            int maxWidth = 0
-            int maxHeight = 0
-            tiffinfo.tokenize( '\n' ).findAll {
-                it.contains 'Image Width:'
-            }.each {
-                def tokens = it.tokenize(" ")
-                int width = Integer.parseInt(tokens.get(2))
-                int height = Integer.parseInt(tokens.get(5))
-                maxWidth = Math.max(maxWidth, width)
-                maxHeight = Math.max(maxHeight, height)
-            }
-
-            return (maxWidth <= 256 && maxHeight <= 256)
-        }
     }
 }

@@ -1,6 +1,7 @@
 package utils
 
 import groovy.util.logging.Log
+import groovy.util.logging.Log4j
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -24,7 +25,7 @@ import groovy.util.logging.Log
  * GIGA-ULg
  *
  */
-@Log
+@Log4j
 class ProcUtils {
 
     static def executeOnShell(String command) {

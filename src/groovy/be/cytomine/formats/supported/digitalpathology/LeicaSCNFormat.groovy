@@ -1,5 +1,8 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.MimeTypeUtils
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -21,16 +24,18 @@ import java.awt.image.BufferedImage
 /**
  * Created by stevben on 22/04/14.
  */
-class LeicaSCNFormat  extends OpenSlideSingleFileFormat {
+class LeicaSCNFormat  extends OpenSlideFormat implements OpenSlideDetector {
+
+    String vendor = "leica"
 
     public LeicaSCNFormat() {
         extensions = ["scn"]
-        vendor = "leica"
-        mimeType = "openslide/scn"
+        mimeType = MimeTypeUtils.MIMETYPE_SCN
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "leica.objective"
+        magnificationProperty = "leica.objective"
     }
 
 

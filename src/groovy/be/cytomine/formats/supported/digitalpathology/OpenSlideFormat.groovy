@@ -1,5 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.detectors.OpenSlideDetector
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -16,7 +18,7 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.formats.supported.NativeFormat
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
 import utils.ServerUtils
@@ -24,32 +26,17 @@ import utils.URLBuilder
 
 import java.awt.image.BufferedImage
 
-abstract class OpenSlideFormat extends SupportedImageFormat {
+abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetector*/ {
 
-    protected String vendor = null
+    String vendor = null
 
-    String widthProperty = "openslide.level[0].width"
-    String heightProperty = "openslide.level[0].height"
-
-    boolean detect() {
-        println "detect $absoluteFilePath"
-        File slideFile = new File(absoluteFilePath)
-        if (slideFile.canRead()) {
-            try {
-                println "can read $absoluteFilePath " +  OpenSlide.detectVendor(slideFile) + " $vendor"
-                return OpenSlide.detectVendor(slideFile) == vendor
-            } catch (java.io.IOException e) {
-                //Not a file that OpenSlide can recognize
-                return false
-            }
-        } else {
-            println "can not read $absoluteFilePath "
-            return false
-        }
-    }
+    protected String widthProperty = "openslide.level[0].width"
+    protected String heightProperty = "openslide.level[0].height"
+    protected String resolutionProperty = null
+    protected String magnificationProperty = null
 
     public BufferedImage associated(String label) { //should be abstract
-        File slideFile = new File(absoluteFilePath)
+        File slideFile = this.file
         BufferedImage associatedBufferedImage = null
         if (slideFile.canRead()) {
             OpenSlide openSlide = new OpenSlide(slideFile)
@@ -64,8 +51,23 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         return associatedBufferedImage
     }
 
+    @Override
+    BufferedImage thumb(Object params) {
+        return null
+    }
+
+    @Override
+    BufferedImage associated(Object label) {
+        return null
+    }
+
+    @Override
+    String associated() {
+        return null
+    }
+
     public def properties() {
-        File slideFile = new File(absoluteFilePath)
+        File slideFile = this.file
         def properties = [[key : "mimeType", value : mimeType]]
         try {
             if (slideFile.canRead()) {
@@ -90,7 +92,7 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
             properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value?.replaceAll(",",".")).intValue() ]
 
         def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", absoluteFilePath, true)
+        iipRequest.addParameter("FIF", this.file.absolutePath, true)
         iipRequest.addParameter("obj", "IIP,1.0")
         iipRequest.addParameter("obj", "bits-per-channel")
         iipRequest.addParameter("obj", "colorspace")
@@ -123,8 +125,18 @@ abstract class OpenSlideFormat extends SupportedImageFormat {
         return properties
     }
 
+    @Override
+    String cropURL(Object params) {
+        return null
+    }
+
+    @Override
+    String tileURL(Object params) {
+        return null
+    }
+
     public BufferedImage thumb(int maxSize, def params=null) {
-        OpenSlide openSlide = new OpenSlide(new File(absoluteFilePath))
+        OpenSlide openSlide = new OpenSlide(this.file)
         BufferedImage thumbnail = openSlide.createThumbnailImage(0, 0, openSlide.getLevel0Width(), openSlide.getLevel0Height(), maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
         openSlide.close()
         return thumbnail

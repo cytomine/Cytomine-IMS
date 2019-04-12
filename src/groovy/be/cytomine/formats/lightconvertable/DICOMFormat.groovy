@@ -1,5 +1,6 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.formats.detectors.ImageMagickDetector
 import com.pixelmed.dicom.AttributeList
 import com.pixelmed.dicom.AttributeTag
 import com.pixelmed.dicom.DicomDictionary
@@ -9,6 +10,7 @@ import com.vividsolutions.jts.io.WKTWriter
 
 import be.cytomine.formats.ICommonFormat
 import grails.util.Holders
+import utils.MimeTypeUtils
 import utils.ServerUtils
 
 /*
@@ -30,21 +32,20 @@ import utils.ServerUtils
 /**
  * Created by stevben on 22/04/14.
  */
-class DICOMFormat extends CommonFormat implements ICommonFormat {
+class DICOMFormat extends CommonFormat implements ImageMagickDetector {
+
+    String IMAGE_MAGICK_FORMAT_IDENTIFIER = "DCM"
 
     public DICOMFormat() {
-        extensions = ["dcm"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "DCM"
-        mimeType = "application/dicom"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        extensions = ["dcm", "dicom"]
+        mimeType = MimeTypeUtils.MIMETYPE_DICOM
     }
 
-    @Override
     def properties() {
         def properties = super.properties()
         def dictionary = new PropertyDictionary()
         def list = new AttributeList()
-        list.read(absoluteFilePath)
+        list.read(this.file.absolutePath)
         (list.values() as ArrayList).each {
             def tag = dictionary.getNameFromTag(it.getTag())
             def value = it.getDelimitedStringValuesOrEmptyString()
@@ -59,7 +60,7 @@ class DICOMFormat extends CommonFormat implements ICommonFormat {
         def annotations = super.annotations()
         def dictionary = new AnnotationDictionary();
         AttributeList list = new AttributeList()
-        list.read(absoluteFilePath)
+        list.read(this.file.absolutePath)
         def dicomAnnotations = list.get(dictionary.getTagFromName("Annotation.Definition"))
         if (dicomAnnotations) {
             def imageHeight = list.get(dictionary.getTagFromName("Rows")).getDelimitedStringValuesOrEmptyString()

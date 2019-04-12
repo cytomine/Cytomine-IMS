@@ -1,6 +1,10 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import org.openslide.OpenSlide
+
+import be.cytomine.formats.CytomineFile
+import be.cytomine.formats.MultipleFilesFormat
+import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.MimeTypeUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -20,26 +24,29 @@ import org.openslide.OpenSlide
 /**
  * Created by stevben on 22/04/14.
  */
-class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
+class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
+
+    String vendor = "hamamatsu"
 
     public HamamatsuVMSFormat() {
         extensions = ["vms"]
-        vendor = "hamamatsu"
-        mimeType = "openslide/vms"
+        mimeType = MimeTypeUtils.MIMETYPE_VMS
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = null //to compute
-        magnificiationProperty = "hamamatsu.SourceLens"
+        magnificationProperty = "hamamatsu.SourceLens"
     }
 
     @Override
     boolean detect() {
-        File uploadedFile = new File(absoluteFilePath);
-        File vms = uploadedFile.listFiles(). find { it.name.endsWith('.vms')}
+        File vms = getRootFile(this.file)
+        log.info vms
 
         if(vms){
-            absoluteFilePath = vms.absolutePath
-            return super.detect()
+            this.file = new CytomineFile(vms.absolutePath)
+            log.info this.file.openSlideVendor
+            return OpenSlideDetector.super.detect()
         }
         return false
     }
@@ -56,6 +63,10 @@ class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
     }
 
     File getRootFile(File folder) {
-        return folder.listFiles(). find { it.name.endsWith('.vms')}
+        return folder.listFiles().find {file ->
+            extensions.any {ext ->
+                file.name.endsWith(".$ext")
+            }
+        }
     }
 }

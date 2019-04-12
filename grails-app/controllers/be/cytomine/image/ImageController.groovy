@@ -17,10 +17,10 @@ package be.cytomine.image
  */
 
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.formats.MultipleFilesFormat
+import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.exception.MiddlewareException
 import com.vividsolutions.jts.geom.Geometry
-import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
 import be.cytomine.client.Cytomine
@@ -57,9 +57,10 @@ class ImageController extends ImageResponseController {
     ])
     def thumb() {
         String fif = URLDecoder.decode(params.fif,"UTF-8")
+        println "FIF= $fif"
         int maxSize = params.int('maxSize', 512)
         String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
         BufferedImage bufferedImage = imageFormat.thumb(maxSize, params)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
@@ -83,7 +84,7 @@ class ImageController extends ImageResponseController {
         String label = params.label
         String mimeType = params.mimeType
         int maxSize = params.int('maxSize', 512)
-        SupportedImageFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
         log.info "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
@@ -104,7 +105,7 @@ class ImageController extends ImageResponseController {
     def associated() {
         String fif = URLDecoder.decode(params.fif,"UTF-8")
         String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
         render imageFormat.associated() as JSON
     }
 
@@ -116,7 +117,7 @@ class ImageController extends ImageResponseController {
     def properties() {
         String fif = URLDecoder.decode(params.fif,"UTF-8")
         String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
         render imageFormat.properties() as JSON
     }
 
@@ -150,7 +151,7 @@ class ImageController extends ImageResponseController {
     def crop() {
         String fif = URLDecoder.decode(params.fif as String, grailsApplication.config.cytomine.charset as String)
         String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
 
         def increaseArea = params.double('increaseArea', 1.0)
         def savedWidth = params.double('width')
@@ -323,9 +324,9 @@ class ImageController extends ImageResponseController {
             responseFile(file)
             return
         }
-        SupportedImageFormat format = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat format = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
 
-        if(format instanceof OpenSlideMultipleFileFormat) {
+        if(format instanceof MultipleFilesFormat) {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
             ZipOutputStream zipFile = new ZipOutputStream(baos)

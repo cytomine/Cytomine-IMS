@@ -1,4 +1,5 @@
-package be.cytomine.formats.supported.digitalpathology
+package be.cytomine.exception;
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -15,11 +16,13 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 22/04/14.
- */
-abstract class OpenSlideMultipleFileFormat extends OpenSlideFormat {
-
-    abstract File getRootFile(File folder)
-
+public class ConversionException extends CytomineException {
+    /**
+     * Message map with this exception
+     *
+     * @param msg  Message
+     */
+    public ConversionException(String msg) {
+        super(msg, 500);
+    }
 }

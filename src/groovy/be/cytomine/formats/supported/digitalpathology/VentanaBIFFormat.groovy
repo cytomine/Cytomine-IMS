@@ -1,5 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.detectors.OpenSlideDetector
+
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -19,28 +21,28 @@ package be.cytomine.formats.supported.digitalpathology
 
 import grails.util.Holders
 import utils.FilesUtils
+import utils.MimeTypeUtils
 import utils.ServerUtils
 
 /**
  * Created by stevben on 19/06/14.
  */
-class VentanaBIFFormat extends OpenSlideSingleFileFormat {
+class VentanaBIFFormat extends OpenSlideFormat implements OpenSlideDetector {
+
+    String vendor = "ventana"
 
     public VentanaBIFFormat(){
         extensions = ["bif"]
-        vendor = "ventana"
-        mimeType = "openslide/bif"
+        mimeType = MimeTypeUtils.MIMETYPE_BIF
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "ventana.ScanRes"
-        magnificiationProperty = "ventana.Magnification"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
+        magnificationProperty = "ventana.Magnification"
     }
-
 
     @Override
     boolean detect() {
-        String extension = FilesUtils.getExtensionFromFilename(absoluteFilePath)
-        return super.detect() && extensions.contains(extension)
+        return OpenSlideDetector.super.detect() && extensions.contains(file.extension())
     }
 }

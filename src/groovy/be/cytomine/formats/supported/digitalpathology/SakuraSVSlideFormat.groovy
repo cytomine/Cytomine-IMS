@@ -1,5 +1,9 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.MultipleFilesFormat
+import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.MimeTypeUtils
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -19,12 +23,13 @@ package be.cytomine.formats.supported.digitalpathology
 /**
  * Created by stevben on 22/04/14.
  */
-class SakuraSVSlideFormat extends OpenSlideMultipleFileFormat {
+class SakuraSVSlideFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
+
+    String vendor = vendor = "sakura"
 
     public SakuraSVSlideFormat () {
         extensions = ["svslide"]
-        vendor = "sakura"
-        mimeType = "sakura/svslide"
+        mimeType = MimeTypeUtils.MIMETYPE_SAKURA
     }
 
     File getRootFile(File folder) {

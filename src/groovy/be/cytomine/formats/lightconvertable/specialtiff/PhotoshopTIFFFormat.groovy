@@ -1,6 +1,9 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-import be.cytomine.formats.ITIFFFormat
+
+import be.cytomine.formats.detectors.TiffInfoDetector
+import be.cytomine.formats.lightconvertable.VIPSConvertable
+import utils.MimeTypeUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -22,18 +25,14 @@ import be.cytomine.formats.ITIFFFormat
 /**
  * Created by hoyoux on 16.02.15.
  */
-class PhotoshopTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
+class PhotoshopTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
 
-    public PhotoshopTIFFFormat () {
+    def requiredKeywords = [
+            "Software: Adobe Photoshop"
+    ]
+
+    PhotoshopTIFFFormat() {
         extensions = ["tif", "tiff"]
-    }
-
-    public boolean detect() {
-        String tiffinfo = getTiffInfo()
-        return this.detect(tiffinfo)
-    }
-
-    boolean detect(String tiffinfo) {
-        return tiffinfo.contains("Software: Adobe Photoshop");
+        mimeType = MimeTypeUtils.MIMETYPE_TIFF
     }
 }

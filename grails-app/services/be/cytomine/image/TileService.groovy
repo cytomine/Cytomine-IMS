@@ -17,7 +17,7 @@ package be.cytomine.image
  */
 
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.formats.supported.NativeFormat
 
 class TileService {
 
@@ -29,12 +29,12 @@ class TileService {
         if (fif.endsWith("/"))
             fif = fif.substring(0, fif.length()-1)
         String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
         return imageFormat.tileURL(fif, params, true)
     }
 
     def getTileUrlIIP(def params) {
-        SupportedImageFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(params.fif, params.mimeType)
+        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(params.fif, params.mimeType)
         return imageFormat.tileURL(params.fif, params, false)
     }
 }

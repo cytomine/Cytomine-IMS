@@ -1,7 +1,10 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-import be.cytomine.formats.ITIFFFormat
+
+import be.cytomine.formats.detectors.TiffInfoDetector
+import be.cytomine.formats.lightconvertable.VIPSConvertable
 import org.springframework.util.StringUtils
+import utils.MimeTypeUtils
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -26,61 +29,64 @@ import java.util.regex.Pattern
 /**
  * Created by hoyoux on 16.02.15.
  */
-class BrokenTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
+class BrokenTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
 
-    public BrokenTIFFFormat () {
+    def possibleKeywords = [
+            "not a valid IFD offset.",
+            "MissingRequired"
+    ]
+
+    BrokenTIFFFormat() {
         extensions = ["tif", "tiff"]
+        mimeType = MimeTypeUtils.MIMETYPE_TIFF
     }
 
-    public boolean detect() {
-        String tiffinfo = getTiffInfo()
-        return this.detect(tiffinfo)
-    }
+    boolean detect() {
+        if (TiffInfoDetector.super.detect())
+            return true
 
-    boolean detect(String tiffinfo) {
-        if (tiffinfo.contains("not a valid IFD offset.")) return true;
-        if (tiffinfo.contains("MissingRequired")) return true;
-        int nbTiffDirectory = StringUtils.countOccurrencesOf(tiffinfo, "TIFF Directory")
-        int nbWidth = StringUtils.countOccurrencesOf(tiffinfo, "Image Width:")
-        if(nbTiffDirectory  == 2 && nbWidth < 2) return true
-        if(nbTiffDirectory  > 0 && StringUtils.countOccurrencesOf(tiffinfo, "Tile Width:") == 0) return true
+        int nbTiffDirectory = StringUtils.countOccurrencesOf(file.getTiffInfoOutput(), "TIFF Directory")
+        int nbWidth = StringUtils.countOccurrencesOf(file.getTiffInfoOutput(), "Image Width:")
+        if (nbTiffDirectory == 2 && nbWidth < 2)
+            return true
 
-        if(nbTiffDirectory  == 1 && tiffinfo.contains("Tile Width")){
+        if (nbTiffDirectory > 0 && StringUtils.countOccurrencesOf(file.getTiffInfoOutput(), "Tile Width:") == 0)
+            return true
 
-            int imWidth = -1;
-            int imHeight = -1;
-            int tileWidth = -1;
-            int tileHeight = -1;
+        if (nbTiffDirectory == 1 && file.getTiffInfoOutput().contains("Tile Width")) {
+            int imWidth = -1
+            int imHeight = -1
+            int tileWidth = -1
+            int tileHeight = -1
 
-            Pattern pattern = Pattern.compile("Image Width: (\\d)+");
-            Matcher matcher = pattern.matcher(tiffinfo);
-            if (matcher.find()){
-                imWidth = Integer.parseInt(tiffinfo.substring("Image Width: ".length()+matcher.start(),matcher.end()))
+            Pattern pattern = Pattern.compile("Image Width: (\\d)+")
+            Matcher matcher = pattern.matcher(file.getTiffInfoOutput())
+            if (matcher.find()) {
+                imWidth = Integer.parseInt(file.getTiffInfoOutput().substring("Image Width: ".length() + matcher.start(), matcher.end()))
             }
-            pattern = Pattern.compile("Tile Width: (\\d)+");
-            matcher = pattern.matcher(tiffinfo);
-            if (matcher.find())
-            {
-                tileWidth = Integer.parseInt(tiffinfo.substring("Tile Width: ".length()+matcher.start(),matcher.end()))
+            pattern = Pattern.compile("Tile Width: (\\d)+")
+            matcher = pattern.matcher(file.getTiffInfoOutput())
+            if (matcher.find()) {
+                tileWidth = Integer.parseInt(file.getTiffInfoOutput().substring("Tile Width: ".length() + matcher.start(), matcher.end()))
             }
 
-            if(tileWidth > -1 && imWidth > tileWidth) return true;
+            if (tileWidth > -1 && imWidth > tileWidth)
+                return true
 
-            pattern = Pattern.compile("Image Length: (\\d)+");
-            matcher = pattern.matcher(tiffinfo);
-            if (matcher.find()){
-                imHeight = Integer.parseInt(tiffinfo.substring("Image Length: ".length()+matcher.start(),matcher.end()))
+            pattern = Pattern.compile("Image Length: (\\d)+")
+            matcher = pattern.matcher(file.getTiffInfoOutput())
+            if (matcher.find()) {
+                imHeight = Integer.parseInt(file.getTiffInfoOutput().substring("Image Length: ".length() + matcher.start(), matcher.end()))
             }
-            pattern = Pattern.compile("Tile Length: (\\d)+");
-            matcher = pattern.matcher(tiffinfo);
-            if (matcher.find())
-            {
-                tileHeight = Integer.parseInt(tiffinfo.substring("Tile Length: ".length()+matcher.start(),matcher.end()))
+            pattern = Pattern.compile("Tile Length: (\\d)+")
+            matcher = pattern.matcher(file.getTiffInfoOutput())
+            if (matcher.find()) {
+                tileHeight = Integer.parseInt(file.getTiffInfoOutput().substring("Tile Length: ".length() + matcher.start(), matcher.end()))
             }
 
-            if(tileHeight > -1 && imHeight > tileHeight) return true;
+            if (tileHeight > -1 && imHeight > tileHeight)
+                return true
         }
-
 
         return false
     }

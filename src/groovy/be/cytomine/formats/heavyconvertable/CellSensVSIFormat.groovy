@@ -1,5 +1,9 @@
 package be.cytomine.formats.heavyconvertable
-import be.cytomine.formats.Format
+
+
+import be.cytomine.formats.CytomineFile
+import be.cytomine.formats.MultipleFilesFormat
+import utils.MimeTypeUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -16,19 +20,22 @@ import be.cytomine.formats.Format
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class CellSensVSIFormat extends BioFormatConvertable {
+class CellSensVSIFormat extends BioFormatConvertable implements MultipleFilesFormat {
 
     CellSensVSIFormat(){
-        mimeType = "olympus/vsi"
+        extensions = ["vsi"]
+        mimeType = MimeTypeUtils.MIMETYPE_VSI
     }
 
     @Override
     boolean detect() {
-        File folder = new File(absoluteFilePath)
+        File vsi = getRootFile(this.file)
 
-        File target = folder.listFiles().find {it.isFile() && it.absolutePath.endsWith(".vsi")}
-        if(target) absoluteFilePath = target.absolutePath
-        return target != null;
+        if (vsi) {
+            this.file = new CytomineFile(vsi.absolutePath)
+        }
+
+        return vsi != null
     }
 
     @Override
@@ -39,5 +46,14 @@ class CellSensVSIFormat extends BioFormatConvertable {
     @Override
     boolean getOnlyBiggestSerie() {
         return true
+    }
+
+    @Override
+    File getRootFile(File folder) {
+        return folder.listFiles().find {file ->
+            file.isFile() && extensions.any {ext ->
+                file.name.endsWith(".$ext")
+            }
+        }
     }
 }

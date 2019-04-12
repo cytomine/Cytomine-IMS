@@ -1,7 +1,10 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.exception.ConversionException
+import be.cytomine.formats.CytomineFile
 import be.cytomine.formats.Format
 import be.cytomine.formats.IConvertableImageFormat
+import be.cytomine.formats.NotNativeFormat
 import grails.util.Holders
 import utils.FilesUtils
 import utils.ProcUtils
@@ -10,55 +13,27 @@ import utils.ServerUtils
 /**
  * Created by hoyoux on 25.09.15.
  */
-abstract class VIPSConvertable extends Format implements IConvertableImageFormat {
-    public String[] extensions = null
-    public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
+abstract class VIPSConvertable extends NotNativeFormat {
 
     @Override
-    String[] convert() {
-        String ext = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase()
-        String source = absoluteFilePath
-        File current = new File(absoluteFilePath)
-        String target
-        if(current.name.lastIndexOf(".") > -1)
-            target = current.parent+"/" + current.name.substring(0,current.name.lastIndexOf("."))+"_pyr.tif"
-        else
-            target = current.parent+"/" + current.name+"_pyr.tif"
+    def convert() {
+        String targetName = (this.file.name - ".${this.file.extension()}") + "_pyr.tif"
+        CytomineFile target = new CytomineFile(this.file.parent, FilesUtils.correctFilename(targetName), this.file.c, this.file.z, this.file.t)
 
-        return convertToPyramidalTIFF(source, target)
+        return [convertToPyramidalTIFF(file, target)]
     }
 
-    static def convertToPyramidalTIFF(source, target) {
-        String ext = FilesUtils.getExtensionFromFilename(source).toLowerCase()
+    static def convertToPyramidalTIFF(CytomineFile source, CytomineFile target) {
 
-        target = target.replace(" ","_")
-        println "ext : $ext"
-        println "source : $source"
-        println "target : $target"
-
-        //1. Look for vips executable
         def vipsExecutable = Holders.config.cytomine.vips
+        def compression = Holders.config.cytomine.imageConversionAlgorithm ?: "jpeg -Q 95"
+        def tileSize = 256
 
-        //2. Pyramid command
-        def pyramidCommand = """$vipsExecutable tiffsave "$source" "$target" --tile --pyramid --compression """
-        if(Holders.config.cytomine.imageConversionAlgorithm.equals("lzw")) pyramidCommand += "lzw"
-        else pyramidCommand += "jpeg -Q 95"
-        pyramidCommand += " --tile-width 256 --tile-height 256 --bigtiff"
+        def command = """$vipsExecutable tiffsave "$source.absolutePath" "$target.absolutePath" --bigtiff --tile --tile-width $tileSize --tile-height $tileSize --pyramid --compression $compression"""
 
-        boolean success = true
+        if (ProcUtils.executeOnShell(command) != 0 || !target.exists())
+            throw new ConversionException("${source.absolutePath} hasn't been converted to ${target.absolutePath}")
 
-        success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
-
-        if (success) {
-            return [target]
-        }
-    }
-
-    def properties() {
-        return []
-    }
-
-    def annotations() {
-        return []
+        return target
     }
 }

@@ -1,5 +1,8 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.MimeTypeUtils
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -19,15 +22,17 @@ package be.cytomine.formats.supported.digitalpathology
 /**
  * Created by stevben on 22/04/14.
  */
-class AperioSVSFormat extends OpenSlideSingleFileFormat {
+class AperioSVSFormat extends OpenSlideFormat implements OpenSlideDetector {
+
+    String vendor = "aperio"
 
     public AperioSVSFormat(){
         extensions = ["svs"]
-        vendor = "aperio"
-        mimeType = "openslide/svs"
+        mimeType = MimeTypeUtils.MIMETYPE_SVS
+
         widthProperty = "openslide.level[0].width"
         heightProperty = "openslide.level[0].height"
         resolutionProperty = "aperio.MPP"
-        magnificiationProperty = "aperio.AppMag"
+        magnificationProperty = "aperio.AppMag"
     }
 }

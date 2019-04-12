@@ -2,6 +2,7 @@ package be.cytomine.formats.archive
 
 import be.cytomine.formats.Format
 import be.cytomine.formats.IConvertableImageFormat
+import be.cytomine.formats.NotNativeFormat
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -22,7 +23,5 @@ import be.cytomine.formats.IConvertableImageFormat
 /**
  * Created by stevben on 10/05/14.
  */
-abstract class ArchiveFormat extends Format implements IConvertableImageFormat {
-
-    //abstract public String[] extract(String destPath)
+abstract class ArchiveFormat extends NotNativeFormat implements IConvertableImageFormat {
 }
