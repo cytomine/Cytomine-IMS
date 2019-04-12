@@ -192,6 +192,9 @@ class UploadService {
         if (identifier.isClassicFolder()) {
             def errors = []
             currentFile.listFiles().each {
+                if (it.name == ".DS_STORE" || it.name.startsWith("__MACOSX"))
+                    return
+
                 try {
                     def child = new CytomineFile(it.absolutePath)
                     def deployed = deploy(child, null, uploadedFile ?: uploadedFileParent, abstractImage, uploadInfo)
