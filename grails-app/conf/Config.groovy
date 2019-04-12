@@ -190,6 +190,9 @@ cytomine.ims.conversion.vips.compression="lzw"
 cytomine.ims.conversion.vips.executable="vips"
 cytomine.ims.conversion.unzip.executable="unzip"
 cytomine.ims.conversion.gdal.executable="gdal_translate"
+cytomine.ims.conversion.bioformats.enabled=true
+cytomine.ims.conversion.bioformats.hostname="bioformat"
+cytomine.ims.conversion.bioformats.port=4321
 
 cytomine.ims.detection.tiffinfo.executable="tiffinfo"
 cytomine.ims.detection.identify.executable="identify"
