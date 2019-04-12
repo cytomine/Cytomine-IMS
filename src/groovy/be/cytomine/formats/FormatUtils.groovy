@@ -9,12 +9,18 @@ class FormatUtils {
     static def getTiffInfo(def filePath) {
         def tiffinfoExecutable = Holders.config.cytomine.ims.detection.tiffinfo.executable
         def command = """$tiffinfoExecutable $filePath """
-        return new ProcessBuilder("$tiffinfoExecutable", filePath).redirectErrorStream(true).start().text
+        return ProcUtils.executeOnShell(command).all
     }
 
     static def getImageMagick(def filePath) {
         def identifyExecutable = Holders.config.cytomine.ims.detection.identify.executable
         def command = """$identifyExecutable $filePath """
+        return ProcUtils.executeOnShell(command).all
+    }
+
+    static def getGdalInfo(def filePath) {
+        def executable = Holders.config.cytomine.ims.detection.gdal.executable
+        def command = """$executable -json $filePath """
         return ProcUtils.executeOnShell(command).out
     }
 

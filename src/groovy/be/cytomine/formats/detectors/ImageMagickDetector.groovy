@@ -1,7 +1,6 @@
 package be.cytomine.formats.detectors
 
 trait ImageMagickDetector extends Detector {
-//    abstract String IMAGE_MAGICK_FORMAT_IDENTIFIER
 
     boolean detect() {
         String output = this.file.getImageMagickOutput()

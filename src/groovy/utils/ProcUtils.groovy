@@ -37,7 +37,8 @@ class ProcUtils {
         return [
                 exit: proc.exitValue(),
                 out : outputStream.toString(),
-                err : errorStream.toString()
+                err : errorStream.toString(),
+                all : outputStream.toString() + errorStream.toString()
         ]
     }
 }

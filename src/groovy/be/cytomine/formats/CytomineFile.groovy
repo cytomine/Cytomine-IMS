@@ -7,6 +7,7 @@ class CytomineFile extends File {
     String tiffInfoOutput
     String imageMagickOutput
     String openSlideVendor
+    String gdalInfoOutput
 
     def c
     def z
@@ -61,6 +62,12 @@ class CytomineFile extends File {
         if (!openSlideVendor)
             openSlideVendor = FormatUtils.getOpenSlideVendor(this)
         return openSlideVendor
+    }
+
+    def getGdalInfoOutput() {
+        if (!gdalInfoOutput)
+            gdalInfoOutput = FormatUtils.getGdalInfo(this.absolutePath)
+        return gdalInfoOutput
     }
 
     def extension() {

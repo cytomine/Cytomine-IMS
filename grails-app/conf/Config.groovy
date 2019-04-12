@@ -193,3 +193,4 @@ cytomine.ims.conversion.gdal.executable="gdal_translate"
 
 cytomine.ims.detection.tiffinfo.executable="tiffinfo"
 cytomine.ims.detection.identify.executable="identify"
+cytomine.ims.detection.gdal.executable="gdalinfo"
