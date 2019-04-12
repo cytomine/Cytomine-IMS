@@ -2,20 +2,20 @@ package be.cytomine.formats
 
 import grails.util.Holders
 import org.openslide.OpenSlide
+import utils.ProcUtils
 
 class FormatUtils {
 
     static def getTiffInfo(def filePath) {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
+        def tiffinfoExecutable = Holders.config.cytomine.ims.detection.tiffinfo.executable
+        def command = """$tiffinfoExecutable $filePath """
         return new ProcessBuilder("$tiffinfoExecutable", filePath).redirectErrorStream(true).start().text
     }
 
     static def getImageMagick(def filePath) {
-        def identifyExecutable = Holders.config.cytomine.identify
-        def command = ["$identifyExecutable", filePath]
-        def proc = command.execute()
-        proc.waitFor()
-        return proc.in.text
+        def identifyExecutable = Holders.config.cytomine.ims.detection.identify.executable
+        def command = """$identifyExecutable $filePath """
+        return ProcUtils.executeOnShell(command).out
     }
 
     static def getOpenSlideVendor(def file) {

@@ -36,11 +36,10 @@ class GeoJPEG2000Format extends GeoTIFFFormat {
         else
             nbits = 8
 
-        def gdaltranslateExecutable = Holders.config.cytomine.gdaltranslate
-        def convertCommand = """$gdaltranslateExecutable -co "NBITS=$nbits" -co "JPEG_QUALITY=100" -co "WEBP_LEVEL=100" "$file.absolutePath" "$target.absolutePath" """
-
-        if (ProcUtils.executeOnShell(convertCommand) != 0 || !target.exists()) {
-            throw new ConversionException("${source.absolutePath} hasn't been converted to ${target.absolutePath}")
+        def gdal = Holders.config.cytomine.ims.conversion.gdal.executable
+        def convertCommand = """$gdal -co "NBITS=$nbits" -co "JPEG_QUALITY=100" -co "WEBP_LEVEL=100" $file.absolutePath $target.absolutePath """
+        if (ProcUtils.executeOnShell(convertCommand).exit != 0 || !target.exists()) {
+            throw new ConversionException("${file.absolutePath} hasn't been converted to ${target.absolutePath}")
         }
 
         return [target]

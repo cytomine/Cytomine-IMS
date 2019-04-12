@@ -1,9 +1,12 @@
 package be.cytomine.formats.archive
 
+import be.cytomine.exception.ConversionException
 import be.cytomine.exception.FormatException
 import be.cytomine.formats.CytomineFile
+import grails.util.Holders
 import org.apache.commons.lang.RandomStringUtils
 import utils.FilesUtils
+import utils.MimeTypeUtils
 import utils.ProcUtils
 
 import java.util.zip.ZipException
@@ -29,7 +32,7 @@ class ZipFormat extends ArchiveFormat {
 
     ZipFormat() {
         extensions = ["zip"]
-        mimeType = "application/zip"
+        mimeType = MimeTypeUtils.MIMETYPE_ZIP
     }
 
     boolean detect() {
@@ -48,8 +51,6 @@ class ZipFormat extends ArchiveFormat {
 
     def convert() {
         CytomineFile target = new CytomineFile(this.file.parent, this.file.name - ".${this.file.extension()}")
-        println target.path
-        println this.file.parentFile.list()
 
         while (this.file.parentFile.list().contains(target.name)) {
             target = new CytomineFile(target.parent, "${target.name}_converted")
@@ -58,12 +59,10 @@ class ZipFormat extends ArchiveFormat {
         ProcUtils.executeOnShell("mkdir -p ${target.absolutePath}")
         ProcUtils.executeOnShell("chmod -R 777 ${target.absolutePath}")
 
-        def command = """unzip ${this.file.absolutePath} -d ${target.absolutePath} """
-        def proc = command.execute()
-        def sout = new StringBuilder()
-        def serr = new StringBuilder()
-        proc.consumeProcessOutput(sout, serr)
-        proc.waitFor()
+        def executable = Holders.config.cytomine.ims.conversion.unzip.executable
+        def command = """$executable ${this.file.absolutePath} -d ${target.absolutePath} """
+        if (ProcUtils.executeOnShell(command).exit != 0 || !target.exists())
+            throw new ConversionException("${file.absolutePath} hasn't been converted to ${target.absolutePath}")
 
         return [target]
     }

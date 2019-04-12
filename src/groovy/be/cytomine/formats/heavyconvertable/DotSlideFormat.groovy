@@ -6,6 +6,7 @@ import be.cytomine.formats.Format
 import be.cytomine.formats.MultipleFilesFormat
 import be.cytomine.formats.NotNativeFormat
 import utils.MimeTypeUtils
+import utils.ProcUtils
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -36,11 +37,8 @@ class DotSlideFormat extends NotNativeFormat implements IHeavyConvertableImageFo
         File target = getRootFile(file)
         if(!target) return false
 
-        String command = "cat  "+target.absolutePath
-        def proc = command.execute()
-        proc.waitFor()
-        String stdout = proc.in.text
-        return stdout.contains("dotSlide")
+        String command = "cat ${target.absolutePath}"
+        return ProcUtils.executeOnShell(command).out.contains("dotSlide")
     }
 
     @Override

@@ -23,7 +23,7 @@ import utils.ProcUtils
 class FileSystemService {
 
     def makeLocalDirectory(String path) {
-        int value = ProcUtils.executeOnShell("mkdir -p " + path)
+        def value = ProcUtils.executeOnShell("mkdir -p " + path).exit
         ProcUtils.executeOnShell("chmod -R 777 " + path)
         return value
     }
@@ -37,7 +37,7 @@ class FileSystemService {
             makeLocalDirectory(destination.parent)
         }
 
-        int exit = ProcUtils.executeOnShell("""mv "$source.absolutePath" "$destination.absolutePath" """)
+        def exit = ProcUtils.executeOnShell("""mv "$source.absolutePath" "$destination.absolutePath" """).exit
         if (exit != 0 || !destination.exists()) {
             log.error destination.absolutePath + " created = " + destination.exists()
             throw new FileNotFoundException(destination.absolutePath + " is not created !")

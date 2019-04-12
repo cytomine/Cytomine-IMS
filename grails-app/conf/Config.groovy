@@ -185,3 +185,11 @@ cytomine.hdf5.maxBlockSize = 15 // Mbytes
 cytomine.deleteImageFilesFrequency = "600000"
 
 cytomine.imageServerURL="http://localhost-ims"
+
+cytomine.ims.conversion.vips.compression="lzw"
+cytomine.ims.conversion.vips.executable="vips"
+cytomine.ims.conversion.unzip.executable="unzip"
+cytomine.ims.conversion.gdal.executable="gdal_translate"
+
+cytomine.ims.detection.tiffinfo.executable="tiffinfo"
+cytomine.ims.detection.identify.executable="identify"

@@ -25,13 +25,13 @@ abstract class VIPSConvertable extends NotNativeFormat {
 
     static def convertToPyramidalTIFF(CytomineFile source, CytomineFile target) {
 
-        def vipsExecutable = Holders.config.cytomine.vips
-        def compression = Holders.config.cytomine.imageConversionAlgorithm ?: "jpeg -Q 95"
+        def vipsExecutable = Holders.config.cytomine.ims.conversion.vips.executable
+        def compression = Holders.config.cytomine.ims.conversion.vips.compression ?: "jpeg -Q 95"
         def tileSize = 256
 
-        def command = """$vipsExecutable tiffsave "$source.absolutePath" "$target.absolutePath" --bigtiff --tile --tile-width $tileSize --tile-height $tileSize --pyramid --compression $compression"""
+        def command = """$vipsExecutable tiffsave $source.absolutePath $target.absolutePath --bigtiff --tile --tile-width $tileSize --tile-height $tileSize --pyramid --compression $compression"""
 
-        if (ProcUtils.executeOnShell(command) != 0 || !target.exists())
+        if (ProcUtils.executeOnShell(command).exit != 0 || !target.exists())
             throw new ConversionException("${source.absolutePath} hasn't been converted to ${target.absolutePath}")
 
         return target

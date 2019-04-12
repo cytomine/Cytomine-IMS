@@ -1,7 +1,7 @@
 package ims
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.collections.DeleteCommandCollection
+//import be.cytomine.client.collections.DeleteCommandCollection
 import be.cytomine.client.models.DeleteCommand
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
@@ -28,20 +28,20 @@ class DeleteImageFileJob {
         //max between frequency*2 and 48h
         timeMargin = Math.max(timeMargin, 172800000L)
 
-        DeleteCommandCollection commands = cytomine.getDeleteCommandByDomainAndAfterDate("uploadedFile", (new Date().time-timeMargin))
-
-        for(int i = 0; i<commands.size(); i++) {
-            DeleteCommand command = commands.list.get(i)
-
-            JSONElement j = JSON.parse(command.get("data"));
-
-            File fileToDelete = new File(j.path+j.filename)
-
-            if(fileToDelete.exists()) {
-                log.info "DELETE file "+fileToDelete.absolutePath
-                fileToDelete.delete()
-            }
-
-        }
+//        DeleteCommandCollection commands = cytomine.getDeleteCommandByDomainAndAfterDate("uploadedFile", (new Date().time-timeMargin))
+//
+//        for(int i = 0; i<commands.size(); i++) {
+//            DeleteCommand command = commands.list.get(i)
+//
+//            JSONElement j = JSON.parse(command.get("data"));
+//
+//            File fileToDelete = new File(j.path+j.filename)
+//
+//            if(fileToDelete.exists()) {
+//                log.info "DELETE file "+fileToDelete.absolutePath
+//                fileToDelete.delete()
+//            }
+//
+//        }
     }
 }
