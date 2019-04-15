@@ -113,16 +113,27 @@ class StorageController {
                 responseContent.status = 200;
                 responseContent.name = filename
                 def uploadResult = uploadService.upload(user as User, storage as Storage, filename, filePath, isSync, projects, properties)
-//
-                responseContent.uploadFile = uploadResult.uploadedFile
-//                responseContent.images = uploadResult.images
+
+                responseContent.uploadFile = uploadResult.uploadedFile.getAttr()
+
+                def images = []
+                uploadResult.images.each { image ->
+                    def slices = uploadResult.slices.find {it.getLong('image') == image.getId()}
+                    def instances = uploadResult.instances.find { it.getLong('baseImage') == image.getId()}
+                    images << [
+                            image: image.getAttr(),
+                            slices: slices.collect {it.getAttr()},
+                            imageInstances: instances.collect {it.getAttr()}
+                    ]
+                }
+                responseContent.images = images
 
 
             } catch(DeploymentException e){
                 response.status = 500;
                 responseContent.status = 500;
                 responseContent.error = e.getMessage()
-//                responseContent.files = [[name:filename, size:0, error:responseContent.error]]
+                responseContent.files = [[name:filename, size:0, error:responseContent.error]]
             }
 
             responseContent = [responseContent]

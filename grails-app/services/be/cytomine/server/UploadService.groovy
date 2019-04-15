@@ -33,8 +33,6 @@ class UploadService {
     final static public String UNDERTERMINED_CONTENT = "undetermined"
 
     def executorService //used for the runAsync
-//    def backgroundService
-    def deployImagesService
     def grailsApplication
     def cytomineService
     def fileSystemService
@@ -69,9 +67,9 @@ class UploadService {
 
         log.info "ImageServer: $imsServer"
 
-        log.info "Create an uploadedFile instance and copy it to its storages"
-        log.info "filePath=$filePath"
-        log.info "absoluteFilePath=${temporaryFile.absolutePath}"
+        log.info "Create an uploadedFile instance and copy it to its storage"
+        log.info "filePath: $filePath"
+        log.info "absoluteFilePath: ${temporaryFile.absolutePath}"
 
         // Root UF
         def size = temporaryFile.size()
@@ -100,12 +98,13 @@ class UploadService {
             log.info "Sync upload"
             deployFile(file, uploadedFile, uploadInfo, result)
         } else {
-//            runAsync {
+            runAsync {
                 log.info "Async upload"
                 deployFile(file, uploadedFile, uploadInfo, result)
-//            }
+            }
         }
 
+        log.info result
         return result
     }
 
@@ -125,29 +124,34 @@ class UploadService {
     private def deployFile(File currentFile, UploadedFile uploadedFile, def uploadInfo, def result) {
         try {
             def file = new CytomineFile(currentFile.absolutePath)
-            result.images = deploy(file, uploadedFile, null, null, uploadInfo)
+            def deployed = deploy(file, uploadedFile, null, null, uploadInfo)
 
             // Add properties to resulting abstract images
-            result.images.each { deployed ->
+            deployed.images.each { image ->
                 def props = []
                 uploadInfo.properties.each {
-                    props << new Property(deployed.image, (String) it.key, (String) it.value)
+                    props << new Property(image, (String) it.key, (String) it.value)
                 }
                 if (props.size() > 0) {
-                    log.info "Add custom ${props.size()} properties to ${deployed.image}"
+                    log.info "Add custom ${props.size()} properties to ${image}"
                     log.debug properties
                     props.each { it.save() } // TODO: replace by a multiple add in a single request
                 }
             }
 
             // Add images to projects
+            def imageInstances = []
             for (int i = 0; i < uploadInfo.projects.size(); i++) {
                 def project = uploadInfo.projects.get(i)
-                result.images.each { deployed ->
-                    log.info "Adding ${deployed.image} to $project"
-                    new ImageInstance(deployed.image, project).save()
+                deployed.images.each { image ->
+                    log.info "Adding ${image} to $project"
+                    imageInstances << new ImageInstance(image, project).save()
                 }
             }
+
+            result.images = deployed.images
+            result.slices = deployed.slices
+            result.instances = imageInstances
 
             // Set uploaded file as deployed
             uploadedFile = new UploadedFile().fetch(uploadedFile.id)
@@ -184,7 +188,7 @@ class UploadService {
     private def deploy(CytomineFile currentFile, UploadedFile uploadedFile, UploadedFile uploadedFileParent, AbstractImage abstractImage, def uploadInfo) {
 
         log.info "Deploy $currentFile"
-        def result = []
+        def result = [images: [], slices: []]
 
         def identifier = new FormatIdentifier(new CytomineFile(currentFile.absolutePath))
 
@@ -198,11 +202,12 @@ class UploadService {
                 try {
                     def child = new CytomineFile(it.absolutePath)
                     def deployed = deploy(child, null, uploadedFile ?: uploadedFileParent, abstractImage, uploadInfo)
-                    result.addAll(deployed)
+                    result.images.addAll(deployed.images)
+                    result.slices.addAll(deployed.slices)
                 } catch (DeploymentException e) {
                     errors << e.getMessage()
                 }
-            }
+            } // TODO: parallelize
 
             if (!errors.isEmpty()) {
                 throw new DeploymentException(errors.join("\n"))
@@ -223,7 +228,7 @@ class UploadService {
                     UNDERTERMINED_CONTENT, uploadInfo.projects, uploadInfo.storage, uploadInfo.user,
                     UploadedFile.Status.DETECTING_FORMAT, uploadedFileParent).save()
 
-            log.info uploadedFile.toString() + uploadedFile.getStr("statusText")
+            log.info "New uploaded file: ${uploadedFile.toString()}"
         }
 
         Format format
@@ -238,13 +243,12 @@ class UploadService {
         log.info "Detected format = $format"
         uploadedFile.set("contentType", format.mimeType)
         uploadedFile.update()
-        log.info uploadedFile.toString() + uploadedFile.getStr("statusText")
 
         if (!abstractImage && !(format instanceof ArchiveFormat)) {
             try {
                 def metadata = [:] //TODO
                 abstractImage = createAbstractImage(uploadedFile, metadata)
-                result.add([image: abstractImage, slices: []])
+                result.images.add(abstractImage)
             }
             catch (CytomineException e) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_DEPLOYMENT)
@@ -269,11 +273,10 @@ class UploadService {
             }
 
             uploadedFile.update()
-            log.info uploadedFile.toString() + uploadedFile.getStr("statusText")
 
             try {
                 AbstractSlice slice = createAbstractSlice(uploadedFile, abstractImage, format, currentFile)
-                result.find { it.image.id == abstractImage.id }?.slices?.add(slice)
+                result.slices.add(slice)
                 // fetch to get the last uploadedFile with the image
                 uploadedFile = new UploadedFile().fetch(uploadedFile.id)
                 if (abstractImage.getLong("uploadedFile") != uploadedFile.getId()) {
@@ -299,16 +302,16 @@ class UploadService {
             files.each {
                 try {
                     def deployed = deploy(it as CytomineFile, null, uploadedFile, abstractImage, uploadInfo)
-                    result.addAll(deployed)
+                    result.images.addAll(deployed.images)
+                    result.slices.addAll(deployed.slices)
                 }
                 catch (DeploymentException e) {
                     errors << e.getMessage()
                 }
-            }
+            } //TODO: parallelize + pipeline
 
             if (!errors.isEmpty()) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_CONVERSION)
-                log.info errors
                 throw new DeploymentException(errors.join("\n"))
             } else {
                 uploadedFile.changeStatus(UploadedFile.Status.CONVERTED)
@@ -317,11 +320,6 @@ class UploadService {
 
         return result
     }
-
-    //                if (format instanceof VIPSConvertable) {
-//                    metadata.properties = format.properties().collectEntries() {[(it.key): it.value]}
-//                    metadata.annotations = format.annotations()
-//                }
 
     private AbstractImage createAbstractImage(UploadedFile uploadedFile, def metadata) {
         def image = new AbstractImage(uploadedFile, uploadedFile.getStr('originalFilename')).save()
@@ -344,37 +342,4 @@ class UploadService {
         def slice = new AbstractSlice(image, uploadedFile, format.mimeType, file.c as Double, file.z as Double, file.t as Double).save()
         return slice
     }
-
-//    private void groupImages(Cytomine cytomine, def newFiles, Long idProject) {
-//        if (newFiles.size() < 2) return
-//        //Create one imagegroup for this multidim image
-//        ImageGroup imageGroup = cytomine.addImageGroup(idProject)
-//        ImageInstanceCollection collection = cytomine.getImageInstances(idProject)
-//
-//        newFiles.each { file ->
-//            def path = file.path
-//            def idImage = 0L
-//            while (idImage == 0) {
-//                log.info "Wait for " + path
-//
-//                for (int i = 0; i < collection.size(); i++) {
-//                    Long expected = file.id
-//                    Long current = collection.get(i).get("baseImage")
-//                    if (expected.equals(current)) {
-//                        log.info "OK!"
-//                        idImage = collection.get(i).getId()
-//                    }
-//                }
-//
-//                if (idImage != 0) break
-//
-//                Thread.sleep(1000)
-//                collection = cytomine.getImageInstances(idProject)
-//            }
-//            log.info "Uploaded ImageID: $idImage"
-//            //Add this image to current imagegroup
-//            ImageSequence imageSequence = cytomine.addImageSequence(imageGroup.getId(), idImage, Integer.parseInt(file.z), 0, Integer.parseInt(file.t), Integer.parseInt(file.c));
-//            log.info "new ImageSequence: " + imageSequence.get("id");
-//        }
-//    }
 }
