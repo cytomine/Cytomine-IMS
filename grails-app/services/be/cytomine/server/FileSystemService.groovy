@@ -37,7 +37,7 @@ class FileSystemService {
             makeLocalDirectory(destination.parent)
         }
 
-        def exit = ProcUtils.executeOnShell("""mv "$source.absolutePath" "$destination.absolutePath" """).exit
+        def exit = ProcUtils.executeOnShell("""mv $source.absolutePath $destination.absolutePath """).exit
         if (exit != 0 || !destination.exists()) {
             log.error destination.absolutePath + " created = " + destination.exists()
             throw new FileNotFoundException(destination.absolutePath + " is not created !")
