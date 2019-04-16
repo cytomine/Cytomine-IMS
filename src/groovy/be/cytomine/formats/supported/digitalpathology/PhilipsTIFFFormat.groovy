@@ -34,50 +34,52 @@ class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
     String vendor = "philips"
     String customExtension = "ptiff"
 
+    // https://openslide.org/formats/philips/
+    // Associated labels: label, macro
     public PhilipsTIFFFormat() {
         extensions = ["tiff", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_PTIFF
     }
 
-    BufferedImage associated(String label) {
-        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-        String tiffinfo = "$tiffinfoExecutable ${this.file.absolutePath}".execute().text
-        int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
-        if (label == "label") {
-            //last directory
-            getTIFFSubImage(numberOfTIFFDirectories - 1)
-        } else if (label == "macro") {
-            //next to last directory
-            getTIFFSubImage(numberOfTIFFDirectories - 2)
-        } else {
-            thumb(512)
-        }
-    }
-    private BufferedImage getTIFFSubImage(int index) {
-        boolean convertSuccessfull = true
-
-        println ImageIO.getReaderFormatNames()
-        String source = this.file.absolutePath
-        File target = File.createTempFile("label", ".jpg")
-        String targetPath = target.absolutePath
-
-        println "target=" + target.getPath()
-        def vipsExecutable = Holders.config.cytomine.vips
-        def command = """$vipsExecutable im_copy $source:$index $targetPath"""
-        println command
-        convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
-
-        BufferedImage labelImage = null
-        if (convertSuccessfull) {
-            println targetPath
-            println new File(targetPath).exists()
-            labelImage = ImageIO.read(target)
-            //labelImage = rotate90ToRight(labelImage)
-            assert(labelImage)
-        }
-        target.delete()
-        return labelImage
-    }
+//    BufferedImage associated(String label) {
+//        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
+//        String tiffinfo = "$tiffinfoExecutable ${this.file.absolutePath}".execute().text
+//        int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
+//        if (label == "label") {
+//            //last directory
+//            getTIFFSubImage(numberOfTIFFDirectories - 1)
+//        } else if (label == "macro") {
+//            //next to last directory
+//            getTIFFSubImage(numberOfTIFFDirectories - 2)
+//        } else {
+//            thumb(512)
+//        }
+//    }
+//    private BufferedImage getTIFFSubImage(int index) {
+//        boolean convertSuccessfull = true
+//
+//        println ImageIO.getReaderFormatNames()
+//        String source = this.file.absolutePath
+//        File target = File.createTempFile("label", ".jpg")
+//        String targetPath = target.absolutePath
+//
+//        println "target=" + target.getPath()
+//        def vipsExecutable = Holders.config.cytomine.vips
+//        def command = """$vipsExecutable im_copy $source:$index $targetPath"""
+//        println command
+//        convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
+//
+//        BufferedImage labelImage = null
+//        if (convertSuccessfull) {
+//            println targetPath
+//            println new File(targetPath).exists()
+//            labelImage = ImageIO.read(target)
+//            //labelImage = rotate90ToRight(labelImage)
+//            assert(labelImage)
+//        }
+//        target.delete()
+//        return labelImage
+//    }
 
     String tileURL(def fif, def params, def with_zoomify) {
         def absoluteFilePath = fif

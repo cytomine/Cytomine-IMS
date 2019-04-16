@@ -21,6 +21,7 @@ import grails.util.Holders
  */
 
 import org.springframework.util.StringUtils
+import utils.HttpUtils
 import utils.MimeTypeUtils
 import utils.ServerUtils
 import utils.URLBuilder
@@ -79,18 +80,16 @@ class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
     }
 
     @Override
-    BufferedImage thumb(Object params) {
-        return null
+    def associated() {
+        return []
     }
 
     @Override
-    BufferedImage associated(Object label) {
-        return null
-    }
+    BufferedImage associated(def label) {
+        if (!label in associated())
+            return null
 
-    @Override
-    String associated() {
-        return null
+        return thumb(256)
     }
 
     def properties() {
@@ -157,56 +156,6 @@ class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
         properties << [key: "cytomine.bitdepth", value: maxDepth]
         properties << [key: "cytomine.colorspace", value: colorspace]
         return properties
-    }
-
-    @Override
-    String cropURL(Object params) {
-        return null
-    }
-
-    @Override
-    String tileURL(Object params) {
-        return null
-    }
-
-    BufferedImage associated(String label) { //should be abstract
-        if (label == "macro") {
-            return thumb(256)
-        }
-    }
-
-
-    BufferedImage thumb(int maxSize, def params) {
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipUrls))
-        iipRequest.addParameter("FIF", this.file.absolutePath, true)
-        iipRequest.addParameter("HEI", "$maxSize")
-        iipRequest.addParameter("WID", "$maxSize")
-
-        def format = "jpg"
-        if (params) {
-            boolean inverse = params.boolean("inverse", false)
-            if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
-            if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
-            if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
-            if (inverse) iipRequest.addParameter("INV", "true")
-            if (params.bits) {
-                def bits = params.int("bits", 8)
-                if (bits > 16) iipRequest.addParameter("BIT", 32)
-                else if (bits > 8) iipRequest.addParameter("BIT", 16)
-                else iipRequest.addParameter("BIT", 8)
-            }
-            if (params.format) format = params.format
-        }
-
-        if (format == "jpg" || format == "jpeg") {
-            iipRequest.addParameter("QLT", "99")
-        }
-
-        iipRequest.addParameter("CVT", format)
-
-        String thumbURL = iipRequest.toString()
-        println thumbURL
-        return ImageIO.read(new URL(thumbURL))
     }
 
     //convert from pixel/unit to µm/pixel

@@ -4,6 +4,7 @@ package be.cytomine.formats.supported.digitalpathology
 import be.cytomine.formats.CytomineFile
 import be.cytomine.formats.MultipleFilesFormat
 import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.ImageUtils
 import utils.MimeTypeUtils
 
 /*
@@ -31,6 +32,8 @@ class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, Op
 
     String vendor = "mirax"
 
+    // https://openslide.org/formats/mirax/
+    // Associated labels: thumbnail, label, macro
     public MiraxMRXSFormat() {
         extensions = ["mrxs"]
         mimeType = MimeTypeUtils.MIMETYPE_MRXS
@@ -49,12 +52,7 @@ class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, Op
 
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro"){
-            return rotate90ToRight(bufferedImage)
-        }
-        else {
-            return bufferedImage
-        }
+        return (label == "macro") ? ImageUtils.rotate90ToRight(bufferedImage) : bufferedImage
     }
 
     File getRootFile(File folder) {

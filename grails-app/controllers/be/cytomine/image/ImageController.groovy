@@ -1,5 +1,7 @@
 package be.cytomine.image
 
+import be.cytomine.formats.CytomineFile
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -57,11 +59,12 @@ class ImageController extends ImageResponseController {
     ])
     def thumb() {
         String fif = URLDecoder.decode(params.fif,"UTF-8")
-        println "FIF= $fif"
         int maxSize = params.int('maxSize', 512)
+        params.maxSize = maxSize
         String mimeType = params.mimeType
-        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
-        BufferedImage bufferedImage = imageFormat.thumb(maxSize, params)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
+        log.info (params)
+        BufferedImage bufferedImage = imageFormat.thumb(params)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
         if (bufferedImage) {
             withFormat {
@@ -84,7 +87,7 @@ class ImageController extends ImageResponseController {
         String label = params.label
         String mimeType = params.mimeType
         int maxSize = params.int('maxSize', 512)
-        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
         log.info "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)
         bufferedImage = imageProcessingService.scaleImage(bufferedImage, maxSize, maxSize)
@@ -105,7 +108,7 @@ class ImageController extends ImageResponseController {
     def associated() {
         String fif = URLDecoder.decode(params.fif,"UTF-8")
         String mimeType = params.mimeType
-        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
         render imageFormat.associated() as JSON
     }
 
@@ -117,7 +120,7 @@ class ImageController extends ImageResponseController {
     def properties() {
         String fif = URLDecoder.decode(params.fif,"UTF-8")
         String mimeType = params.mimeType
-        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
         render imageFormat.properties() as JSON
     }
 
@@ -151,7 +154,7 @@ class ImageController extends ImageResponseController {
     def crop() {
         String fif = URLDecoder.decode(params.fif as String, grailsApplication.config.cytomine.charset as String)
         String mimeType = params.mimeType
-        NativeFormat imageFormat = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
 
         def increaseArea = params.double('increaseArea', 1.0)
         def savedWidth = params.double('width')
@@ -183,7 +186,7 @@ class ImageController extends ImageResponseController {
         params.height = height
         params.topLeftX = topLeftX
         params.topLeftY = topLeftY
-        String cropURL = imageFormat.cropURL(params, grailsApplication.config.cytomine.charset)
+        String cropURL = imageFormat.cropURL(params)
         log.info cropURL
         int i = 0
         BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
@@ -235,52 +238,52 @@ class ImageController extends ImageResponseController {
 
     }
 
-    @RestApiMethod(description="Extract a crop into an image")
-    @RestApiParams(params=[
-            @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = " The URL of the related Cytomine-Core"),
-            @RestApiParam(name="name", type="String", paramType = RestApiParamType.QUERY, description = " The name of the generated image"),
-            @RestApiParam(name="storage", type="long", paramType = RestApiParamType.QUERY, description = "The id of the targeted storage"),
-            @RestApiParam(name="annotation", type="long", paramType = RestApiParamType.QUERY, description = "The id of the annotation"),
-            @RestApiParam(name="project", type="long", paramType = RestApiParamType.QUERY, description = " The id of the targeted project", required = false),
-    ])
-    def uploadCrop() {
-
-        String cytomineUrl =  params['cytomine']//grailsApplication.config.grails.cytomineUrl
-        String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
-        String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
-
-        def user = cytomineService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
-        long currentUserId = user.id
-
-
-        log.info "init cytomine..."
-
-        Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
-
-        def idStorage = Integer.parseInt(params['storage'] + "")
-
-        def parameters = cytomine.doGet("/api/annotation/"+params.annotation+"/cropParameters.json")
-
-        params.putAll(JSONValue.parse(parameters))
-
-        BufferedImage bufferedImage = readCropBufferedImage(params)
-
-        File output = new File("/tmp/"+params.name)
-        ImageIO.write(bufferedImage, "jpg", output)
-
-
-        def responseContent = [:]
-        responseContent.status = 200;
-        def uploadResult
-        try{
-//            uploadResult = uploadService.upload(cytomine, output.name, idStorage, output.path, params['project']?[Integer.parseInt(params['project'] + "")]:null, currentUserId, null, new Date().getTime(), true)
-        } catch (Exception e){
-            e.printStackTrace()
-        }
-        responseContent.uploadFile = uploadResult.uploadedFile
-        responseContent.images = uploadResult.images
-        render responseContent as JSON
-    }
+//    @RestApiMethod(description="Extract a crop into an image")
+//    @RestApiParams(params=[
+//            @RestApiParam(name="cytomine", type="String", paramType = RestApiParamType.QUERY, description = " The URL of the related Cytomine-Core"),
+//            @RestApiParam(name="name", type="String", paramType = RestApiParamType.QUERY, description = " The name of the generated image"),
+//            @RestApiParam(name="storage", type="long", paramType = RestApiParamType.QUERY, description = "The id of the targeted storage"),
+//            @RestApiParam(name="annotation", type="long", paramType = RestApiParamType.QUERY, description = "The id of the annotation"),
+//            @RestApiParam(name="project", type="long", paramType = RestApiParamType.QUERY, description = " The id of the targeted project", required = false),
+//    ])
+//    def uploadCrop() {
+//
+//        String cytomineUrl =  params['cytomine']//grailsApplication.config.grails.cytomineUrl
+//        String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
+//        String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
+//
+//        def user = cytomineService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
+//        long currentUserId = user.id
+//
+//
+//        log.info "init cytomine..."
+//
+//        Cytomine cytomine = new Cytomine((String) cytomineUrl, (String) user.publicKey, (String) user.privateKey)
+//
+//        def idStorage = Integer.parseInt(params['storage'] + "")
+//
+//        def parameters = cytomine.doGet("/api/annotation/"+params.annotation+"/cropParameters.json")
+//
+//        params.putAll(JSONValue.parse(parameters))
+//
+//        BufferedImage bufferedImage = readCropBufferedImage(params)
+//
+//        File output = new File("/tmp/"+params.name)
+//        ImageIO.write(bufferedImage, "jpg", output)
+//
+//
+//        def responseContent = [:]
+//        responseContent.status = 200;
+//        def uploadResult
+//        try{
+////            uploadResult = uploadService.upload(cytomine, output.name, idStorage, output.path, params['project']?[Integer.parseInt(params['project'] + "")]:null, currentUserId, null, new Date().getTime(), true)
+//        } catch (Exception e){
+//            e.printStackTrace()
+//        }
+//        responseContent.uploadFile = uploadResult.uploadedFile
+//        responseContent.images = uploadResult.images
+//        render responseContent as JSON
+//    }
 
 
     @RestApiMethod(description="Get a tile of an image (following zoomify format)", extensions = ["jpg"])
@@ -324,7 +327,7 @@ class ImageController extends ImageResponseController {
             responseFile(file)
             return
         }
-        NativeFormat format = FormatIdentifier.getSupportedImageFormatByMimeType(fif, mimeType)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
 
         if(format instanceof MultipleFilesFormat) {
 

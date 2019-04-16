@@ -2,6 +2,7 @@ package be.cytomine.formats.supported.digitalpathology
 
 import be.cytomine.formats.CustomExtensionFormat
 import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.ImageUtils
 import utils.MimeTypeUtils
 
 /*
@@ -32,6 +33,8 @@ class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
     String vendor = "ventana"
     String customExtension = "vtif"
 
+    // https://openslide.org/formats/ventana/
+    // Associated labels: macro, thumbnail
     public VentanaTIFFFormat() {
         extensions = ["tif", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_VTIFF
@@ -43,11 +46,7 @@ class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
 
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro") {
-            return rotate90ToRight(bufferedImage)
-        } else {
-            return bufferedImage
-        }
+        return (label == "macro") ? ImageUtils.rotate90ToRight(bufferedImage) : bufferedImage
     }
 
     String tileURL(def fif, def params, def with_zoomify) {

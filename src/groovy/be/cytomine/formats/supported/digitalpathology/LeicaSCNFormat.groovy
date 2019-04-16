@@ -1,6 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
 import be.cytomine.formats.detectors.OpenSlideDetector
+import utils.ImageUtils
 import utils.MimeTypeUtils
 
 /*
@@ -28,19 +29,15 @@ class LeicaSCNFormat  extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "leica"
 
+    // https://openslide.org/formats/leica/
+    // Associated labels: macro
     public LeicaSCNFormat() {
         extensions = ["scn"]
         mimeType = MimeTypeUtils.MIMETYPE_SCN
     }
 
-
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro") {
-            return rotate90ToRight(bufferedImage)
-        }
-        else {
-            return bufferedImage
-        }
+        return (label == "macro") ? ImageUtils.rotate90ToRight(bufferedImage) : bufferedImage
     }
 }

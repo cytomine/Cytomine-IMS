@@ -122,7 +122,7 @@ class FormatIdentifier {
         return detected
     }
 
-    Format identify(String mimeType, def onlyNative = true) {
+    def identify(String mimeType, def onlyNative = true) {
         def formatsToTest = (onlyNative) ? getNativeFormats() : this.formats
 
         Format detected = formatsToTest.find {

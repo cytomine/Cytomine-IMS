@@ -21,8 +21,6 @@ import be.cytomine.formats.detectors.OpenSlideDetector
 import be.cytomine.formats.supported.NativeFormat
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
-import utils.ServerUtils
-import utils.URLBuilder
 
 import java.awt.image.BufferedImage
 
@@ -38,35 +36,41 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
             "cytomine.magnification": "openslide.objective-power",
     ]
 
-    public BufferedImage associated(String label) { //should be abstract
-        File slideFile = this.file
-        BufferedImage associatedBufferedImage = null
-        if (slideFile.canRead()) {
-            OpenSlide openSlide = new OpenSlide(slideFile)
+    def associated() {
+        def labels = []
+        if (this.file.canRead()) {
+            labels = new OpenSlide(this.file).getAssociatedImages().collect {it.key}
+        }
+        return labels
+    }
+
+    BufferedImage associated(def label) {
+        BufferedImage associated = null
+        if (this.file.canRead()) {
+            OpenSlide openSlide = new OpenSlide(this.file)
             openSlide.getAssociatedImages().each {
                 if (it.key == label) {
                     AssociatedImage associatedImage = it.value
-                    associatedBufferedImage = associatedImage.toBufferedImage()
+                    associated = associatedImage.toBufferedImage()
                 }
             }
             openSlide.close()
         }
-        return associatedBufferedImage
+        return associated
     }
 
     @Override
-    BufferedImage thumb(Object params) {
-        return null
-    }
-
-    @Override
-    BufferedImage associated(Object label) {
-        return null
-    }
-
-    @Override
-    String associated() {
-        return null
+    BufferedImage thumb(def params) {
+        // TODO - currently does not support: inverse, contrast, gamma (is it required for a thumb ?)
+        BufferedImage thumbnail = null
+        if (this.file.canRead()) {
+            OpenSlide openSlide = new OpenSlide(this.file)
+            def w = openSlide.getLevel0Width()
+            def h = openSlide.getLevel0Height()
+            thumbnail = openSlide.createThumbnailImage(0, 0, w, h, (int) params.maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
+            openSlide.close()
+        }
+        return thumbnail
     }
 
     public def properties() {
@@ -100,22 +104,5 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
         properties << ["cytomine.colorspace": "rgb"]
 
         return properties
-    }
-
-    @Override
-    String cropURL(Object params) {
-        return null
-    }
-
-    @Override
-    String tileURL(Object params) {
-        return null
-    }
-
-    public BufferedImage thumb(int maxSize, def params=null) {
-        OpenSlide openSlide = new OpenSlide(this.file)
-        BufferedImage thumbnail = openSlide.createThumbnailImage(0, 0, openSlide.getLevel0Width(), openSlide.getLevel0Height(), maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
-        openSlide.close()
-        return thumbnail
     }
 }

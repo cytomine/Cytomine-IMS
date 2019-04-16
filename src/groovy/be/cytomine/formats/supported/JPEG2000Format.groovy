@@ -20,6 +20,7 @@ import be.cytomine.exception.FormatException
 
 import grails.util.Holders
 import utils.FilesUtils
+import utils.HttpUtils
 import utils.MimeTypeUtils
 import utils.ServerUtils
 import utils.URLBuilder
@@ -46,35 +47,137 @@ class JPEG2000Format extends NativeFormat {
         return detect
     }
 
-    BufferedImage associated(String label) {
+    @Override
+    def associated() {
+        return []
+    }
+
+    @Override
+    BufferedImage associated(def label) {
+        if (!label in associated())
+            return null
+
         return thumb(256);
     }
 
-    public BufferedImage thumb(int maxSize, def params=null) {
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipUrls))
-        iipRequest.addParameter("FIF", this.file.absolutePath, true)
-        iipRequest.addParameter("HEI", "$maxSize")
-        iipRequest.addParameter("WID", "$maxSize")
-        iipRequest.addParameter("QLT", "99")
-        iipRequest.addParameter("CVT", "jpeg")
-        String thumbURL = iipRequest.toString()
-        println thumbURL
-        return ImageIO.read(new URL(thumbURL))
+    @Override
+    BufferedImage thumb(def params) {
+        params.format = "jpg" //Only supported format by JPEG2000 IIP version
+        def query = [
+                FIF: this.file.absolutePath,
+                WID: params.int("maxSize"),
+                HEI: params.int("maxSize"),
+//                INV: params.boolean("inverse", false),
+//                CNT: params.double("contrast"),
+//                GAM: params.double("gamma"),
+                BIT: /*Math.ceil(((Integer) params.bits ?: 8) / 8) **/ 8,
+                QLT: (params.format == "jpg") ? 99 : null,
+                CVT: params.format
+        ]
+
+        return ImageIO.read(new URL(HttpUtils.makeUrl(ServerUtils.getServer(iipUrls), query)))
     }
 
     @Override
-    BufferedImage thumb(Object params) {
-        return null
+    String cropURL(def params) {
+        int topLeftX = params.int('topLeftX')
+        int topLeftY = params.int('topLeftY')
+        double width = params.double('width')
+        double height = params.double('height')
+        double imageWidth = params.double('imageWidth')
+        double imageHeight = params.double('imageHeight')
+
+        def x = topLeftX / imageWidth
+        def y = (imageHeight - topLeftY) / imageHeight
+        double w = width / imageWidth
+        double h = height / imageHeight
+
+        if (x > 1 || y > 1)
+            return null
+
+        double computedWidth = width
+        double computedHeight = height
+        if (params.maxSize) {
+            int maxSize = params.int('maxSize', 256)
+            computedWidth = maxSize //Math.min(computedWidth, maxSize)
+            computedHeight = maxSize //Math.min(computedHeight, maxSize)
+        } else if (params.zoom) {
+            int zoom = params.int('zoom', 0)
+            computedWidth *= Math.pow(2, zoom)
+            computedHeight *= Math.pow(2, zoom)
+        }
+
+        if (params.boolean("safe", true)) {
+            int maxCropSize = new Integer(Holders.config.cytomine.maxCropSize)
+            computedWidth = Math.min(computedWidth, maxCropSize)
+            computedHeight = Math.min(computedHeight, maxCropSize)
+        }
+
+        /*
+        Ruven P. (author of IIP Image)
+        In fact, the region is calculated from the WID or HEI given, not from
+        the full image size. So you get the requested region on the virtual
+        750px resize. I guess you were expecting to get a region exactly of size
+        WID?
+
+        This is something that seems to have caused confusion with others also
+        and perhaps the way it works in counter intuitive, so I'm considering
+        changing the behaviour in the 1.0 release and have WID or HEI define the
+        final region size rather than the virtual image size. In the meantime,
+        the way to get around it is to calculate the appropriate WID that the
+        full image would be. So if your image is x pixels wide, give WID the
+        value of x/2 to get a 750px wide image.
+        */
+        if (width > computedWidth || height > computedHeight) {
+            double tmpWidth = width
+            double tmpHeight = height
+            while (tmpWidth > computedWidth || tmpHeight > computedHeight) {
+                tmpWidth = tmpWidth / 2
+                tmpHeight = tmpHeight / 2
+            }
+
+            computedWidth = imageWidth / (width / tmpWidth)
+            computedHeight = imageHeight / (height / tmpHeight)
+        }
+
+        def query = [
+                FIF: this.file.absolutePath,
+                WID: computedWidth,
+                HEI: computedHeight,
+                RGN: "$x,$y,$w,$h",
+//                CNT: params.double("contrast"),
+//                GAM: params.double("gamma"),
+//                INV: params.boolean("inverse", false),
+                BIT: /*Math.ceil((params.int("bits") ?: 8) / 8) **/ 8,
+                QLT: params.int("jpegQuality", 99),
+                CVT: params.format
+        ]
+        return HttpUtils.makeUrl(ServerUtils.getServer(iipUrls), query)
     }
 
     @Override
-    BufferedImage associated(Object label) {
-        return null
-    }
+    String tileURL(params) {
+        def server = ServerUtils.getServer(iipUrls)
+        if (params.tileGroup) {
+            def tg = params.int("tileGroup")
+            def z = params.int("z")
+            def x = params.int("x")
+            def y = params.int("y")
+            def file = HttpUtils.encode(this.file.absolutePath)
+            return "${server}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
+        }
 
-    @Override
-    String associated() {
-        return null
+        def z = params.int("z")
+        def tileIndex = params.int("tileIndex")
+        def query = [
+                FIF: this.file.absolutePath,
+//                CNT: params.double("contrast"),
+//                GAM: params.double("gamma"),
+//                INV: params.boolean("inverse", false),
+                JTL: "$z,$tileIndex"
+        ]
+
+        return HttpUtils.makeUrl(server, query)
     }
 
     public def properties() {
@@ -128,78 +231,5 @@ class JPEG2000Format extends NativeFormat {
         properties << [ key : "cytomine.bitdepth", value : depth]
         properties << [ key : "cytomine.colorspace", value: colorspace]
         return properties
-    }
-
-    String cropURL(def params, def charset = "UTF-8") {
-        int topLeftX = params.int('topLeftX')
-        int topLeftY = params.int('topLeftY')
-        double width = params.double('width')
-        double height = params.double('height')
-        double imageWidth = params.double('imageWidth')
-        double imageHeight = params.double('imageHeight')
-//        boolean inverse = params.boolean("inverse", false)
-
-        //All values x,y,w & h should be in ratios 0-1.0 [RGN=x,y,w,h]
-        def x = (topLeftX == 0) ? 0 : 1 / (imageWidth / topLeftX)
-        def y = ((imageHeight - topLeftY) == 0) ? 0 : 1 / (imageHeight / (imageHeight - topLeftY))
-        double w = (width == 0) ? 0d : 1d / (imageWidth / width)
-        double h = (height == 0) ? 0d : 1d / (imageHeight / height)
-
-        if (x > 1 || y > 1) return ""
-
-        int maxWidthOrHeight = new Integer(Holders.config.cytomine.maxCropSize)
-        if (params.maxSize) {
-            int maxSize = params.int('maxSize', 256)
-            if (maxWidthOrHeight > maxSize) {
-                maxWidthOrHeight = maxSize
-            }
-        }
-
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL), charset)
-        iipRequest.addParameter("FIF", params.fif, true)
-        iipRequest.addParameter("RGN", "$x,$y,$w,$h")
-
-        if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
-            int tmpWidth = width
-            int tmpHeight = height
-            while (tmpWidth > maxWidthOrHeight || tmpHeight > maxWidthOrHeight) {
-                tmpWidth = tmpWidth / 2
-                tmpHeight = tmpHeight / 2
-            }
-            /*
-            Ruven P. (author of IIP Image)
-            In fact, the region is calculated from the WID or HEI given, not from
-            the full image size. So you get the requested region on the virtual
-            750px resize. I guess you were expecting to get a region exactly of size
-            WID?
-
-            This is something that seems to have caused confusion with others also
-            and perhaps the way it works in counter intuitive, so I'm considering
-            changing the behaviour in the 1.0 release and have WID or HEI define the
-            final region size rather than the virtual image size. In the meantime,
-            the way to get around it is to calculate the appropriate WID that the
-            full image would be. So if your image is x pixels wide, give WID the
-            value of x/2 to get a 750px wide image.
-            */
-            int hei = imageHeight / (height / tmpHeight)
-            iipRequest.addParameter("HEI", "$hei")
-        }
-        if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
-        if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
-//        if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
-//        if (inverse) iipRequest.addParameter("INV", "true")
-//        if (params.bits) {
-//            def bits= params.int("bits", 8)
-//            if (bits > 16) iipRequest.addParameter("BIT", 32)
-//            else if (bits > 8) iipRequest.addParameter("BIT", 16)
-//            else iipRequest.addParameter("BIT", 8)
-//        }
-        iipRequest.addParameter("CVT", params.format)
-        return iipRequest.toString()
-    }
-
-    @Override
-    String tileURL(Object params) {
-        return null
     }
 }
