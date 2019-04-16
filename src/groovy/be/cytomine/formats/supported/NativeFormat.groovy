@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage
 @Log4j
 abstract class NativeFormat extends Format {
 
-    public def iipUrls = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+    public String iipUrl
 
     /**
      * Get the list of available associated labels.
@@ -66,7 +66,7 @@ abstract class NativeFormat extends Format {
                 CVT: params.format
         ]
 
-        def url = HttpUtils.makeUrl(ServerUtils.getServer(iipUrls), query)
+        def url = HttpUtils.makeUrl(iipUrl, query)
         log.info (url)
         return ImageIO.read(new URL(url))
     }
@@ -119,7 +119,7 @@ abstract class NativeFormat extends Format {
         }
 
         if (params.boolean("safe", true)) {
-            int maxCropSize = new Integer(Holders.config.cytomine.maxCropSize)
+            int maxCropSize = new Integer(Holders.config.cytomine.ims.crop.maxSize)
             computedWidth = Math.min(computedWidth, maxCropSize)
             computedHeight = Math.min(computedHeight, maxCropSize)
         }
@@ -136,7 +136,7 @@ abstract class NativeFormat extends Format {
                 QLT: params.int("jpegQuality", 99),
                 CVT: params.format
         ]
-        return HttpUtils.makeUrl(ServerUtils.getServer(iipUrls), query)
+        return HttpUtils.makeUrl(iipUrl, query)
     }
 
     /**
@@ -153,14 +153,13 @@ abstract class NativeFormat extends Format {
      * @return
      */
     String tileURL(params) {
-        def server = ServerUtils.getServer(iipUrls)
         if (params.tileGroup) {
             def tg = params.int("tileGroup")
             def z = params.int("z")
             def x = params.int("x")
             def y = params.int("y")
             def file = HttpUtils.encode(this.file.absolutePath)
-            return "${server}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
+            return "${iipUrl}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
         }
 
         def z = params.int("z")
@@ -173,6 +172,6 @@ abstract class NativeFormat extends Format {
                 JTL: "$z,$tileIndex"
         ]
 
-        return HttpUtils.makeUrl(server, query)
+        return HttpUtils.makeUrl(iipUrl, query)
     }
 }

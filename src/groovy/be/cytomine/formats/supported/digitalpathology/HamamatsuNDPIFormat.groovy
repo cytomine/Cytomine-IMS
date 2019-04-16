@@ -29,6 +29,7 @@ class HamamatsuNDPIFormat extends OpenSlideFormat implements OpenSlideDetector {
     // https://openslide.org/formats/hamamatsu/
     // Associated labels: macro
     HamamatsuNDPIFormat() {
+        super()
         extensions = ["ndpi"]
         mimeType = MimeTypeUtils.MIMETYPE_NDPI
     }

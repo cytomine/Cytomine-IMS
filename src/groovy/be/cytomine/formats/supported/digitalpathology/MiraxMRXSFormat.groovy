@@ -35,6 +35,7 @@ class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, Op
     // https://openslide.org/formats/mirax/
     // Associated labels: thumbnail, label, macro
     public MiraxMRXSFormat() {
+        super()
         extensions = ["mrxs"]
         mimeType = MimeTypeUtils.MIMETYPE_MRXS
     }

@@ -25,9 +25,6 @@ import java.awt.image.BufferedImage
 import grails.util.Holders
 import utils.ServerUtils
 
-/**
- * Created by stevben on 28/04/14.
- */
 class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
 
     String vendor = "ventana"
@@ -36,6 +33,7 @@ class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
     // https://openslide.org/formats/ventana/
     // Associated labels: macro, thumbnail
     public VentanaTIFFFormat() {
+        super()
         extensions = ["tif", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_VTIFF
     }
@@ -47,16 +45,5 @@ class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
         return (label == "macro") ? ImageUtils.rotate90ToRight(bufferedImage) : bufferedImage
-    }
-
-    String tileURL(def fif, def params, def with_zoomify) {
-        def absoluteFilePath = fif
-        return super.tileURL(rename().absolutePath, params, with_zoomify)
-    }
-
-    String cropURL(def params, def charset) {
-        def absoluteFilePath = params.fif
-        params.fif = rename().absolutePath
-        return super.cropURL(params, charset)
     }
 }

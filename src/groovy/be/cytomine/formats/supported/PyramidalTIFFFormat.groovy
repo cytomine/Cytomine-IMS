@@ -21,12 +21,9 @@ import grails.util.Holders
  */
 
 import org.springframework.util.StringUtils
-import utils.HttpUtils
 import utils.MimeTypeUtils
 import utils.ServerUtils
-import utils.URLBuilder
 
-import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
 class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
@@ -34,7 +31,7 @@ class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
     PyramidalTIFFFormat() {
         extensions = ["tif", "tiff"]
         mimeType = MimeTypeUtils.MIMETYPE_PYRTIFF
-        iipUrls = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        iipUrl = Holders.config.cytomine.ims.pyramidalTiff.iip.url
     }
 
     def forbiddenKeywords = [

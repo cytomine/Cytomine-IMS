@@ -31,6 +31,7 @@ class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat,
     // https://openslide.org/formats/hamamatsu/
     // Associated labels: macro
     public HamamatsuVMSFormat() {
+        super()
         extensions = ["vms"]
         mimeType = MimeTypeUtils.MIMETYPE_VMS
     }

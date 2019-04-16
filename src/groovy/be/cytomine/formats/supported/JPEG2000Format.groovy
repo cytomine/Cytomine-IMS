@@ -19,7 +19,6 @@ import be.cytomine.exception.FormatException
  */
 
 import grails.util.Holders
-import utils.FilesUtils
 import utils.HttpUtils
 import utils.MimeTypeUtils
 import utils.ServerUtils
@@ -36,13 +35,14 @@ class JPEG2000Format extends NativeFormat {
     public JPEG2000Format() {
         extensions = ["jp2"]
         mimeType = MimeTypeUtils.MIMETYPE_JP2
-        iipUrls = ServerUtils.getServers(Holders.config.cytomine.iipImageServerJpeg2000)
+        iipUrl = Holders.config.cytomine.ims.jpeg2000.iip.url
     }
 
     public boolean detect() {
         //I check the extension for the moment because did not find an another way
         boolean detect = extensions.any { it == this.file.extension() }
-        if(detect && !Holders.config.cytomine.Jpeg2000Enabled) throw new FormatException("JPEG2000 disabled");
+        if(detect && !Holders.config.cytomine.ims.jpeg2000.enabled)
+            throw new FormatException("JPEG2000 disabled")
 
         return detect
     }
@@ -75,7 +75,7 @@ class JPEG2000Format extends NativeFormat {
                 CVT: params.format
         ]
 
-        return ImageIO.read(new URL(HttpUtils.makeUrl(ServerUtils.getServer(iipUrls), query)))
+        return ImageIO.read(new URL(HttpUtils.makeUrl(iipUrl, query)))
     }
 
     @Override
@@ -108,7 +108,7 @@ class JPEG2000Format extends NativeFormat {
         }
 
         if (params.boolean("safe", true)) {
-            int maxCropSize = new Integer(Holders.config.cytomine.maxCropSize)
+            int maxCropSize = new Integer(Holders.config.cytomine.ims.crop.maxSize)
             computedWidth = Math.min(computedWidth, maxCropSize)
             computedHeight = Math.min(computedHeight, maxCropSize)
         }
@@ -152,19 +152,18 @@ class JPEG2000Format extends NativeFormat {
                 QLT: params.int("jpegQuality", 99),
                 CVT: params.format
         ]
-        return HttpUtils.makeUrl(ServerUtils.getServer(iipUrls), query)
+        return HttpUtils.makeUrl(iipUrl, query)
     }
 
     @Override
     String tileURL(params) {
-        def server = ServerUtils.getServer(iipUrls)
         if (params.tileGroup) {
             def tg = params.int("tileGroup")
             def z = params.int("z")
             def x = params.int("x")
             def y = params.int("y")
             def file = HttpUtils.encode(this.file.absolutePath)
-            return "${server}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
+            return "${iipUrl}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
         }
 
         def z = params.int("z")
@@ -177,10 +176,11 @@ class JPEG2000Format extends NativeFormat {
                 JTL: "$z,$tileIndex"
         ]
 
-        return HttpUtils.makeUrl(server, query)
+        return HttpUtils.makeUrl(iipUrl, query)
     }
 
     public def properties() {
+        //TODO
         def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
         iipRequest.addParameter("FIF", this.file.absolutePath, true)
         iipRequest.addParameter("obj", "IIP,1.0")

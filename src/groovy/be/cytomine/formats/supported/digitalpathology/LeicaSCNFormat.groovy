@@ -32,6 +32,7 @@ class LeicaSCNFormat  extends OpenSlideFormat implements OpenSlideDetector {
     // https://openslide.org/formats/leica/
     // Associated labels: macro
     public LeicaSCNFormat() {
+        super()
         extensions = ["scn"]
         mimeType = MimeTypeUtils.MIMETYPE_SCN
     }

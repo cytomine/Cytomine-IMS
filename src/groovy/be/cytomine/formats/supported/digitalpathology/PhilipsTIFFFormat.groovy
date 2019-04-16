@@ -37,6 +37,7 @@ class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
     // https://openslide.org/formats/philips/
     // Associated labels: label, macro
     public PhilipsTIFFFormat() {
+        super()
         extensions = ["tiff", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_PTIFF
     }
@@ -80,15 +81,4 @@ class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
 //        target.delete()
 //        return labelImage
 //    }
-
-    String tileURL(def fif, def params, def with_zoomify) {
-        def absoluteFilePath = fif
-        return super.tileURL(rename().absolutePath, params, with_zoomify)
-    }
-
-    String cropURL(def params, def charset) {
-        def absoluteFilePath = params.fif
-        params.fif = rename().absolutePath
-        return super.cropURL(params, charset)
-    }
 }

@@ -34,6 +34,7 @@ class VentanaBIFFormat extends OpenSlideFormat implements OpenSlideDetector {
     // https://openslide.org/formats/ventana/
     // Associated labels: macro, thumbnail
     public VentanaBIFFormat(){
+        super()
         extensions = ["bif"]
         mimeType = MimeTypeUtils.MIMETYPE_BIF
     }

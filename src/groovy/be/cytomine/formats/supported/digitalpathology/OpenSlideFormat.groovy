@@ -19,6 +19,7 @@ import be.cytomine.formats.detectors.OpenSlideDetector
  */
 
 import be.cytomine.formats.supported.NativeFormat
+import grails.util.Holders
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
 
@@ -28,13 +29,14 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
 
     String vendor = null
 
-    protected def cytominePropertyKeys = [
-            "cytomine.width": "openslide.level[0].width",
-            "cytomine.height": "openslide.level[0].height",
-            "cytomine.physicalSizeX": "openslide.mpp-x",
-            "cytomine.physicalSizeY": "openslide.mpp-y",
-            "cytomine.magnification": "openslide.objective-power",
-    ]
+    protected OpenSlideFormat() {
+        iipUrl = Holders.config.cytomine.ims.openslide.iip.url
+        cytominePropertyKeys << ["cytomine.width": "openslide.level[0].width"]
+        cytominePropertyKeys << ["cytomine.height": "openslide.level[0].height"]
+        cytominePropertyKeys << ["cytomine.physicalSizeX": "openslide.mpp-x"]
+        cytominePropertyKeys << ["cytomine.physicalSizeY": "openslide.mpp-y"]
+        cytominePropertyKeys << ["cytomine.magnification": "openslide.objective-power"]
+    }
 
     def associated() {
         def labels = []

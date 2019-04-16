@@ -197,3 +197,11 @@ cytomine.ims.conversion.bioformats.port=4321
 cytomine.ims.detection.tiffinfo.executable="tiffinfo"
 cytomine.ims.detection.identify.executable="identify"
 cytomine.ims.detection.gdal.executable="gdalinfo"
+
+cytomine.ims.pyramidalTiff.iip.url="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
+cytomine.ims.openslide.iip.url="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
+cytomine.ims.jpeg2000.iip.url="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
+cytomine.ims.jpeg2000.enabled=true
+
+
+cytomine.ims.crop.maxSize=15000 // in pixels

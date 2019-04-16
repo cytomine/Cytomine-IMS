@@ -29,6 +29,7 @@ class AperioSVSFormat extends OpenSlideFormat implements OpenSlideDetector {
     // https://openslide.org/formats/aperio/
     // Associated labels: thumbnail, label, macro
     public AperioSVSFormat(){
+        super()
         extensions = ["svs"]
         mimeType = MimeTypeUtils.MIMETYPE_SVS
     }

@@ -25,9 +25,10 @@ import utils.MimeTypeUtils
  */
 class SakuraSVSlideFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
 
-    String vendor = vendor = "sakura"
+    String vendor = "sakura"
 
     public SakuraSVSlideFormat () {
+        super()
         extensions = ["svslide"]
         mimeType = MimeTypeUtils.MIMETYPE_SAKURA
     }
