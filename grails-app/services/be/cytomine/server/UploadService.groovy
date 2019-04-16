@@ -98,10 +98,10 @@ class UploadService {
             log.info "Sync upload"
             deployFile(file, uploadedFile, uploadInfo, result)
         } else {
-            runAsync {
+//            runAsync {
                 log.info "Async upload"
                 deployFile(file, uploadedFile, uploadInfo, result)
-            }
+//            }
         }
 
         log.info result
@@ -246,7 +246,7 @@ class UploadService {
 
         if (!abstractImage && !(format instanceof ArchiveFormat)) {
             try {
-                def metadata = [:] //TODO
+                def metadata = format.properties() //TODO
                 abstractImage = createAbstractImage(uploadedFile, metadata)
                 result.images.add(abstractImage)
             }
@@ -334,6 +334,7 @@ class UploadService {
             log.debug properties
             props.each { it.save() } // TODO: replace by a multiple add in a single request
         }
+        image.extractUsefulProperties()
 
         return image
     }

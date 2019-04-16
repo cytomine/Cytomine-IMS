@@ -34,11 +34,6 @@ class VentanaBIFFormat extends OpenSlideFormat implements OpenSlideDetector {
     public VentanaBIFFormat(){
         extensions = ["bif"]
         mimeType = MimeTypeUtils.MIMETYPE_BIF
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "ventana.ScanRes"
-        magnificationProperty = "ventana.Magnification"
     }
 
     @Override

@@ -30,10 +30,13 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
 
     String vendor = null
 
-    protected String widthProperty = "openslide.level[0].width"
-    protected String heightProperty = "openslide.level[0].height"
-    protected String resolutionProperty = null
-    protected String magnificationProperty = null
+    protected def cytominePropertyKeys = [
+            "cytomine.width": "openslide.level[0].width",
+            "cytomine.height": "openslide.level[0].height",
+            "cytomine.physicalSizeX": "openslide.mpp-x",
+            "cytomine.physicalSizeY": "openslide.mpp-y",
+            "cytomine.magnification": "openslide.objective-power",
+    ]
 
     public BufferedImage associated(String label) { //should be abstract
         File slideFile = this.file
@@ -67,61 +70,35 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
     }
 
     public def properties() {
-        File slideFile = this.file
-        def properties = [[key : "mimeType", value : mimeType]]
+        def properties = super.properties()
+        if (!this.file.canRead()) {
+            throw new FileNotFoundException("Unable to read ${this.file}")
+        }
+
         try {
-            if (slideFile.canRead()) {
-                OpenSlide openSlide = new OpenSlide(slideFile)
-                openSlide.getProperties().each {
-                    properties << [key: it.key, value: it.value]
-                }
-                openSlide.close()
-            } else {
-                println "cannot read ${slideFile.absolutePath}"
+            OpenSlide openSlide = new OpenSlide(this.file)
+            openSlide.getProperties().each {
+                properties << [(it.key): it.value]
             }
-        }catch(Exception e) {
-            println e
+            openSlide.close()
         }
-        if (widthProperty && properties.find { it.key == widthProperty}?.value != null)
-            properties << [ key : "cytomine.width", value : Integer.parseInt(properties.find { it.key == widthProperty}?.value) ]
-        if (heightProperty && properties.find { it.key == heightProperty}?.value != null)
-            properties << [ key : "cytomine.height", value : Integer.parseInt(properties.find { it.key == heightProperty}?.value) ]
-        if (resolutionProperty && properties.find { it.key == resolutionProperty}?.value != null)
-            properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value?.replaceAll(",",".")) ]
-        if (magnificiationProperty && properties.find { it.key == magnificiationProperty}?.value != null)
-            properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value?.replaceAll(",",".")).intValue() ]
+        catch(Exception e) {
+            throw new Exception("Openslide is unable to read ${this.file}: ${e.getMessage()}")
+        }
 
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", this.file.absolutePath, true)
-        iipRequest.addParameter("obj", "IIP,1.0")
-        iipRequest.addParameter("obj", "bits-per-channel")
-        iipRequest.addParameter("obj", "colorspace")
-        String propertiesURL = iipRequest.toString()
-        String propertiesTextResponse = new URL(propertiesURL).text
-        Integer depth = null
-        String colorspace = null
-        propertiesTextResponse.eachLine { line ->
-            if (line.isEmpty()) return
-
-            def args = line.split(":")
-            if (args.length != 2) return
-
-            if (args[0].equals('Bits-per-channel'))
-                depth = Integer.parseInt(args[1])
-
-            if (args[0].contains('Colorspace')) {
-                def tokens = args[1].split(' ')
-                if (tokens[2] == "1") {
-                    colorspace = "grayscale"
-                } else if (tokens[2] == "3") {
-                    colorspace = "rgb"
-                } else {
-                    colorspace = "cielab"
-                }
+        cytominePropertyKeys.each { cytoKey, openslideKey ->
+            if (!openslideKey || properties.hasProperty(openslideKey))
+                return
+            def value = properties.get(openslideKey)
+            if (value) {
+                properties << [(cytoKey): cytominePropertyParsers.get(cytoKey)(value)]
             }
         }
-        properties << [ key : "cytomine.bitdepth", value : depth]
-        properties << [ key : "cytomine.colorspace", value: colorspace]
+
+        properties << ["cytomine.bitPerSample": 8] //https://github.com/openslide/openslide/issues/41 (Hamamatsu)
+        properties << ["cytomine.samplePerPixel": 3] //https://github.com/openslide/openslide/issues/42 (Leica, Mirax, Hamamatsu)
+        properties << ["cytomine.colorspace": "rgb"]
+
         return properties
     }
 

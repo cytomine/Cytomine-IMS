@@ -38,18 +38,11 @@ abstract class NativeFormat extends Format {
     abstract BufferedImage thumb(def params)
     abstract BufferedImage associated(def label)
     abstract String associated()
-    abstract def properties()
+
     abstract String cropURL(def params)
     abstract String tileURL(def params)
 
-//    public String[] extensions = null
-//    public String mimeType = null
-//    public String widthProperty = "width"
-//    public String heightProperty = "height"
-//    public String resolutionProperty = "resolution"
-//    public String magnificiationProperty = "magnificiation"
-//    public List<String> iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
-//
+
 //    abstract BufferedImage associated(String label)
 //
 //    abstract BufferedImage thumb(int maxSize, def params=null)
@@ -57,19 +50,6 @@ abstract class NativeFormat extends Format {
 //    String[] associated() {
 //        return ["macro"]
 //    }
-//
-//    def properties() {
-//        BufferedImage bufferedImage = ImageIO.read(new File(absoluteFilePath))
-//        def properties = [[key: "mimeType", value: mimeType]]
-//        properties << [key: "cytomine.width", value: bufferedImage.getWidth()]
-//        properties << [key: "cytomine.height", value: bufferedImage.getHeight()]
-//        properties << [key: "cytomine.resolution", value: null]
-//        properties << [key: "cytomine.magnification", value: null]
-//        properties << [key: "cytomine.bitdepth", value: 8]
-//        properties << [key: "cytomine.colorspace", value: null]
-//        return properties
-//    }
-//
 //    String cropURL(def params, def charset = "UTF-8") {
 //        int topLeftX = params.int('topLeftX')
 //        int topLeftY = params.int('topLeftY')

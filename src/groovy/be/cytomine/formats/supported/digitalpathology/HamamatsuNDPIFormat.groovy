@@ -29,11 +29,6 @@ class HamamatsuNDPIFormat extends OpenSlideFormat implements OpenSlideDetector {
     HamamatsuNDPIFormat() {
         extensions = ["ndpi"]
         mimeType = MimeTypeUtils.MIMETYPE_NDPI
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificationProperty = "hamamatsu.SourceLens"
     }
 
     boolean detect() {

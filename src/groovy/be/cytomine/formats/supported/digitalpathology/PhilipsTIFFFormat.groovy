@@ -37,11 +37,6 @@ class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
     public PhilipsTIFFFormat() {
         extensions = ["tiff", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_PTIFF
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificationProperty = null
     }
 
     BufferedImage associated(String label) {

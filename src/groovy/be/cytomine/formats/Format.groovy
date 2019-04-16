@@ -35,6 +35,41 @@ abstract class Format {
      */
     protected int detectionComplexity = 0
 
+    protected def cytominePropertyKeys = [
+            "cytomine.width": null,
+            "cytomine.height": null,
+            "cytomine.depth": null,
+            "cytomine.duration": null,
+            "cytomine.channels": null,
+            "cytomine.physicalSizeX": null,
+            "cytomine.physicalSizeY": null,
+            "cytomine.physicalSizeZ": null,
+            "cytomine.magnification": null,
+            "cytomine.framePerSecond": null,
+            "cytomine.bitPerSample": null,
+            "cytomine.samplePerPixel": null,
+            "cytomine.colorspace": null
+    ]
+
+    def parseString = { x -> x }
+    def parseInt = { x -> Integer.parseInt(x) }
+    def parseDouble = { x -> Double.parseDouble(x.replaceAll(",", ".")) }
+    protected def cytominePropertyParsers = [
+            "cytomine.width": parseInt,
+            "cytomine.height": parseInt,
+            "cytomine.depth": parseInt,
+            "cytomine.duration": parseInt,
+            "cytomine.channels": parseInt,
+            "cytomine.physicalSizeX": parseDouble,
+            "cytomine.physicalSizeY": parseDouble,
+            "cytomine.physicalSizeZ": parseDouble,
+            "cytomine.magnification": parseInt,
+            "cytomine.framePerSecond": parseDouble,
+            "cytomine.bitPerSample": parseInt,
+            "cytomine.samplePerPixel": parseInt,
+            "cytomine.colorspace": parseString
+    ]
+
     public String toString() {
         return this.class.simpleName
     }
@@ -50,7 +85,11 @@ abstract class Format {
     }
 
     def properties() {
-        return []
+        def properties = [:]
+        properties << ["cytomine.mimeType": this.mimeType]
+        properties << ["cytomine.extension": this.file.extension()]
+        properties << ["cytomine.format": this.toString()]
+        return properties
     }
 
     def annotations() {

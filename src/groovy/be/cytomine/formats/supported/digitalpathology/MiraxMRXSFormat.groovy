@@ -34,11 +34,6 @@ class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, Op
     public MiraxMRXSFormat() {
         extensions = ["mrxs"]
         mimeType = MimeTypeUtils.MIMETYPE_MRXS
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificationProperty = "mirax.GENERAL.OBJECTIVE_MAGNIFICATION"
     }
 
     @Override

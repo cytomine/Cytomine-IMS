@@ -26,13 +26,9 @@ class AperioSVSFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "aperio"
 
+    // https://openslide.org/formats/aperio/
     public AperioSVSFormat(){
         extensions = ["svs"]
         mimeType = MimeTypeUtils.MIMETYPE_SVS
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "aperio.MPP"
-        magnificationProperty = "aperio.AppMag"
     }
 }

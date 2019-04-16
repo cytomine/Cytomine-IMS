@@ -31,11 +31,6 @@ class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat,
     public HamamatsuVMSFormat() {
         extensions = ["vms"]
         mimeType = MimeTypeUtils.MIMETYPE_VMS
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = null //to compute
-        magnificationProperty = "hamamatsu.SourceLens"
     }
 
     @Override
@@ -49,17 +44,6 @@ class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat,
             return OpenSlideDetector.super.detect()
         }
         return false
-    }
-
-    def properties() {
-        def properties = super.properties()
-
-        float physicalWidthProperty = Float.parseFloat(properties.find { it.key == "hamamatsu.PhysicalWidth"}.value.replaceAll(",","."))
-        float widthProperty = Float.parseFloat(properties.find { it.key == "cytomine.width"}.value.replaceAll(",", "."))
-        if (physicalWidthProperty && widthProperty) {
-            def resolution = physicalWidthProperty / widthProperty / 1000
-            properties << [ key : "cytomine.resolution", value : resolution]
-        }
     }
 
     File getRootFile(File folder) {

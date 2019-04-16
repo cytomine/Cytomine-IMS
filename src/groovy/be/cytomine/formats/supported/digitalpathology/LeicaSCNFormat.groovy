@@ -31,11 +31,6 @@ class LeicaSCNFormat  extends OpenSlideFormat implements OpenSlideDetector {
     public LeicaSCNFormat() {
         extensions = ["scn"]
         mimeType = MimeTypeUtils.MIMETYPE_SCN
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificationProperty = "leica.objective"
     }
 
 

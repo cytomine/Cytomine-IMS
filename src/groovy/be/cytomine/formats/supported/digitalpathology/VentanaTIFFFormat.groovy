@@ -35,11 +35,6 @@ class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
     public VentanaTIFFFormat() {
         extensions = ["tif", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_VTIFF
-
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificationProperty = "openslide.objective-power"
     }
 
     boolean detect() {
