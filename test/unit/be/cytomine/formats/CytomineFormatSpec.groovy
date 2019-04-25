@@ -35,6 +35,7 @@ import grails.util.Holders
 import spock.lang.Ignore
 import spock.lang.IgnoreIf
 import spock.lang.Specification
+import utils.PropertyUtils
 
 @TestFor(StorageController)
 class CytomineFormatSpec extends Specification {
@@ -75,6 +76,24 @@ class CytomineFormatSpec extends Specification {
         converted.each { it.delete() }
     }
 
+    void "test metadata JPEG format"() {
+        given:
+        def file = createCytomineFileFromFilename("jpeg.jpeg")
+        def format = new JPEGFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection PNG 8bits format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("png-8.png")
@@ -102,6 +121,24 @@ class CytomineFormatSpec extends Specification {
         converted.each { it.delete() }
     }
 
+    void "test metadata PNG 8bits format"() {
+        given:
+        def file = createCytomineFileFromFilename("png-8.png")
+        def format = new PNGFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+    
     void "test detection PGM format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("pgm.pgm")
@@ -129,6 +166,24 @@ class CytomineFormatSpec extends Specification {
         converted.each { it.delete() }
     }
 
+    void "test metadata PGM format"() {
+        given:
+        def file = createCytomineFileFromFilename("pgm.pgm")
+        def format = new PGMFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+    
     void "test detection BMP format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("bmp.bmp")
@@ -156,6 +211,24 @@ class CytomineFormatSpec extends Specification {
         converted.each { it.delete() }
     }
 
+    void "test metadata BMP format"() {
+        given:
+        def file = createCytomineFileFromFilename("bmp.bmp")
+        def format = new BMPFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+    
     void "test detection DICOM 8bits format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("dicom-8.dcm")
@@ -182,6 +255,24 @@ class CytomineFormatSpec extends Specification {
         cleanup:
         converted.each { it.delete() }
     }
+    
+    void "test metadata DICOM 8bits format"() {
+        given:
+        def file = createCytomineFileFromFilename("dicom-8.dcm")
+        def format = new DICOMFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
 
     @IgnoreIf({ !Holders.config.cytomine.Jpeg2000Enabled })
     void "test detection JPEG2000 format"() {
@@ -193,6 +284,25 @@ class CytomineFormatSpec extends Specification {
         format instanceof JPEG2000Format
     }
 
+    @IgnoreIf({ !Holders.config.cytomine.Jpeg2000Enabled })
+    void "test metadata JPEG2000 format"() {
+        given:
+        def file = createCytomineFileFromFilename("jp2.jp2")
+        def format = new JPEG2000Format()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection pyramidal TIFF format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("pyrtiff.tif")
@@ -200,6 +310,24 @@ class CytomineFormatSpec extends Specification {
         def format = new FormatIdentifier(uploadedFile).identify()
         then:
         format instanceof PyramidalTIFFFormat
+    }
+
+    void "test metadata pyramidal TIFF format"() {
+        given:
+        def file = createCytomineFileFromFilename("pyrtiff.tif")
+        def format = new PyramidalTIFFFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
     }
 
     void "test detection planar TIFF 8bits format"() {
@@ -229,6 +357,24 @@ class CytomineFormatSpec extends Specification {
         converted.each { it.delete() }
     }
 
+    void "test metadata planar TIFF 8bits format"() {
+        given:
+        def file = createCytomineFileFromFilename("tiff-8.tif")
+        def format = new PlanarTIFFFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection planar TIFF 16bits format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("tiff-16.tif")
@@ -254,6 +400,24 @@ class CytomineFormatSpec extends Specification {
 
         cleanup:
         converted.each { it.delete() }
+    }
+
+    void "test metadata planar TIFF 16bits format"() {
+        given:
+        def file = createCytomineFileFromFilename("tiff-16.tif")
+        def format = new PlanarTIFFFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
     }
 
     @Ignore
@@ -407,6 +571,25 @@ class CytomineFormatSpec extends Specification {
         converted.each { it.delete() }
     }
 
+
+    void "test metadata GeoTIFF format"() {
+        given:
+        def file = createCytomineFileFromFilename("geotiff.tif")
+        def format = new GeoTIFFFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection GeoJPEG2000 format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("geojp2.jp2")
@@ -434,6 +617,24 @@ class CytomineFormatSpec extends Specification {
         converted.each { it.delete() }
     }
 
+    void "test metadata GeoJPEG2000 format"() {
+        given:
+        def file = createCytomineFileFromFilename("geojp2.jp2")
+        def format = new GeoJPEG2000Format()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection Hamamatsu NDPI format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("ndpi.ndpi")
@@ -441,6 +642,24 @@ class CytomineFormatSpec extends Specification {
         def format = new FormatIdentifier(uploadedFile).identify()
         then:
         format instanceof HamamatsuNDPIFormat
+    }
+
+    void "test metadata Hamamatsu NDPI format"() {
+        given:
+        def file = createCytomineFileFromFilename("ndpi.ndpi")
+        def format = new HamamatsuNDPIFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
     }
 
     void "test detection Aperio SVS Format"() {
@@ -452,6 +671,24 @@ class CytomineFormatSpec extends Specification {
         format instanceof AperioSVSFormat
     }
 
+    void "test metadata Aperio SVS format"() {
+        given:
+        def file = createCytomineFileFromFilename("svs.svs")
+        def format = new AperioSVSFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection Ventana BIF format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("bif.bif")
@@ -459,6 +696,24 @@ class CytomineFormatSpec extends Specification {
         def format = new FormatIdentifier(uploadedFile).identify()
         then:
         format instanceof VentanaBIFFormat
+    }
+
+    void "test metadata Ventana BIF format"() {
+        given:
+        def file = createCytomineFileFromFilename("bif.bif")
+        def format = new VentanaBIFFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
     }
 
     void "test detection Leica SCN Format"() {
@@ -470,6 +725,24 @@ class CytomineFormatSpec extends Specification {
         format instanceof LeicaSCNFormat
     }
 
+    void "test metadata Leica SCN format"() {
+        given:
+        def file = createCytomineFileFromFilename("scn.scn")
+        def format = new LeicaSCNFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection Mirax MRXS Format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("mrxs/")
@@ -479,6 +752,24 @@ class CytomineFormatSpec extends Specification {
         format instanceof MiraxMRXSFormat
     }
 
+    void "test metadata Mirax MRXS format"() {
+        given:
+        def file = createCytomineFileFromFilename("mrxs/")
+        def format = new MiraxMRXSFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
+    }
+
     void "test detection Hamamatsu VMS format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("vms/")
@@ -486,6 +777,25 @@ class CytomineFormatSpec extends Specification {
         def format = new FormatIdentifier(uploadedFile).identify()
         then:
         format instanceof HamamatsuVMSFormat
+    }
+
+
+    void "test metadata Hamamatsu VMS format"() {
+        given:
+        def file = createCytomineFileFromFilename("vms/")
+        def format = new HamamatsuVMSFormat()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def props = format.cytomineProperties()
+        println(props)
+
+        then:
+        props[PropertyUtils.CYTO_WIDTH] != null
+        props[PropertyUtils.CYTO_HEIGHT] != null
+        props[PropertyUtils.CYTO_BPS] != null
+        props[PropertyUtils.CYTO_SPP] != null
     }
 
     @Ignore
