@@ -17,6 +17,7 @@ package be.cytomine.formats.tools.metadata
  */
 
 import be.cytomine.formats.tools.CytomineFile
+import grails.converters.JSON
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import utils.ProcUtils
@@ -36,8 +37,7 @@ class GdalMetadataExtractor extends MetadataExtractor {
         if (exec.exit || !exec.out || exec.out.isEmpty())
             return [:]
 
-        return flattenProperties(properties, "GeoTiff", "", exec.out)
-
+        return flattenProperties([:], "GeoTiff", "", JSON.parse(exec.out))
     }
 
     def flattenProperties(def properties, String prefix, def key, def value) {
