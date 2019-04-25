@@ -21,6 +21,7 @@ import be.cytomine.formats.detectors.ImageMagickDetector
 
 import grails.util.Holders
 import utils.MimeTypeUtils
+import utils.PropertyUtils
 import utils.ServerUtils
 
 /**
@@ -33,5 +34,8 @@ public class PGMFormat extends CommonFormat implements ImageMagickDetector {
     public PGMFormat () {
         extensions = ["pgm"]
         mimeType = MimeTypeUtils.MIMETYPE_PPM
+
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "File.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "File.ImageHeight"
     }
 }

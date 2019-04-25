@@ -23,6 +23,7 @@ import utils.MimeTypeUtils
 class CellSensVSIFormat extends BioFormatConvertable implements MultipleFilesFormat {
 
     CellSensVSIFormat(){
+        super()
         extensions = ["vsi"]
         mimeType = MimeTypeUtils.MIMETYPE_VSI
     }

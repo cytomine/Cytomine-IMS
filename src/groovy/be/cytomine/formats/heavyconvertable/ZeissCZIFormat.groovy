@@ -22,6 +22,7 @@ class ZeissCZIFormat extends BioFormatConvertable {
     final String CZI_MAGIC_STRING = "ZISRAWFILE"
 
     ZeissCZIFormat() {
+        super()
         extensions = ["czi"]
         mimeType = MimeTypeUtils.MIMETYPE_ZEISSCZI
     }

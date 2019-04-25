@@ -2,10 +2,12 @@ package be.cytomine.formats.lightconvertable.geospatial
 
 import be.cytomine.formats.detectors.TiffInfoDetector
 import be.cytomine.formats.lightconvertable.VIPSConvertable
+import be.cytomine.formats.metadata.GdalMetadataExtractor
 import grails.converters.JSON
 import grails.util.Holders
 import utils.MimeTypeUtils
 import utils.ProcUtils
+import utils.PropertyUtils
 
 class GeoTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
 
@@ -22,32 +24,23 @@ class GeoTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
     GeoTIFFFormat() {
         extensions = ["tif", "tiff"]
         mimeType = MimeTypeUtils.MIMETYPE_TIFF
+
+        // https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "EXIF.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "EXIF.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "EXIF.XResolution"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "EXIF.YResolution"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "EXIF.ResolutionUnit"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "EXIF.ResolutionUnit"
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "EXIF.BitsPerSample"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "EXIF.SamplesPerPixel"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "EXIF.PhotometricInterpretation"
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 
     def properties() {
         def properties = super.properties()
-
-        def gdalinfoExecutable = Holders.config.cytomine.gdalinfo
-        def gdalinfo = JSON.parse(new ProcessBuilder("$gdalinfoExecutable", "-json", this.file.absolutePath).redirectErrorStream(true).start().text)
-
-        flattenProperties(properties, "geotiff", "", gdalinfo)
-    }
-
-    def flattenProperties(properties, prefix, key, value) {
-        key = (!key.isEmpty()) ? ".$key" : key
-        if (value instanceof List) {
-            value.eachWithIndex { it, i ->
-                return flattenProperties(properties, "$prefix$key[$i]", "", it)
-            }
-        }
-        else if (value instanceof Map) {
-            value.each {
-                return flattenProperties(properties, "$prefix$key", it.key, it.value)
-            }
-        }
-        else {
-           properties << [key: "$prefix$key", value: value]
-        }
+        properties += new GdalMetadataExtractor(this.file).properties()
 
         return properties
     }

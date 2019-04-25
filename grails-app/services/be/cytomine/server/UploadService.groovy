@@ -246,7 +246,7 @@ class UploadService {
 
         if (!abstractImage && !(format instanceof ArchiveFormat)) {
             try {
-                def metadata = format.properties() //TODO
+                def metadata = format.cytomineProperties()
                 abstractImage = createAbstractImage(uploadedFile, metadata)
                 result.images.add(abstractImage)
             }

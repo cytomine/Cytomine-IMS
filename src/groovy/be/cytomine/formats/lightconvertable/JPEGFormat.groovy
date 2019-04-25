@@ -23,6 +23,7 @@ import be.cytomine.formats.detectors.ImageMagickDetector
 import grails.util.Holders
 import org.openslide.OpenSlide
 import utils.MimeTypeUtils
+import utils.PropertyUtils
 import utils.ServerUtils
 
 /**
@@ -35,5 +36,16 @@ public class JPEGFormat extends CommonFormat implements ImageMagickDetector {
     public JPEGFormat () {
         extensions = ["jpg", "jpeg"]
         mimeType = MimeTypeUtils.MIMETYPE_JPEG
+
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "File.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "File.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "JFIF.XResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "JFIF.YResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "JFIF.ResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "JFIF.ResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "File.BitsPerSample"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "File.ColorComponents"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "File.ColorSpace" //to check
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 }

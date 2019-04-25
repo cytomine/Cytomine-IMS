@@ -87,6 +87,7 @@ class ImageController extends ImageResponseController {
         String label = params.label
         String mimeType = params.mimeType
         int maxSize = params.int('maxSize', 512)
+        params.maxSize = maxSize
         NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
         log.info "imageFormat=${imageFormat.class}"
         BufferedImage bufferedImage = imageFormat.associated(label)

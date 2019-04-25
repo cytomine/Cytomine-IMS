@@ -76,7 +76,7 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
     }
 
     public def properties() {
-        def properties = super.properties()
+        def properties = [:]
         if (!this.file.canRead()) {
             throw new FileNotFoundException("Unable to read ${this.file}")
         }
@@ -88,18 +88,15 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
             }
             openSlide.close()
         }
-        catch(Exception e) {
+        catch (Exception e) {
             throw new Exception("Openslide is unable to read ${this.file}: ${e.getMessage()}")
         }
 
-        cytominePropertyKeys.each { cytoKey, openslideKey ->
-            if (!openslideKey || properties.hasProperty(openslideKey))
-                return
-            def value = properties.get(openslideKey)
-            if (value) {
-                properties << [(cytoKey): cytominePropertyParsers.get(cytoKey)(value)]
-            }
-        }
+        return properties
+    }
+
+    public def cytomineProperties() {
+        def properties = super.properties()
 
         properties << ["cytomine.bitPerSample": 8] //https://github.com/openslide/openslide/issues/41 (Hamamatsu)
         properties << ["cytomine.samplePerPixel": 3] //https://github.com/openslide/openslide/issues/42 (Leica, Mirax, Hamamatsu)

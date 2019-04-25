@@ -21,6 +21,7 @@ import be.cytomine.formats.detectors.ImageMagickDetector
 
 import grails.util.Holders
 import utils.MimeTypeUtils
+import utils.PropertyUtils
 import utils.ServerUtils
 
 /**
@@ -33,5 +34,17 @@ class BMPFormat extends CommonFormat implements ImageMagickDetector {
     public BMPFormat() {
         extensions = ["bmp"]
         mimeType = MimeTypeUtils.MIMETYPE_BMP
+
+        //https://sno.phy.queensu.ca/~phil/exiftool/TagNames/BMP.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "File.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "File.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "File.ColorSpace"
+    }
+
+    def cytomineProperties() {
+        def properties = super.cytomineProperties()
+        properties[PropertyUtils.CYTO_BPS] = 8
+        properties[PropertyUtils.CYTO_SPP] = 3
+        return properties
     }
 }

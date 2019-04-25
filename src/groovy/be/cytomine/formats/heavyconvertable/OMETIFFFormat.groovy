@@ -26,9 +26,8 @@ class OMETIFFFormat extends BioFormatConvertable implements TiffInfoDetector {
             "OME-TIFF"
     ]
 
-    boolean group = true
-
     OMETIFFFormat() {
+        super()
         extensions = ["ome.tiff"]
         mimeType = MimeTypeUtils.MIMETYPE_OMETIFF
     }

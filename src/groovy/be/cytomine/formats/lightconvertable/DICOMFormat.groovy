@@ -11,6 +11,7 @@ import com.vividsolutions.jts.io.WKTWriter
 import be.cytomine.formats.ICommonFormat
 import grails.util.Holders
 import utils.MimeTypeUtils
+import utils.PropertyUtils
 import utils.ServerUtils
 
 /*
@@ -39,6 +40,28 @@ class DICOMFormat extends CommonFormat implements ImageMagickDetector {
     public DICOMFormat() {
         extensions = ["dcm", "dicom"]
         mimeType = MimeTypeUtils.MIMETYPE_DICOM
+
+        // https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/DICOM.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "DICOM.Columns"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "DICOM.Rows"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "DICOM.PixelSpacing" // first element
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "DICOM.PixelSpacing" // second element
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "DICOM.BitsAllocated"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "DICOM.SamplesPerPixel"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "DICOM.PhotometricInterpretation"
+
+        cytominePropertyParsers[PropertyUtils.CYTO_X_RES] = { x ->
+            def split = x.split("\\\\")
+            if (split.size() > 0) return PropertyUtils.parseDouble(split[0])
+            else null
+        }
+
+        cytominePropertyParsers[PropertyUtils.CYTO_Y_RES] = { x ->
+            def split = x.split("\\\\")
+            if (split.size() > 1) return PropertyUtils.parseDouble(split[1])
+            else if (split.size() > 0) return PropertyUtils.parseDouble(split[0])
+            else null
+        }
     }
 
     def properties() {
@@ -48,11 +71,19 @@ class DICOMFormat extends CommonFormat implements ImageMagickDetector {
         list.read(this.file.absolutePath)
         (list.values() as ArrayList).each {
             def tag = dictionary.getNameFromTag(it.getTag())
+            def key = "DICOM." + tag
             def value = it.getDelimitedStringValuesOrEmptyString()
             if (!tag?.isEmpty() && tag != "null" && tag && !value?.isEmpty())
-                properties << [key: "dicom.$tag", value: value]
+                properties << [(key): value]
         }
 
+        return properties
+    }
+
+    def cytomineProperties() {
+        def properties = super.cytomineProperties()
+        properties[PropertyUtils.CYTO_X_RES_UNIT] = "mm"
+        properties[PropertyUtils.CYTO_Y_RES_UNIT] = "mm"
         return properties
     }
 
@@ -91,7 +122,8 @@ class DICOMFormat extends CommonFormat implements ImageMagickDetector {
 class PropertyDictionary extends DicomDictionary {
     @Override
     protected void createNameByTag() {
-        super.createNameByTag();
+//        super.createNameByTag();
+        this.nameByTag = new HashMap(100);
         this.nameByTag.put(new AttributeTag(119, 16), "PrivateCreator[0]");
         this.nameByTag.put(new AttributeTag(119, 17), "PrivateCreator[1]");
         this.nameByTag.put(new AttributeTag(119, 6400), "Annotation.Number")
@@ -101,7 +133,8 @@ class PropertyDictionary extends DicomDictionary {
 class AnnotationDictionary extends DicomDictionary {
     @Override
     protected void createNameByTag() {
-        super.createNameByTag();
+//        super.createNameByTag();
+        this.nameByTag = new HashMap(100);
         this.nameByTag.put(new AttributeTag(119, 6400), "Annotation.Number")
         this.nameByTag.put(new AttributeTag(119, 6401), "Annotation.Definition")
         this.nameByTag.put(new AttributeTag(119, 6418), "Annotation.Row")
@@ -112,7 +145,8 @@ class AnnotationDictionary extends DicomDictionary {
     }
 
     protected void createTagByName() {
-        super.createTagByName()
+//        super.createTagByName()
+        this.tagByName = new HashMap(100);
         this.tagByName.put("Annotation.Number", new AttributeTag(119, 6400))
         this.tagByName.put("Annotation.Definition", new AttributeTag(119, 6401))
         this.tagByName.put("Annotation.Row", new AttributeTag(119, 6418))

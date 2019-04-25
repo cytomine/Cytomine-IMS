@@ -21,6 +21,7 @@ import be.cytomine.formats.detectors.ImageMagickDetector
 
 import grails.util.Holders
 import utils.MimeTypeUtils
+import utils.PropertyUtils
 import utils.ServerUtils
 
 /**
@@ -33,5 +34,26 @@ class PNGFormat extends CommonFormat implements ImageMagickDetector {
     public PNGFormat() {
         extensions = ["png"]
         mimeType = MimeTypeUtils.MIMETYPE_PNG
+
+        // https://sno.phy.queensu.ca/~phil/exiftool/TagNames/PNG.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "PNG.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "PNG.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "PNG.PixelsPerUnitX"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "PNG.PixelsPerUnitY"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "PNG.PixelUnits"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "PNG.PixelUnits"
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "PNG.BitDepth"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "" //TODO: infer from color type
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "PNG.ColorType"
+
+        // We have to reverse X & Y resolution as they are given in pixel per unit instead of unit per pixel
+        def reverseDouble = { x ->
+            def n = PropertyUtils.parseDouble(x)
+            if (!n) return null
+            return 1.0 / n
+        }
+
+        cytominePropertyParsers[PropertyUtils.CYTO_X_RES] = reverseDouble
+        cytominePropertyParsers[PropertyUtils.CYTO_Y_RES] = reverseDouble
     }
 }

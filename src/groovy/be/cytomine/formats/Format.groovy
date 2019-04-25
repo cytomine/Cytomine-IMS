@@ -1,7 +1,10 @@
 package be.cytomine.formats
 
+import be.cytomine.formats.metadata.ExifToolMetadataExtractor
+import utils.PropertyUtils
+
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,44 +33,42 @@ abstract class Format {
      */
     public String mimeType = null
 
-    /**
-     * The degree of complexity of the detection method.
-     */
-    protected int detectionComplexity = 0
-
     protected def cytominePropertyKeys = [
-            "cytomine.width": null,
-            "cytomine.height": null,
-            "cytomine.depth": null,
-            "cytomine.duration": null,
-            "cytomine.channels": null,
-            "cytomine.physicalSizeX": null,
-            "cytomine.physicalSizeY": null,
-            "cytomine.physicalSizeZ": null,
-            "cytomine.magnification": null,
-            "cytomine.framePerSecond": null,
-            "cytomine.bitPerSample": null,
-            "cytomine.samplePerPixel": null,
-            "cytomine.colorspace": null
+            (PropertyUtils.CYTO_WIDTH): null,
+            (PropertyUtils.CYTO_HEIGHT): null,
+            (PropertyUtils.CYTO_DEPTH): null,
+            (PropertyUtils.CYTO_DURATION): null,
+            (PropertyUtils.CYTO_CHANNELS): null,
+            (PropertyUtils.CYTO_X_RES): null,
+            (PropertyUtils.CYTO_Y_RES): null,
+            (PropertyUtils.CYTO_Z_RES): null,
+            (PropertyUtils.CYTO_X_RES_UNIT): null,
+            (PropertyUtils.CYTO_Y_RES_UNIT): null,
+            (PropertyUtils.CYTO_Z_RES_UNIT): null,
+            (PropertyUtils.CYTO_MAGNIFICATION): null,
+            (PropertyUtils.CYTO_FPS): null,
+            (PropertyUtils.CYTO_BPS): null,
+            (PropertyUtils.CYTO_SPP): null,
+            (PropertyUtils.CYTO_COLORSPACE): ""
     ]
-
-    def parseString = { x -> x }
-    def parseInt = { x -> Integer.parseInt(x) }
-    def parseDouble = { x -> Double.parseDouble(x.replaceAll(",", ".")) }
+    
     protected def cytominePropertyParsers = [
-            "cytomine.width": parseInt,
-            "cytomine.height": parseInt,
-            "cytomine.depth": parseInt,
-            "cytomine.duration": parseInt,
-            "cytomine.channels": parseInt,
-            "cytomine.physicalSizeX": parseDouble,
-            "cytomine.physicalSizeY": parseDouble,
-            "cytomine.physicalSizeZ": parseDouble,
-            "cytomine.magnification": parseInt,
-            "cytomine.framePerSecond": parseDouble,
-            "cytomine.bitPerSample": parseInt,
-            "cytomine.samplePerPixel": parseInt,
-            "cytomine.colorspace": parseString
+            (PropertyUtils.CYTO_WIDTH): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_HEIGHT): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_DEPTH): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_DURATION): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_CHANNELS): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_X_RES): PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_Y_RES): PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_Z_RES): PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_X_RES_UNIT): PropertyUtils.parseString,
+            (PropertyUtils.CYTO_Y_RES_UNIT): PropertyUtils.parseString,
+            (PropertyUtils.CYTO_Z_RES_UNIT): PropertyUtils.parseString,
+            (PropertyUtils.CYTO_MAGNIFICATION): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_FPS): PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_BPS): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_SPP): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_COLORSPACE): PropertyUtils.parseString
     ]
 
     public String toString() {
@@ -85,12 +86,27 @@ abstract class Format {
     }
 
     def properties() {
-        def properties = [:]
-        properties << ["cytomine.mimeType": this.mimeType]
-        properties << ["cytomine.extension": this.file.extension()]
-        properties << ["cytomine.format": this.toString()]
-        return properties
+        return new ExifToolMetadataExtractor(this.file).properties()
     }
+
+    def cytomineProperties() {
+        def properties = properties()
+        properties << [(PropertyUtils.CYTO_MIMETYPE): this.mimeType]
+        properties << [(PropertyUtils.CYTO_EXT): this.file.extension()]
+        properties << [(PropertyUtils.CYTO_FORMAT): this.toString()]
+
+        cytominePropertyKeys.each { cytoKey, tagKey ->
+            if (!tagKey || properties.hasProperty(tagKey as String))
+                return
+            def value = properties.get(tagKey)
+            if (value) {
+                properties << [(cytoKey): cytominePropertyParsers.get(cytoKey)(value)]
+            }
+        }
+
+        return properties.findAll { it.value != null && !(it as String).isEmpty() }
+    }
+
 
     def annotations() {
         return []

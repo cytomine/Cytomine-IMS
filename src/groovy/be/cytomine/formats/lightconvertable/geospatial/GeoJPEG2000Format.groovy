@@ -4,15 +4,29 @@ import be.cytomine.exception.ConversionException
 import be.cytomine.formats.CytomineFile
 import be.cytomine.formats.NotNativeFormat
 import be.cytomine.formats.detectors.GdalDetector
+import be.cytomine.formats.metadata.GdalMetadataExtractor
 import grails.util.Holders
 import utils.FilesUtils
 import utils.MimeTypeUtils
 import utils.ProcUtils
+import utils.PropertyUtils
 
 class GeoJPEG2000Format extends NotNativeFormat implements GdalDetector {
     GeoJPEG2000Format() {
         extensions = ["jp2"]
         mimeType = MimeTypeUtils.MIMETYPE_JP2
+
+        // https://sno.phy.queensu.ca/~phil/exiftool/TagNames/Jpeg2000.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "Jpeg2000.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "Jpeg2000.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "Jpeg2000.DisplayXResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "Jpeg2000.DisplayYResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "Jpeg2000.DisplayXResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "Jpeg2000.DisplayYResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "Jpeg2000.BitsPerComponent"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Jpeg2000.NumberOfComponents"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "Jpeg2000.ColorSpace"
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 
     boolean detect() {
@@ -34,5 +48,12 @@ class GeoJPEG2000Format extends NotNativeFormat implements GdalDetector {
         }
 
         return [target]
+    }
+
+    def properties() {
+        def properties = super.properties()
+        properties += new GdalMetadataExtractor(this.file).properties()
+
+        return properties
     }
 }

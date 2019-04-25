@@ -64,6 +64,13 @@ class DotSlideFormat extends NotNativeFormat implements IHeavyConvertableImageFo
     }
 
     @Override
+    def properties() {
+        def properties = super.properties()
+        // TODO: extract properties from XML files
+        return properties
+    }
+
+    @Override
     File getRootFile(File folder) {
         return folder.listFiles().find {file ->
             file.isFile() && file.name == "ExtendedProps.xml"

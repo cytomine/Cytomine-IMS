@@ -37,5 +37,7 @@ class HuronTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
     HuronTIFFFormat() {
         extensions = ["tif", "tiff"]
         mimeType = MimeTypeUtils.MIMETYPE_TIFF
+
+
     }
 }
