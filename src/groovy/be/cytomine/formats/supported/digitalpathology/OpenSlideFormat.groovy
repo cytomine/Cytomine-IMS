@@ -96,7 +96,7 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
     }
 
     def cytomineProperties() {
-        def properties = super.properties()
+        def properties = super.cytomineProperties()
 
         properties << ["cytomine.bitPerSample": 8] //https://github.com/openslide/openslide/issues/41 (Hamamatsu)
         properties << ["cytomine.samplePerPixel": 3] //https://github.com/openslide/openslide/issues/42 (Leica, Mirax, Hamamatsu)
