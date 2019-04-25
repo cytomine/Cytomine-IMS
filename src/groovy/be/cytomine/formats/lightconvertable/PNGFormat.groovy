@@ -39,8 +39,17 @@ class PNGFormat extends CommonFormat implements ImageMagickDetector {
         cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "PNG.PixelUnits"
         cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "PNG.PixelUnits"
         cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "PNG.BitDepth"
-        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "" //TODO: infer from color type
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "PNG.ColorType"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "PNG.ColorType"
+
+        cytominePropertyParsers[PropertyUtils.CYTO_SPP] = { x ->
+            x = x.toLowerCase()
+            if (x == "grayscale") return 1
+            else if (x == "rgb") return 3
+            else if (x == "grayscale with alpha") return 2
+            else if (x == "rgb with alpha") return 4
+            else return null
+        }
 
         // We have to reverse X & Y resolution as they are given in pixel per unit instead of unit per pixel
         def reverseDouble = { x ->

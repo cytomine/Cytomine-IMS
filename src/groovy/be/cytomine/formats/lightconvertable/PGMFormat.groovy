@@ -26,11 +26,22 @@ class PGMFormat extends CommonFormat implements ImageMagickDetector {
 
     String IMAGE_MAGICK_FORMAT_IDENTIFIER = "PGM"
 
+    // http://netpbm.sourceforge.net/doc/pgm.html
     PGMFormat() {
         extensions = ["pgm"]
         mimeType = MimeTypeUtils.MIMETYPE_PPM
 
         cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "File.ImageWidth"
         cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "File.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "File.MaxVal"
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = { x ->
+            return (PropertyUtils.parseInt(x) > 256) ? 16 : 8
+        }
+    }
+
+    def cytomineProperties() {
+        def properties = super.cytomineProperties()
+        properties[PropertyUtils.CYTO_SPP] = 1 //PGM = Portable Gray Map
+        return properties
     }
 }
