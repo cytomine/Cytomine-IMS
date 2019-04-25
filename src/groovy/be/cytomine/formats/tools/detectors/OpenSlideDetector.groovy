@@ -1,4 +1,4 @@
-package be.cytomine.formats.lightconvertable.specialtiff
+package be.cytomine.formats.tools.detectors
 
 /*
  * Copyright (c) 2009-2019. Authors: see NOTICE file.
@@ -16,27 +16,12 @@ package be.cytomine.formats.lightconvertable.specialtiff
  * limitations under the License.
  */
 
-import be.cytomine.formats.tools.detectors.TiffInfoDetector
-import be.cytomine.formats.lightconvertable.VIPSConvertable
 import groovy.util.logging.Log4j
-import utils.MimeTypeUtils
 
 @Log4j
-class HuronTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
+trait OpenSlideDetector extends Detector {
 
-    def requiredKeywords = [
-            "Compression Scheme: None",
-            "Photometric Interpretation: RGB color",
-            "Source = Bright Field"
-    ]
-
-    def forbiddenKeywords = [
-            "Compression Scheme: JPEG",
-            "Photometric Interpretation: YCbCr"
-    ]
-
-    HuronTIFFFormat() {
-        extensions = ["tif", "tiff"]
-        mimeType = MimeTypeUtils.MIMETYPE_TIFF
+    boolean detect() {
+        return this.file.getOpenSlideVendor() == this.vendor
     }
 }

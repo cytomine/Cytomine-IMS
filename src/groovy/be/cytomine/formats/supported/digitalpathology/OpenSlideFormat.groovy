@@ -1,9 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.detectors.OpenSlideDetector
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +18,13 @@ import be.cytomine.formats.detectors.OpenSlideDetector
 
 import be.cytomine.formats.supported.NativeFormat
 import grails.util.Holders
+import groovy.util.logging.Log4j
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
 
 import java.awt.image.BufferedImage
 
+@Log4j
 abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetector*/ {
 
     String vendor = null
@@ -41,7 +41,7 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
     def associated() {
         def labels = []
         if (this.file.canRead()) {
-            labels = new OpenSlide(this.file).getAssociatedImages().collect {it.key}
+            labels = new OpenSlide(this.file).getAssociatedImages().collect { it.key }
         }
         return labels
     }
@@ -75,7 +75,7 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
         return thumbnail
     }
 
-    public def properties() {
+    def properties() {
         def properties = [:]
         if (!this.file.canRead()) {
             throw new FileNotFoundException("Unable to read ${this.file}")
@@ -95,7 +95,7 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
         return properties
     }
 
-    public def cytomineProperties() {
+    def cytomineProperties() {
         def properties = super.properties()
 
         properties << ["cytomine.bitPerSample": 8] //https://github.com/openslide/openslide/issues/41 (Hamamatsu)

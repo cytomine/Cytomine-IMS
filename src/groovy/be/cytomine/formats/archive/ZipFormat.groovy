@@ -1,19 +1,7 @@
 package be.cytomine.formats.archive
 
-import be.cytomine.exception.ConversionException
-import be.cytomine.exception.FormatException
-import be.cytomine.formats.CytomineFile
-import grails.util.Holders
-import org.apache.commons.lang.RandomStringUtils
-import utils.FilesUtils
-import utils.MimeTypeUtils
-import utils.ProcUtils
-
-import java.util.zip.ZipException
-import java.util.zip.ZipFile
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +16,17 @@ import java.util.zip.ZipFile
  * limitations under the License.
  */
 
+import be.cytomine.exception.ConversionException
+import be.cytomine.formats.tools.CytomineFile
+import grails.util.Holders
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.ProcUtils
+
+import java.util.zip.ZipException
+import java.util.zip.ZipFile
+
+@Log4j
 class ZipFormat extends ArchiveFormat {
 
     ZipFormat() {
@@ -36,16 +35,16 @@ class ZipFormat extends ArchiveFormat {
     }
 
     boolean detect() {
-        if (!this.extensions.any { it == this.file.extension()})
+        if (!this.extensions.any { it == this.file.extension() })
             return false
-        
-        try{
+
+        try {
             new ZipFile(this.file)
-        } 
-        catch(ZipException ignored) {
+        }
+        catch (ZipException ignored) {
             return false
         }
-        
+
         return true
     }
 

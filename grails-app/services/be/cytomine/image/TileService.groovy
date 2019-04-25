@@ -1,6 +1,6 @@
 package be.cytomine.image
 
-import be.cytomine.formats.CytomineFile
+import be.cytomine.formats.tools.CytomineFile
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.

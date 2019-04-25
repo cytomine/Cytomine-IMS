@@ -1,8 +1,5 @@
 package be.cytomine.formats
 
-import be.cytomine.formats.metadata.ExifToolMetadataExtractor
-import utils.PropertyUtils
-
 /*
  * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
@@ -19,6 +16,12 @@ import utils.PropertyUtils
  * limitations under the License.
  */
 
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.metadata.ExifToolMetadataExtractor
+import groovy.util.logging.Log4j
+import utils.PropertyUtils
+
+@Log4j
 abstract class Format {
 
     public String[] extensions = null
@@ -34,48 +37,48 @@ abstract class Format {
     public String mimeType = null
 
     protected def cytominePropertyKeys = [
-            (PropertyUtils.CYTO_WIDTH): null,
-            (PropertyUtils.CYTO_HEIGHT): null,
-            (PropertyUtils.CYTO_DEPTH): null,
-            (PropertyUtils.CYTO_DURATION): null,
-            (PropertyUtils.CYTO_CHANNELS): null,
-            (PropertyUtils.CYTO_X_RES): null,
-            (PropertyUtils.CYTO_Y_RES): null,
-            (PropertyUtils.CYTO_Z_RES): null,
-            (PropertyUtils.CYTO_X_RES_UNIT): null,
-            (PropertyUtils.CYTO_Y_RES_UNIT): null,
-            (PropertyUtils.CYTO_Z_RES_UNIT): null,
+            (PropertyUtils.CYTO_WIDTH)        : null,
+            (PropertyUtils.CYTO_HEIGHT)       : null,
+            (PropertyUtils.CYTO_DEPTH)        : null,
+            (PropertyUtils.CYTO_DURATION)     : null,
+            (PropertyUtils.CYTO_CHANNELS)     : null,
+            (PropertyUtils.CYTO_X_RES)        : null,
+            (PropertyUtils.CYTO_Y_RES)        : null,
+            (PropertyUtils.CYTO_Z_RES)        : null,
+            (PropertyUtils.CYTO_X_RES_UNIT)   : null,
+            (PropertyUtils.CYTO_Y_RES_UNIT)   : null,
+            (PropertyUtils.CYTO_Z_RES_UNIT)   : null,
             (PropertyUtils.CYTO_MAGNIFICATION): null,
-            (PropertyUtils.CYTO_FPS): null,
-            (PropertyUtils.CYTO_BPS): null,
-            (PropertyUtils.CYTO_SPP): null,
-            (PropertyUtils.CYTO_COLORSPACE): ""
-    ]
-    
-    protected def cytominePropertyParsers = [
-            (PropertyUtils.CYTO_WIDTH): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_HEIGHT): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_DEPTH): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_DURATION): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_CHANNELS): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_X_RES): PropertyUtils.parseDouble,
-            (PropertyUtils.CYTO_Y_RES): PropertyUtils.parseDouble,
-            (PropertyUtils.CYTO_Z_RES): PropertyUtils.parseDouble,
-            (PropertyUtils.CYTO_X_RES_UNIT): PropertyUtils.parseString,
-            (PropertyUtils.CYTO_Y_RES_UNIT): PropertyUtils.parseString,
-            (PropertyUtils.CYTO_Z_RES_UNIT): PropertyUtils.parseString,
-            (PropertyUtils.CYTO_MAGNIFICATION): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_FPS): PropertyUtils.parseDouble,
-            (PropertyUtils.CYTO_BPS): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_SPP): PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_COLORSPACE): PropertyUtils.parseString
+            (PropertyUtils.CYTO_FPS)          : null,
+            (PropertyUtils.CYTO_BPS)          : null,
+            (PropertyUtils.CYTO_SPP)          : null,
+            (PropertyUtils.CYTO_COLORSPACE)   : ""
     ]
 
-    public String toString() {
+    protected def cytominePropertyParsers = [
+            (PropertyUtils.CYTO_WIDTH)        : PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_HEIGHT)       : PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_DEPTH)        : PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_DURATION)     : PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_CHANNELS)     : PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_X_RES)        : PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_Y_RES)        : PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_Z_RES)        : PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_X_RES_UNIT)   : PropertyUtils.parseString,
+            (PropertyUtils.CYTO_Y_RES_UNIT)   : PropertyUtils.parseString,
+            (PropertyUtils.CYTO_Z_RES_UNIT)   : PropertyUtils.parseString,
+            (PropertyUtils.CYTO_MAGNIFICATION): PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_FPS)          : PropertyUtils.parseDouble,
+            (PropertyUtils.CYTO_BPS)          : PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_SPP)          : PropertyUtils.parseInt,
+            (PropertyUtils.CYTO_COLORSPACE)   : PropertyUtils.parseString
+    ]
+
+    String toString() {
         return this.class.simpleName
     }
 
-    abstract public boolean detect()
+    abstract boolean detect()
 
     CytomineFile getFile() {
         return file

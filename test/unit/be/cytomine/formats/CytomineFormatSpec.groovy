@@ -28,6 +28,7 @@ import be.cytomine.formats.lightconvertable.specialtiff.*
 import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.*
+import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.storage.StorageController
 import grails.test.mixin.TestFor
 import grails.util.Holders

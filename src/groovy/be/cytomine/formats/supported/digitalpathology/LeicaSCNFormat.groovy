@@ -1,11 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.detectors.OpenSlideDetector
-import utils.ImageUtils
-import utils.MimeTypeUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +16,21 @@ import utils.MimeTypeUtils
  * limitations under the License.
  */
 
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.ImageUtils
+import utils.MimeTypeUtils
+
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 22/04/14.
- */
-class LeicaSCNFormat  extends OpenSlideFormat implements OpenSlideDetector {
+@Log4j
+class LeicaSCNFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "leica"
 
     // https://openslide.org/formats/leica/
     // Associated labels: macro
-    public LeicaSCNFormat() {
+    LeicaSCNFormat() {
         super()
         extensions = ["scn"]
         mimeType = MimeTypeUtils.MIMETYPE_SCN

@@ -1,13 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-
-import be.cytomine.formats.CytomineFile
-import be.cytomine.formats.MultipleFilesFormat
-import be.cytomine.formats.detectors.OpenSlideDetector
-import utils.MimeTypeUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +15,21 @@ import utils.MimeTypeUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Created by stevben on 22/04/14.
- */
+
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+
+@Log4j
 class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
 
     String vendor = "hamamatsu"
 
     // https://openslide.org/formats/hamamatsu/
     // Associated labels: macro
-    public HamamatsuVMSFormat() {
+    HamamatsuVMSFormat() {
         super()
         extensions = ["vms"]
         mimeType = MimeTypeUtils.MIMETYPE_VMS
@@ -41,7 +40,7 @@ class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat,
         File vms = getRootFile(this.file)
         log.info vms
 
-        if(vms){
+        if (vms) {
             this.file = new CytomineFile(vms.absolutePath)
             log.info this.file.openSlideVendor
             return OpenSlideDetector.super.detect()
@@ -50,8 +49,8 @@ class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat,
     }
 
     File getRootFile(File folder) {
-        return folder.listFiles().find {file ->
-            extensions.any {ext ->
+        return folder.listFiles().find { file ->
+            extensions.any { ext ->
                 file.name.endsWith(".$ext")
             }
         }

@@ -1,10 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.CustomExtensionFormat
-import be.cytomine.formats.detectors.OpenSlideDetector
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +16,12 @@ import be.cytomine.formats.detectors.OpenSlideDetector
  * limitations under the License.
  */
 
-import grails.util.Holders
+import be.cytomine.formats.tools.CustomExtensionFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
 import utils.MimeTypeUtils
-import utils.ProcUtils
 
-import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
-
-/**
- * Created by stevben on 12/07/14.
- */
+@Log4j
 class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
 
     String vendor = "philips"
@@ -36,49 +29,54 @@ class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
 
     // https://openslide.org/formats/philips/
     // Associated labels: label, macro
-    public PhilipsTIFFFormat() {
+    PhilipsTIFFFormat() {
         super()
         extensions = ["tiff", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_PTIFF
     }
 
-//    BufferedImage associated(String label) {
-//        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
-//        String tiffinfo = "$tiffinfoExecutable ${this.file.absolutePath}".execute().text
-//        int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
-//        if (label == "label") {
-//            //last directory
-//            getTIFFSubImage(numberOfTIFFDirectories - 1)
-//        } else if (label == "macro") {
-//            //next to last directory
-//            getTIFFSubImage(numberOfTIFFDirectories - 2)
-//        } else {
-//            thumb(512)
-//        }
-//    }
-//    private BufferedImage getTIFFSubImage(int index) {
-//        boolean convertSuccessfull = true
-//
-//        println ImageIO.getReaderFormatNames()
-//        String source = this.file.absolutePath
-//        File target = File.createTempFile("label", ".jpg")
-//        String targetPath = target.absolutePath
-//
-//        println "target=" + target.getPath()
-//        def vipsExecutable = Holders.config.cytomine.vips
-//        def command = """$vipsExecutable im_copy $source:$index $targetPath"""
-//        println command
-//        convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
-//
-//        BufferedImage labelImage = null
-//        if (convertSuccessfull) {
-//            println targetPath
-//            println new File(targetPath).exists()
-//            labelImage = ImageIO.read(target)
-//            //labelImage = rotate90ToRight(labelImage)
-//            assert(labelImage)
-//        }
-//        target.delete()
-//        return labelImage
-//    }
+    /*
+    Why it has been used instead of OpenSlide implementation ?
+
+    BufferedImage associated(String label) {
+        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
+        String tiffinfo = "$tiffinfoExecutable ${this.file.absolutePath}".execute().text
+        int numberOfTIFFDirectories = tiffinfo.count("TIFF Directory")
+        if (label == "label") {
+            //last directory
+            getTIFFSubImage(numberOfTIFFDirectories - 1)
+        } else if (label == "macro") {
+            //next to last directory
+            getTIFFSubImage(numberOfTIFFDirectories - 2)
+        } else {
+            thumb(512)
+        }
+    }
+
+    private BufferedImage getTIFFSubImage(int index) {
+        boolean convertSuccessfull = true
+
+        println ImageIO.getReaderFormatNames()
+        String source = this.file.absolutePath
+        File target = File.createTempFile("label", ".jpg")
+        String targetPath = target.absolutePath
+
+        println "target=" + target.getPath()
+        def vipsExecutable = Holders.config.cytomine.vips
+        def command = """$vipsExecutable im_copy $source:$index $targetPath"""
+        println command
+        convertSuccessfull &= ProcUtils.executeOnShell(command) == 0
+
+        BufferedImage labelImage = null
+        if (convertSuccessfull) {
+            println targetPath
+            println new File(targetPath).exists()
+            labelImage = ImageIO.read(target)
+            //labelImage = rotate90ToRight(labelImage)
+            assert(labelImage)
+        }
+        target.delete()
+        return labelImage
+    }
+    */
 }

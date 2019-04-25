@@ -1,9 +1,7 @@
 package be.cytomine.formats.supported
 
-import be.cytomine.exception.FormatException
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +16,20 @@ import be.cytomine.exception.FormatException
  * limitations under the License.
  */
 
+import be.cytomine.exception.FormatException
 import grails.util.Holders
+import groovy.util.logging.Log4j
 import utils.HttpUtils
 import utils.MimeTypeUtils
 import utils.PropertyUtils
-import utils.ServerUtils
-import utils.URLBuilder
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 22/04/14.
- */
+@Log4j
 class JPEG2000Format extends NativeFormat {
 
-    public JPEG2000Format() {
+    JPEG2000Format() {
         extensions = ["jp2"]
         mimeType = MimeTypeUtils.MIMETYPE_JP2
         iipUrl = Holders.config.cytomine.ims.jpeg2000.iip.url
@@ -51,10 +47,10 @@ class JPEG2000Format extends NativeFormat {
         cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 
-    public boolean detect() {
+    boolean detect() {
         //I check the extension for the moment because did not find an another way
         boolean detect = extensions.any { it == this.file.extension() }
-        if(detect && !Holders.config.cytomine.ims.jpeg2000.enabled)
+        if (detect && !Holders.config.cytomine.ims.jpeg2000.enabled)
             throw new FormatException("JPEG2000 disabled")
 
         return detect

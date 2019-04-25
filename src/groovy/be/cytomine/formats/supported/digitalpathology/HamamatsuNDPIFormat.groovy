@@ -1,11 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.detectors.OpenSlideDetector
-import org.openslide.OpenSlide
-import utils.MimeTypeUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +15,13 @@ import utils.MimeTypeUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Created by stevben on 22/04/14.
- */
+
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import org.openslide.OpenSlide
+import utils.MimeTypeUtils
+
+@Log4j
 class HamamatsuNDPIFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "hamamatsu"

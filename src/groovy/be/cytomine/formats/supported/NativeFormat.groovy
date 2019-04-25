@@ -20,7 +20,6 @@ import be.cytomine.formats.Format
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import utils.HttpUtils
-import utils.ServerUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -32,7 +31,7 @@ abstract class NativeFormat extends Format {
 
     /**
      * Get the list of available associated labels.
-     * @return List<String> the labels
+     * @return List<String>  the labels
      */
     abstract def associated()
 
@@ -67,7 +66,7 @@ abstract class NativeFormat extends Format {
         ]
 
         def url = HttpUtils.makeUrl(iipUrl, query)
-        log.info (url)
+        log.info(url)
         return ImageIO.read(new URL(url))
     }
 

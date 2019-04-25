@@ -1,21 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.formats.detectors.ImageMagickDetector
-import com.pixelmed.dicom.AttributeList
-import com.pixelmed.dicom.AttributeTag
-import com.pixelmed.dicom.DicomDictionary
-import com.vividsolutions.jts.geom.util.AffineTransformation
-import com.vividsolutions.jts.io.WKTReader
-import com.vividsolutions.jts.io.WKTWriter
-
-import be.cytomine.formats.ICommonFormat
-import grails.util.Holders
-import utils.MimeTypeUtils
-import utils.PropertyUtils
-import utils.ServerUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +16,23 @@ import utils.ServerUtils
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 22/04/14.
- */
+import be.cytomine.formats.tools.detectors.ImageMagickDetector
+import com.pixelmed.dicom.AttributeList
+import com.pixelmed.dicom.AttributeTag
+import com.pixelmed.dicom.DicomDictionary
+import com.vividsolutions.jts.geom.util.AffineTransformation
+import com.vividsolutions.jts.io.WKTReader
+import com.vividsolutions.jts.io.WKTWriter
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.PropertyUtils
+
+@Log4j
 class DICOMFormat extends CommonFormat implements ImageMagickDetector {
 
     String IMAGE_MAGICK_FORMAT_IDENTIFIER = "DCM"
 
-    public DICOMFormat() {
+    DICOMFormat() {
         extensions = ["dcm", "dicom"]
         mimeType = MimeTypeUtils.MIMETYPE_DICOM
 
@@ -89,17 +84,17 @@ class DICOMFormat extends CommonFormat implements ImageMagickDetector {
 
     def annotations() {
         def annotations = super.annotations()
-        def dictionary = new AnnotationDictionary();
+        def dictionary = new AnnotationDictionary()
         AttributeList list = new AttributeList()
         list.read(this.file.absolutePath)
         def dicomAnnotations = list.get(dictionary.getTagFromName("Annotation.Definition"))
         if (dicomAnnotations) {
             def imageHeight = list.get(dictionary.getTagFromName("Rows")).getDelimitedStringValuesOrEmptyString()
-            for (int i=0; i < dicomAnnotations.getNumberOfItems(); i++) {
+            for (int i = 0; i < dicomAnnotations.getNumberOfItems(); i++) {
                 AttributeList annotation = dicomAnnotations.getItem(i).getAttributeList()
                 def wkt = annotation.get(dictionary.getTagFromName("Annotation.Polygon")).getDelimitedStringValuesOrEmptyString()
                 def polygon = new WKTReader().read(wkt)
-                def transformation = new AffineTransformation(0, 1, 0, -1, 0, Double.parseDouble(imageHeight.replaceAll(",",".")))
+                def transformation = new AffineTransformation(0, 1, 0, -1, 0, Double.parseDouble(imageHeight.replaceAll(",", ".")))
                 polygon.apply(transformation)
                 def location = new WKTWriter().write(polygon)
 
@@ -123,9 +118,9 @@ class PropertyDictionary extends DicomDictionary {
     @Override
     protected void createNameByTag() {
 //        super.createNameByTag();
-        this.nameByTag = new HashMap(100);
-        this.nameByTag.put(new AttributeTag(119, 16), "PrivateCreator[0]");
-        this.nameByTag.put(new AttributeTag(119, 17), "PrivateCreator[1]");
+        this.nameByTag = new HashMap(100)
+        this.nameByTag.put(new AttributeTag(119, 16), "PrivateCreator[0]")
+        this.nameByTag.put(new AttributeTag(119, 17), "PrivateCreator[1]")
         this.nameByTag.put(new AttributeTag(119, 6400), "Annotation.Number")
     }
 }
@@ -134,7 +129,7 @@ class AnnotationDictionary extends DicomDictionary {
     @Override
     protected void createNameByTag() {
 //        super.createNameByTag();
-        this.nameByTag = new HashMap(100);
+        this.nameByTag = new HashMap(100)
         this.nameByTag.put(new AttributeTag(119, 6400), "Annotation.Number")
         this.nameByTag.put(new AttributeTag(119, 6401), "Annotation.Definition")
         this.nameByTag.put(new AttributeTag(119, 6418), "Annotation.Row")
@@ -146,7 +141,7 @@ class AnnotationDictionary extends DicomDictionary {
 
     protected void createTagByName() {
 //        super.createTagByName()
-        this.tagByName = new HashMap(100);
+        this.tagByName = new HashMap(100)
         this.tagByName.put("Annotation.Number", new AttributeTag(119, 6400))
         this.tagByName.put("Annotation.Definition", new AttributeTag(119, 6401))
         this.tagByName.put("Annotation.Row", new AttributeTag(119, 6418))

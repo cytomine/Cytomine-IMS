@@ -1,6 +1,4 @@
-package be.cytomine.formats.heavyconvertable
-
-import be.cytomine.formats.IConvertableImageFormat
+package be.cytomine.formats.tools.metadata
 
 /*
  * Copyright (c) 2009-2019. Authors: see NOTICE file.
@@ -18,7 +16,7 @@ import be.cytomine.formats.IConvertableImageFormat
  * limitations under the License.
  */
 
-/**
- * Created by hoyoux on 29.04.15.
- */
-interface IHeavyConvertableImageFormat extends IConvertableImageFormat {}
+abstract class MetadataExtractor {
+
+    abstract def properties()
+}

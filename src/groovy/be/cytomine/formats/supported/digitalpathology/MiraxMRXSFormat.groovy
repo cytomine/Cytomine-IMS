@@ -1,14 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-
-import be.cytomine.formats.CytomineFile
-import be.cytomine.formats.MultipleFilesFormat
-import be.cytomine.formats.detectors.OpenSlideDetector
-import utils.ImageUtils
-import utils.MimeTypeUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +16,23 @@ import utils.MimeTypeUtils
  * limitations under the License.
  */
 
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.ImageUtils
+import utils.MimeTypeUtils
+
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 22/04/14.
- */
+@Log4j
 class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
 
     String vendor = "mirax"
 
     // https://openslide.org/formats/mirax/
     // Associated labels: thumbnail, label, macro
-    public MiraxMRXSFormat() {
+    MiraxMRXSFormat() {
         super()
         extensions = ["mrxs"]
         mimeType = MimeTypeUtils.MIMETYPE_MRXS
@@ -44,7 +42,7 @@ class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, Op
     boolean detect() {
         File mrxs = getRootFile(this.file)
 
-        if(mrxs){
+        if (mrxs) {
             this.file = new CytomineFile(mrxs.absolutePath)
             return OpenSlideDetector.super.detect()
         }
@@ -57,8 +55,8 @@ class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, Op
     }
 
     File getRootFile(File folder) {
-        return folder.listFiles().find {file ->
-            extensions.any {ext ->
+        return folder.listFiles().find { file ->
+            extensions.any { ext ->
                 file.name.endsWith(".$ext")
             }
         }

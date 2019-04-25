@@ -1,9 +1,7 @@
 package be.cytomine.formats
 
-import be.cytomine.exception.FormatException
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +16,7 @@ import be.cytomine.exception.FormatException
  * limitations under the License.
  */
 
+import be.cytomine.exception.FormatException
 import be.cytomine.formats.archive.ArchiveFormat
 import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
@@ -29,12 +28,14 @@ import be.cytomine.formats.lightconvertable.geospatial.GeoJPEG2000Format
 import be.cytomine.formats.lightconvertable.geospatial.GeoTIFFFormat
 import be.cytomine.formats.lightconvertable.specialtiff.*
 import be.cytomine.formats.supported.JPEG2000Format
-import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.NativeFormat
+import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.*
-import groovy.util.logging.Log
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import groovy.util.logging.Log4j
 
-@Log
+@Log4j
 class FormatIdentifier {
 
     private def formats
@@ -143,16 +144,11 @@ class FormatIdentifier {
         def detected
         try {
             detected = identify()
-        } catch(FormatException ignored) {}
+        } catch (FormatException ignored) {
+        }
 
         return detected == null
     }
-
-
-
-
-
-
 
 
     static getAvailableArchiveFormats() {
@@ -177,61 +173,6 @@ class FormatIdentifier {
         ]
     }
 
-    static def getImageFormats(String uploadedFilePath, def imageFormats = [], def parent = null) {
-//
-//        File uploadedFile = new File(uploadedFilePath)
-//
-//        if (uploadedFile.isDirectory()) {
-//            println "$uploadedFilePath is a directory"
-//
-//            if (uploadedFile.name == "__MACOSX") return
-//            // check if it is a folder containing one multipleFileImage
-//            def multipleFileImageFormats = getAvailableHierarchicalMultipleImageFormats() + getAvailableMultipleImageFormats()
-//
-//            def format = multipleFileImageFormats.find { imageFormat ->
-//                imageFormat.file = new CytomineFile(uploadedFilePath)
-//                return imageFormat.detect()
-//            }
-//
-//            if (format) {
-//                imageFormats << [
-//                        absoluteFilePath: format.file.absolutePath,
-//                        imageFormat     : format,
-//                        parent          : parent
-//                ]
-//            } else {
-//                for (File child : uploadedFile.listFiles()) getImageFormats(child.absolutePath, imageFormats, parent)
-//            }
-//            return imageFormats
-//        }
-//
-//        def archiveFormats = getAvailableArchiveFormats()
-//
-//        archiveFormats.each {
-//            it.file = new CytomineFile(uploadedFilePath)
-//        }
-//
-//        ArchiveFormat detectedArchiveFormat = archiveFormats.find {
-//            it.detect()
-//        }
-//
-//        if (detectedArchiveFormat) { //archive, we need to extract and analyze the content
-//
-//            String dest = uploadedFile.getParent() + "/" + RandomStringUtils.random(13, (('A'..'Z') + ('0'..'0')).join().toCharArray())
-//            detectedArchiveFormat.extract(dest)
-//
-//            getImageFormats(dest, imageFormats, [absoluteFilePath: uploadedFilePath, imageFormat: detectedArchiveFormat])
-//
-//        } else {
-//            imageFormats << [
-//                    uploadedFilePath: uploadedFilePath,
-//                    imageFormat     : getImageFormat(new CytomineFile(uploadedFilePath)),
-//                    parent          : parent
-//            ]
-//        }
-//        return imageFormats
-    }
-
     static NativeFormat getSupportedImageFormatByMimeType(String fif, String mimeType) {
         def imageFormats = getSupportedImageFormats()
 
@@ -243,63 +184,4 @@ class FormatIdentifier {
         return imageFormat
 
     }
-
-    static Format getImageFormat(def file) {
-
-//        def format
-//
-//        if (file.isDirectory()) {
-//
-//            return getMultiFileFormat(file)
-//
-//        }
-//        else {
-//
-//            Format testedFormat = new ZipFormat()
-//            testedFormat.file = file
-//            if (testedFormat.detect()) return testedFormat
-//
-//            testedFormat = getAvailableSingleFileImageFormats().find {
-//                println file.class.simpleName
-//                it.file = file
-//                it.detect()
-//            }
-////            println "123"
-////            testedFormat = new JPEGFormat()
-////            println "456"
-////            testedFormat.setFile(file)
-////            println "789"
-//            if (testedFormat.detect()) return testedFormat
-//
-//            // GeoJP2 tested before classic JP2 as GeoJP2 is a JP2 with some metadata
-////            testedFormat = new GeoJPEG2000Format()
-////            testedFormat.file = file
-////            if (testedFormat.detect()) return testedFormat
-////
-////            testedFormat = new GeoTIFFFormat()
-////            testedFormat.file = file
-////            if (testedFormat.detect()) return testedFormat
-////
-////            testedFormat = new JPEG2000Format()
-////            testedFormat.file = file
-////            if (testedFormat.detect()) return testedFormat
-////
-////            testedFormat = new ZeissCZIFormat()
-////            testedFormat.file = file
-////            if (testedFormat.detect()) return testedFormat
-////
-////            format = getOpenSlideFormat(filePath)
-////            if (format) return format
-////
-////            format = getTIFFFormat(filePath)
-////            if (format) return format
-////
-////            format = getImageMagickFormat(filePath)
-////            if (format) return format
-//
-//        }
-//
-//        throw new FormatException("Undetected Format")
-    }
-
 }

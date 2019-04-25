@@ -1,11 +1,7 @@
 package be.cytomine.formats.supported
 
-
-import be.cytomine.formats.detectors.TiffInfoDetector
-import grails.util.Holders
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +16,16 @@ import grails.util.Holders
  * limitations under the License.
  */
 
+import be.cytomine.formats.tools.detectors.TiffInfoDetector
+import grails.util.Holders
+import groovy.util.logging.Log4j
 import org.springframework.util.StringUtils
 import utils.MimeTypeUtils
 import utils.PropertyUtils
-import utils.ServerUtils
 
 import java.awt.image.BufferedImage
 
+@Log4j
 class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
 
     PyramidalTIFFFormat() {

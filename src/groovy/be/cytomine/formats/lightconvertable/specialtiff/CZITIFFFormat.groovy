@@ -1,13 +1,7 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-
-import be.cytomine.formats.detectors.TiffInfoDetector
-import be.cytomine.formats.lightconvertable.VIPSConvertable
-import utils.MimeTypeUtils
-import utils.PropertyUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +16,13 @@ import utils.PropertyUtils
  * limitations under the License.
  */
 
+import be.cytomine.formats.lightconvertable.VIPSConvertable
+import be.cytomine.formats.tools.detectors.TiffInfoDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.PropertyUtils
+
+@Log4j
 class CZITIFFFormat extends VIPSConvertable implements TiffInfoDetector {
 
     def requiredKeywords = [

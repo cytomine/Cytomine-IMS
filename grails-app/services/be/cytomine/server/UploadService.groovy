@@ -24,6 +24,9 @@ import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.*
 import be.cytomine.formats.archive.ArchiveFormat
 import be.cytomine.formats.supported.NativeFormat
+import be.cytomine.formats.tools.CustomExtensionFormat
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
 import utils.FilesUtils
 
 import java.nio.file.Paths

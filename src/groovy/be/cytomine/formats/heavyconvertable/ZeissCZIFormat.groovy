@@ -1,9 +1,7 @@
 package be.cytomine.formats.heavyconvertable
 
-import utils.MimeTypeUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +16,10 @@ import utils.MimeTypeUtils
  * limitations under the License.
  */
 
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+
+@Log4j
 class ZeissCZIFormat extends BioFormatConvertable {
     final String CZI_MAGIC_STRING = "ZISRAWFILE"
 

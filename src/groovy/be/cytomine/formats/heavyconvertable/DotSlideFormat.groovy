@@ -1,15 +1,7 @@
 package be.cytomine.formats.heavyconvertable
 
-import be.cytomine.exception.ConversionException
-import be.cytomine.formats.CytomineFile
-import be.cytomine.formats.Format
-import be.cytomine.formats.MultipleFilesFormat
-import be.cytomine.formats.NotNativeFormat
-import utils.MimeTypeUtils
-import utils.ProcUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +15,16 @@ import utils.ProcUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Created by hoyoux on 28.04.15.
- */
+
+import be.cytomine.exception.ConversionException
+import be.cytomine.formats.NotNativeFormat
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.ProcUtils
+
+@Log4j
 class DotSlideFormat extends NotNativeFormat implements IHeavyConvertableImageFormat, MultipleFilesFormat {
 
     DotSlideFormat() {
@@ -35,7 +34,7 @@ class DotSlideFormat extends NotNativeFormat implements IHeavyConvertableImageFo
     @Override
     boolean detect() {
         File target = getRootFile(file)
-        if(!target) return false
+        if (!target) return false
 
         String command = "cat ${target.absolutePath}"
         return ProcUtils.executeOnShell(command).out.contains("dotSlide")
@@ -72,7 +71,7 @@ class DotSlideFormat extends NotNativeFormat implements IHeavyConvertableImageFo
 
     @Override
     File getRootFile(File folder) {
-        return folder.listFiles().find {file ->
+        return folder.listFiles().find { file ->
             file.isFile() && file.name == "ExtendedProps.xml"
         }
     }

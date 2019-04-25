@@ -1,12 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.CustomExtensionFormat
-import be.cytomine.formats.detectors.OpenSlideDetector
-import utils.ImageUtils
-import utils.MimeTypeUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +16,15 @@ import utils.MimeTypeUtils
  * limitations under the License.
  */
 
-import java.awt.image.BufferedImage
-import grails.util.Holders
-import utils.ServerUtils
+import be.cytomine.formats.tools.CustomExtensionFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.ImageUtils
+import utils.MimeTypeUtils
 
+import java.awt.image.BufferedImage
+
+@Log4j
 class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
 
     String vendor = "ventana"
@@ -32,7 +32,7 @@ class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
 
     // https://openslide.org/formats/ventana/
     // Associated labels: macro, thumbnail
-    public VentanaTIFFFormat() {
+    VentanaTIFFFormat() {
         super()
         extensions = ["tif", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_VTIFF

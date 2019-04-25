@@ -1,10 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import be.cytomine.formats.detectors.OpenSlideDetector
-
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +16,18 @@ import be.cytomine.formats.detectors.OpenSlideDetector
  * limitations under the License.
  */
 
-import grails.util.Holders
-import utils.FilesUtils
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
 import utils.MimeTypeUtils
-import utils.ServerUtils
 
-/**
- * Created by stevben on 19/06/14.
- */
+@Log4j
 class VentanaBIFFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "ventana"
 
     // https://openslide.org/formats/ventana/
     // Associated labels: macro, thumbnail
-    public VentanaBIFFormat(){
+    VentanaBIFFormat() {
         super()
         extensions = ["bif"]
         mimeType = MimeTypeUtils.MIMETYPE_BIF

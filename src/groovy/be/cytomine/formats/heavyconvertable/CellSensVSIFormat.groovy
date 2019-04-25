@@ -1,12 +1,7 @@
 package be.cytomine.formats.heavyconvertable
 
-
-import be.cytomine.formats.CytomineFile
-import be.cytomine.formats.MultipleFilesFormat
-import utils.MimeTypeUtils
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +15,16 @@ import utils.MimeTypeUtils
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+
+@Log4j
 class CellSensVSIFormat extends BioFormatConvertable implements MultipleFilesFormat {
 
-    CellSensVSIFormat(){
+    CellSensVSIFormat() {
         super()
         extensions = ["vsi"]
         mimeType = MimeTypeUtils.MIMETYPE_VSI
@@ -51,8 +53,8 @@ class CellSensVSIFormat extends BioFormatConvertable implements MultipleFilesFor
 
     @Override
     File getRootFile(File folder) {
-        return folder.listFiles().find {file ->
-            file.isFile() && extensions.any {ext ->
+        return folder.listFiles().find { file ->
+            file.isFile() && extensions.any { ext ->
                 file.name.endsWith(".$ext")
             }
         }

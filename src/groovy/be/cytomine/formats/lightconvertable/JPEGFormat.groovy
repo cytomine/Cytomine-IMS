@@ -1,11 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.exception.MiddlewareException
-import be.cytomine.formats.ICommonFormat
-import be.cytomine.formats.detectors.ImageMagickDetector
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +16,17 @@ import be.cytomine.formats.detectors.ImageMagickDetector
  * limitations under the License.
  */
 
-import grails.util.Holders
-import org.openslide.OpenSlide
+import be.cytomine.formats.tools.detectors.ImageMagickDetector
+import groovy.util.logging.Log4j
 import utils.MimeTypeUtils
 import utils.PropertyUtils
-import utils.ServerUtils
 
-/**
- * Created by stevben on 22/04/14.
- */
-public class JPEGFormat extends CommonFormat implements ImageMagickDetector {
+@Log4j
+class JPEGFormat extends CommonFormat implements ImageMagickDetector {
 
     String IMAGE_MAGICK_FORMAT_IDENTIFIER = "JPEG"
 
-    public JPEGFormat () {
+    JPEGFormat() {
         extensions = ["jpg", "jpeg"]
         mimeType = MimeTypeUtils.MIMETYPE_JPEG
 

@@ -1,6 +1,6 @@
 package be.cytomine.image
 
-import be.cytomine.formats.CytomineFile
+import be.cytomine.formats.tools.CytomineFile
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -19,14 +19,13 @@ import be.cytomine.formats.CytomineFile
  */
 
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.MultipleFilesFormat
+import be.cytomine.formats.tools.MultipleFilesFormat
 import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.exception.MiddlewareException
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
-import be.cytomine.client.Cytomine
-import org.json.simple.JSONValue
+
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import org.restapidoc.annotation.RestApi
