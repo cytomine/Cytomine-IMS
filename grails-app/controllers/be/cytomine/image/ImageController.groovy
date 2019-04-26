@@ -162,10 +162,6 @@ class ImageController extends ImageResponseController {
         String mimeType = params.mimeType
         NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
 
-        def increaseArea = params.double('increaseArea', 1.0)
-        def savedWidth = params.double('width')
-        def savedHeight = params.double('height')
-
         int imageWidth = params.int('imageWidth')
         int imageHeight = params.int('imageHeight')
         def width = params.double('width')
@@ -173,11 +169,12 @@ class ImageController extends ImageResponseController {
         def topLeftX = params.int('topLeftX')
         def topLeftY = params.int('topLeftY')
 
+        def increaseArea = params.double('increaseArea', 1.0)
         if (increaseArea && increaseArea != 1.0) {
             width *= increaseArea
             height *= increaseArea
-            topLeftX -= ((width - savedWidth) / 2)
-            topLeftY += ((height - savedHeight) / 2)
+            topLeftX -=  width * (increaseArea - 1) / 2
+            topLeftY +=  height * (increaseArea - 1) / 2
         }
 
         //we will increase the missing direction to make a square
