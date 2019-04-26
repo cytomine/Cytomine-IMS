@@ -105,7 +105,6 @@ class ImageController extends ImageResponseController {
             throw new ObjectNotFoundException(params.label+" not found")
         }
     }
-    }
 
     @RestApiMethod(description="Get the list of nested (or associated) images available of an image", extensions = ["json"])
     @RestApiParams(params=[
@@ -144,8 +143,10 @@ class ImageController extends ImageResponseController {
             @RestApiParam(name="maxSize", type="int", paramType = RestApiParamType.QUERY, description = " The max width or height of the generated thumb", required = false),
             @RestApiParam(name="zoom", type="int", paramType = RestApiParamType.QUERY, description = " The zoom used in order to extract the ROI (0 = higher resolution). Ignored if maxSize is used.", required = false),
             @RestApiParam(name="location", type="int", paramType = RestApiParamType.QUERY, description = " A geometry in WKT Format (Well-known text)", required = false),
-            @RestApiParam(name="draw", type="int", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
+            @RestApiParam(name="draw", type="boolean", paramType = RestApiParamType.QUERY, description = " If used, draw the geometry contour on the crop. draw takes precedence over mask & alphamask.", required = false),
             @RestApiParam(name="mask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask", required = false),
+            @RestApiParam(name="thickness", type="int", paramType = RestApiParamType.QUERY, description = " If draw used, set the thickness of the geometry contour on the crop.", required = false),
+            @RestApiParam(name="color", type="String", paramType = RestApiParamType.QUERY, description = " If draw used, set the color of the geometry contour on the crop.", required = false),
             @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
             @RestApiParam(name="drawScaleBar", type="int", paramType = RestApiParamType.QUERY, description = "If true, draw a scale bar", required = false),
             @RestApiParam(name="resolution", type="float", paramType = RestApiParamType.QUERY, description = "Resolution to print in scale bar if used", required=false),
