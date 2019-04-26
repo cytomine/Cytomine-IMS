@@ -1,9 +1,10 @@
 package be.cytomine.image
 
-import be.cytomine.formats.tools.CytomineFile
-import be.cytomine.client.Cytomine
-import be.cytomine.exception.DeploymentException
+import be.cytomine.exception.MiddlewareException
 import be.cytomine.exception.ObjectNotFoundException
+import be.cytomine.formats.FormatIdentifier
+import be.cytomine.formats.supported.NativeFormat
+import be.cytomine.formats.tools.CytomineFile
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -21,22 +22,18 @@ import be.cytomine.exception.ObjectNotFoundException
  * limitations under the License.
  */
 
-import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.tools.MultipleFilesFormat
-import be.cytomine.formats.supported.NativeFormat
-import be.cytomine.exception.MiddlewareException
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
-
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
 
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -147,6 +144,7 @@ class ImageController extends ImageResponseController {
             @RestApiParam(name="mask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the mask of the geometry (black & white) instead of the crop. mask takes precedence over alphamask", required = false),
             @RestApiParam(name="thickness", type="int", paramType = RestApiParamType.QUERY, description = " If draw used, set the thickness of the geometry contour on the crop.", required = false),
             @RestApiParam(name="color", type="String", paramType = RestApiParamType.QUERY, description = " If draw used, set the color of the geometry contour on the crop.", required = false),
+            @RestApiParam(name="square", type="boolean", paramType = RestApiParamType.QUERY, description = " If used, try to extends the ROI around the crop to have a square.", required = false),
             @RestApiParam(name="alphaMask", type="int", paramType = RestApiParamType.QUERY, description = " If used, return the crop with the mask in the alphachannel (0% to 100%). PNG required", required = false),
             @RestApiParam(name="drawScaleBar", type="int", paramType = RestApiParamType.QUERY, description = "If true, draw a scale bar", required = false),
             @RestApiParam(name="resolution", type="float", paramType = RestApiParamType.QUERY, description = "Resolution to print in scale bar if used", required=false),
@@ -168,6 +166,8 @@ class ImageController extends ImageResponseController {
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
 
+        int imageWidth = params.int('imageWidth')
+        int imageHeight = params.int('imageHeight')
         def width = params.double('width')
         def height = params.double('height')
         def topLeftX = params.int('topLeftX')
@@ -178,6 +178,31 @@ class ImageController extends ImageResponseController {
             height *= increaseArea
             topLeftX -= ((width - savedWidth) / 2)
             topLeftY += ((height - savedHeight) / 2)
+        }
+
+        //we will increase the missing direction to make a square
+        if (params.boolean('square', false)) {
+            if (width < height) {
+                double delta = height - width
+                topLeftX -= delta / 2
+                width += delta
+
+                if (topLeftX < 0) {
+                    topLeftX = 0
+                } else {
+                    topLeftX = Math.min(topLeftX, imageWidth - width)
+                }
+            } else if (width > height) {
+                double delta = width - height
+                topLeftY += delta / 2
+                height += delta
+
+                if (topLeftY > imageHeight) {
+                    topLeftY = imageHeight
+                } else {
+                    topLeftY = Math.max(topLeftY, height)
+                }
+            }
         }
 
         def safe = params.boolean('safe', false)
