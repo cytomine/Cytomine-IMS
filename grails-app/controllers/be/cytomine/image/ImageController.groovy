@@ -5,6 +5,7 @@ import be.cytomine.exception.ObjectNotFoundException
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
 
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
@@ -22,7 +23,6 @@ import be.cytomine.formats.tools.CytomineFile
  * limitations under the License.
  */
 
-import be.cytomine.formats.tools.MultipleFilesFormat
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
@@ -178,28 +178,30 @@ class ImageController extends ImageResponseController {
         }
 
         //we will increase the missing direction to make a square
-        if (params.boolean('square', false)) {
+        if (Boolean.parseBoolean(params.square)) {
             if (width < height) {
                 double delta = height - width
                 topLeftX -= delta / 2
                 width += delta
-
-                if (topLeftX < 0) {
-                    topLeftX = 0
-                } else {
-                    topLeftX = Math.min(topLeftX, imageWidth - width)
-                }
             } else if (width > height) {
                 double delta = width - height
                 topLeftY += delta / 2
                 height += delta
-
-                if (topLeftY > imageHeight) {
-                    topLeftY = imageHeight
-                } else {
-                    topLeftY = Math.max(topLeftY, height)
-                }
             }
+        }
+
+        width = Math.min(width, imageWidth)
+        if (topLeftX < 0) {
+            topLeftX = 0
+        } else {
+            topLeftX = Math.min((double) topLeftX, imageWidth - width)
+        }
+
+        height = Math.min(height, imageHeight)
+        if (topLeftY > imageHeight) {
+            topLeftY = imageHeight
+        } else {
+            topLeftY = Math.max((double) topLeftY, height)
         }
 
         def safe = params.boolean('safe', false)

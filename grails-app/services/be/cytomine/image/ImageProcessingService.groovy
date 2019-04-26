@@ -49,7 +49,6 @@ class ImageProcessingService {
         int topLeftY = params.int('topLeftY')
         int width = params.int('width')
         int height = params.int('height')
-        int imageHeight = params.int('imageHeight')
         double x_ratio = image.getWidth() / width
         double y_ratio = image.getHeight() / height
         int borderWidth = params.int('thickness', (int) Math.round(((double) width / (15000 / 250d)) * x_ratio))
@@ -62,65 +61,64 @@ class ImageProcessingService {
                 color,
                 borderWidth,
                 topLeftX,
-                imageHeight - topLeftY,
+                topLeftY,
                 x_ratio,
                 y_ratio,
-                imageHeight
         )
     }
 
-    BufferedImage drawGeometries(BufferedImage image, Collection<Geometry> geometryCollection, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio, int imageHeight) {
+    BufferedImage drawGeometries(BufferedImage image, Collection<Geometry> geometryCollection, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
         for (geometry in geometryCollection) {
             if (geometry instanceof MultiPolygon) {
                 MultiPolygon multiPolygon = (MultiPolygon) geometry
                 for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
                     geometry = multiPolygon.getGeometryN(i)
-                    image = drawGeometry(image, geometry, c, borderWidth, x, y, x_ratio, y_ratio, imageHeight)
+                    image = drawGeometry(image, geometry, c, borderWidth, x, y, x_ratio, y_ratio)
                 }
             }
             else {
-                image = drawGeometry(image, geometry, c, borderWidth, x, y, x_ratio, y_ratio, imageHeight)
+                image = drawGeometry(image, geometry, c, borderWidth, x, y, x_ratio, y_ratio)
             }
         }
 
         return image
     }
 
-    BufferedImage drawGeometry(BufferedImage image, Geometry geometry, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio, int imageHeight) {
+    BufferedImage drawGeometry(BufferedImage image, Geometry geometry, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
         if (geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry
-            image = drawPolygon(image, polygon, c, borderWidth, x, y, x_ratio, y_ratio, imageHeight)
+            image = drawPolygon(image, polygon, c, borderWidth, x, y, x_ratio, y_ratio)
         }
         else if (geometry instanceof Point) {
             Point point = (Point) geometry
-            image = drawPoint(image, point, c, borderWidth, x, y, x_ratio, y_ratio, imageHeight)
+            image = drawPoint(image, point, c, borderWidth, x, y, x_ratio, y_ratio)
         }
         else if (geometry instanceof LineString) {
             LineString line = (LineString) geometry
-            image = drawLineString(image, line, c, borderWidth, x, y, x_ratio, y_ratio, imageHeight)
+            image = drawLineString(image, line, c, borderWidth, x, y, x_ratio, y_ratio)
         }
 
         return image
     }
 
-    BufferedImage drawPolygon(BufferedImage image, Polygon polygon, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio, int imageHeight) {
-        image = drawLineString(image, polygon.getExteriorRing(), c, borderWidth, x, y, x_ratio, y_ratio, imageHeight)
+    BufferedImage drawPolygon(BufferedImage image, Polygon polygon, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        image = drawLineString(image, polygon.getExteriorRing(), c, borderWidth, x, y, x_ratio, y_ratio)
         for (def j = 0; j < polygon.getNumInteriorRing(); j++) {
-            image = drawLineString(image, polygon.getInteriorRingN(j), c, borderWidth, x, y, x_ratio, y_ratio, imageHeight)
+            image = drawLineString(image, polygon.getInteriorRingN(j), c, borderWidth, x, y, x_ratio, y_ratio)
         }
 
         return image
     }
 
-    BufferedImage drawLineString(BufferedImage image, LineString lineString, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio, int imageHeight) {
+    BufferedImage drawLineString(BufferedImage image, LineString lineString, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
         Path2D.Float regionOfInterest = new Path2D.Float()
         boolean isFirst = true
 
         Coordinate[] coordinates = lineString.getCoordinates()
         for (Coordinate coordinate : coordinates) {
-            double xLocal = Math.min((coordinate.x - x) * x_ratio, image.getWidth())
+            double xLocal = Math.min((coordinate.x - x) * x_ratio, image.getWidth() - 1)
             xLocal = Math.max(0, xLocal)
-            double yLocal = Math.min((imageHeight - coordinate.y - y) * y_ratio, image.getHeight())
+            double yLocal = Math.min((y - coordinate.y) * y_ratio, image.getHeight() - 1)
             yLocal = Math.max(0, yLocal)
 
             if (isFirst) {
@@ -138,7 +136,7 @@ class ImageProcessingService {
         return image
     }
 
-    BufferedImage drawPoint(BufferedImage image, Point point, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio, int imageHeight) {
+    BufferedImage drawPoint(BufferedImage image, Point point, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
         Graphics g = image.createGraphics()
         g.setColor(c)
         g.setStroke(new BasicStroke(borderWidth))
@@ -146,7 +144,7 @@ class ImageProcessingService {
         int length = 10
         double xLocal = Math.min((point.x - x) * x_ratio, image.getWidth())
         xLocal = Math.max(0, xLocal)
-        double yLocal = Math.min((imageHeight - point.y - y) * y_ratio, image.getHeight())
+        double yLocal = Math.min((y - point.y) * y_ratio, image.getHeight())
         yLocal = Math.max(0, yLocal)
 
 
