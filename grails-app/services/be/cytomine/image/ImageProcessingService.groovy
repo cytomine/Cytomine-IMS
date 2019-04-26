@@ -47,11 +47,11 @@ class ImageProcessingService {
     BufferedImage createCropWithDraw(BufferedImage image, Geometry geometry, def params) {
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
-        int width = params.int('width')
-        int height = params.int('height')
-        double x_ratio = image.getWidth() / width
-        double y_ratio = image.getHeight() / height
-        int borderWidth = params.int('thickness', (int) Math.round(((double) width / (15000 / 250d)) * x_ratio))
+        int width = image.getWidth()
+        int height = image.getHeight()
+        double x_ratio = width / params.int('width')
+        double y_ratio = height / params.int('height')
+        int borderWidth = params.int('thickness', Math.round(2 + ((double) Math.max(width, height)) / 1000d))
 
         Color color = (params.color) ? new Color(Integer.parseInt(params.color.replace("0x",""),16)) : Color.BLACK
 
