@@ -274,7 +274,7 @@ class CytomineFormatSpec extends Specification {
         props[PropertyUtils.CYTO_SPP] != null
     }
 
-    @IgnoreIf({ !Holders.config.cytomine.Jpeg2000Enabled })
+    @IgnoreIf({ !Holders.config.cytomine.ims.jpeg2000.enabled })
     void "test detection JPEG2000 format"() {
         given:
         def uploadedFile = createCytomineFileFromFilename("jp2.jp2")
@@ -284,7 +284,7 @@ class CytomineFormatSpec extends Specification {
         format instanceof JPEG2000Format
     }
 
-    @IgnoreIf({ !Holders.config.cytomine.Jpeg2000Enabled })
+    @IgnoreIf({ !Holders.config.cytomine.ims.jpeg2000.enabled })
     void "test metadata JPEG2000 format"() {
         given:
         def file = createCytomineFileFromFilename("jp2.jp2")

@@ -23,23 +23,27 @@ class BootStrap {
     def grailsApplication
 
     def init = { servletContext ->
-        log.info "Config file: "+ new File("imageserverconfig.properties").absolutePath
 
-        if(!grailsApplication.config.cytomine.imageServerPrivateKey) {
-            throw new IllegalArgumentException("cytomine.imageServerPrivateKey must be set!")
-        }
-        if(!grailsApplication.config.cytomine.imageServerPublicKey) {
-            throw new IllegalArgumentException("cytomine.imageServerPublicKey must be set!")
+        log.info "Cytomine IMS configuration:"
+        Holders.config.flatten().each {
+            if ((it.key as String).startsWith("cytomine"))
+                log.info "${it.key}: ${it.value}"
         }
 
-        //log.info "iipImageServerBase:" + grailsApplication.config.cytomine.iipImageServerBase
-        log.info "iipImageServerJpeg2000:" + grailsApplication.config.cytomine.iipImageServerJpeg2000
-        log.info "iipImageServerCyto:" + grailsApplication.config.cytomine.iipImageServerCyto
+        if (!Holders.config.cytomine.ims.server.url) {
+            throw new IllegalArgumentException("cytomine.ims.server.url is not set !")
+        }
 
-        Holders.config.cytomine.maxCropSize = Integer.parseInt(Holders.config.cytomine.maxCropSize+"")
-        Holders.config.cytomine.hdf5.maxBurstSize = Integer.parseInt(Holders.config.cytomine.hdf5.maxBurstSize+"")
-        Holders.config.cytomine.hdf5.maxBlockSize = Integer.parseInt(Holders.config.cytomine.hdf5.maxBlockSize+"")
+        if (!Holders.config.cytomine.ims.server.privateKey) {
+            throw new IllegalArgumentException("cytomine.ims.server.privateKey is not set!")
+        }
 
-        DeleteImageFileJob.schedule(Long.parseLong(grailsApplication.config.cytomine.deleteImageFilesFrequency), -1, [:])
+        if (!Holders.config.cytomine.ims.server.publicKey) {
+            throw new IllegalArgumentException("cytomine.ims.server.publicKey is not set!")
+        }
+
+        if (Holders.config.cytomine.ims.server.core.url && Holders.config.cytomine.ims.deleteJob.frequency) {
+            DeleteImageFileJob.schedule(grailsApplication.config.cytomine.ims.deleteJob.frequency as Long, -1, [:])
+        }
     }
 }

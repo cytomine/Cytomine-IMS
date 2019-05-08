@@ -57,8 +57,8 @@ class StorageController {
             if (params.idProject) params.projects = params.idProject
 
             String coreURL = params.core
-            String ISPublicKey = grailsApplication.config.cytomine.imageServerPublicKey
-            String ISPrivateKey = grailsApplication.config.cytomine.imageServerPrivateKey
+            String ISPublicKey = grailsApplication.config.cytomine.ims.server.publicKey
+            String ISPrivateKey = grailsApplication.config.cytomine.ims.server.privateKey
             log.info "Upload is made on Cytomine = $coreURL with image server $ISPublicKey/$ISPrivateKey key pair"
             CytomineConnection imsConnection = Cytomine.connection(coreURL, ISPublicKey, ISPrivateKey)
 
@@ -159,7 +159,7 @@ class StorageController {
 
         def result = [:]
 
-        String storagePath = Holders.config.cytomine.storagePath
+        String storagePath = Holders.config.cytomine.ims.path.storage
         def proc = "df $storagePath".execute()
         proc.waitFor()
 

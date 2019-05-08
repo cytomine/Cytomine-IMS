@@ -158,7 +158,7 @@ class ImageController extends ImageResponseController {
             @RestApiParam(name="bits", type="int", paramType = RestApiParamType.QUERY, description = "Output bit depth per channel (see IIP format)", required = false)
     ])
     def crop() {
-        String fif = URLDecoder.decode(params.fif as String, grailsApplication.config.cytomine.charset as String)
+        String fif = URLDecoder.decode(params.fif as String, grailsApplication.config.cytomine.ims.charset as String)
         String mimeType = params.mimeType
         NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
 
@@ -207,8 +207,8 @@ class ImageController extends ImageResponseController {
         def safe = params.boolean('safe', false)
         if (safe) {
             //if safe mode, skip annotation too large
-            if (width > grailsApplication.config.cytomine.maxAnnotationOnImageWidth ||
-                    height > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) {
+            if (width > grailsApplication.config.cytomine.ims.crop.maxSize ||
+                    height > grailsApplication.config.cytomine.ims.crop.maxSize) {
                 throw new MiddlewareException("Requested area is too big.")
             }
         }
@@ -281,8 +281,8 @@ class ImageController extends ImageResponseController {
 //    def uploadCrop() {
 //
 //        String cytomineUrl =  params['cytomine']//grailsApplication.config.grails.cytomineUrl
-//        String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
-//        String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
+//        String pubKey = grailsApplication.config.cytomine.ims.server.publicKey
+//        String privKey = grailsApplication.config.cytomine.ims.server.privateKey
 //
 //        def user = cytomineService.tryAPIAuthentification(cytomineUrl,pubKey,privKey,request)
 //        long currentUserId = user.id

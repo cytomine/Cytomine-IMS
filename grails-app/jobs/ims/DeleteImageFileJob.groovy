@@ -16,14 +16,14 @@ class DeleteImageFileJob {
 
     def execute() {
 
-        String cytomineUrl = grailsApplication.config.cytomine.coreURL
+        String cytomineUrl = grailsApplication.config.cytomine.ims.server.core.url
 
-        String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
-        String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
+        String pubKey = grailsApplication.config.cytomine.ims.server.publicKey
+        String privKey = grailsApplication.config.cytomine.ims.server.privateKey
 
         Cytomine cytomine = new Cytomine((String) cytomineUrl, pubKey, privKey)
 
-        long timeMargin = Long.parseLong(grailsApplication.config.cytomine.deleteImageFilesFrequency)*2
+        long timeMargin = grailsApplication.config.cytomine.ims.deleteJob.frequency*2
 
         //max between frequency*2 and 48h
         timeMargin = Math.max(timeMargin, 172800000L)

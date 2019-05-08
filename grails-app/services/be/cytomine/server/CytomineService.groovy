@@ -31,13 +31,13 @@ class CytomineService {
     def grailsApplication
 
     def getCytomine(String cytomineUrl) {
-        String publicKey = grailsApplication.config.cytomine.imageServerPublicKey
-        String privateKey = grailsApplication.config.cytomine.imageServerPrivateKey
+        String publicKey = grailsApplication.config.cytomine.ims.server.publicKey
+        String privateKey = grailsApplication.config.cytomine.ims.server.privateKey
         return new Cytomine(cytomineUrl, publicKey, privateKey)
     }
 
     def getThisImageServer() {
-        def url = grailsApplication.config.cytomine.imageServerURL
+        def url = grailsApplication.config.cytomine.ims.server.url
         def servers = Collection.fetch(ImageServer.class)
         for (int i = 0; i < servers.size(); i++) {
             def server = servers.get(i)
