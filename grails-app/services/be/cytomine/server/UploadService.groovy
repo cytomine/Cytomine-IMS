@@ -28,6 +28,7 @@ import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.formats.tools.CustomExtensionFormat
 import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.formats.tools.MultipleFilesFormat
+import grails.async.Promises
 import utils.FilesUtils
 
 import java.nio.file.Paths
@@ -140,7 +141,8 @@ class UploadService {
                 if (props.size() > 0) {
                     log.info "Add custom ${props.size()} properties to ${image}"
                     log.debug properties
-                    props.each { it.save(uploadInfo.userConn) } // TODO: replace by a multiple add in a single request
+                    def promises = props.collect {p -> Promises.task { p.save(uploadInfo.userConn) } }
+                    Promises.waitAll(promises)
                 }
             }
 
@@ -200,19 +202,22 @@ class UploadService {
         // If the current file is a regular folder, recursively deploy its children but do not create an UF
         if (identifier.isClassicFolder()) {
             def errors = []
-            currentFile.listFiles().each {
-                if (it.name == ".DS_STORE" || it.name.startsWith("__MACOSX"))
-                    return
+            def promises = currentFile.listFiles().collect { file ->
+                Promises.task {
+                    if (file.name == ".DS_STORE" || file.name.startsWith("__MACOSX"))
+                        return {}
 
-                try {
-                    def child = new CytomineFile(it.absolutePath)
-                    def deployed = deploy(child, null, uploadedFile ?: uploadedFileParent, abstractImage, uploadInfo)
-                    result.images.addAll(deployed.images)
-                    result.slices.addAll(deployed.slices)
-                } catch (DeploymentException e) {
-                    errors << e.getMessage()
+                    try {
+                        def child = new CytomineFile(file)
+                        def deployed = deploy(child, null, uploadedFile ?: uploadedFileParent, abstractImage, uploadInfo)
+                        result.images.addAll(deployed.images)
+                        result.slices.addAll(deployed.slices)
+                    } catch (DeploymentException e) {
+                        errors << e.getMessage()
+                    }
                 }
-            } // TODO: parallelize
+            }
+            Promises.waitAll(promises)
 
             if (!errors.isEmpty()) {
                 throw new DeploymentException(errors.join("\n"))
@@ -304,16 +309,19 @@ class UploadService {
                 errors << e.getMessage()
             }
 
-            files.each {
-                try {
-                    def deployed = deploy(it as CytomineFile, null, uploadedFile, abstractImage, uploadInfo)
-                    result.images.addAll(deployed.images)
-                    result.slices.addAll(deployed.slices)
+            def promises = files.collect { file ->
+                Promises.task {
+                    try {
+                        def deployed = deploy(file as CytomineFile, null, uploadedFile, abstractImage, uploadInfo)
+                        result.images.addAll(deployed.images)
+                        result.slices.addAll(deployed.slices)
+                    }
+                    catch (DeploymentException e) {
+                        errors << e.getMessage()
+                    }
                 }
-                catch (DeploymentException e) {
-                    errors << e.getMessage()
-                }
-            } //TODO: parallelize + pipeline
+            } //TODO: pipeline
+            Promises.waitAll(promises)
 
             if (!errors.isEmpty()) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_CONVERSION)
@@ -337,7 +345,8 @@ class UploadService {
         if (props.size() > 0) {
             log.info "Add ${props.size()} format-dependent properties to ${image}"
             log.debug properties
-            props.each { it.save(userConn) } // TODO: replace by a multiple add in a single request
+            def promises = props.collect { p -> Promises.task { p.save(userConn) } }
+            Promises.waitAll(promises)
         }
         image.extractUsefulProperties()
 
