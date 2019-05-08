@@ -16,6 +16,7 @@ package be.cytomine.server
  * limitations under the License.
  */
 
+import be.cytomine.client.CytomineConnection
 import be.cytomine.client.CytomineException
 import be.cytomine.client.models.*
 import be.cytomine.exception.DeploymentException
@@ -44,7 +45,7 @@ class UploadService {
      * Upload a file on Cytomine.
      * It will create all intermediate files and final abstract images.
      *
-     * @param user The Cytomine user doing the request
+     * @param userConn The CytomineConnection doing the request
      * @param storage The Cytomine virtual storage in which the file is uploaded
      * @param filename The filename of the uploaded file
      * @param filePath The path where the file is currently stored
@@ -54,7 +55,7 @@ class UploadService {
      *
      * @return A map with the root UploadedFile and all the generated AbstractImages
      */
-    def upload(User user, Storage storage, String filename, def filePath, boolean isSync, def projects, def properties) {
+    def upload(CytomineConnection userConn, Storage storage, String filename, def filePath, boolean isSync, def projects, def properties) {
         if (!filePath) {
             throw new FileNotFoundException("Got an invalid file. Disk can be full.")
         }
@@ -80,7 +81,7 @@ class UploadService {
         def status = UploadedFile.Status.UPLOADED
         def destinationPath = Paths.get(new Date().getTime().toString(), FilesUtils.correctFilename(filename))
         def uploadedFile = new UploadedFile(imsServer, filename, destinationPath.toString(), size, extension,
-                UNDERTERMINED_CONTENT, projects, storage, user, status, null).save()
+                UNDERTERMINED_CONTENT, projects, storage, userConn.getCurrentUser(), status, null).save(userConn)
 
         File file = new File((String) uploadedFile.get('path'))
         fileSystemService.move(temporaryFile, file)
@@ -89,7 +90,8 @@ class UploadService {
         result.uploadedFile = uploadedFile
 
         def uploadInfo = [
-                user      : user,
+                userConn  : userConn,
+                user      : userConn.getCurrentUser(),
                 storage   : storage,
                 imsServer : imsServer,
                 isSync    : isSync,
@@ -138,7 +140,7 @@ class UploadService {
                 if (props.size() > 0) {
                     log.info "Add custom ${props.size()} properties to ${image}"
                     log.debug properties
-                    props.each { it.save() } // TODO: replace by a multiple add in a single request
+                    props.each { it.save(uploadInfo.userConn) } // TODO: replace by a multiple add in a single request
                 }
             }
 
@@ -148,7 +150,7 @@ class UploadService {
                 def project = uploadInfo.projects.get(i)
                 deployed.images.each { image ->
                     log.info "Adding ${image} to $project"
-                    imageInstances << new ImageInstance(image, project).save()
+                    imageInstances << new ImageInstance(image, project).save(uploadInfo.userConn)
                 }
             }
 
@@ -229,7 +231,7 @@ class UploadService {
             log.info "Create a new uploadedFile for $filename"
             uploadedFile = new UploadedFile(uploadInfo.imsServer, filename, destPath, size, extension,
                     UNDERTERMINED_CONTENT, uploadInfo.projects, uploadInfo.storage, uploadInfo.user,
-                    UploadedFile.Status.DETECTING_FORMAT, uploadedFileParent).save()
+                    UploadedFile.Status.DETECTING_FORMAT, uploadedFileParent).save(uploadInfo.userConn)
 
             log.info "New uploaded file: ${uploadedFile.toString()}"
         }
@@ -250,7 +252,7 @@ class UploadService {
         if (!abstractImage && !(format instanceof ArchiveFormat)) {
             try {
                 def metadata = format.cytomineProperties()
-                abstractImage = createAbstractImage(uploadedFile, metadata)
+                abstractImage = createAbstractImage(uploadInfo.userConn, uploadedFile, metadata)
                 result.images.add(abstractImage)
             }
             catch (CytomineException e) {
@@ -278,7 +280,7 @@ class UploadService {
             uploadedFile.update()
 
             try {
-                AbstractSlice slice = createAbstractSlice(uploadedFile, abstractImage, format, currentFile)
+                AbstractSlice slice = createAbstractSlice(uploadInfo.userConn, uploadedFile, abstractImage, format, currentFile)
                 result.slices.add(slice)
                 // fetch to get the last uploadedFile with the image
                 uploadedFile = new UploadedFile().fetch(uploadedFile.id)
@@ -324,8 +326,8 @@ class UploadService {
         return result
     }
 
-    private AbstractImage createAbstractImage(UploadedFile uploadedFile, def metadata) {
-        def image = new AbstractImage(uploadedFile, uploadedFile.getStr('originalFilename')).save()
+    private AbstractImage createAbstractImage(CytomineConnection userConn, UploadedFile uploadedFile, def metadata) {
+        def image = new AbstractImage(uploadedFile, uploadedFile.getStr('originalFilename')).save(userConn)
 
         def props = []
         metadata.each {
@@ -335,15 +337,15 @@ class UploadService {
         if (props.size() > 0) {
             log.info "Add ${props.size()} format-dependent properties to ${image}"
             log.debug properties
-            props.each { it.save() } // TODO: replace by a multiple add in a single request
+            props.each { it.save(userConn) } // TODO: replace by a multiple add in a single request
         }
         image.extractUsefulProperties()
 
         return image
     }
 
-    private AbstractSlice createAbstractSlice(UploadedFile uploadedFile, AbstractImage image, Format format, CytomineFile file) {
-        def slice = new AbstractSlice(image, uploadedFile, format.mimeType, file.c as Double, file.z as Double, file.t as Double).save()
+    private AbstractSlice createAbstractSlice(CytomineConnection userConn, UploadedFile uploadedFile, AbstractImage image, Format format, CytomineFile file) {
+        def slice = new AbstractSlice(image, uploadedFile, format.mimeType, file.c as Double, file.z as Double, file.t as Double).save(userConn)
         return slice
     }
 }

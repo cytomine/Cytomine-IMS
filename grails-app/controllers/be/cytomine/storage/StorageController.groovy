@@ -60,7 +60,7 @@ class StorageController {
             String ISPublicKey = grailsApplication.config.cytomine.ims.server.publicKey
             String ISPrivateKey = grailsApplication.config.cytomine.ims.server.privateKey
             log.info "Upload is made on Cytomine = $coreURL with image server $ISPublicKey/$ISPrivateKey key pair"
-            CytomineConnection imsConnection = Cytomine.connection(coreURL, ISPublicKey, ISPrivateKey)
+            CytomineConnection imsConnection = Cytomine.connection(coreURL, ISPublicKey, ISPrivateKey, true)
 
             // Check user authentication
             def authorization = cytomineService.getAuthorizationFromRequest(request)
@@ -74,8 +74,8 @@ class StorageController {
             if (!cytomineService.testSignature(keys.get('privateKey'), authorization.signature, messageToSign))
                 throw new AuthenticationException("Auth failed.")
 
-            CytomineConnection userConnection = Cytomine.connection(coreURL, (String) keys.get('publicKey'), (String) keys.get('privateKey'))
-            def user = Cytomine.getInstance().getCurrentUser()
+            CytomineConnection userConnection = new CytomineConnection(coreURL, (String) keys.get('publicKey'), (String) keys.get('privateKey'))
+            def user = userConnection.getCurrentUser()
 
             // Check and get storage
             def storage = new Storage().fetch(userConnection, params.long('storage'))
@@ -112,7 +112,7 @@ class StorageController {
             try {
                 responseContent.status = 200;
                 responseContent.name = filename
-                def uploadResult = uploadService.upload(user as User, storage as Storage, filename, filePath, isSync, projects, properties)
+                def uploadResult = uploadService.upload(userConnection, storage as Storage, filename, filePath, isSync, projects, properties)
 
                 responseContent.uploadFile = uploadResult.uploadedFile.getAttr()
 
@@ -142,9 +142,10 @@ class StorageController {
         }
         catch (CytomineException e) {
             log.error(e.toString())
+            log.error(e.getMessage())
             log.error(e.printStackTrace())
             response.status = e.getHttpCode()
-            render e
+            render e.toString()
         }
         catch (Exception e) {
             log.error(e.toString())
