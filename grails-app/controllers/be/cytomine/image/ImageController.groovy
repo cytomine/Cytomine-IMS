@@ -359,7 +359,7 @@ class ImageController extends ImageResponseController {
             responseFile(file)
             return
         }
-        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
+        NativeFormat format = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
 
         if(format instanceof MultipleFilesFormat) {
 
