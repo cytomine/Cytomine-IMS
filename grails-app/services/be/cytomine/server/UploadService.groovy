@@ -197,7 +197,7 @@ class UploadService {
         log.info "Deploy $currentFile"
         def result = [images: [], slices: []]
 
-        def identifier = new FormatIdentifier(new CytomineFile(currentFile.absolutePath))
+        def identifier = new FormatIdentifier(new CytomineFile(currentFile))
 
         // If the current file is a regular folder, recursively deploy its children but do not create an UF
         if (identifier.isClassicFolder()) {

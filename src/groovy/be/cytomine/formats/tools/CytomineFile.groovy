@@ -58,6 +58,10 @@ class CytomineFile extends File {
         setDimensions(c, z, t)
     }
 
+    CytomineFile(CytomineFile file) {
+        this(file.absolutePath, file.c, file.z, file.t)
+    }
+
     def setDimensions(def c, def z, def t) {
         this.c = c
         this.z = z
