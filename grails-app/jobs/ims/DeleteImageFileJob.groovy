@@ -1,47 +1,47 @@
 package ims
 
 import be.cytomine.client.Cytomine
-//import be.cytomine.client.collections.DeleteCommandCollection
+import be.cytomine.client.CytomineConnection
+import be.cytomine.client.collections.Collection
 import be.cytomine.client.models.DeleteCommand
-import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONElement
 
+import grails.converters.JSON
 
 class DeleteImageFileJob {
     static triggers = {
-        // cron name: "DeleteImageTrigger", cronExpression: "0 0 1 * * ?"// execute job at 1 AM every day
     }
 
     def grailsApplication
 
     def execute() {
+        log.info "Execute DeleteImageFile job"
 
         String cytomineUrl = grailsApplication.config.cytomine.ims.server.core.url
-
         String pubKey = grailsApplication.config.cytomine.ims.server.publicKey
         String privKey = grailsApplication.config.cytomine.ims.server.privateKey
+        CytomineConnection imsConn = Cytomine.connection(cytomineUrl, pubKey, privKey, true)
 
-        Cytomine cytomine = new Cytomine((String) cytomineUrl, pubKey, privKey)
-
-        long timeMargin = grailsApplication.config.cytomine.ims.deleteJob.frequency*2
+        long timeMargin = grailsApplication.config.cytomine.ims.deleteJob.frequency * 1000 * 2
 
         //max between frequency*2 and 48h
         timeMargin = Math.max(timeMargin, 172800000L)
 
-//        DeleteCommandCollection commands = cytomine.getDeleteCommandByDomainAndAfterDate("uploadedFile", (new Date().time-timeMargin))
-//
-//        for(int i = 0; i<commands.size(); i++) {
-//            DeleteCommand command = commands.list.get(i)
-//
-//            JSONElement j = JSON.parse(command.get("data"));
-//
-//            File fileToDelete = new File(j.path+j.filename)
-//
-//            if(fileToDelete.exists()) {
-//                log.info "DELETE file "+fileToDelete.absolutePath
-//                fileToDelete.delete()
-//            }
-//
-//        }
+        Collection<DeleteCommand> commands = new Collection<DeleteCommand>(DeleteCommand.class, 0, 0)
+        commands.addParams("domain", "uploadedFile")
+        commands.addParams("after", (new Date().time - timeMargin).toString())
+        commands = commands.fetch()
+        log.info commands
+
+        for (int i = 0; i < commands.size(); i++) {
+            DeleteCommand command = (DeleteCommand) commands.list.get(i)
+
+            def data = JSON.parse(command.get("data") as String)
+
+            File fileToDelete = new File(data.path)
+            if (fileToDelete.exists()) {
+                log.info "Delete file " + fileToDelete.absolutePath
+                fileToDelete.delete()
+            }
+        }
     }
 }

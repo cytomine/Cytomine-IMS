@@ -43,7 +43,7 @@ class BootStrap {
         }
 
         if (Holders.config.cytomine.ims.server.core.url && Holders.config.cytomine.ims.deleteJob.frequency) {
-            DeleteImageFileJob.schedule(grailsApplication.config.cytomine.ims.deleteJob.frequency as Long, -1, [:])
+            DeleteImageFileJob.schedule((grailsApplication.config.cytomine.ims.deleteJob.frequency as Long) * 1000, -1, [:])
         }
     }
 }
