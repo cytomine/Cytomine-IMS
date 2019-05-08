@@ -156,27 +156,18 @@ class StorageController {
 
     @RestApiMethod(description="Method for getting used and free space of the image storage")
     def size () {
-
-        def result = [:]
-
         String storagePath = Holders.config.cytomine.ims.path.storage
         def proc = "df $storagePath".execute()
         proc.waitFor()
 
         String[] out = proc.text.split("\n")[1].trim().replaceAll("\\s+", " ").split(" ")
 
-        boolean nfs
-        if (out[0].contains(":")) nfs = true
-
         Long used = Long.parseLong(out[2])
         Long available = Long.parseLong(out[3])
-        result.put("used", used)
-        result.put("available", available)
-        result.put("usedP", (double) (used / (used + available)))
+
         String hostname = ""
         String mount = ""
-
-        if (nfs) {
+        if (out[0].contains(":")) { // NFS mount
             hostname = out[0].split(":")[0]
             mount = out[0].split(":")[1]
         } else {
@@ -184,16 +175,21 @@ class StorageController {
             mount = out[5]
         }
 
-        result.put("hostname", hostname.hashCode())
-        result.put("mount", mount)
-
         String ip = "host $hostname".execute().text
         if (ip.contains("not found")) {
             ip = null
         } else {
             ip = ip.split(" ").last().hashCode()
         }
-        result.put("ip", ip)
+
+        def result = [
+                used: used,
+                available: available,
+                usedP: (double) (used / (used + available)),
+                hostname: hostname,
+                mount: mount,
+                ip: ip
+        ]
 
         render result as JSON
     }
