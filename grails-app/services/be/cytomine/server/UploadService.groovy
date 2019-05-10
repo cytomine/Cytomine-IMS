@@ -104,10 +104,10 @@ class UploadService {
             log.info "Sync upload"
             deployFile(file, uploadedFile, uploadInfo, result)
         } else {
-//            runAsync {
+            runAsync {
                 log.info "Async upload"
                 deployFile(file, uploadedFile, uploadInfo, result)
-//            }
+            }
         }
 
         log.info result
