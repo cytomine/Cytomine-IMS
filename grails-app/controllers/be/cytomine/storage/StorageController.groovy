@@ -114,7 +114,7 @@ class StorageController {
                 responseContent.name = filename
                 def uploadResult = uploadService.upload(userConnection, storage as Storage, filename, filePath, isSync, projects, properties)
 
-                responseContent.uploadFile = uploadResult.uploadedFile.getAttr()
+                responseContent.uploadedFile = uploadResult.uploadedFile.getAttr()
 
                 def images = []
                 uploadResult.images.each { image ->
