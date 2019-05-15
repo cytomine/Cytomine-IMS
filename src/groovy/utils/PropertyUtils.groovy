@@ -46,6 +46,9 @@ class PropertyUtils {
         if (x instanceof Integer)
             return x
 
+        if (x instanceof Double)
+            return (int) x
+
         try {
             return Integer.parseInt(x?.toString())
         }
