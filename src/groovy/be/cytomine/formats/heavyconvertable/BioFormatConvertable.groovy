@@ -43,18 +43,14 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
         cytominePropertyKeys[PropertyUtils.CYTO_Z_RES_UNIT] = "Bioformats.Pixels.PhysicalSizeZUnit"
         cytominePropertyKeys[PropertyUtils.CYTO_FPS] = "Bioformats.Pixels.TimeIncrement" //TODO: unit
         cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "Bioformats.Pixels.SignificantBits"
-        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Bioformats.Channels.SamplesPerPixel"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Bioformats.Pixels.BitsPerPixel"
         cytominePropertyKeys[PropertyUtils.CYTO_MAGNIFICATION] = "Bioformats.Objective.NominalMagnification"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "" //TODO
     }
 
-    @Override
-    def convert() {
+    def makeRequest(def message) {
         if (!(Holders.config.cytomine.ims.conversion.bioformats.enabled as Boolean))
             throw new MiddlewareException("Convertor BioFormat not enabled")
-
-        def files
-        String error
 
         String hostName = Holders.config.cytomine.ims.conversion.bioformats.hostname
         int portNumber = Holders.config.cytomine.ims.conversion.bioformats.port as Integer
@@ -64,20 +60,26 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
             PrintWriter out = new PrintWriter(echoSocket.getOutputStream(), true)
             BufferedReader inp = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()))
 
-            def message = [
-                    path            : this.file.absolutePath,
-                    group           : this.group as String,
-                    onlyBiggestSerie: this.onlyBiggestSerie as String
-            ]
-
             out.println(JsonOutput.toJson(message))
             String result = inp.readLine()
-            def json = JSON.parse(result)
-            files = json.files
-            error = json.error
+            return JSON.parse(result)
         } catch (UnknownHostException e) {
             throw new MiddlewareException(e.getMessage())
         }
+    }
+
+    @Override
+    def convert() {
+        def message = [
+                path            : this.file.absolutePath,
+                group           : this.group,
+                onlyBiggestSerie: this.onlyBiggestSerie,
+                action          : "convert"
+        ]
+
+        def response = makeRequest(message)
+        def files = response.files
+        def error = response.error
 
         log.info("BioFormats returned ${files?.size()} files")
 
@@ -89,7 +91,13 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
 
     def properties() {
         def properties = super.properties()
-        //TODO: call Bioformats to extract properties
+
+        def message = [
+                path: this.file.absolutePath,
+                action: "properties"
+        ]
+
+        properties += makeRequest(message)
         return properties
     }
 
