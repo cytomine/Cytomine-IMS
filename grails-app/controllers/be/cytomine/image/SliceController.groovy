@@ -224,7 +224,12 @@ class SliceController extends ImageResponseController {
             @RestApiParam(name="gamma", type="float", paramType = RestApiParamType.QUERY, description = "Apply gamma correction (see IIP format)")
     ])
     def tile() {
-        String fif = URLDecoder.decode(params.fif,"UTF-8")
+        String fif
+        if (params.zoomify)
+            fif = URLDecoder.decode(params.zoomify,"UTF-8")
+        else
+            fif = URLDecoder.decode(params.fif,"UTF-8")
+
         String mimeType = params.mimeType
         NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
         responseJPGImageFromUrl(imageFormat.tileURL(params))
