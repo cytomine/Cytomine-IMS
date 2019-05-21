@@ -172,8 +172,14 @@ class UploadService {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_DEPLOYMENT)
             }
 
+            if (e instanceof DeploymentException) {
+                // Delete created slices and images
+                def promises = e.info.images.collect { image -> Promises.task { image.delete(uploadInfo.userConn) } }
+                Promises.waitAll(promises)
+            }
+
             if (uploadInfo.isSync) {
-                throw new DeploymentException(e.getMessage())
+                throw new DeploymentException(e.getMessage(), [:])
             } else {
                 e.printStackTrace()
             }
@@ -220,7 +226,7 @@ class UploadService {
             Promises.waitAll(promises)
 
             if (!errors.isEmpty()) {
-                throw new DeploymentException(errors.join("\n"))
+                throw new DeploymentException(errors.join("\n"), result)
             }
 
             return result
@@ -247,7 +253,7 @@ class UploadService {
         } catch (FormatException e) {
             log.warn "Undetected format" + e.toString()
             uploadedFile.changeStatus(UploadedFile.Status.ERROR_FORMAT)
-            throw new DeploymentException(e.getMessage())
+            throw new DeploymentException(e.getMessage(), result)
         }
 
         log.info "Detected format = $format"
@@ -262,7 +268,7 @@ class UploadService {
             }
             catch (CytomineException e) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_DEPLOYMENT)
-                throw new DeploymentException(e.getMessage())
+                throw new DeploymentException(e.getMessage(), result)
             }
 
         }
@@ -294,7 +300,7 @@ class UploadService {
                 }
             } catch (CytomineException e) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_DEPLOYMENT)
-                throw new DeploymentException(e.getMsg())
+                throw new DeploymentException(e.getMsg(), result)
             }
         } else {
             uploadedFile.changeStatus(UploadedFile.Status.CONVERTING)
@@ -325,7 +331,7 @@ class UploadService {
 
             if (!errors.isEmpty()) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_CONVERSION)
-                throw new DeploymentException(errors.join("\n"))
+                throw new DeploymentException(errors.join("\n"), result)
             } else {
                 uploadedFile.changeStatus(UploadedFile.Status.CONVERTED)
             }

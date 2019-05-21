@@ -44,7 +44,7 @@ class DeployImagesService {
 
             if(!new File(destFilename).exists()) {
                 log.error new File(destFilename).absolutePath + " created = " + new File(destFilename).exists()
-                throw new DeploymentException(new File(destFilename).absolutePath + " is not created! ")
+                throw new DeploymentException(new File(destFilename).absolutePath + " is not created! ", [:])
             }
 
         }
