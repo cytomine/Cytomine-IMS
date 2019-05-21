@@ -57,19 +57,6 @@ class JPEG2000Format extends NativeFormat {
     }
 
     @Override
-    def associated() {
-        return []
-    }
-
-    @Override
-    BufferedImage associated(def label) {
-        if (!label in associated())
-            return null
-
-        return null
-    }
-
-    @Override
     BufferedImage thumb(def params) {
         params.format = "jpg" //Only supported format by JPEG2000 IIP version
         def query = [

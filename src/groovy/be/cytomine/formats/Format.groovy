@@ -21,6 +21,8 @@ import be.cytomine.formats.tools.metadata.ExifToolMetadataExtractor
 import groovy.util.logging.Log4j
 import utils.PropertyUtils
 
+import java.awt.image.BufferedImage
+
 @Log4j
 abstract class Format {
 
@@ -110,8 +112,27 @@ abstract class Format {
         return properties.findAll { it.value != null && !(it as String).isEmpty() }
     }
 
-
     def annotations() {
         return []
+    }
+
+    /**
+     * Get the list of available associated labels.
+     * @return List<String>  the labels
+     */
+    def associated() {
+        return []
+    }
+
+    /**
+     * Get an image associated to a label.
+     * @param label The label
+     * @return A buffered image for this associated file
+     */
+    BufferedImage associated(def label) {
+        if (!label in associated())
+            return null
+
+        return null
     }
 }

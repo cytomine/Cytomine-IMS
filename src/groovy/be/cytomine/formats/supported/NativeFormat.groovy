@@ -30,19 +30,6 @@ abstract class NativeFormat extends Format {
     public String iipUrl
 
     /**
-     * Get the list of available associated labels.
-     * @return List<String>  the labels
-     */
-    abstract def associated()
-
-    /**
-     * Get an image associated to a label.
-     * @param label The label
-     * @return A buffered image for this associated file
-     */
-    abstract BufferedImage associated(def label)
-
-    /**
      * Get an image thumb.
      * @param params
      *      - size The thumb size

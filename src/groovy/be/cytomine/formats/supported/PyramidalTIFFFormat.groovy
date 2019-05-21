@@ -87,19 +87,6 @@ class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
             return false
     }
 
-    @Override
-    def associated() {
-        return []
-    }
-
-    @Override
-    BufferedImage associated(def label) {
-        if (!label in associated())
-            return null
-
-        return null
-    }
-
 //    def properties() {
 //        def tiffinfoExecutable = Holders.config.cytomine.tiffinfo
 //        String tiffinfo = "$tiffinfoExecutable ${this.file.absolutePath}".execute().text
