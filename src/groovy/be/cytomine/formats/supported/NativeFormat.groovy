@@ -145,6 +145,10 @@ abstract class NativeFormat extends Format {
             def x = params.int("x")
             def y = params.int("y")
             def file = HttpUtils.encode(this.file.absolutePath)
+
+            if (file.endsWith("/"))
+                file = file.substring(0, file.length()-1)
+
             return "${iipUrl}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
         }
 

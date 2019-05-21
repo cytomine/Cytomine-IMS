@@ -26,17 +26,22 @@ class UrlMappings {
 		"/"(view:"/index")
 		"500"(view:'/error')
 
+        /* Storage controller */
+
         "/upload"(controller:"storage"){
             action = [POST:"upload"]
         }
 
-        "/uploadCrop" (controller:"image") {
-            action = [POST:"uploadCrop"]
+//        "/uploadCrop" (controller:"image") {
+//            action = [POST:"uploadCrop"]
+//        }
+
+        "/storage/size.$format"(controller:"storage"){
+            action = [GET:"size"]
         }
 
-        "/download"(controller:"storage"){
-            action = [GET : "download"]
-        }
+
+        /* Image controller */
 
         "/image/associated.$format" (controller:"image") {
             action = [GET:"associated"]
@@ -50,18 +55,27 @@ class UrlMappings {
             action = [GET:"properties"]
         }
 
-        "/image/thumb.$format" (controller:"image") {
+        "/image/download" (controller: "image") {
+            action = [GET: "download"]
+        }
+
+
+        /* Slice controller */
+
+        "/slice/thumb.$format" (controller:"slice") {
             action = [GET:"thumb", POST:"thumb"]
         }
 
-        "/image/crop.$format" (controller:"image") {
+        "/slice/crop.$format" (controller:"slice") {
             action = [GET:"crop", POST:"crop"]
         }
 
-        "/storage/size.$format"(controller:"storage"){
-            action = [GET:"size"]
+        "/slice/tile" (controller: "slice") {
+            action = [GET:"tile"]
         }
 
+
+        /* Other */
         "/multidim/pixel.$format" (controller:"multiDim"){
             action = [GET:"getSpectraPixel"]
         }
@@ -72,10 +86,6 @@ class UrlMappings {
 
         "/multidim/convert.$format" (controller: "multiDim"){
             action = [POST: "convertListToHdf5"]
-        }
-
-        "/image/tile" (controller: "image") {
-            action = [GET:"tileZoomify"] //tileIIP
         }
 	}
 }

@@ -48,6 +48,10 @@ class FormatIdentifier {
 
     def setFile(file) {
         this.file = file
+
+        if (!this.file.exists())
+            throw new FileNotFoundException("File not found.")
+
         this.formats.each {
             it.file = this.file
         }
