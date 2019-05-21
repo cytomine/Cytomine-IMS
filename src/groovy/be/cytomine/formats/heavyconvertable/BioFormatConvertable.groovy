@@ -42,8 +42,8 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
         cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "Bioformats.Pixels.PhysicalSizeYUnit"
         cytominePropertyKeys[PropertyUtils.CYTO_Z_RES_UNIT] = "Bioformats.Pixels.PhysicalSizeZUnit"
         cytominePropertyKeys[PropertyUtils.CYTO_FPS] = "Bioformats.Pixels.TimeIncrement" //TODO: unit
-        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "Bioformats.Pixels.SignificantBits"
-        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Bioformats.Pixels.BitsPerPixel"
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "Bioformats.Pixels.BitsPerPixel"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Bioformats.Pixels.SamplesPerPixel"
         cytominePropertyKeys[PropertyUtils.CYTO_MAGNIFICATION] = "Bioformats.Objective.NominalMagnification"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "" //TODO
     }
@@ -97,7 +97,12 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
                 action: "properties"
         ]
 
-        properties += makeRequest(message)
+        def response = makeRequest(message)
+        if (response == null || response.error != null) {
+            throw new MiddlewareException("BioFormats Exception : ${response?.error}")
+        }
+
+        properties += response
         return properties
     }
 
