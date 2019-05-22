@@ -38,7 +38,9 @@ class CellSensVSIFormat extends BioFormatConvertable implements MultipleFilesFor
             this.file = new CytomineFile(vsi.absolutePath)
         }
 
-        return vsi != null
+        return extensions.any { ext ->
+            this.file.name.endsWith(".$ext")
+        }
     }
 
     @Override

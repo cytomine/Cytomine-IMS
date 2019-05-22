@@ -38,14 +38,12 @@ class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat,
     @Override
     boolean detect() {
         File vms = getRootFile(this.file)
-        log.info vms
 
         if (vms) {
             this.file = new CytomineFile(vms.absolutePath)
-            log.info this.file.openSlideVendor
-            return OpenSlideDetector.super.detect()
         }
-        return false
+
+        return OpenSlideDetector.super.detect()
     }
 
     File getRootFile(File folder) {

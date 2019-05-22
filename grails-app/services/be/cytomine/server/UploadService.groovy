@@ -164,6 +164,16 @@ class UploadService {
             uploadedFile = new UploadedFile().fetch(uploadedFile.id)
             uploadedFile.changeStatus(UploadedFile.Status.DEPLOYED)
 
+            // Corner case for zipped native files (ex: MRXS, VMS)-> previous line only set the zip as deployed.
+            if (result.images.size() > 1 ||
+                    (result.images.size() == 1 && result.images[0].getLong('uploadedFile') != uploadedFile.getId())) {
+                result.images.each {
+                    def uf = new UploadedFile().fetch(it.getLong('uploadedFile'))
+                    if (uf.get("status") % 2 == 0 && uf.get("status") < 100)
+                        uf.changeStatus(UploadedFile.Status.DEPLOYED)
+                }
+            }
+
         } catch (DeploymentException | CytomineException e) {
             uploadedFile = new UploadedFile().fetch(uploadedFile.id)
 
@@ -214,7 +224,7 @@ class UploadService {
                         return {}
 
                     try {
-                        def child = new CytomineFile(file)
+                        def child = new CytomineFile(file.absolutePath)
                         def deployed = deploy(child, null, uploadedFile ?: uploadedFileParent, abstractImage, uploadInfo)
                         result.images.addAll(deployed.images)
                         result.slices.addAll(deployed.slices)

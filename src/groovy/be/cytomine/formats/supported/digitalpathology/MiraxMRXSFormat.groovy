@@ -44,9 +44,9 @@ class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, Op
 
         if (mrxs) {
             this.file = new CytomineFile(mrxs.absolutePath)
-            return OpenSlideDetector.super.detect()
         }
-        return false
+
+        return OpenSlideDetector.super.detect()
     }
 
     BufferedImage associated(String label) {
