@@ -29,6 +29,9 @@ import be.cytomine.formats.tools.CustomExtensionFormat
 import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.formats.tools.MultipleFilesFormat
 import grails.async.Promises
+import groovyx.gpars.dataflow.Dataflow
+import groovyx.gpars.group.DefaultPGroup
+import groovyx.gpars.scheduler.DefaultPool
 import utils.FilesUtils
 
 import java.nio.file.Paths
@@ -184,6 +187,7 @@ class UploadService {
 
             if (e instanceof DeploymentException) {
                 // Delete created slices and images
+                log.info "Delete created images caused by Deployment exception ${e.getMessage()}"
                 def promises = e.info.images.collect { image -> Promises.task { image.delete(uploadInfo.userConn) } }
                 Promises.waitAll(promises)
             }
@@ -325,19 +329,28 @@ class UploadService {
                 errors << e.getMessage()
             }
 
-            def promises = files.collect { file ->
-                Promises.task {
-                    try {
-                        def deployed = deploy(file as CytomineFile, null, uploadedFile, abstractImage, uploadInfo)
-                        result.images.addAll(deployed.images)
-                        result.slices.addAll(deployed.slices)
-                    }
-                    catch (DeploymentException e) {
-                        errors << e.getMessage()
-                    }
-                }
-            } //TODO: pipeline
-            Promises.waitAll(promises)
+            def poolGroup = new DefaultPGroup(new DefaultPool(true, 10))
+            try {
+                Dataflow.usingGroup(poolGroup, {
+                    def promises = files.collect { file ->
+                        Promises.task {
+                            try {
+                                def deployed = deploy(file as CytomineFile, null, uploadedFile, abstractImage, uploadInfo)
+                                result.images.addAll(deployed.images)
+                                result.slices.addAll(deployed.slices)
+                            }
+                            catch (DeploymentException e) {
+                                errors << e.getMessage()
+                            }
+                        }
+                    } //TODO: pipeline
+                    Promises.waitAll(promises)
+                })
+            }
+            finally {
+                poolGroup.shutdown()
+            }
+
 
             if (!errors.isEmpty()) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_CONVERSION)

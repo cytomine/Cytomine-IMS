@@ -1,5 +1,8 @@
 package be.cytomine.formats.tools.detectors
 
+import grails.converters.JSON
+import groovy.util.logging.Log4j
+
 /*
  * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
@@ -16,6 +19,11 @@ package be.cytomine.formats.tools.detectors
  * limitations under the License.
  */
 
+@Log4j
 trait FfmpegDetector extends Detector {
+    boolean detect() {
+        def output = JSON.parse(this.file.getFfProbeOutput())
 
+        return output?.format?.format_name?.contains(this.FFPROBE_FORMAT_IDENTIFIER)
+    }
 }

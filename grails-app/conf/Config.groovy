@@ -153,6 +153,7 @@ cytomine.ims.conversion.vips.compression = "lzw"
 cytomine.ims.conversion.vips.executable = "vips"
 cytomine.ims.conversion.unzip.executable = "unzip"
 cytomine.ims.conversion.gdal.executable = "gdal_translate"
+cytomine.ims.conversion.ffmpeg.executable = "ffmpeg"
 cytomine.ims.conversion.bioformats.enabled = true
 cytomine.ims.conversion.bioformats.hostname = "bioformat"
 cytomine.ims.conversion.bioformats.port = 4321
@@ -160,6 +161,7 @@ cytomine.ims.conversion.bioformats.port = 4321
 cytomine.ims.detection.tiffinfo.executable = "tiffinfo"
 cytomine.ims.detection.identify.executable = "identify"
 cytomine.ims.detection.gdal.executable = "gdalinfo"
+cytomine.ims.detection.ffprobe.executable = "ffprobe"
 cytomine.ims.metadata.exiftool.executable = "exiftool"
 
 cytomine.ims.pyramidalTiff.iip.url = "http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"

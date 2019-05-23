@@ -40,20 +40,5 @@ class GdalMetadataExtractor extends MetadataExtractor {
         return flattenProperties([:], "GeoTiff", "", JSON.parse(exec.out))
     }
 
-    def flattenProperties(def properties, String prefix, def key, def value) {
-        key = (!key.isEmpty()) ? ".$key" : key
-        if (value instanceof List) {
-            value.eachWithIndex { it, i ->
-                return flattenProperties(properties, "$prefix$key[$i]", "", it)
-            }
-        } else if (value instanceof Map) {
-            value.each {
-                return flattenProperties(properties, "$prefix$key", it.key, it.value)
-            }
-        } else {
-            properties << [(prefix + key): value]
-        }
 
-        return properties
-    }
 }

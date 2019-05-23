@@ -26,6 +26,7 @@ class CytomineFile extends File {
     String imageMagickOutput
     String openSlideVendor
     String gdalInfoOutput
+    String ffProbeOutput
 
     def c
     def z
@@ -75,7 +76,9 @@ class CytomineFile extends File {
     }
 
     def getImageMagickOutput() {
-        if (!imageMagickOutput)
+        // Hack to avoid video in image magick which crashes with ffmpeg (to investigate)
+        def videoExtensions = ["mp4", "mov", "avi", "flv", "m4a", "3gp", "3g2", "mj2"]
+        if (!imageMagickOutput && !videoExtensions.contains(extension()))
             imageMagickOutput = FormatUtils.getImageMagick(this.absolutePath)
         return imageMagickOutput
     }
@@ -90,6 +93,12 @@ class CytomineFile extends File {
         if (!gdalInfoOutput)
             gdalInfoOutput = FormatUtils.getGdalInfo(this.absolutePath)
         return gdalInfoOutput
+    }
+
+    def getFfProbeOutput() {
+        if (!ffProbeOutput)
+            ffProbeOutput = FormatUtils.getFfProbe(this.absolutePath)
+        return ffProbeOutput
     }
 
     def extension() {

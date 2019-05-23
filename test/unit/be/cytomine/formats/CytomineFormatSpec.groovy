@@ -21,6 +21,7 @@ import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.formats.heavyconvertable.DotSlideFormat
 import be.cytomine.formats.heavyconvertable.OMETIFFFormat
 import be.cytomine.formats.heavyconvertable.ZeissCZIFormat
+import be.cytomine.formats.heavyconvertable.video.MP4Format
 import be.cytomine.formats.lightconvertable.*
 import be.cytomine.formats.lightconvertable.geospatial.GeoJPEG2000Format
 import be.cytomine.formats.lightconvertable.geospatial.GeoTIFFFormat
@@ -956,6 +957,33 @@ class CytomineFormatSpec extends Specification {
 
         then:
         converted.size() == 1
+
+        cleanup:
+        converted.each { it.delete() }
+    }
+
+    void "test detection MP4 format"() {
+        given:
+        def uploadedFile = createCytomineFileFromFilename("mp4.mp4")
+        when:
+        def format = new FormatIdentifier(uploadedFile).identify()
+        then:
+        format instanceof MP4Format
+    }
+
+    void "test conversion MP4 format"() {
+        given:
+        def file = createCytomineFileFromFilename("mp4.mp4")
+        def format = new MP4Format()
+        format.setFile(file)
+        format.detect()
+
+        when:
+        def converted = format.convert()
+
+        then:
+        converted.size() > 0
+        new FormatIdentifier(converted.get(0)).identify() instanceof JPEGFormat
 
         cleanup:
         converted.each { it.delete() }

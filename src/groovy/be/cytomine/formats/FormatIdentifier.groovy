@@ -23,6 +23,7 @@ import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.formats.heavyconvertable.DotSlideFormat
 import be.cytomine.formats.heavyconvertable.OMETIFFFormat
 import be.cytomine.formats.heavyconvertable.ZeissCZIFormat
+import be.cytomine.formats.heavyconvertable.video.MP4Format
 import be.cytomine.formats.lightconvertable.*
 import be.cytomine.formats.lightconvertable.geospatial.GeoJPEG2000Format
 import be.cytomine.formats.lightconvertable.geospatial.GeoTIFFFormat
@@ -60,23 +61,23 @@ class FormatIdentifier {
     def initializeFormats() {
         this.formats = [
                 // Fast detections
-                new ZipFormat(),
-                new JPEGFormat(),
-                new PGMFormat(),
-                new PNGFormat(),
-                new BMPFormat(),
-                new DICOMFormat(),
-                new PhotoshopTIFFFormat(),
-                new HuronTIFFFormat(),
-                new CZITIFFFormat(),
-                new OMETIFFFormat(),
-                new GeoTIFFFormat(),
-                new GeoJPEG2000Format(),
+                new ZipFormat(), // detector: extension
+                new JPEGFormat(), // detector: image magick
+                new PGMFormat(), // detector: image magick
+                new PNGFormat(), // detector: image magick
+                new BMPFormat(), // detector: image magick
+                new DICOMFormat(), // detector: image magick
+                new PhotoshopTIFFFormat(), // detector: tiffinfo
+                new HuronTIFFFormat(), // detector: tiffinfo
+                new CZITIFFFormat(), // detector: tiffinfo
+                new OMETIFFFormat(), // detector: tiffinfo
+                new GeoTIFFFormat(), // detector: tiffinfo
 
                 // Slow detections that must come before others
-                new HamamatsuNDPIFormat(),
-                new VentanaTIFFFormat(),
-                new PhilipsTIFFFormat(),
+                new HamamatsuNDPIFormat(), // detector: openslide
+                new VentanaTIFFFormat(), // detector: openslide
+                new PhilipsTIFFFormat(), // detector: openslide
+                new GeoJPEG2000Format(), // detector: extension + gdal
 
                 // Fast detections that must go last (large detection criteria)
                 new JPEG2000Format(), // Accept any JPEG2000
@@ -85,15 +86,16 @@ class FormatIdentifier {
                 new BrokenTIFFFormat(), // Accept any TIFF
 
                 // Slow detections
-                new AperioSVSFormat(),
-                new HamamatsuVMSFormat(),
-                new LeicaSCNFormat(),
-                new MiraxMRXSFormat(),
-                new SakuraSVSlideFormat(),
-                new VentanaBIFFormat(),
-                new CellSensVSIFormat(),
-                new DotSlideFormat(),
-                new ZeissCZIFormat(),
+                new AperioSVSFormat(), // detector: openslide
+                new HamamatsuVMSFormat(), // detector: openslide
+                new LeicaSCNFormat(), // detector: openslide
+                new MiraxMRXSFormat(), // detector: openslide
+                new SakuraSVSlideFormat(), // detector: openslide
+                new VentanaBIFFormat(), // detector: openslide
+                new CellSensVSIFormat(), // detector: extension
+                new DotSlideFormat(), // detector: extension
+                new ZeissCZIFormat(), // detector: custom
+                new MP4Format(), // detector: ffprobe
         ]
     }
 

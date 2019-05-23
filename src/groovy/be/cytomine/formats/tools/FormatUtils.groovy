@@ -42,6 +42,12 @@ class FormatUtils {
         return ProcUtils.executeOnShell(command).out
     }
 
+    static def getFfProbe(def filePath) {
+        def executable = Holders.config.cytomine.ims.detection.ffprobe.executable
+        def command = """$executable -v quiet -print_format json -show_format -show_streams -select_streams V:0 $filePath """
+        return ProcUtils.executeOnShell(command).out
+    }
+
     static def getOpenSlideVendor(def file) {
         if (!file.canRead()) {
             return false

@@ -43,4 +43,5 @@ class MimeTypeUtils {
     static final public String MIMETYPE_JP2 = "image/jp2"
     static final public String MIMETYPE_PYRTIFF = "image/pyrtiff"
     static final public String MIMETYPE_DICOM = "application/dicom"
+    static final public String MIMETYPE_MP4 = "video/mp4"
 }
