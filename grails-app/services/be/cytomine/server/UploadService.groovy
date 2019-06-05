@@ -383,7 +383,7 @@ class UploadService {
     }
 
     private AbstractSlice createAbstractSlice(CytomineConnection userConn, UploadedFile uploadedFile, AbstractImage image, Format format, CytomineFile file) {
-        def slice = new AbstractSlice(image, uploadedFile, format.mimeType, file.c as Double, file.z as Double, file.t as Double).save(userConn)
+        def slice = new AbstractSlice(image, uploadedFile, format.mimeType, file.c as Integer, file.z as Integer, file.t as Integer).save(userConn)
         return slice
     }
 }
