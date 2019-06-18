@@ -24,7 +24,7 @@ package utils
  */
 class FilesUtils {
 
-    static String[] badChars = [" " , "(" , ")" , "+" , "*" , "/" , "@" , "'" , '"' , '$' , '€' , '£' , '°' , '`' , '[' , ']', '#', '?']
+    static String[] badChars = [" " , "(" , ")" , "+" , "*" , "/" , "@" , "'" , '"' , '$' , '€' , '£' , '°' , '`' , '[' , ']', '#', '?', '&']
     /**
      * Get the extension of a filename
      */
