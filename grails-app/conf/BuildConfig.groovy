@@ -62,7 +62,7 @@ grails.project.dependency.resolution = {
 
     }
     dependencies {
-        compile 'be.cytomine.client:cytomine-java-client:2.0.2-SNAPSHOT'
+        compile 'be.cytomine.client:cytomine-java-client:2.0.3-SNAPSHOT'
         compile 'com.vividsolutions:jts:1.13'
         compile 'net.imagej:ij:1.51h'
         compile 'com.github.jai-imageio:jai-imageio-core:1.4.0'
