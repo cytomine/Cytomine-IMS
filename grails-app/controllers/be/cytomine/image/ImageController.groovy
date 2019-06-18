@@ -318,8 +318,8 @@ class ImageController extends ImageUtilsController {
         int height = params.int('height')
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
-        int imageWidth = Integer.parseInt(params.imageWidth)
-        int imageHeight = Integer.parseInt(params.imageHeight)
+        int imageWidth = params.int('imageWidth')
+        int imageHeight = params.int('imageHeight')
 
         if (params.increaseArea) {
             double increaseArea = params.double("increaseArea")
