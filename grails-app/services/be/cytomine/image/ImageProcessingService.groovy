@@ -51,7 +51,7 @@ class ImageProcessingService {
         int height = image.getHeight()
         double x_ratio = width / params.int('width')
         double y_ratio = height / params.int('height')
-        int borderWidth = params.int('thickness', Math.round(2 + ((double) Math.max(width, height)) / 1000d))
+        int borderWidth = params.int('thickness', (int) Math.round(2 + ((double) Math.max(width, height)) / 1000d))
 
         Color color = (params.color) ? new Color(Integer.parseInt(params.color.replace("0x",""),16)) : Color.BLACK
 
