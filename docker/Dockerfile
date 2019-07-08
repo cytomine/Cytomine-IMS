@@ -17,6 +17,7 @@ FROM cytomineuliege/tomcat7:v1.2.0
 RUN apt-get -y update && apt-get install --no-install-recommends --no-install-suggests -y ant \
       automake \
       dnsutils \
+      ffmpeg \
       git \
       gobject-introspection \
       gtk-doc-tools \
@@ -25,6 +26,7 @@ RUN apt-get -y update && apt-get install --no-install-recommends --no-install-su
       libgdk-pixbuf2.0-dev \
 	  libgsf-1-dev \
 	  libglib2.0-dev \
+	  libimage-exiftool-perl \
       libjpeg8-dev \
       libopenexr-dev \
       libopenjpeg-dev \
