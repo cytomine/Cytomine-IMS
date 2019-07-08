@@ -154,7 +154,7 @@ class JPEG2000Format extends NativeFormat {
     @Override
     String tileURL(params) {
         if (params.tileGroup) {
-            def tg = params.int("tileGroup")
+            def tg = params.int("tileGroup") ?: Integer.parseInt(params.tileGroup.toLowerCase().replace("tilegroup", ""))
             def z = params.int("z")
             def x = params.int("x")
             def y = params.int("y")
