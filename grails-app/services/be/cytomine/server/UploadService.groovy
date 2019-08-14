@@ -109,7 +109,14 @@ class UploadService {
         } else {
             runAsync {
                 log.info "Async upload"
-                deployFile(file, uploadedFile, uploadInfo, result)
+                try {
+                    deployFile(file, uploadedFile, uploadInfo, result)
+                }
+                catch(Exception e) {
+                    log.error e
+                    log.error e.printStackTrace()
+                    throw e
+                }
             }
         }
 
