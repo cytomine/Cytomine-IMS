@@ -17,7 +17,7 @@ abstract class VideoFormat extends NotNativeFormat {
         ProcUtils.executeOnShell("chmod -R 777 ${target.absolutePath}")
 
         def name = this.file.name - ".${this.file.extension()}"
-        def options = "-hide_banner -an -sn -y"
+        def options = "-hide_banner -an -sn -y -start_number 0"
         def executable = Holders.config.cytomine.ims.conversion.ffmpeg.executable
         def command = """$executable -i ${this.file.absolutePath} $options ${target.absolutePath}/${name}_T%d.jpg """
         if (ProcUtils.executeOnShell(command).exit != 0 || !target.exists())
