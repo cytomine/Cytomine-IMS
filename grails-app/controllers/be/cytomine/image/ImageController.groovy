@@ -46,9 +46,8 @@ class ImageController extends ImageResponseController {
     ])
     def properties() {
         String fif = URLDecoder.decode(params.fif, "UTF-8")
-        String mimeType = params.mimeType
-        Format imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType)
-        render imageFormat.properties() as JSON
+        Format imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify()
+        render imageFormat.cytomineProperties() as JSON
     }
 
     @RestApiMethod(description = "Get the list of nested (or associated) images available of an image", extensions = ["json"])
