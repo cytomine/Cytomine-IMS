@@ -80,7 +80,7 @@ class BrokenTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
                 tileWidth = Integer.parseInt(file.getTiffInfoOutput().substring("Tile Width: ".length() + matcher.start(), matcher.end()))
             }
 
-            if (tileWidth > -1 && imWidth > tileWidth)
+            if (tileWidth > -1 && imWidth >= tileWidth)
                 return true
 
             pattern = Pattern.compile("Image Length: (\\d)+")
@@ -94,7 +94,7 @@ class BrokenTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
                 tileHeight = Integer.parseInt(file.getTiffInfoOutput().substring("Tile Length: ".length() + matcher.start(), matcher.end()))
             }
 
-            if (tileHeight > -1 && imHeight > tileHeight)
+            if (tileHeight > -1 && imHeight >= tileHeight)
                 return true
         }
 
