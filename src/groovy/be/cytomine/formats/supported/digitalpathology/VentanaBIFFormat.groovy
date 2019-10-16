@@ -1,8 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +16,25 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-import grails.util.Holders
-import utils.FilesUtils
-import utils.ServerUtils
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
 
-/**
- * Created by stevben on 19/06/14.
- */
-class VentanaBIFFormat extends OpenSlideSingleFileFormat {
+@Log4j
+class VentanaBIFFormat extends OpenSlideFormat implements OpenSlideDetector {
 
-    public VentanaBIFFormat(){
+    String vendor = "ventana"
+
+    // https://openslide.org/formats/ventana/
+    // Associated labels: macro, thumbnail
+    VentanaBIFFormat() {
+        super()
         extensions = ["bif"]
-        vendor = "ventana"
-        mimeType = "openslide/bif"
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "ventana.ScanRes"
-        magnificiationProperty = "ventana.Magnification"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
+        mimeType = MimeTypeUtils.MIMETYPE_BIF
     }
-
 
     @Override
     boolean detect() {
-        String extension = FilesUtils.getExtensionFromFilename(absoluteFilePath)
-        return super.detect() && extensions.contains(extension)
+        return OpenSlideDetector.super.detect() && extensions.contains(file.extension())
     }
 }

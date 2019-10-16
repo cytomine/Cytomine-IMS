@@ -1,10 +1,7 @@
 package be.cytomine.formats.archive
 
-import be.cytomine.formats.Format
-import be.cytomine.formats.IConvertableImageFormat
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +16,10 @@ import be.cytomine.formats.IConvertableImageFormat
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 10/05/14.
- */
-abstract class ArchiveFormat extends Format implements IConvertableImageFormat {
+import be.cytomine.formats.IConvertableImageFormat
+import be.cytomine.formats.NotNativeFormat
+import groovy.util.logging.Log4j
 
-    //abstract public String[] extract(String destPath)
+@Log4j
+abstract class ArchiveFormat extends NotNativeFormat implements IConvertableImageFormat {
 }

@@ -1,9 +1,7 @@
 package be.cytomine.formats.supported
 
-import be.cytomine.exception.FormatException
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,168 +16,162 @@ import be.cytomine.exception.FormatException
  * limitations under the License.
  */
 
+import be.cytomine.exception.FormatException
 import grails.util.Holders
-import utils.FilesUtils
-import utils.ServerUtils
-import utils.URLBuilder
+import groovy.util.logging.Log4j
+import utils.HttpUtils
+import utils.MimeTypeUtils
+import utils.PropertyUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 22/04/14.
- */
-class JPEG2000Format extends SupportedImageFormat {
+@Log4j
+class JPEG2000Format extends NativeFormat {
 
-    public JPEG2000Format() {
+    JPEG2000Format() {
         extensions = ["jp2"]
-        mimeType = "image/jp2"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerJpeg2000)
+        mimeType = MimeTypeUtils.MIMETYPE_JP2
+        iipUrl = Holders.config.cytomine.ims.jpeg2000.iip.url
+
+        // https://sno.phy.queensu.ca/~phil/exiftool/TagNames/Jpeg2000.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "Jpeg2000.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "Jpeg2000.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "Jpeg2000.DisplayXResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "Jpeg2000.DisplayYResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "Jpeg2000.DisplayXResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "Jpeg2000.DisplayYResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "Jpeg2000.BitsPerComponent"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Jpeg2000.NumberOfComponents"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "Jpeg2000.ColorSpace"
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 
-    public boolean detect() {
+    boolean detect() {
         //I check the extension for the moment because did not find an another way
-        boolean detect = FilesUtils.getExtensionFromFilename(absoluteFilePath).toLowerCase() == "jp2"
-        if(detect && !Holders.config.cytomine.Jpeg2000Enabled) throw new FormatException("JPEG2000 disabled");
+        boolean detect = extensions.any { it == this.file.extension() }
+        if (detect && !Holders.config.cytomine.ims.jpeg2000.enabled)
+            throw new FormatException("JPEG2000 disabled")
 
         return detect
     }
 
     @Override
-    BufferedImage associated(String label) {
-        return thumb(256);
+    BufferedImage thumb(def params) {
+        params.format = "jpg" //Only supported format by JPEG2000 IIP version
+        def query = [
+                FIF: this.file.absolutePath,
+                WID: params.int("maxSize"),
+                HEI: params.int("maxSize"),
+//                INV: params.boolean("inverse", false),
+//                CNT: params.double("contrast"),
+//                GAM: params.double("gamma"),
+                BIT: /*Math.ceil(((Integer) params.bits ?: 8) / 8) **/ 8,
+                QLT: (params.format == "jpg") ? 99 : null,
+                CVT: params.format
+        ]
+
+        return ImageIO.read(new URL(HttpUtils.makeUrl(iipUrl, query)))
     }
 
-    public BufferedImage thumb(int maxSize, def params=null) {
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", absoluteFilePath, true)
-        iipRequest.addParameter("HEI", "$maxSize")
-        iipRequest.addParameter("WID", "$maxSize")
-        iipRequest.addParameter("QLT", "99")
-        iipRequest.addParameter("CVT", "jpeg")
-        String thumbURL = iipRequest.toString()
-        println thumbURL
-        return ImageIO.read(new URL(thumbURL))
-    }
-
-    public def properties() {
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", absoluteFilePath, true)
-        iipRequest.addParameter("obj", "IIP,1.0")
-        iipRequest.addParameter("obj", "Max-size")
-        iipRequest.addParameter("obj", "Tile-size")
-        iipRequest.addParameter("obj", "Resolution-number")
-        iipRequest.addParameter("obj", "bits-per-channel")
-        iipRequest.addParameter("obj", "colorspace")
-        String propertiesURL = iipRequest.toString()
-        String propertiesTextResponse = new URL(propertiesURL).text
-        Integer width = null
-        Integer height = null
-        Integer depth = null
-        String colorspace = null
-        propertiesTextResponse.eachLine { line ->
-            if (line.isEmpty()) return;
-
-            def args = line.split(":")
-            if (args.length != 2) return
-
-            if (args[0].equals('Max-size')) {
-                def sizes = args[1].split(' ')
-                width = Integer.parseInt(sizes[0])
-                height = Integer.parseInt(sizes[1])
-            }
-
-            if (args[0].equals('Bits-per-channel'))
-                depth = Integer.parseInt(args[1])
-
-            if (args[0].contains('Colorspace')) {
-                def tokens = args[1].split(' ')
-                if (tokens[2] == "1") {
-                    colorspace = "grayscale"
-                } else if (tokens[2] == "3") {
-                    colorspace = "rgb"
-                } else {
-                    colorspace = "cielab"
-                }
-            }
-        }
-        assert(width)
-        assert(height)
-        def properties = [[key : "mimeType", value : mimeType]]
-        properties << [ key : "cytomine.width", value : width ]
-        properties << [ key : "cytomine.height", value : height ]
-        properties << [ key : "cytomine.resolution", value : null ]
-        properties << [ key : "cytomine.magnification", value : null ]
-        properties << [ key : "cytomine.bitdepth", value : depth]
-        properties << [ key : "cytomine.colorspace", value: colorspace]
-        return properties
-    }
-
-    String cropURL(def params, def charset = "UTF-8") {
+    @Override
+    String cropURL(def params) {
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         double width = params.double('width')
         double height = params.double('height')
         double imageWidth = params.double('imageWidth')
         double imageHeight = params.double('imageHeight')
-//        boolean inverse = params.boolean("inverse", false)
 
-        //All values x,y,w & h should be in ratios 0-1.0 [RGN=x,y,w,h]
-        def x = (topLeftX == 0) ? 0 : 1 / (imageWidth / topLeftX)
-        def y = ((imageHeight - topLeftY) == 0) ? 0 : 1 / (imageHeight / (imageHeight - topLeftY))
-        double w = (width == 0) ? 0d : 1d / (imageWidth / width)
-        double h = (height == 0) ? 0d : 1d / (imageHeight / height)
+        def x = topLeftX / imageWidth
+        def y = (imageHeight - topLeftY) / imageHeight
+        double w = width / imageWidth
+        double h = height / imageHeight
 
-        if (x > 1 || y > 1) return ""
+        if (x > 1 || y > 1)
+            return null
 
-        int maxWidthOrHeight = new Integer(Holders.config.cytomine.maxCropSize)
+        double computedWidth = width
+        double computedHeight = height
         if (params.maxSize) {
             int maxSize = params.int('maxSize', 256)
-            if (maxWidthOrHeight > maxSize) {
-                maxWidthOrHeight = maxSize
-            }
+            computedWidth = maxSize //Math.min(computedWidth, maxSize)
+            computedHeight = maxSize //Math.min(computedHeight, maxSize)
+        } else if (params.zoom) {
+            int zoom = params.int('zoom', 0)
+            computedWidth *= Math.pow(2, zoom)
+            computedHeight *= Math.pow(2, zoom)
         }
 
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL), charset)
-        iipRequest.addParameter("FIF", params.fif, true)
-        iipRequest.addParameter("RGN", "$x,$y,$w,$h")
+        if (params.boolean("safe", true)) {
+            int maxCropSize = new Integer(Holders.config.cytomine.ims.crop.maxSize)
+            computedWidth = Math.min(computedWidth, maxCropSize)
+            computedHeight = Math.min(computedHeight, maxCropSize)
+        }
 
-        if (width > maxWidthOrHeight || height > maxWidthOrHeight) {
-            int tmpWidth = width
-            int tmpHeight = height
-            while (tmpWidth > maxWidthOrHeight || tmpHeight > maxWidthOrHeight) {
+        /*
+        Ruven P. (author of IIP Image)
+        In fact, the region is calculated from the WID or HEI given, not from
+        the full image size. So you get the requested region on the virtual
+        750px resize. I guess you were expecting to get a region exactly of size
+        WID?
+
+        This is something that seems to have caused confusion with others also
+        and perhaps the way it works in counter intuitive, so I'm considering
+        changing the behaviour in the 1.0 release and have WID or HEI define the
+        final region size rather than the virtual image size. In the meantime,
+        the way to get around it is to calculate the appropriate WID that the
+        full image would be. So if your image is x pixels wide, give WID the
+        value of x/2 to get a 750px wide image.
+        */
+        if (width > computedWidth || height > computedHeight) {
+            double tmpWidth = width
+            double tmpHeight = height
+            while (tmpWidth > computedWidth || tmpHeight > computedHeight) {
                 tmpWidth = tmpWidth / 2
                 tmpHeight = tmpHeight / 2
             }
-            /*
-            Ruven P. (author of IIP Image)
-            In fact, the region is calculated from the WID or HEI given, not from
-            the full image size. So you get the requested region on the virtual
-            750px resize. I guess you were expecting to get a region exactly of size
-            WID?
 
-            This is something that seems to have caused confusion with others also
-            and perhaps the way it works in counter intuitive, so I'm considering
-            changing the behaviour in the 1.0 release and have WID or HEI define the
-            final region size rather than the virtual image size. In the meantime,
-            the way to get around it is to calculate the appropriate WID that the
-            full image would be. So if your image is x pixels wide, give WID the
-            value of x/2 to get a 750px wide image.
-            */
-            int hei = imageHeight / (height / tmpHeight)
-            iipRequest.addParameter("HEI", "$hei")
+            computedWidth = imageWidth / (width / tmpWidth)
+            computedHeight = imageHeight / (height / tmpHeight)
         }
-        if (params.contrast) iipRequest.addParameter("CNT", "$params.contrast")
-        if (params.gamma) iipRequest.addParameter("GAM", "$params.gamma")
-//        if (params.colormap) iipRequest.addParameter("CMP", params.colormap, true)
-//        if (inverse) iipRequest.addParameter("INV", "true")
-//        if (params.bits) {
-//            def bits= params.int("bits", 8)
-//            if (bits > 16) iipRequest.addParameter("BIT", 32)
-//            else if (bits > 8) iipRequest.addParameter("BIT", 16)
-//            else iipRequest.addParameter("BIT", 8)
-//        }
-        iipRequest.addParameter("CVT", params.format)
-        return iipRequest.toString()
+
+        def query = [
+                FIF: this.file.absolutePath,
+                WID: computedWidth,
+                HEI: computedHeight,
+                RGN: "$x,$y,$w,$h",
+//                CNT: params.double("contrast"),
+//                GAM: params.double("gamma"),
+//                INV: params.boolean("inverse", false),
+                BIT: /*Math.ceil((params.int("bits") ?: 8) / 8) **/ 8,
+                QLT: params.int("jpegQuality", 99),
+                CVT: params.format
+        ]
+        return HttpUtils.makeUrl(iipUrl, query)
+    }
+
+    @Override
+    String tileURL(params) {
+        if (params.tileGroup) {
+            def tg = params.int("tileGroup") ?: Integer.parseInt(params.tileGroup.toLowerCase().replace("tilegroup", ""))
+            def z = params.int("z")
+            def x = params.int("x")
+            def y = params.int("y")
+            def file = HttpUtils.encode(this.file.absolutePath)
+            return "${iipUrl}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
+        }
+
+        def z = params.int("z")
+        def tileIndex = params.int("tileIndex")
+        def query = [
+                FIF: this.file.absolutePath,
+//                CNT: params.double("contrast"),
+//                GAM: params.double("gamma"),
+//                INV: params.boolean("inverse", false),
+                JTL: "$z,$tileIndex"
+        ]
+
+        return HttpUtils.makeUrl(iipUrl, query)
     }
 }

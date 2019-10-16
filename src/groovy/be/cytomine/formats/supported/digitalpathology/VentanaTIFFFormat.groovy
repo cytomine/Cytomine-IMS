@@ -1,7 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,46 +16,34 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
+import be.cytomine.formats.tools.CustomExtensionFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.ImageUtils
+import utils.MimeTypeUtils
+
 import java.awt.image.BufferedImage
-import grails.util.Holders
-import utils.ServerUtils
 
-/**
- * Created by stevben on 28/04/14.
- */
-class VentanaTIFFFormat extends OpenSlideSingleFileTIFFFormat {
+@Log4j
+class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
 
-    public VentanaTIFFFormat() {
-        extensions = ["tif", "vtif"]
-        vendor = "ventana"
-        mimeType = "openslide/ventana"
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "openslide.objective-power"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerCyto)
-        fakeExtension = "vtif"
+    String vendor = "ventana"
+    String customExtension = "vtif"
+
+    // https://openslide.org/formats/ventana/
+    // Associated labels: macro, thumbnail
+    VentanaTIFFFormat() {
+        super()
+        extensions = ["tif", customExtension]
+        mimeType = MimeTypeUtils.MIMETYPE_VTIFF
+    }
+
+    boolean detect() {
+        return OpenSlideDetector.super.detect() && extensions.contains(file.extension())
     }
 
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro") {
-            return rotate90ToRight(bufferedImage)
-        } else {
-            return bufferedImage
-        }
-    }
-
-    @Override
-    String tileURL(def fif, def params, def with_zoomify) {
-        absoluteFilePath = fif
-        return super.tileURL(rename().absolutePath, params, with_zoomify)
-    }
-
-    @Override
-    String cropURL(def params, def charset) {
-        absoluteFilePath = params.fif
-        params.fif = rename().absolutePath
-        return super.cropURL(params, charset)
+        return (label == "macro") ? ImageUtils.rotate90ToRight(bufferedImage) : bufferedImage
     }
 }

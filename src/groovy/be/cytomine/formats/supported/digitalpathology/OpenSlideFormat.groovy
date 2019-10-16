@@ -1,7 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,117 +16,92 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.formats.supported.NativeFormat
+import grails.util.Holders
+import groovy.util.logging.Log4j
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
-import utils.ServerUtils
-import utils.URLBuilder
 
 import java.awt.image.BufferedImage
 
-abstract class OpenSlideFormat extends SupportedImageFormat {
+@Log4j
+abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetector*/ {
 
-    protected String vendor = null
+    String vendor = null
 
-    String widthProperty = "openslide.level[0].width"
-    String heightProperty = "openslide.level[0].height"
-
-    boolean detect() {
-        println "detect $absoluteFilePath"
-        File slideFile = new File(absoluteFilePath)
-        if (slideFile.canRead()) {
-            try {
-                println "can read $absoluteFilePath " +  OpenSlide.detectVendor(slideFile) + " $vendor"
-                return OpenSlide.detectVendor(slideFile) == vendor
-            } catch (java.io.IOException e) {
-                //Not a file that OpenSlide can recognize
-                return false
-            }
-        } else {
-            println "can not read $absoluteFilePath "
-            return false
-        }
+    protected OpenSlideFormat() {
+        iipUrl = Holders.config.cytomine.ims.openslide.iip.url
+        cytominePropertyKeys << ["cytomine.width": "openslide.level[0].width"]
+        cytominePropertyKeys << ["cytomine.height": "openslide.level[0].height"]
+        cytominePropertyKeys << ["cytomine.physicalSizeX": "openslide.mpp-x"]
+        cytominePropertyKeys << ["cytomine.physicalSizeY": "openslide.mpp-y"]
+        cytominePropertyKeys << ["cytomine.magnification": "openslide.objective-power"]
     }
 
-    public BufferedImage associated(String label) { //should be abstract
-        File slideFile = new File(absoluteFilePath)
-        BufferedImage associatedBufferedImage = null
-        if (slideFile.canRead()) {
-            OpenSlide openSlide = new OpenSlide(slideFile)
+    def associated() {
+        def labels = []
+        if (this.file.canRead()) {
+            labels = new OpenSlide(this.file).getAssociatedImages().collect { it.key }
+        }
+        return labels
+    }
+
+    BufferedImage associated(def label) {
+        BufferedImage associated = null
+        if (this.file.canRead()) {
+            OpenSlide openSlide = new OpenSlide(this.file)
             openSlide.getAssociatedImages().each {
                 if (it.key == label) {
                     AssociatedImage associatedImage = it.value
-                    associatedBufferedImage = associatedImage.toBufferedImage()
+                    associated = associatedImage.toBufferedImage()
                 }
             }
             openSlide.close()
         }
-        return associatedBufferedImage
+        return associated
     }
 
-    public def properties() {
-        File slideFile = new File(absoluteFilePath)
-        def properties = [[key : "mimeType", value : mimeType]]
+    @Override
+    BufferedImage thumb(def params) {
+        // TODO - currently does not support: inverse, contrast, gamma (is it required for a thumb ?)
+        BufferedImage thumbnail = null
+        if (this.file.canRead()) {
+            OpenSlide openSlide = new OpenSlide(this.file)
+            def w = openSlide.getLevel0Width()
+            def h = openSlide.getLevel0Height()
+            thumbnail = openSlide.createThumbnailImage(0, 0, w, h, (int) params.maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
+            openSlide.close()
+        }
+        return thumbnail
+    }
+
+    def properties() {
+        def properties = [:]
+        if (!this.file.canRead()) {
+            throw new FileNotFoundException("Unable to read ${this.file}")
+        }
+
         try {
-            if (slideFile.canRead()) {
-                OpenSlide openSlide = new OpenSlide(slideFile)
-                openSlide.getProperties().each {
-                    properties << [key: it.key, value: it.value]
-                }
-                openSlide.close()
-            } else {
-                println "cannot read ${slideFile.absolutePath}"
+            OpenSlide openSlide = new OpenSlide(this.file)
+            openSlide.getProperties().each {
+                properties << [(it.key): it.value]
             }
-        }catch(Exception e) {
-            println e
+            openSlide.close()
         }
-        if (widthProperty && properties.find { it.key == widthProperty}?.value != null)
-            properties << [ key : "cytomine.width", value : Integer.parseInt(properties.find { it.key == widthProperty}?.value) ]
-        if (heightProperty && properties.find { it.key == heightProperty}?.value != null)
-            properties << [ key : "cytomine.height", value : Integer.parseInt(properties.find { it.key == heightProperty}?.value) ]
-        if (resolutionProperty && properties.find { it.key == resolutionProperty}?.value != null)
-            properties << [ key : "cytomine.resolution", value : Double.parseDouble(properties.find { it.key == resolutionProperty}?.value?.replaceAll(",",".")) ]
-        if (magnificiationProperty && properties.find { it.key == magnificiationProperty}?.value != null)
-            properties << [ key : "cytomine.magnification", value : Double.parseDouble(properties.find { it.key == magnificiationProperty}?.value?.replaceAll(",",".")).intValue() ]
-
-        def iipRequest = new URLBuilder(ServerUtils.getServer(iipURL))
-        iipRequest.addParameter("FIF", absoluteFilePath, true)
-        iipRequest.addParameter("obj", "IIP,1.0")
-        iipRequest.addParameter("obj", "bits-per-channel")
-        iipRequest.addParameter("obj", "colorspace")
-        String propertiesURL = iipRequest.toString()
-        String propertiesTextResponse = new URL(propertiesURL).text
-        Integer depth = null
-        String colorspace = null
-        propertiesTextResponse.eachLine { line ->
-            if (line.isEmpty()) return
-
-            def args = line.split(":")
-            if (args.length != 2) return
-
-            if (args[0].equals('Bits-per-channel'))
-                depth = Integer.parseInt(args[1])
-
-            if (args[0].contains('Colorspace')) {
-                def tokens = args[1].split(' ')
-                if (tokens[2] == "1") {
-                    colorspace = "grayscale"
-                } else if (tokens[2] == "3") {
-                    colorspace = "rgb"
-                } else {
-                    colorspace = "cielab"
-                }
-            }
+        catch (Exception e) {
+            throw new Exception("Openslide is unable to read ${this.file}: ${e.getMessage()}")
         }
-        properties << [ key : "cytomine.bitdepth", value : depth]
-        properties << [ key : "cytomine.colorspace", value: colorspace]
+
         return properties
     }
 
-    public BufferedImage thumb(int maxSize, def params=null) {
-        OpenSlide openSlide = new OpenSlide(new File(absoluteFilePath))
-        BufferedImage thumbnail = openSlide.createThumbnailImage(0, 0, openSlide.getLevel0Width(), openSlide.getLevel0Height(), maxSize, BufferedImage.TYPE_INT_ARGB_PRE)
-        openSlide.close()
-        return thumbnail
+    def cytomineProperties() {
+        def properties = super.cytomineProperties()
+
+        properties << ["cytomine.bitPerSample": 8] //https://github.com/openslide/openslide/issues/41 (Hamamatsu)
+        properties << ["cytomine.samplePerPixel": 3] //https://github.com/openslide/openslide/issues/42 (Leica, Mirax, Hamamatsu)
+        properties << ["cytomine.colorspace": "rgb"]
+
+        return properties
     }
 }

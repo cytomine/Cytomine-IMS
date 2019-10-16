@@ -1,9 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.formats.ICommonFormat
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +16,32 @@ import be.cytomine.formats.ICommonFormat
  * limitations under the License.
  */
 
-import grails.util.Holders
-import utils.ServerUtils
+import be.cytomine.formats.tools.detectors.ImageMagickDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.PropertyUtils
 
-/**
- * Created by stevben on 22/04/14.
- */
-public class PGMFormat extends CommonFormat implements ICommonFormat {
+@Log4j
+class PGMFormat extends CommonFormat implements ImageMagickDetector {
 
-    public PGMFormat () {
+    String IMAGE_MAGICK_FORMAT_IDENTIFIER = "PGM"
+
+    // http://netpbm.sourceforge.net/doc/pgm.html
+    PGMFormat() {
         extensions = ["pgm"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "PGM"
-        mimeType = "image/pgm"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        mimeType = MimeTypeUtils.MIMETYPE_PPM
+
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "File.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "File.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "File.MaxVal"
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = { x ->
+            return (PropertyUtils.parseInt(x) > 256) ? 16 : 8
+        }
+    }
+
+    def cytomineProperties() {
+        def properties = super.cytomineProperties()
+        properties[PropertyUtils.CYTO_SPP] = 1 //PGM = Portable Gray Map
+        return properties
     }
 }

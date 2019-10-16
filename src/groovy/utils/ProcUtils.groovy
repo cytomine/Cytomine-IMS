@@ -1,7 +1,7 @@
 package utils
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,29 @@ package utils
  * limitations under the License.
  */
 
-/**
- * User: lrollus
- * Date: 19/09/13
- * GIGA-ULg
- *
- */
+import groovy.util.logging.Log4j
+
+@Log4j
 class ProcUtils {
+    //https://stackoverflow.com/a/25337451
+    static def executeOnShell(def command) {
+        log.info("Will execute $command")
 
-    static def executeOnShell(String command) {
-        return executeOnShell(command, new File("/"))
-    }
+        def proc = command.execute()
+        def outputStream = new StringBuilder()
+        def errorStream = new StringBuilder()
+        proc.waitForProcessOutput(outputStream, errorStream)
 
-    static def executeOnShell(String command, File workingDir) {
-        println command
-        def process = new ProcessBuilder(addShellPrefix(command))
-                .directory(workingDir)
-                .redirectErrorStream(true)
-                .start()
+        log.info("Command exited with ${proc.exitValue()}")
+        log.debug(outputStream)
+        if (proc.exitValue() != 0)
+            log.warn(errorStream)
 
-        process.inputStream.eachLine { println it }
-        process.waitFor();
-        int value = process.exitValue()
-        println "Command return value = $value"
-        return value
-    }
-
-    static def addShellPrefix(String command) {
-        String[] commandArray = new String[3]
-        commandArray[0] = "sh"
-        commandArray[1] = "-c"
-        commandArray[2] = command
-        return commandArray
+        return [
+                exit: proc.exitValue(),
+                out : outputStream.toString(),
+                err : errorStream.toString(),
+                all : outputStream.toString() + errorStream.toString()
+        ]
     }
 }

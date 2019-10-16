@@ -1,7 +1,7 @@
-package be.cytomine.formats.supported.digitalpathology
+package be.cytomine.formats.tools.detectors
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 22/04/14.
- */
-abstract class OpenSlideSingleFileFormat extends OpenSlideFormat {
+import groovy.util.logging.Log4j
 
+@Log4j
+trait OpenSlideDetector extends Detector {
 
+    boolean detect() {
+        return this.file.getOpenSlideVendor() == this.vendor
+    }
 }

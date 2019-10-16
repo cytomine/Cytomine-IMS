@@ -1,5 +1,7 @@
 package be.cytomine.image
 
+import be.cytomine.formats.tools.CytomineFile
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -17,7 +19,7 @@ package be.cytomine.image
  */
 
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.supported.SupportedImageFormat
+import be.cytomine.formats.supported.NativeFormat
 
 class TileService {
 
@@ -29,12 +31,12 @@ class TileService {
         if (fif.endsWith("/"))
             fif = fif.substring(0, fif.length()-1)
         String mimeType = params.mimeType
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(fif, mimeType)
-        return imageFormat.tileURL(fif, params, true)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
+        return imageFormat.tileURL(params)
     }
 
     def getTileUrlIIP(def params) {
-        SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(params.fif, params.mimeType)
-        return imageFormat.tileURL(params.zoomify, params, false)
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
+        return imageFormat.tileURL(params)
     }
 }

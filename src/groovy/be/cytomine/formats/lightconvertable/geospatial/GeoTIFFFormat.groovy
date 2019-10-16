@@ -1,83 +1,61 @@
 package be.cytomine.formats.lightconvertable.geospatial
 
-import be.cytomine.formats.lightconvertable.specialtiff.ConvertableTIFFFormat
-import grails.converters.JSON
-import grails.util.Holders
-import utils.ProcUtils
+/*
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
+ *
+ * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.gnu.org/licenses/lgpl-2.1.txt
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-class GeoTIFFFormat extends ConvertableTIFFFormat {
+import be.cytomine.formats.lightconvertable.VIPSConvertable
+import be.cytomine.formats.tools.detectors.TiffInfoDetector
+import be.cytomine.formats.tools.metadata.GdalMetadataExtractor
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.PropertyUtils
+
+@Log4j
+class GeoTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
+
+    // http://web.archive.org/web/20160731005338/http://www.remotesensing.org:80/geotiff/spec/geotiff6.html#6.1
+    def possibleKeywords = [
+            "Tag 33550:",
+            "Tag 34264:",
+            "Tag 33922:",
+            "Tag 34735:",
+            "Tag 34736:",
+            "Tag 34737:"
+    ]
 
     GeoTIFFFormat() {
         extensions = ["tif", "tiff"]
+        mimeType = MimeTypeUtils.MIMETYPE_TIFF
+
+        // https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "EXIF.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "EXIF.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "EXIF.XResolution"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "EXIF.YResolution"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "EXIF.ResolutionUnit"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "EXIF.ResolutionUnit"
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "EXIF.BitsPerSample"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "EXIF.SamplesPerPixel"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "EXIF.PhotometricInterpretation"
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 
-    boolean detect() {
-        String tiffinfo = getTiffInfo()
-        // http://web.archive.org/web/20160731005338/http://www.remotesensing.org:80/geotiff/spec/geotiff6.html#6.3.1.1
-        return tiffinfo.contains("Tag 33550:") || tiffinfo.contains("Tag 34264:") ||
-                tiffinfo.contains("Tag 33922:") || tiffinfo.contains("Tag 34735:") ||
-                tiffinfo.contains("tag 34736:") || tiffinfo.contains("Tag 34737:")
-
-    }
-
-    @Override
-    String[] convert() {
-        // 1. Get bit depth
-        def gdalinfoExecutable = Holders.config.cytomine.gdalinfo
-        def gdalinfo = new ProcessBuilder("$gdalinfoExecutable", absoluteFilePath).redirectErrorStream(true).start().text
-        def nbits
-        if (gdalinfo.contains("Int16"))
-            nbits = 16
-        else if (gdalinfo.contains("Int32") || gdalinfo.contains("Float32"))
-            nbits = 32
-        else
-            nbits = 8
-
-        // 2. Convert to 8/16/32 GeoTIFF
-        String source = absoluteFilePath
-        String intermediate = [new File(absoluteFilePath).getParent(), "_tmp.tif"].join(File.separator)
-        def gdaltranslateExecutable = Holders.config.cytomine.gdaltranslate
-        def convertCommand = """$gdaltranslateExecutable -co "NBITS=$nbits" -co "JPEG_QUALITY=100" -co "WEBP_LEVEL=100" "$source" "$intermediate" """
-
-        if (ProcUtils.executeOnShell(convertCommand) == 0) {
-            // 3. Convert to pyramidal tiff
-            String target = [new File(absoluteFilePath).getParent(), UUID.randomUUID().toString() + ".tif"].join(File.separator)
-            def result = convertToPyramidalTIFF(intermediate, target)
-
-            File fileToDelete = new File(intermediate)
-            if(fileToDelete.exists()) {
-                fileToDelete.delete()
-            }
-
-            return result
-        }
-    }
-
-    @Override
     def properties() {
         def properties = super.properties()
-
-        def gdalinfoExecutable = Holders.config.cytomine.gdalinfo
-        def gdalinfo = JSON.parse(new ProcessBuilder("$gdalinfoExecutable", "-json", absoluteFilePath).redirectErrorStream(true).start().text)
-
-        flattenProperties(properties, "geotiff", "", gdalinfo)
-    }
-
-    def flattenProperties(properties, prefix, key, value) {
-        key = (!key.isEmpty()) ? ".$key" : key
-        if (value instanceof List) {
-            value.eachWithIndex { it, i ->
-                return flattenProperties(properties, "$prefix$key[$i]", "", it)
-            }
-        }
-        else if (value instanceof Map) {
-            value.each {
-                return flattenProperties(properties, "$prefix$key", it.key, it.value)
-            }
-        }
-        else {
-           properties << [key: "$prefix$key", value: value]
-        }
+        properties += new GdalMetadataExtractor(this.file).properties()
 
         return properties
     }

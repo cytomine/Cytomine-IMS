@@ -19,4 +19,17 @@ class ImageUtils {
         graphics2D.dispose();
         return scaledImage;
     }
+
+    public static BufferedImage rotate90ToRight(BufferedImage inputImage) {
+        int width = inputImage.getWidth()
+        int height = inputImage.getHeight()
+        BufferedImage returnImage = new BufferedImage(height, width, inputImage.getType())
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                returnImage.setRGB(height - y - 1, x, inputImage.getRGB(x, y))
+            }
+        }
+        return returnImage
+    }
 }

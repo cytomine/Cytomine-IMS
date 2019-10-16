@@ -1,7 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,20 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 22/04/14.
- */
-class SakuraSVSlideFormat extends OpenSlideMultipleFileFormat {
+import be.cytomine.formats.tools.MultipleFilesFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
 
-    public SakuraSVSlideFormat () {
+@Log4j
+class SakuraSVSlideFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
+
+    String vendor = "sakura"
+
+    SakuraSVSlideFormat() {
+        super()
         extensions = ["svslide"]
-        vendor = "sakura"
-        mimeType = "sakura/svslide"
+        mimeType = MimeTypeUtils.MIMETYPE_SAKURA
     }
 
     File getRootFile(File folder) {

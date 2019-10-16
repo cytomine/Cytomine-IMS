@@ -1,9 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
-import org.openslide.OpenSlide
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,45 +15,42 @@ import org.openslide.OpenSlide
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Created by stevben on 22/04/14.
- */
-class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
 
-    public HamamatsuVMSFormat() {
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+
+@Log4j
+class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
+
+    String vendor = "hamamatsu"
+
+    // https://openslide.org/formats/hamamatsu/
+    // Associated labels: macro
+    HamamatsuVMSFormat() {
+        super()
         extensions = ["vms"]
-        vendor = "hamamatsu"
-        mimeType = "openslide/vms"
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = null //to compute
-        magnificiationProperty = "hamamatsu.SourceLens"
+        mimeType = MimeTypeUtils.MIMETYPE_VMS
     }
 
     @Override
     boolean detect() {
-        File uploadedFile = new File(absoluteFilePath);
-        File vms = uploadedFile.listFiles(). find { it.name.endsWith('.vms')}
+        File vms = getRootFile(this.file)
 
-        if(vms){
-            absoluteFilePath = vms.absolutePath
-            return super.detect()
+        if (vms) {
+            this.file = new CytomineFile(vms.absolutePath)
         }
-        return false
-    }
 
-    def properties() {
-        def properties = super.properties()
-
-        float physicalWidthProperty = Float.parseFloat(properties.find { it.key == "hamamatsu.PhysicalWidth"}.value.replaceAll(",","."))
-        float widthProperty = Float.parseFloat(properties.find { it.key == "cytomine.width"}.value.replaceAll(",", "."))
-        if (physicalWidthProperty && widthProperty) {
-            def resolution = physicalWidthProperty / widthProperty / 1000
-            properties << [ key : "cytomine.resolution", value : resolution]
-        }
+        return OpenSlideDetector.super.detect()
     }
 
     File getRootFile(File folder) {
-        return folder.listFiles(). find { it.name.endsWith('.vms')}
+        return folder.listFiles().find { file ->
+            extensions.any { ext ->
+                file.name.endsWith(".$ext")
+            }
+        }
     }
 }

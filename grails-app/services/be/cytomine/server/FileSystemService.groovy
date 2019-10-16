@@ -1,5 +1,7 @@
 package be.cytomine.server
 
+import be.cytomine.exception.DeploymentException
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -21,9 +23,25 @@ import utils.ProcUtils
 class FileSystemService {
 
     def makeLocalDirectory(String path) {
-        int value = ProcUtils.executeOnShell("mkdir -p " + path)
+        def value = ProcUtils.executeOnShell("mkdir -p " + path).exit
         ProcUtils.executeOnShell("chmod -R 777 " + path)
         return value
+    }
+
+    def move(String source, String destination) {
+        return move(new File(source), new File(destination))
+    }
+
+    def move(File source, File destination) {
+        if (!new File(destination.parent).exists()) {
+            makeLocalDirectory(destination.parent)
+        }
+
+        def exit = ProcUtils.executeOnShell("""mv $source.absolutePath $destination.absolutePath """).exit
+        if (exit != 0 || !destination.exists()) {
+            log.error destination.absolutePath + " created = " + destination.exists()
+            throw new FileNotFoundException(destination.absolutePath + " is not created !")
+        }
     }
 
 

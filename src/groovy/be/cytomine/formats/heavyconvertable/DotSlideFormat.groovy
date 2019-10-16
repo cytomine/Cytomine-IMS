@@ -1,9 +1,7 @@
 package be.cytomine.formats.heavyconvertable
 
-import be.cytomine.formats.Format
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +15,64 @@ import be.cytomine.formats.Format
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Created by hoyoux on 28.04.15.
- */
-class DotSlideFormat extends Format implements IHeavyConvertableImageFormat {
+
+import be.cytomine.exception.ConversionException
+import be.cytomine.formats.NotNativeFormat
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.ProcUtils
+
+@Log4j
+class DotSlideFormat extends NotNativeFormat implements IHeavyConvertableImageFormat, MultipleFilesFormat {
 
     DotSlideFormat() {
-        mimeType = "olympus/.slide"
+        mimeType = MimeTypeUtils.MIMETYPE_DOTSLIDE
     }
 
     @Override
     boolean detect() {
-        String mainFile = "ExtendedProps.xml"
-        File folder = new File(absoluteFilePath)
+        File target = getRootFile(file)
+        if (!target) return false
 
-        File target = folder.listFiles().find {it.name.equals(mainFile)}
-        if(!target) return false
-
-        String command = "cat  "+target.absolutePath
-        def proc = command.execute()
-        proc.waitFor()
-        String stdout = proc.in.text
-        return stdout.contains("dotSlide")
+        String command = "cat ${target.absolutePath}"
+        return ProcUtils.executeOnShell(command).out.contains("dotSlide")
     }
 
     @Override
-    String[] convert() {
+    def convert() {
         println "Conversion DotSlide : begin"
-        String name = new File(absoluteFilePath).name
+        String name = this.file.name
 
         // call the dotslide lib
-        dotslide.Main.main("-fi", "$absoluteFilePath/fi", "-fp", "$absoluteFilePath/fp" , "-p", "$absoluteFilePath/");
-        dotslidebuild.Main.main("-f", "$absoluteFilePath/fp.txt", "-io", "$absoluteFilePath/$name")
+        dotslide.Main.main("-fi", "${this.file.absolutePath}/fi",
+                "-fp", "${this.file.absolutePath}/fp",
+                "-p", "${this.file.absolutePath}/")
+
+        dotslidebuild.Main.main("-f", "${this.file.absolutePath}/fp.txt",
+                "-io", "${this.file.absolutePath}/$name")
 
         println "Conversion DotSlide : end"
-        return [absoluteFilePath+"/"+name+".tif"]
+
+        File target = new CytomineFile(this.file.parent, name + ".tif")
+        if (!target)
+            throw new ConversionException()
+
+        return [target]
+    }
+
+    @Override
+    def properties() {
+        def properties = super.properties()
+        // TODO: extract properties from XML files
+        return properties
+    }
+
+    @Override
+    File getRootFile(File folder) {
+        return folder.listFiles().find { file ->
+            file.isFile() && file.name == "ExtendedProps.xml"
+        }
     }
 }

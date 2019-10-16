@@ -1,7 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,12 @@ package be.cytomine.formats.lightconvertable
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import grails.util.Holders
-import be.cytomine.formats.ICommonFormat
 
+import groovy.util.logging.Log4j
 
-/**
- * Created by stevben on 22/04/14.
- */
-public abstract class CommonFormat extends VIPSConvertable  implements ICommonFormat {
+@Log4j
+abstract class CommonFormat extends VIPSConvertable  /*implements ImageMagickDetector*/ {
 
-    public IMAGE_MAGICK_FORMAT_IDENTIFIER = null
+    String IMAGE_MAGICK_FORMAT_IDENTIFIER = null
 
-    public boolean detect() {
-        def identifyExecutable = Holders.config.cytomine.identify
-        def command = ["$identifyExecutable", absoluteFilePath]
-        def proc = command.execute()
-        proc.waitFor()
-        String stdout = proc.in.text
-        return detect(stdout)
-    }
-    public boolean detect(String imageMagikInfo) {
-        if(imageMagikInfo.split(" ").size() < 2) return false;
-        return imageMagikInfo.split(" ")[1].contains(IMAGE_MAGICK_FORMAT_IDENTIFIER)
-    }
 }

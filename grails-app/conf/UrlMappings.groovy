@@ -26,46 +26,56 @@ class UrlMappings {
 		"/"(view:"/index")
 		"500"(view:'/error')
 
+        /* Storage controller */
+
         "/upload"(controller:"storage"){
             action = [POST:"upload"]
         }
 
-        "/uploadCrop" (controller:"image") {
-            action = [POST:"uploadCrop"]
+//        "/uploadCrop" (controller:"image") {
+//            action = [POST:"uploadCrop"]
+//        }
+
+        "/storage/size.$format"(controller:"storage"){
+            action = [GET:"size"]
         }
 
-        "/download"(controller:"storage"){
-            action = [GET : "download"]
-        }
+
+        /* Image controller */
 
         "/image/associated.$format" (controller:"image") {
             action = [GET:"associated"]
         }
 
         "/image/nested.$format" (controller:"image") {
-            action = [GET:"nested"]
+            action = [GET:"nested", POST:"nested"]
         }
 
-        "/image/properties" (controller:"image") {
+        "/image/properties.$format" (controller:"image") {
             action = [GET:"properties"]
         }
 
-        "/image/thumb.$format" (controller:"image") {
-            action = [GET:"thumb"]
+        "/image/download" (controller: "image") {
+            action = [GET: "download"]
         }
 
-        "/image/crop.$format" (controller:"image") {
+
+        /* Slice controller */
+
+        "/slice/thumb.$format" (controller:"slice") {
+            action = [GET:"thumb", POST:"thumb"]
+        }
+
+        "/slice/crop.$format" (controller:"slice") {
             action = [GET:"crop", POST:"crop"]
         }
 
-        "/image/mask.$format" (controller:"image") {
-            action = [GET:"mask",POST:"mask"]
+        "/slice/tile" (controller: "slice") {
+            action = [GET:"tile"]
         }
 
-        "/storage/size.$format"(controller:"storage"){
-            action = [GET:"size"]
-        }
 
+        /* Other */
         "/multidim/pixel.$format" (controller:"multiDim"){
             action = [GET:"getSpectraPixel"]
         }
@@ -76,14 +86,6 @@ class UrlMappings {
 
         "/multidim/convert.$format" (controller: "multiDim"){
             action = [POST: "convertListToHdf5"]
-        }
-
-        "/image/tile" (controller: "image") {
-            action = [GET:"tileZoomify"] //tileIIP
-        }
-
-        "/image/tileIIP" (controller: "image") {
-            action = [GET:"tileIIP"] //tileIIP
         }
 	}
 }

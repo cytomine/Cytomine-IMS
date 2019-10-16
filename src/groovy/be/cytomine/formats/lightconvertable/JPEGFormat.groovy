@@ -1,10 +1,7 @@
 package be.cytomine.formats.lightconvertable
 
-import be.cytomine.exception.MiddlewareException
-import be.cytomine.formats.ICommonFormat
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +16,29 @@ import be.cytomine.formats.ICommonFormat
  * limitations under the License.
  */
 
-import grails.util.Holders
-import org.openslide.OpenSlide
-import utils.ServerUtils
+import be.cytomine.formats.tools.detectors.ImageMagickDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.PropertyUtils
 
-/**
- * Created by stevben on 22/04/14.
- */
-public class JPEGFormat extends CommonFormat implements ICommonFormat {
+@Log4j
+class JPEGFormat extends CommonFormat implements ImageMagickDetector {
 
-    public JPEGFormat () {
+    String IMAGE_MAGICK_FORMAT_IDENTIFIER = "JPEG"
+
+    JPEGFormat() {
         extensions = ["jpg", "jpeg"]
-        IMAGE_MAGICK_FORMAT_IDENTIFIER = "JPEG"
-        mimeType = "image/jpeg"
-        iipURL = ServerUtils.getServers(Holders.config.cytomine.iipImageServerBase)
+        mimeType = MimeTypeUtils.MIMETYPE_JPEG
+
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "File.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "File.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "JFIF.XResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "JFIF.YResolution" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "JFIF.ResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "JFIF.ResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "File.BitsPerSample"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "File.ColorComponents"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "File.ColorSpace" //to check
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 }
