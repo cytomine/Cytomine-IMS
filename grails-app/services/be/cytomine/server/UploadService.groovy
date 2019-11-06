@@ -381,7 +381,17 @@ class UploadService {
         if (props.size() > 0) {
             log.info "Add ${props.size()} format-dependent properties to ${image}"
             log.debug properties
-            def promises = props.collect { p -> Promises.task { p.save(userConn) } }
+            def promises = props.collect {
+                p -> Promises.task {
+                    try {
+                        p.save(userConn)
+                    }
+                    catch (CytomineException e) {
+                        if (p.getStr("key").contains("cytomine."))
+                            throw e
+                    }
+                }
+            }
             Promises.waitAll(promises)
         }
         image.extractUsefulProperties()
