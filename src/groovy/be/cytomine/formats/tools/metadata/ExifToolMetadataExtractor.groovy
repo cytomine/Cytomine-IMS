@@ -61,13 +61,13 @@ class ExifToolMetadataExtractor extends MetadataExtractor {
 
         def exifProperties = new JsonSlurper().parseText(exec.out[1..-1]).findAll {
             it.value != null &&
-                    !(it.value as String).isEmpty() &&
+                    !(it.value as String).replaceAll("\\\\u[0-9A-Fa-f]{4}", "").isEmpty() &&
                     !(it.value as String).contains("use -b option to extract") &&
                     !(it.key in propertiesToRemove)
         }
 
         return exifProperties.collectEntries {
-            [(renameKey(it.key)): it.value]
+            [(renameKey(it.key)): (it.value as String).replaceAll("\\\\u[0-9A-Fa-f]{4}", "")]
         }
     }
 
