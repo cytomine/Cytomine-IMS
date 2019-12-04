@@ -19,6 +19,7 @@ package be.cytomine.formats.supported
 import be.cytomine.exception.FormatException
 import grails.util.Holders
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.HttpUtils
 import utils.MimeTypeUtils
 import utils.PropertyUtils
@@ -57,7 +58,7 @@ class JPEG2000Format extends NativeFormat {
     }
 
     @Override
-    BufferedImage thumb(def params) {
+    BufferedImage thumb(TypeConvertingMap params) {
         params.format = "jpg" //Only supported format by JPEG2000 IIP version
         def query = [
                 FIF: this.file.absolutePath,
@@ -75,7 +76,7 @@ class JPEG2000Format extends NativeFormat {
     }
 
     @Override
-    String cropURL(def params) {
+    String cropURL(TypeConvertingMap params) {
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         double width = params.double('width')
@@ -152,7 +153,7 @@ class JPEG2000Format extends NativeFormat {
     }
 
     @Override
-    String tileURL(params) {
+    String tileURL(TypeConvertingMap params) {
         if (params.tileGroup) {
             def tg = params.int("tileGroup") ?: Integer.parseInt(params.tileGroup.toLowerCase().replace("tilegroup", ""))
             def z = params.int("z")

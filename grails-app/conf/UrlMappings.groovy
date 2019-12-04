@@ -59,7 +59,6 @@ class UrlMappings {
             action = [GET: "download"]
         }
 
-
         /* Slice controller */
 
         "/slice/thumb.$format" (controller:"slice") {
@@ -74,18 +73,10 @@ class UrlMappings {
             action = [GET:"tile"]
         }
 
+        /* Profile controller */
 
-        /* Other */
-        "/multidim/pixel.$format" (controller:"multiDim"){
-            action = [GET:"getSpectraPixel"]
-        }
-
-        "/multidim/rectangle.$format" (controller:"multiDim"){
-            action = [GET:"getSpectraRectangle"]
-        }
-
-        "/multidim/convert.$format" (controller: "multiDim"){
-            action = [POST: "convertListToHdf5"]
+        "/profile.$format" (controller: "profile") {
+            action = [POST: "computeProfile", GET: "extractProfile"]
         }
 	}
 }
