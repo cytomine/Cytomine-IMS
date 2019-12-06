@@ -138,6 +138,9 @@ class VisionController extends ImageResponseController {
             BufferedImage bufferedImage
             bufferedImage = getImageFromURL(imageURL)
 
+            if (!bufferedImage)
+                bufferedImage = getImageFromURL(imageURL.replaceAll("https://", "http://"))
+
             /* Process the BufferedImage */
 
             if (params.method == "r_rgb") {
