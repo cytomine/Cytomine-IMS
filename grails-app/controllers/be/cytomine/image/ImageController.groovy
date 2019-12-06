@@ -1,5 +1,7 @@
 package be.cytomine.image
 
+import be.cytomine.exception.FormatException
+
 /*
  * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
@@ -104,7 +106,16 @@ class ImageController extends ImageResponseController {
             return
         }
 
-        Format format = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType)
+        Format format
+        try {
+            format = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType)
+        }
+        catch (FormatException ignored) {
+            log.info ignored
+            responseFile(file)
+            return
+        }
+
         if (format instanceof MultipleFilesFormat) {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
