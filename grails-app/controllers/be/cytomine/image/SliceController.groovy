@@ -141,15 +141,6 @@ class SliceController extends ImageResponseController {
             topLeftY = Math.max((double) topLeftY, height)
         }
 
-        def safe = params.boolean('safe', true)
-        if (safe) {
-            //if safe mode, skip annotation too large
-            if (width > grailsApplication.config.cytomine.ims.crop.maxSize ||
-                    height > grailsApplication.config.cytomine.ims.crop.maxSize) {
-                throw new MiddlewareException("Requested area is too big.")
-            }
-        }
-
         // Read image from IIP
         params.width = width
         params.height = height
