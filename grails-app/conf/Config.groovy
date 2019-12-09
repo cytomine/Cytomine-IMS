@@ -179,6 +179,8 @@ cytomine.ims.hdf5.maxBlockSize = 15 // Mbytes
 cytomine.ims.tile.size = 256
 cytomine.ims.hdf5.queueLimit = 100
 
+cytomine.ims.upload.nThreadsPool = 10
+
 // Rest API Doc plugin
 grails.plugins.restapidoc.docVersion = "0.1"
 grails.plugins.restapidoc.basePath = cytomine.ims.server.url

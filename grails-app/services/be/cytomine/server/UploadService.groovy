@@ -29,9 +29,7 @@ import be.cytomine.formats.tools.CustomExtensionFormat
 import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.formats.tools.MultipleFilesFormat
 import grails.async.Promises
-import groovyx.gpars.dataflow.Dataflow
-import groovyx.gpars.group.DefaultPGroup
-import groovyx.gpars.scheduler.DefaultPool
+import groovyx.gpars.GParsExecutorsPool
 import utils.FilesUtils
 
 import java.nio.file.Paths
@@ -229,25 +227,34 @@ class UploadService {
         // If the current file is a regular folder, recursively deploy its children but do not create an UF
         if (identifier.isClassicFolder()) {
             def errors = []
-            def promises = currentFile.listFiles().collect { file ->
-                Promises.task {
+            def nThreads = grailsApplication.config.cytomine.ims.upload.nThreadsPool
+            GParsExecutorsPool.withPool(nThreads) {
+                def outputs = currentFile.listFiles().collectParallel { file ->
                     if (file.name == ".DS_STORE" || file.name.startsWith("__MACOSX"))
-                        return {}
+                        return [:]
 
+                    def output = [:]
                     try {
                         def child = new CytomineFile(file.absolutePath)
                         def deployed = deploy(child, null, uploadedFile ?: uploadedFileParent, abstractImage, uploadInfo)
-                        result.images.addAll(deployed.images)
-                        result.slices.addAll(deployed.slices)
+                        output.images = deployed.images
+                        output.slices = deployed.slices
                     } catch (DeploymentException e) {
-                        errors << e.getMessage()
+                        output.error =  e.getMessage()
                     }
-                }
-            }
-            Promises.waitAll(promises)
 
-            if (!errors.isEmpty()) {
-                throw new DeploymentException(errors.join("\n"), result)
+                    return output
+                }
+
+                outputs.each { out ->
+                    if (out.images) result.images.addAll(out.images)
+                    if (out.slices) result.slices.addAll(out.slices)
+                    if (out.error) errors << out.error
+                }
+
+                if (!errors.isEmpty()) {
+                    throw new DeploymentException(errors.join("\n"), result)
+                }
             }
 
             return result
@@ -336,28 +343,28 @@ class UploadService {
                 errors << e.getMessage()
             }
 
-            def poolGroup = new DefaultPGroup(new DefaultPool(true, 10))
-            try {
-                Dataflow.usingGroup(poolGroup, {
-                    def promises = files.collect { file ->
-                        Promises.task {
-                            try {
-                                def deployed = deploy(file as CytomineFile, null, uploadedFile, abstractImage, uploadInfo)
-                                result.images.addAll(deployed.images)
-                                result.slices.addAll(deployed.slices)
-                            }
-                            catch (DeploymentException e) {
-                                errors << e.getMessage()
-                            }
-                        }
-                    } //TODO: pipeline
-                    Promises.waitAll(promises)
-                })
-            }
-            finally {
-                poolGroup.shutdown()
-            }
+            def nThreads = grailsApplication.config.cytomine.ims.upload.nThreadsPool
+            GParsExecutorsPool.withPool(nThreads) {
+                def outputs = files.collectParallel { file ->
+                    def output = [:]
+                    try {
+                        def deployed = deploy(file as CytomineFile, null, uploadedFile, abstractImage, uploadInfo)
+                        output.images = deployed.images
+                        output.slices = deployed.slices
+                    }
+                    catch (DeploymentException e) {
 
+                    }
+
+                    return output
+                }
+
+                outputs.each { out ->
+                    if (out.images) result.images.addAll(out.images)
+                    if (out.slices) result.slices.addAll(out.slices)
+                    if (out.error) errors << out.error
+                }
+            }
 
             if (!errors.isEmpty()) {
                 uploadedFile.changeStatus(UploadedFile.Status.ERROR_CONVERSION)
