@@ -18,6 +18,8 @@ package be.cytomine.formats
 
 import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.formats.tools.metadata.ExifToolMetadataExtractor
+import be.cytomine.units.Length
+import be.cytomine.units.MetricPrefix
 import groovy.util.logging.Log4j
 import utils.PropertyUtils
 
@@ -106,6 +108,28 @@ abstract class Format {
             def value = properties.get(tagKey)
             if (value) {
                 properties << [(cytoKey): cytominePropertyParsers.get(cytoKey)(value)]
+            }
+        }
+
+        properties = properties.findAll { it.value != null && !(it as String).isEmpty() }
+
+        // Convert resolutions to micron per pixel
+        def resolutions = [
+                [valueKey: PropertyUtils.CYTO_X_RES, unitKey: PropertyUtils.CYTO_X_RES_UNIT],
+                [valueKey: PropertyUtils.CYTO_Y_RES, unitKey: PropertyUtils.CYTO_Y_RES_UNIT],
+                [valueKey: PropertyUtils.CYTO_Z_RES, unitKey: PropertyUtils.CYTO_Z_RES_UNIT],
+        ]
+        resolutions.each { resolution ->
+            def value = (Double) properties[resolution.valueKey]
+            def unit = (String) properties[resolution.unitKey]
+            try {
+                properties[resolution.valueKey] = new Length(value, unit).to(MetricPrefix.MICRO)
+                properties[resolution.unitKey] = (properties[resolution.valueKey]) ? MetricPrefix.MICRO.symbol + "m" : null
+            }
+            catch (IllegalArgumentException ignored) {
+                // Values in properties are inconsistent.
+                properties.remove(resolution.valueKey)
+                properties.remove(resolution.unitKey)
             }
         }
 

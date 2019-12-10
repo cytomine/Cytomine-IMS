@@ -72,13 +72,9 @@ class DICOMFormat extends CommonFormat implements ImageMagickDetector {
                 properties << [(key): value]
         }
 
-        return properties
-    }
+        properties << [(PropertyUtils.CYTO_X_RES_UNIT): "mm"]
+        properties << [(PropertyUtils.CYTO_Y_RES_UNIT): "mm"]
 
-    def cytomineProperties() {
-        def properties = super.cytomineProperties()
-        properties[PropertyUtils.CYTO_X_RES_UNIT] = "mm"
-        properties[PropertyUtils.CYTO_Y_RES_UNIT] = "mm"
         return properties
     }
 

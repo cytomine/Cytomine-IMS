@@ -34,8 +34,8 @@ class JPEGFormat extends CommonFormat implements ImageMagickDetector {
         cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "File.ImageHeight"
         cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "JFIF.XResolution" // to check
         cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "JFIF.YResolution" // to check
-        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "JFIF.ResolutionUnit" // to check
-        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "JFIF.ResolutionUnit" // to check
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "JFIF.ResolutionUnit" // to check: "None"/per "inches"/ per "cm"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "JFIF.ResolutionUnit" // to check: "None"/per "inches"/ per "cm"
         cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "File.BitsPerSample"
         cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "File.ColorComponents"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "File.ColorSpace" //to check
