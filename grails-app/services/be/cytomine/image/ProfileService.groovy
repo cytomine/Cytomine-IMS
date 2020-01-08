@@ -121,7 +121,7 @@ class ProfileService {
             def imageHeight = image.getInt("height")
             def nZooms = image.getStr("zoom")
 
-            def bpc = image.getInt("bitDepth") ?: 8
+            def bpc = image.getInt("bitPerSample") ?: 8
             def dimension = null
             if (image.getInt("channels") > 1) dimension = 'channel'
             if (image.getInt("depth") > 1) dimension = 'zStack'
