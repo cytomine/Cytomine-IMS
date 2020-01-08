@@ -22,6 +22,7 @@ import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.formats.tools.CytomineFile
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
+import grails.converters.JSON
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
@@ -35,6 +36,41 @@ import java.awt.image.BufferedImage
 class SliceController extends ImageResponseController {
 
     def imageProcessingService
+    def histogramService
+
+    @RestApiMethod(description = "Get the histogram and statistics about a slice", extensions = ["json"])
+    @RestApiParams(params = [
+            @RestApiParam(name = "fif", type = "String", paramType = RestApiParamType.QUERY, description = "The absolute path of the image"),
+            @RestApiParam(name = "mimeType", type = "String", paramType = RestApiParamType.QUERY, description = "The mime type of the image"),
+            @RestApiParam(name = "bitPerSample", type = "int", paramType = RestApiParamType.QUERY, description = "The number of bits per sample of the image"),
+            @RestApiParam(name = "samplePerPixel", type = "int", paramType = RestApiParamType.QUERY, description = "The number of sample per pixel of the image"),
+    ])
+    def histogram() {
+        String fif = URLDecoder.decode(params.fif, "UTF-8")
+        String mimeType = params.mimeType
+        NativeFormat imageFormat = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType, true)
+
+        int bps = params.int("bitPerSample", 8)
+        int spp = params.int("samplePerPixel", 1)
+
+        def data = []
+        for (int i = 0; i < spp; i++) {
+            def histogram = imageFormat.histogram(i)
+
+            if (histogram.isEmpty())
+                break;
+
+            data << [
+                    band: i,
+                    min: histogramService.min(histogram),
+                    max: histogramService.max(histogram),
+                    histogram: histogram,
+                    histogram256: histogramService.binnedHistogram(histogram, 256, bps)
+            ]
+        }
+
+        render data as JSON
+    }
 
     @RestApiMethod(description="Get the thumb of a slice", extensions = ["jpg","png", "tiff"])
     @RestApiParams(params=[
