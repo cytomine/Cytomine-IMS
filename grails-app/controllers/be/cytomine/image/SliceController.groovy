@@ -61,7 +61,7 @@ class SliceController extends ImageResponseController {
                 break;
 
             data << [
-                    band: i,
+                    sample: i,
                     min: histogramService.min(histogram),
                     max: histogramService.max(histogram),
                     histogram: histogram,

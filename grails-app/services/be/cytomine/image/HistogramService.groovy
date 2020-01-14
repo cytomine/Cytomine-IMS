@@ -23,7 +23,12 @@ class HistogramService {
     }
 
     def max(def histogram) {
-        return histogram.size() - 1
+        def idx = histogram.size() - 1
+        while (histogram[idx] == 0) {
+            idx--
+        }
+
+        return idx
     }
 
     def binnedHistogram(def histogram, int nBins, int bps) {
