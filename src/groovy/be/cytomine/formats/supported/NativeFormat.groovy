@@ -160,6 +160,7 @@ abstract class NativeFormat extends Format {
                 CNT: params.double("contrast"),
                 GAM: params.double("gamma"),
                 INV: params.boolean("inverse") ?: null,
+                MINMAX: params.minmax?.split("\\|"),
                 JTL: "$z,$tileIndex"
         ]
 
