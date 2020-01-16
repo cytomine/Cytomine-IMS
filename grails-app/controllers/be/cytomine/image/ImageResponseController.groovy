@@ -75,6 +75,7 @@ class ImageResponseController {
     }
 
     def responseBufferedImageJPG(BufferedImage bufferedImage) {
+        bufferedImage = ensureOpaque(bufferedImage)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         log.info "Response Buffered Image jpg"
         if (request.method == 'HEAD') {
@@ -127,5 +128,17 @@ class ImageResponseController {
         response.outputStream << is
         response.outputStream.flush()
         is.close()
+    }
+
+    private static BufferedImage ensureOpaque(BufferedImage bi) {
+        if (bi.getTransparency() == BufferedImage.OPAQUE)
+            return bi;
+        int w = bi.getWidth();
+        int h = bi.getHeight();
+        int[] pixels = new int[w * h];
+        bi.getRGB(0, 0, w, h, pixels, 0, w);
+        BufferedImage bi2 = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        bi2.setRGB(0, 0, w, h, pixels, 0, w);
+        return bi2;
     }
 }
