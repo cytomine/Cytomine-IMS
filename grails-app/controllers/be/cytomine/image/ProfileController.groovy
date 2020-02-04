@@ -120,8 +120,8 @@ class ProfileController {
             int xright = (int) coordinates.max { it.x }.x
             int ytop = (int) coordinates.max { it.y }.y
             int ybottom = (int) coordinates.min { it.y }.y
-            int width = xright - xleft
-            int height = ybottom - ytop
+            int width = xright - xleft + 1
+            int height = ytop - ybottom + 1
 
             response = profileService.bboxProfile(fif, xleft, ytop, width, height, bounds)
         }
