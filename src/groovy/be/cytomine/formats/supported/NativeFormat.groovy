@@ -139,24 +139,26 @@ abstract class NativeFormat extends Format {
      *      - inverse (optional, used in JTL protocol, default: false)
      * @return
      */
-    String tileURL(TypeConvertingMap params) {
+    String tileURL(TypeConvertingMap params, File actualFile = null) {
+        def file = actualFile ?: this.file
+
         if (params.tileGroup) {
             def tg = params.int("tileGroup") ?: Integer.parseInt(params.tileGroup.toLowerCase().replace("tilegroup", ""))
             def z = params.int("z")
             def x = params.int("x")
             def y = params.int("y")
-            def file = HttpUtils.encode(this.file.absolutePath)
+            def filename = HttpUtils.encode(file.absolutePath)
 
-            if (file.endsWith("/"))
-                file = file.substring(0, file.length()-1)
+            if (filename.endsWith("/"))
+                filename = filename.substring(0, filename.length()-1)
 
-            return "${iipUrl}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
+            return "${iipUrl}?zoomify=${filename}/TileGroup${tg}/${z}-${x}-${y}.jpg"
         }
 
         def z = params.int("z")
         def tileIndex = params.int("tileIndex")
         def query = [
-                FIF: this.file.absolutePath,
+                FIF: file.absolutePath,
                 CNT: params.double("contrast"),
                 GAM: params.double("gamma"),
                 INV: params.boolean("inverse") ?: null,

@@ -19,6 +19,7 @@ package be.cytomine.formats.supported.digitalpathology
 import be.cytomine.formats.tools.CustomExtensionFormat
 import be.cytomine.formats.tools.detectors.OpenSlideDetector
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.MimeTypeUtils
 
 @Log4j
@@ -33,6 +34,10 @@ class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
         super()
         extensions = ["tiff", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_PTIFF
+    }
+
+    String tileURL(TypeConvertingMap params, File actualFile = null) {
+        return super.tileURL(params, this.rename())
     }
 
     /*
