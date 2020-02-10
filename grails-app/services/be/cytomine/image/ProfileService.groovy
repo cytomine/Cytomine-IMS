@@ -22,6 +22,7 @@ import be.cytomine.client.models.*
 import be.cytomine.exception.DeploymentException
 import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.FormatIdentifier
+import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.tools.CytomineFile
 import ch.systemsx.cisd.base.mdarray.MDByteArray
 import ch.systemsx.cisd.base.mdarray.MDIntArray
@@ -34,6 +35,7 @@ import groovyx.gpars.scheduler.DefaultPool
 import hdf.hdf5lib.exceptions.HDF5SymbolTableException
 import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.FilesUtils
+import utils.ImageUtils
 import utils.MimeTypeUtils
 
 import javax.imageio.ImageIO
@@ -46,6 +48,7 @@ import static ch.systemsx.cisd.hdf5.MatrixUtils.dims
 class ProfileService {
     def fileSystemService
     def cytomineService
+    def imageProcessingService
     def grailsApplication
 
     final String HDF5_DATASET = "data"
@@ -222,14 +225,15 @@ class ProfileService {
                     int end = Math.max(start, Math.min((n + 1) * nTilesPerThread, nTiles) - 1)
                     (start..end).each { i ->
                         def tile = tiles[i]
+                        def params = [:]
 
                         def url
                         if (bpc == 8 && useJpegTiles) {
-                            def params = [z: nZooms, tileIndex: tile.tileIndex]
+                            params = [z: nZooms, tileIndex: tile.tileIndex]
                             url  = tile.format.tileURL(new TypeConvertingMap(params))
                         }
                         else {
-                            def params = [
+                            params = [
                                     topLeftX: tile.X * tileSize, topLeftY: imageHeight - (tile.Y * tileSize),
                                     width: tileSize, height: tileSize,
                                     imageWidth: imageWidth, imageHeight: imageHeight,
@@ -241,6 +245,17 @@ class ProfileService {
                         try {
                             println url
                             BufferedImage bi = getImageFromURL(url)
+                            if(tile.format instanceof JPEG2000Format) {
+                                /*
+                                 * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for old IIP server request. Same for h.
+                                 * We may loose precision and the size could be w+-1 * h+-1.
+                                 * If the difference is < as threshold, we rescale
+                                 */
+                                def dimensions = ImageUtils.getComputedDimensions(new TypeConvertingMap(params))
+                                if ((int) dimensions.computedWidth != bi.width || (int) dimensions.computedHeight != bi.height) {
+                                    bi = imageProcessingService.scaleImage(bi, (int) dimensions.computedWidth, (int) dimensions.computedHeight)
+                                }
+                            }
                             log.info "Read tile ${tile.tileIndex} (slice ${tile.slice})"
 
                             int widthPadding = tileSize - bi.getWidth()

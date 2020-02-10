@@ -18,6 +18,7 @@ package be.cytomine.image
 
 import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.FormatIdentifier
+import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.formats.tools.CytomineFile
 import com.vividsolutions.jts.geom.Geometry
@@ -28,6 +29,7 @@ import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
+import utils.ImageUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -193,6 +195,18 @@ class SliceController extends ImageResponseController {
 
         if (!bufferedImage) {
             throw new MiddlewareException("Not a valid image: ${cropURL}")
+        }
+
+        if(imageFormat instanceof JPEG2000Format) {
+            /*
+             * When we ask a crop with size = w*h, we translate w to 1d/(imageWidth / width) for old IIP server request. Same for h.
+             * We may loose precision and the size could be w+-1 * h+-1.
+             * If the difference is < as threshold, we rescale
+             */
+            def dimensions = ImageUtils.getComputedDimensions(params)
+            if ((int) dimensions.computedWidth != bufferedImage.width || (int) dimensions.computedHeight != bufferedImage.height) {
+                bufferedImage = imageProcessingService.scaleImage(bufferedImage, (int) dimensions.computedWidth, (int) dimensions.computedHeight)
+            }
         }
 
         def type = params.type ?: 'crop'

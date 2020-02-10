@@ -1,5 +1,8 @@
 package utils
 
+import grails.util.Holders
+import org.codehaus.groovy.grails.web.util.TypeConvertingMap
+
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
@@ -31,5 +34,30 @@ class ImageUtils {
             }
         }
         return returnImage
+    }
+
+    public static def getComputedDimensions(TypeConvertingMap params) {
+        double width = params.double('width')
+        double height = params.double('height')
+
+        double computedWidth = width
+        double computedHeight = height
+        if (params.maxSize) {
+            int maxSize = params.int('maxSize', 256)
+            computedWidth = maxSize //Math.min(computedWidth, maxSize)
+            computedHeight = maxSize //Math.min(computedHeight, maxSize)
+        } else if (params.zoom) {
+            int zoom = params.int('zoom', 0)
+            computedWidth *= Math.pow(2, zoom)
+            computedHeight *= Math.pow(2, zoom)
+        }
+
+        if (params.boolean("safe", true)) {
+            int maxCropSize = new Integer(Holders.config.cytomine.ims.crop.maxSize)
+            computedWidth = Math.min(computedWidth, maxCropSize)
+            computedHeight = Math.min(computedHeight, maxCropSize)
+        }
+
+        return [computedWidth: computedWidth, computedHeight: computedHeight]
     }
 }

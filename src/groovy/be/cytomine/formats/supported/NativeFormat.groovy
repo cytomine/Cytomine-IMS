@@ -21,6 +21,7 @@ import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.HttpUtils
+import utils.ImageUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -93,28 +94,12 @@ abstract class NativeFormat extends Format {
         if (x > 1 || y > 1)
             return null
 
-        double computedWidth = width
-        double computedHeight = height
-        if (params.maxSize) {
-            int maxSize = params.int('maxSize', 256)
-            computedWidth = maxSize //Math.min(computedWidth, maxSize)
-            computedHeight = maxSize //Math.min(computedHeight, maxSize)
-        } else if (params.zoom) {
-            int zoom = params.int('zoom', 0)
-            computedWidth *= Math.pow(2, zoom)
-            computedHeight *= Math.pow(2, zoom)
-        }
-
-        if (params.boolean("safe", true)) {
-            int maxCropSize = new Integer(Holders.config.cytomine.ims.crop.maxSize)
-            computedWidth = Math.min(computedWidth, maxCropSize)
-            computedHeight = Math.min(computedHeight, maxCropSize)
-        }
+        def computedDimensions = ImageUtils.getComputedDimensions(params)
 
         def query = [
                 FIF: this.file.absolutePath,
-                WID: computedWidth,
-                HEI: computedHeight,
+                WID: computedDimensions.computedWidth,
+                HEI: computedDimensions.computedHeight,
                 RGN: "$x,$y,$w,$h",
                 CNT: params.double("contrast"),
                 GAM: params.double("gamma"),
