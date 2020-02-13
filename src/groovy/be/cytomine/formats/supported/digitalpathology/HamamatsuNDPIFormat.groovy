@@ -25,6 +25,7 @@ import utils.MimeTypeUtils
 class HamamatsuNDPIFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "hamamatsu"
+    String customExtension = "ndpi"
 
     // https://openslide.org/formats/hamamatsu/
     // Associated labels: macro

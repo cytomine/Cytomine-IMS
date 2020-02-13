@@ -41,9 +41,11 @@ abstract class NativeFormat extends Format {
      *      - bits (optional, default: 8)
      * @return
      */
-    BufferedImage thumb(TypeConvertingMap params) {
+    BufferedImage thumb(TypeConvertingMap params, File actualFile = null) {
+        def file = actualFile ?: this.file
+
         def query = [
-                FIF: this.file.absolutePath,
+                FIF: file.absolutePath,
                 WID: params.int("maxSize"),
                 HEI: params.int("maxSize"),
                 INV: params.boolean("inverse") ?: null,
@@ -78,7 +80,9 @@ abstract class NativeFormat extends Format {
      *      - jpegQuality (optional, default: 99)
      * @return
      */
-    String cropURL(TypeConvertingMap params) {
+    String cropURL(TypeConvertingMap params, File actualFile = null) {
+        def file = actualFile ?: this.file
+
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         double width = params.double('width')
@@ -97,7 +101,7 @@ abstract class NativeFormat extends Format {
         def computedDimensions = ImageUtils.getComputedDimensions(params)
 
         def query = [
-                FIF: this.file.absolutePath,
+                FIF: file.absolutePath,
                 WID: computedDimensions.computedWidth,
                 HEI: computedDimensions.computedHeight,
                 RGN: "$x,$y,$w,$h",

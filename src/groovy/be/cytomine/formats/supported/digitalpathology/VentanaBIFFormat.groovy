@@ -24,6 +24,7 @@ import utils.MimeTypeUtils
 class VentanaBIFFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "ventana"
+    String customExtension = "bif"
 
     // https://openslide.org/formats/ventana/
     // Associated labels: macro, thumbnail

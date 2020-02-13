@@ -23,7 +23,7 @@ import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.MimeTypeUtils
 
 @Log4j
-class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
+class PhilipsTIFFFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "philips"
     String customExtension = "ptiff"
@@ -34,10 +34,6 @@ class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
         super()
         extensions = ["tiff", customExtension]
         mimeType = MimeTypeUtils.MIMETYPE_PTIFF
-    }
-
-    String tileURL(TypeConvertingMap params, File actualFile = null) {
-        return super.tileURL(params, this.rename())
     }
 
     /*

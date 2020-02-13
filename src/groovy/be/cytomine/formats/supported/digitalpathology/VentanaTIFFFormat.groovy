@@ -39,10 +39,6 @@ class VentanaTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat
         mimeType = MimeTypeUtils.MIMETYPE_VTIFF
     }
 
-    String tileURL(TypeConvertingMap params, File actualFile = null) {
-        return super.tileURL(params, this.rename())
-    }
-
     boolean detect() {
         return OpenSlideDetector.super.detect() && extensions.contains(file.extension())
     }

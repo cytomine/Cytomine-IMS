@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage
 class LeicaSCNFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "leica"
+    String customExtension = "scn"
 
     // https://openslide.org/formats/leica/
     // Associated labels: macro

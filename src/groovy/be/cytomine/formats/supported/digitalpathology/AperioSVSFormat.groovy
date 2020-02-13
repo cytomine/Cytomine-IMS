@@ -1,5 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
+import be.cytomine.formats.tools.CustomExtensionFormat
+
 /*
  * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
@@ -21,9 +23,10 @@ import groovy.util.logging.Log4j
 import utils.MimeTypeUtils
 
 @Log4j
-class AperioSVSFormat extends OpenSlideFormat implements OpenSlideDetector {
+class AperioSVSFormat extends OpenSlideFormat implements OpenSlideDetector, CustomExtensionFormat {
 
     String vendor = "aperio"
+    String customExtension = "svs"
 
     // https://openslide.org/formats/aperio/
     // Associated labels: thumbnail, label, macro

@@ -17,6 +17,7 @@ package be.cytomine.formats.supported.digitalpathology
  */
 
 import be.cytomine.formats.supported.NativeFormat
+import be.cytomine.formats.tools.CustomExtensionFormat
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.util.TypeConvertingMap
@@ -27,9 +28,10 @@ import utils.PropertyUtils
 import java.awt.image.BufferedImage
 
 @Log4j
-abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetector*/ {
+abstract class OpenSlideFormat extends NativeFormat implements CustomExtensionFormat {
 
     String vendor = null
+    String customExtension = null
 
     protected OpenSlideFormat() {
         iipUrl = Holders.config.cytomine.ims.openslide.iip.url
@@ -38,6 +40,14 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
         cytominePropertyKeys << ["cytomine.physicalSizeX": "openslide.mpp-x"]
         cytominePropertyKeys << ["cytomine.physicalSizeY": "openslide.mpp-y"]
         cytominePropertyKeys << ["cytomine.magnification": "openslide.objective-power"]
+    }
+
+    String tileURL(TypeConvertingMap params, File actualFile = null) {
+        return super.tileURL(params, this.rename())
+    }
+
+    String cropURL(TypeConvertingMap params, File actualFile = null) {
+        return super.cropURL(params, this.rename())
     }
 
     def associated() {
