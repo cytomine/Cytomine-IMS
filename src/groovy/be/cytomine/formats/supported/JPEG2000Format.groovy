@@ -113,16 +113,16 @@ class JPEG2000Format extends NativeFormat {
         value of x/2 to get a 750px wide image.
         */
         def hei = null
-        if (width > computedWidth || height > computedHeight) {
-            double tmpWidth = width
-            double tmpHeight = height
-            while (tmpWidth > computedWidth || tmpHeight > computedHeight) {
-                tmpWidth = tmpWidth / 2
-                tmpHeight = tmpHeight / 2
-            }
-
-            hei = imageHeight / (height / tmpHeight)
-        }
+//        if (width > computedWidth || height > computedHeight) {
+//            double tmpWidth = width
+//            double tmpHeight = height
+//            while (tmpWidth > computedWidth || tmpHeight > computedHeight) {
+//                tmpWidth = tmpWidth / 2
+//                tmpHeight = tmpHeight / 2
+//            }
+//
+//            hei = imageHeight / (height / tmpHeight)
+//        }
 
         def query = [
                 FIF: this.file.absolutePath,
