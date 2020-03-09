@@ -22,6 +22,7 @@ import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.formats.heavyconvertable.DotSlideFormat
 import be.cytomine.formats.heavyconvertable.OMETIFFFormat
+import be.cytomine.formats.heavyconvertable.PerkinElmerVectraQPTIFF
 import be.cytomine.formats.heavyconvertable.ZeissCZIFormat
 import be.cytomine.formats.heavyconvertable.video.MP4Format
 import be.cytomine.formats.lightconvertable.*
@@ -72,6 +73,7 @@ class FormatIdentifier {
                 new CZITIFFFormat(), // detector: tiffinfo
                 new OMETIFFFormat(), // detector: tiffinfo
                 new GeoTIFFFormat(), // detector: tiffinfo
+                new PerkinElmerVectraQPTIFF(),
 
                 // Slow detections that must come before others
                 new HamamatsuNDPIFormat(), // detector: openslide
