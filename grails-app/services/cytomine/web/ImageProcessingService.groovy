@@ -1,7 +1,7 @@
 package cytomine.web
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2020. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.geom.GeometryCollection
 import com.vividsolutions.jts.geom.LineString
 import com.vividsolutions.jts.geom.MultiPolygon
+import com.vividsolutions.jts.geom.Point
+import com.vividsolutions.jts.geom.Polygon
 import ij.ImagePlus
 import ij.process.ImageConverter
 import ij.process.ImageProcessor
@@ -143,22 +145,6 @@ class ImageProcessingService {
 
     }
 
-    public BufferedImage drawPolygons(def params, BufferedImage bufferedImage, Collection<Geometry> geometryCollection, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio) {
-        for (geometry in geometryCollection) {
-
-            if (geometry instanceof MultiPolygon) {
-                MultiPolygon multiPolygon = (MultiPolygon) geometry;
-                for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-                    bufferedImage = drawPolygon(params, bufferedImage, multiPolygon.getGeometryN(i),c,borderWidth, x, y, x_ratio, y_ratio)
-                }
-            } else {
-                bufferedImage = drawPolygon(params, bufferedImage, geometry,c,borderWidth, x, y, x_ratio, y_ratio)
-            }
-        }
-
-        return bufferedImage
-    }
-
     public BufferedImage scaleImage(BufferedImage img, Integer width, Integer height) {
         int imgWidth = img.getWidth();
         int imgHeight = img.getHeight();
@@ -180,57 +166,6 @@ class ImageProcessingService {
             g.dispose();
         }
         return newImage;
-    }
-
-    public BufferedImage drawPolygon(def params, BufferedImage window,  Geometry geometry, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio) {
-        if (geometry instanceof com.vividsolutions.jts.geom.Polygon) {
-            com.vividsolutions.jts.geom.Polygon polygon = (com.vividsolutions.jts.geom.Polygon) geometry;
-            window = drawPolygon(params, window, polygon,c,borderWidth, x, y, x_ratio, y_ratio)
-        }
-
-        return window
-    }
-
-    public BufferedImage drawPolygon(def params, BufferedImage window, com.vividsolutions.jts.geom.Polygon polygon, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio) {
-        window = drawPolygon(params, window, polygon.getExteriorRing(), c,borderWidth, x, y, x_ratio, y_ratio)
-        for (def j = 0; j < polygon.getNumInteriorRing(); j++) {
-            window = drawPolygon(params, window, polygon.getInteriorRingN(j), c,borderWidth, x, y, x_ratio, y_ratio)
-        }
-
-        return window
-    }
-
-    public BufferedImage drawPolygon(def params, BufferedImage window, LineString lineString, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
-
-        int imageHeight = params.int('imageHeight')
-        Path2D.Float regionOfInterest = new Path2D.Float();
-        boolean isFirst = true;
-
-        Coordinate[] coordinates = lineString.getCoordinates();
-
-        for(Coordinate coordinate:coordinates) {
-            double xLocal = Math.min((coordinate.x - x) * x_ratio, window.getWidth());
-            xLocal = Math.max(0, xLocal)
-            double yLocal = Math.min((imageHeight - coordinate.y - y) * y_ratio, window.getHeight());
-            yLocal = Math.max(0, yLocal)
-
-            if(Math.round(xLocal) == window.width) xLocal--;
-            if(Math.round(yLocal) == window.height) yLocal--;
-
-            if(isFirst) {
-                regionOfInterest.moveTo(xLocal,yLocal);
-                isFirst = false;
-            }
-            regionOfInterest.lineTo(xLocal,yLocal);
-        }
-        Graphics2D g2d = (Graphics2D)window.getGraphics();
-        //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setStroke(new BasicStroke(borderWidth));
-        g2d.setColor(c);
-
-        g2d.draw(regionOfInterest);
-        window
-
     }
 
     public BufferedImage drawScaleBar(BufferedImage image, Double resolution, Double ratioWith, Double magnification) {
@@ -327,57 +262,114 @@ class ImageProcessingService {
         }
 
     }
-    public BufferedImage createCropWithDraw(BufferedImage bufferedImage, Geometry geometry, def params) {
-        //AbstractImage image, BufferedImage window, LineString lineString, Color color, int x, int y, double x_ratio, double y_ratio
-//        int topLeftX = params.int('topLeftX')-200
-//        int topLeftY = params.int('topLeftY')+200
-//        int width = params.int('width')+400
-//        int height = params.int('height')+400
 
+    BufferedImage createCropWithDraw(BufferedImage image, Geometry geometry, def params) {
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
-        int width = params.int('width')
-        int height = params.int('height')
+        int width = image.getWidth()
+        int height = image.getHeight()
+        double x_ratio = width / params.int('width')
+        double y_ratio = height / params.int('height')
+        int borderWidth = params.int('thickness', (int) Math.round(2 + ((double) Math.max(width, height)) / 1000d))
 
-        if(params.double('increaseArea')) {
-            width = params.int('width')*params.double("increaseArea")
-            height = params.int('height')*params.double("increaseArea")
-            topLeftX = params.int('topLeftX')-((width-params.int('width'))/2)
-            topLeftY = params.int('topLeftY')+((height-params.int('height'))/2)
-        }
+        Color color = (params.color) ? new Color(Integer.parseInt(params.color.replace("0x",""),16)) : Color.BLACK
 
-        int imageHeight = params.int('imageHeight')
-        double x_ratio = bufferedImage.getWidth() / width
-        double y_ratio = bufferedImage.getHeight() / height
-        //int borderWidth = ((double)annotation.getArea()/(100000000d/50d))
-        int borderWidth;
-
-        Integer thickness = params.int('thickness')
-        if(!thickness) {
-            borderWidth = ((double)width/(15000/250d))*x_ratio
-        } else {
-            borderWidth = thickness
-        }
-
-        Color color = Color.BLACK;
-        if(params.color) color = new Color(Integer.parseInt(params.color.replace("0x",""),16))
-
-
-        //AbstractImage image, BufferedImage window, Collection<Geometry> geometryCollection, Color c, int borderWidth,int x, int y, double x_ratio, double y_ratio
-        bufferedImage = drawPolygons(
-                params,
-                bufferedImage,
+        return drawGeometries(
+                image,
                 [geometry],
                 color,
                 borderWidth,
                 topLeftX,
-                imageHeight - topLeftY,
+                topLeftY,
                 x_ratio,
-                y_ratio
+                y_ratio,
         )
-        bufferedImage
     }
 
+    BufferedImage drawGeometries(BufferedImage image, Collection<Geometry> geometryCollection, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        for (geometry in geometryCollection) {
+            if (geometry instanceof MultiPolygon) {
+                MultiPolygon multiPolygon = (MultiPolygon) geometry
+                for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                    geometry = multiPolygon.getGeometryN(i)
+                    image = drawGeometry(image, geometry, c, borderWidth, x, y, x_ratio, y_ratio)
+                }
+            }
+            else {
+                image = drawGeometry(image, geometry, c, borderWidth, x, y, x_ratio, y_ratio)
+            }
+        }
+
+        return image
+    }
+
+    BufferedImage drawGeometry(BufferedImage image, Geometry geometry, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        if (geometry instanceof Polygon) {
+            Polygon polygon = (Polygon) geometry
+            image = drawPolygon(image, polygon, c, borderWidth, x, y, x_ratio, y_ratio)
+        }
+        else if (geometry instanceof Point) {
+            Point point = (Point) geometry
+            image = drawPoint(image, point, c, borderWidth, x, y, x_ratio, y_ratio)
+        }
+        else if (geometry instanceof LineString) {
+            LineString line = (LineString) geometry
+            image = drawLineString(image, line, c, borderWidth, x, y, x_ratio, y_ratio)
+        }
+
+        return image
+    }
+
+    BufferedImage drawPoint(BufferedImage image, Point point, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        Graphics g = image.createGraphics()
+        g.setColor(c)
+        g.setStroke(new BasicStroke(borderWidth))
+
+        int length = 10
+        double xLocal = Math.min((point.x - x) * x_ratio, image.getWidth())
+        xLocal = Math.max(0, xLocal)
+        double yLocal = Math.min((y - point.y) * y_ratio, image.getHeight())
+        yLocal = Math.max(0, yLocal)
 
 
+        g.drawLine((int) xLocal, (int) yLocal - length, (int) xLocal, (int) yLocal + length)
+        g.drawLine((int) xLocal - length, (int) yLocal, (int) xLocal + length, (int) yLocal)
+        g.dispose()
+        return image
+    }
+
+    BufferedImage drawPolygon(BufferedImage image, Polygon polygon, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        image = drawLineString(image, polygon.getExteriorRing(), c, borderWidth, x, y, x_ratio, y_ratio)
+        for (def j = 0; j < polygon.getNumInteriorRing(); j++) {
+            image = drawLineString(image, polygon.getInteriorRingN(j), c, borderWidth, x, y, x_ratio, y_ratio)
+        }
+
+        return image
+    }
+
+    BufferedImage drawLineString(BufferedImage image, LineString lineString, Color c, int borderWidth, int x, int y, double x_ratio, double y_ratio) {
+        Path2D.Float regionOfInterest = new Path2D.Float()
+        boolean isFirst = true
+
+        Coordinate[] coordinates = lineString.getCoordinates()
+        for (Coordinate coordinate : coordinates) {
+            double xLocal = Math.min((coordinate.x - x) * x_ratio, image.getWidth() - 1)
+            xLocal = Math.max(0, xLocal)
+            double yLocal = Math.min((y - coordinate.y) * y_ratio, image.getHeight() - 1)
+            yLocal = Math.max(0, yLocal)
+
+            if (isFirst) {
+                regionOfInterest.moveTo(xLocal, yLocal)
+                isFirst = false
+            }
+            regionOfInterest.lineTo(xLocal, yLocal)
+        }
+
+        Graphics2D g2d = (Graphics2D) image.getGraphics()
+        g2d.setStroke(new BasicStroke(borderWidth))
+        g2d.setColor(c)
+        g2d.draw(regionOfInterest)
+
+        return image
+    }
 }
