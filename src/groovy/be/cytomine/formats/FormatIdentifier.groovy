@@ -73,13 +73,14 @@ class FormatIdentifier {
                 new CZITIFFFormat(), // detector: tiffinfo
                 new OMETIFFFormat(), // detector: tiffinfo
                 new GeoTIFFFormat(), // detector: tiffinfo
-                new PerkinElmerVectraQPTIFF(),
+
 
                 // Slow detections that must come before others
                 new HamamatsuNDPIFormat(), // detector: openslide
                 new VentanaTIFFFormat(), // detector: openslide
                 new PhilipsTIFFFormat(), // detector: openslide
                 new GeoJPEG2000Format(), // detector: extension + gdal
+                new PerkinElmerVectraQPTIFF(),
 
                 // Fast detections that must go last (large detection criteria)
                 new JPEG2000Format(), // Accept any JPEG2000
@@ -98,6 +99,7 @@ class FormatIdentifier {
                 new DotSlideFormat(), // detector: extension
                 new ZeissCZIFormat(), // detector: custom
                 new MP4Format(), // detector: ffprobe
+
         ]
     }
 
