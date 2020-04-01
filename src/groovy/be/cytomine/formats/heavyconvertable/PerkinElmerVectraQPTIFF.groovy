@@ -71,7 +71,7 @@ class PerkinElmerVectraQPTIFF extends BioFormatConvertable{
     @Override
     boolean getGroup()
     {
-        return false
+        return true
     }
 
     @Override
