@@ -80,7 +80,7 @@ class FormatIdentifier {
                 new VentanaTIFFFormat(), // detector: openslide
                 new PhilipsTIFFFormat(), // detector: openslide
                 new GeoJPEG2000Format(), // detector: extension + gdal
-                new PerkinElmerVectraQPTIFF(),
+                
 
                 // Fast detections that must go last (large detection criteria)
                 new JPEG2000Format(), // Accept any JPEG2000
