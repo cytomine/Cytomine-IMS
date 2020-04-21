@@ -96,34 +96,21 @@ class ProfileController {
             throw new WrongParameterException("Location is not a valid WKT: ${e.getMessage()}")
         }
 
-        boolean isPoint = geometry instanceof Point
-        boolean isBbox = geometry instanceof Polygon && geometry.isRectangle()
-        if (!isPoint && !isBbox) {
-            throw new WrongParameterException("Location must be POINT or rectangular POLYGON.")
-        }
-
         def bounds = [
                 min: params.int("minSlice", 0),
                 max: params.int("maxSlice", Integer.MAX_VALUE)
         ]
 
         def response = [:]
-        if (isPoint) {
+        if (geometry instanceof Point) {
             Point point = (Point) geometry
             response = profileService.pointProfile(fif, (int) point.getX(), (int) point.getY(), bounds)
         }
-        else if (isBbox) {
-            Polygon bbox = (Polygon) geometry
-            def coordinates = bbox.getCoordinates()
-
-            int xleft = (int) coordinates.min { it.x }.x
-            int xright = (int) coordinates.max { it.x }.x
-            int ytop = (int) coordinates.max { it.y }.y
-            int ybottom = (int) coordinates.min { it.y }.y
-            int width = xright - xleft + 1
-            int height = ytop - ybottom + 1
-
-            response = profileService.bboxProfile(fif, xleft, ytop, width, height, bounds)
+        else if (geometry.isValid()) {
+            response = profileService.geometryProfile(fif, geometry, bounds)
+        }
+        else {
+            throw new WrongParameterException("Location is not a valid geometry.")
         }
 
         render response as JSON
