@@ -82,5 +82,21 @@ class UrlMappings {
         "/profile.$format" (controller: "profile") {
             action = [POST: "computeProfile", GET: "extractProfile"]
         }
+
+        "/profile/stats.$format" (controller: "profile") {
+            action = [POST: "statsProfile", GET: "statsProfile"]
+        }
+
+        "/profile/min-projection.$format" (controller: "profile") {
+            action = [POST: "minProjection", GET: "minProjection"]
+        }
+
+        "/profile/max-projection.$format" (controller: "profile") {
+            action = [POST: "maxProjection", GET: "maxProjection"]
+        }
+
+        "/profile/average-projection.$format" (controller: "profile") {
+            action = [POST: "averageProjection", GET: "averageProjection"]
+        }
 	}
 }

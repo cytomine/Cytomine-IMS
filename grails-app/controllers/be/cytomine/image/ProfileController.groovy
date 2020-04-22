@@ -32,7 +32,9 @@ import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
 
-class ProfileController {
+import java.awt.image.BufferedImage
+
+class ProfileController extends ImageResponseController {
 
     def profileService
 
@@ -88,6 +90,77 @@ class ProfileController {
     ])
     def extractProfile() {
         String fif = URLDecoder.decode(params.fif, "UTF-8")
+        Geometry geometry = sanitizeGeometry(params)
+        def bounds = sanitizeBounds(params)
+
+        def response
+        if (geometry instanceof Point) {
+            Point point = (Point) geometry
+            response = profileService.pointProfile(fif, (int) point.getX(), (int) point.getY(), bounds)
+        }
+        else {
+            response = profileService.geometryProfile(fif, geometry, bounds)
+        }
+
+        render response as JSON
+    }
+
+    @RestApiMethod(description="Get the statistics (min, max, avg) of the profile of a 3D image for a given location", extensions = ["json"])
+    @RestApiParams(params=[
+            @RestApiParam(name="fif", type="String", paramType= RestApiParamType.QUERY, description="The absolute path of the profile", required=true),
+            @RestApiParam(name="location", type="String", paramType= RestApiParamType.QUERY, description="A geometry in WKT Format (Well-known text) in a cartesian coordinate system. Only POINT and POLYGON describing a rectangle are supported.", required=true),
+            @RestApiParam(name="minSlice", type="int", paramType=RestApiParamType.QUERY, description="The minimum slice index", required=false),
+            @RestApiParam(name="maxSlice", type="int", paramType=RestApiParamType.QUERY, description="The maximum slice index", required=false),
+    ])
+    def statsProfile() {
+        String fif = URLDecoder.decode(params.fif, "UTF-8")
+        Geometry geometry = sanitizeGeometry(params)
+        def bounds = sanitizeBounds(params)
+
+        def response
+        if (geometry instanceof Point) {
+            Point point = (Point) geometry
+            response = profileService.pointProfileStats(
+                    profileService.pointProfile(fif, (int) point.getX(), (int) point.getY(), bounds))
+        }
+        else {
+            response = profileService.geometryProfileStats(profileService.geometryProfile(fif, geometry, bounds))
+        }
+
+        render response as JSON
+    }
+
+    def minProjection() {
+        forward(action: "projection", params: [projection: 'min'])
+    }
+
+    def maxProjection() {
+        forward(action: "projection", params: [projection: 'max'])
+    }
+
+    def averageProjection() {
+        forward(action: "projection", params: [projection: 'average'])
+    }
+
+    def projection() {
+        String fif = URLDecoder.decode(params.fif, "UTF-8")
+        Geometry geometry = sanitizeGeometry(params)
+        if (!(geometry instanceof Polygon)) {
+            throw new WrongParameterException("Location is not a valid geometry.")
+        }
+
+        def bounds = sanitizeBounds(params)
+        def projectionMode = params.projection
+        BufferedImage image = profileService.polygonProfileProjection(fif, geometry, bounds, projectionMode)
+
+        withFormat {
+            png { responseBufferedImagePNG(image) }
+            jpg { responseBufferedImageJPG(image) }
+            tiff { responseBufferedImageTIFF(image) }
+        }
+    }
+
+    private def sanitizeGeometry(params) {
         Geometry geometry
         try {
             geometry = new WKTReader().read(params.location as String)
@@ -96,23 +169,17 @@ class ProfileController {
             throw new WrongParameterException("Location is not a valid WKT: ${e.getMessage()}")
         }
 
-        def bounds = [
-                min: params.int("minSlice", 0),
-                max: params.int("maxSlice", Integer.MAX_VALUE)
-        ]
-
-        def response = [:]
-        if (geometry instanceof Point) {
-            Point point = (Point) geometry
-            response = profileService.pointProfile(fif, (int) point.getX(), (int) point.getY(), bounds)
-        }
-        else if (geometry.isValid()) {
-            response = profileService.geometryProfile(fif, geometry, bounds)
-        }
-        else {
+        if (!geometry.isValid()) {
             throw new WrongParameterException("Location is not a valid geometry.")
         }
 
-        render response as JSON
+        geometry
+    }
+
+    private def sanitizeBounds(params) {
+        [
+                min: params.int("minSlice", 0),
+                max: params.int("maxSlice", Integer.MAX_VALUE)
+        ]
     }
 }

@@ -34,6 +34,7 @@ import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.geom.GeometryFactory
 import com.vividsolutions.jts.geom.util.AffineTransformation
 import com.vividsolutions.jts.operation.predicate.RectangleIntersects
+import groovyx.gpars.GParsPool
 import groovyx.gpars.dataflow.DataflowQueue
 import groovyx.gpars.dataflow.operator.PoisonPill
 import groovyx.gpars.group.DefaultPGroup
@@ -47,6 +48,7 @@ import utils.MimeTypeUtils
 import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.awt.image.WritableRaster
 import java.nio.file.Paths
 
 import static ch.systemsx.cisd.hdf5.MatrixUtils.dims
@@ -642,6 +644,83 @@ class ProfileService {
         }
 
         return spectrum
+    }
+    
+    def pointProfileStats(def pointProfile, def getMin = true, def getMax = true, def getAverage = true) {
+        if (getMin) pointProfile.min = pointProfile.profile.min()
+        if (getMax) pointProfile.max = pointProfile.profile.max()
+        if (getAverage) pointProfile.average = pointProfile.profile.sum() / pointProfile.profile.size()
+        pointProfile.remove("profile")
+        return pointProfile
+    }
+
+    def geometryProfileStats(def geometryProfile, def getMin = true, def getMax = true, def getAverage = true) {
+        GParsPool.withPool {
+            geometryProfile.collectParallel { pointProfileStats(it, getMin, getMax, getAverage) }
+        }
+        return geometryProfile
+    }
+
+    def polygonProfileProjection(String fif, Geometry geometry, def bounds, def projectionMode) {
+        def profile = geometryProfile(fif, geometry, bounds)
+        def projection = geometryProfileStats(profile, (projectionMode == 'min'), (projectionMode == 'max'),
+                (projectionMode == 'average'))
+
+        Envelope envelope = geometry.getEnvelopeInternal()
+        def xleft = (int) Math.round(envelope.getMinX())
+        def ybottom = (int) Math.round(envelope.getMinY())
+        def width = (int) Math.round(envelope.getWidth())
+        def height = (int) Math.round(envelope.getHeight())
+        def bits = profileInfo(fif)?.bpc ?: 8
+        def type = (bits > 8) ? BufferedImage.TYPE_USHORT_GRAY : BufferedImage.TYPE_BYTE_GRAY
+        BufferedImage image = new BufferedImage(width, height, type)
+        WritableRaster raster = image.getRaster()
+        GParsPool.withPool {
+            projection.eachParallel {
+                def x = it.point[0] - xleft
+                def y = height - (it.point[1] - ybottom)
+                raster.setPixel(x, y, [it[projectionMode]] as int[])
+            }
+        }
+
+        image
+    }
+
+    def profileInfo(String path) {
+        File f = new File(path)
+        if (!f.exists()) {
+            throw new FileNotFoundException(f.absolutePath + "does not exist.")
+        }
+
+        def info = [:]
+        IHDF5Reader hdf5 = null
+        try {
+            hdf5 = HDF5Factory.openForReading(f)
+
+            try {
+                info.version = hdf5.int32().read("version")
+                info.imageWidth = hdf5.int32().read("width")
+                info.imageHeight = hdf5.int32().read("height")
+                info.bpc = hdf5.int32().read("bpc")
+                info.nSlices = hdf5.int32().read("nSlices")
+                info.blockSize = hdf5.int32().read("blockSize")
+            }
+            catch(HDF5SymbolTableException ignored) {
+
+                int[] meta = hdf5.int32().readArray("/meta")
+                info.version = 1
+                info.blockSize = meta[0]
+                info.bpc = meta[1]
+                info.nSlices = meta[2]
+                info.imageWidth = meta[3]
+                info.imageHeight = meta[4]
+            }
+        }
+        finally {
+            if (hdf5 != null) hdf5.close()
+        }
+
+        return info
     }
 
     private static def getHDF5Reader(IHDF5Reader hdf5, bpc) {
