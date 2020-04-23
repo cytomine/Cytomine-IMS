@@ -302,21 +302,21 @@ class UploadService {
         }
 
         if (format instanceof NativeFormat) {
-            uploadedFile.set("status", UploadedFile.Status.DEPLOYING.code)
+            uploadedFile.changeStatus(UploadedFile.Status.DEPLOYING)
             log.info uploadedFile.get("status")
 
             if (format instanceof MultipleFilesFormat) {
                 File root = format.getRootFile(currentFile)
                 uploadedFile.set("originalFilename", root.name)
                 uploadedFile.set("filename", root.absolutePath - (uploadedFile.getStr("path") - uploadedFile.getStr("filename")))
+                uploadedFile.update()
             }
 
             if (format instanceof CustomExtensionFormat) {
                 File renamed = format.rename()
                 uploadedFile.set("filename", renamed.absolutePath - (uploadedFile.getStr("path") - uploadedFile.getStr("filename")))
+                uploadedFile.update()
             }
-
-            uploadedFile.update()
 
             try {
                 AbstractSlice slice = createAbstractSlice(uploadInfo.userConn, uploadedFile, abstractImage, format, currentFile)
