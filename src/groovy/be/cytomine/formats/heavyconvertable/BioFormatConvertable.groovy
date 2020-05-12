@@ -86,7 +86,7 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
         if ((files == [] || files == null) && error != null) {
             throw new ConversionException("BioFormats Exception : $error")
         }
-        return files.collect { new CytomineFile(it.path as String, it.c, it.z, it.t) }
+        return files.collect { new CytomineFile(it.path as String, it.c, it.z, it.t, it.channelName) }
     }
 
     def properties() {

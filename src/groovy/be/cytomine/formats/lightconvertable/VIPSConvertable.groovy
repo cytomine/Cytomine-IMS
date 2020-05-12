@@ -30,7 +30,7 @@ abstract class VIPSConvertable extends NotNativeFormat {
     @Override
     def convert() {
         String targetName = (this.file.name - ".${this.file.extension()}") + "_pyr.tif"
-        CytomineFile target = new CytomineFile(this.file.parent, FilesUtils.correctFilename(targetName), this.file.c, this.file.z, this.file.t)
+        CytomineFile target = new CytomineFile(this.file.parent, FilesUtils.correctFilename(targetName), this.file.c, this.file.z, this.file.t, this.file.channelName)
 
         return [convertToPyramidalTIFF(file, target)]
     }
