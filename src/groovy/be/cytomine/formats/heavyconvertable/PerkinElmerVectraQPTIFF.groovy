@@ -15,7 +15,7 @@ class PerkinElmerVectraQPTIFF extends BioFormatConvertable{
     {
         super()
         extensions=["qptiff"]
-        mimeType= MimeTypeUtils.MIMETYPE_QPTIFF
+        mimeType= MimeTypeUtils.MIMETYPE_TIFF
     }
 
 
