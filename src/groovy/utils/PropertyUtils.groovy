@@ -1,5 +1,8 @@
 package utils
 
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
+
 /*
  * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
@@ -37,6 +40,7 @@ class PropertyUtils {
     public static final String CYTO_MIMETYPE = "cytomine.mimeType"
     public static final String CYTO_EXT = "cytomine.extension"
     public static final String CYTO_FORMAT = "cytomine.format"
+    public static final String CYTO_CHANNEL_NAMES = "cytomine.channelNames"
 
     public static final def parseString = {
         x -> x?.toString()
@@ -75,5 +79,14 @@ class PropertyUtils {
             return null
 
         return PropertyUtils.parseInt(split[0])
+    }
+
+    public static final def parseJSON = { x ->
+        try {
+            return JSON.parse(x)
+        }
+        catch (ConverterException ignored) {
+            return null
+        }
     }
 }

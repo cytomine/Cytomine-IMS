@@ -46,6 +46,7 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
         cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Bioformats.Pixels.SamplesPerPixel"
         cytominePropertyKeys[PropertyUtils.CYTO_MAGNIFICATION] = "Bioformats.Objective.NominalMagnification"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "" //TODO
+        cytominePropertyKeys[PropertyUtils.CYTO_CHANNEL_NAMES] = "Bioformats.Channels.Name"
     }
 
     def makeRequest(def message) {
