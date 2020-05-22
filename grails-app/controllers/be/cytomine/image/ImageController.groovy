@@ -1,11 +1,8 @@
 package be.cytomine.image
 
-import be.cytomine.client.Cytomine
-import be.cytomine.exception.DeploymentException
-import be.cytomine.exception.ObjectNotFoundException
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2020. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +16,9 @@ import be.cytomine.exception.ObjectNotFoundException
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import be.cytomine.client.Cytomine
+import be.cytomine.exception.ObjectNotFoundException
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.SupportedImageFormat
 import be.cytomine.exception.MiddlewareException
@@ -26,7 +26,6 @@ import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileForma
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
 import grails.converters.JSON
-import grails.util.Holders
 import org.json.simple.JSONValue
 import java.awt.BasicStroke
 import java.awt.Color
@@ -40,7 +39,6 @@ import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.annotation.RestApiResponseObject
 import org.restapidoc.pojo.RestApiParamType
 import utils.ImageUtils
-import utils.ServerUtils
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -330,29 +328,30 @@ class ImageController extends ImageUtilsController {
         }
 
         //we will increase the missing direction to make a square
-        if(Boolean.parseBoolean(params.square)){
-            if(width < height) {
+        if (Boolean.parseBoolean(params.square)) {
+            if (width < height) {
                 double delta = height - width
-                topLeftX -= delta/2
+                topLeftX -= delta / 2
                 width += delta
-
-                if(topLeftX < 0) {
-                    topLeftX = 0
-                } else {
-                    topLeftX = Math.min(topLeftX, imageWidth - width)
-                }
-            } else if(width > height) {
+            } else if (width > height) {
                 double delta = width - height
-                topLeftY += delta/2
+                topLeftY += delta / 2
                 height += delta
-
-                if(topLeftY > imageHeight){
-                    topLeftY = imageHeight
-                }
-                else {
-                    topLeftY = Math.max(topLeftY, height)
-                }
             }
+        }
+
+        width = Math.min(width, imageWidth)
+        if (topLeftX < 0) {
+            topLeftX = 0
+        } else {
+            topLeftX = Math.min((double) topLeftX, imageWidth - width)
+        }
+
+        height = Math.min(height, imageHeight)
+        if (topLeftY > imageHeight) {
+            topLeftY = imageHeight
+        } else {
+            topLeftY = Math.max((double) topLeftY, height)
         }
 
         params.topLeftX = topLeftX.toString()

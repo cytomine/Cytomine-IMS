@@ -1,9 +1,7 @@
 package be.cytomine.formats.supported
 
-import be.cytomine.formats.Format
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2020. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +16,14 @@ import be.cytomine.formats.Format
  * limitations under the License.
  */
 
+import be.cytomine.formats.Format
+
 import grails.util.Holders
 import utils.ServerUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 10/05/14.
- */
 abstract class SupportedImageFormat extends Format {
 
     def grailsApplication
@@ -55,7 +52,7 @@ abstract class SupportedImageFormat extends Format {
         return properties
     }
 
-    String  cropURL(def params, def charset = "UTF-8") {
+    String cropURL(def params, def charset = "UTF-8") {
         String fif = URLEncoder.encode(params.fif,charset)
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
@@ -64,19 +61,13 @@ abstract class SupportedImageFormat extends Format {
         double imageWidth = params.double('imageWidth')
         double imageHeight = params.double('imageHeight')
 
-        //All values x,y,w & h should be in ratios 0-1.0 [RGN=x,y,w,h]
-        def x = (topLeftX == 0) ? 0 : 1/(imageWidth / topLeftX)
-        def y = ((imageHeight - topLeftY) == 0) ? 0 : 1/(imageHeight / (imageHeight - topLeftY))
-        double w = (width == 0) ? 0d : 1d/(imageWidth / width)
-        double h = (height == 0) ? 0d : 1d/(imageHeight / height)
-
-        // TODO perf: replace the previous assignment by the following
-        /*def x = topLeftX/imageWidth
+        def x = topLeftX/imageWidth
         def y = (imageHeight - topLeftY)/imageHeight
         double w = width/imageWidth
-        double h = height/imageHeight*/
+        double h = height/imageHeight
 
-        if(x>1 || y > 1) return
+        if(x>1 || y > 1)
+            return null
 
 		int maxWidthOrHeight = Holders.config.cytomine.maxCropSize
         if (params.maxSize) {
