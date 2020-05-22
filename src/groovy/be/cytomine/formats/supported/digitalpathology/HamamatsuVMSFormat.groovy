@@ -35,6 +35,8 @@ class HamamatsuVMSFormat extends OpenSlideMultipleFileFormat {
     @Override
     boolean detect() {
         File uploadedFile = new File(absoluteFilePath);
+        if(uploadedFile.isFile() && uploadedFile.name.endsWith('.vms')) uploadedFile = uploadedFile.parentFile
+
         File vms = uploadedFile.listFiles(). find { it.name.endsWith('.vms')}
 
         if(vms){

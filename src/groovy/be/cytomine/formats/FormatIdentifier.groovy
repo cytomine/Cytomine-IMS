@@ -169,11 +169,12 @@ public class FormatIdentifier {
 
         def format;
 
-        if (new File(filePath).isDirectory()) {
+        format = getMultiFileFormat(filePath)
+        if (format) return format
 
-            return getMultiFileFormat(filePath)
-
-        } else {
+        if (new File(filePath).isFile()) {
+            format = getMultiFileFormat(filePath)
+            if (format) return format
 
             Format testedFormat = new ZipFormat()
             testedFormat.absoluteFilePath = filePath

@@ -36,6 +36,8 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
     @Override
     boolean detect() {
         File uploadedFile = new File(absoluteFilePath);
+        if(uploadedFile.isFile() && uploadedFile.name.endsWith('.mrxs')) uploadedFile = uploadedFile.parentFile
+
         File mrxs = getRootFile(uploadedFile)
 
         if(mrxs){
