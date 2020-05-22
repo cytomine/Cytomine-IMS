@@ -149,8 +149,8 @@ class UploadService {
         } catch(DeploymentException | CytomineException e) {
             uploadedFile = cytomine.getUploadedFile(uploadedFile.id)
             int status = uploadedFile.get("status")
-            if (status != 3 && status != 8 && status != 9){
-                cytomine.editUploadedFile(uploadedFile.id, 9) // status ERROR_DEPLOYMENT
+            if (status != 3 && status != 4 && status != 8){
+                cytomine.editUploadedFile(uploadedFile.id, 8) // status ERROR_DEPLOYMENT
             }
             if(isSync) {
                 throw new DeploymentException(e.getMessage())
@@ -327,7 +327,7 @@ class UploadService {
                 cytomine.editUploadedFile(uploadedFile.id, 2) // status DEPLOYED
                 return [images : [image], groups: []]
             } catch(CytomineException e) {
-                cytomine.editUploadedFile(uploadedFile.id, 9) // status ERROR_DEPLOYMENT
+                cytomine.editUploadedFile(uploadedFile.id, 8) // status ERROR_DEPLOYMENT
                 throw new DeploymentException(e.getMsg())
             }
         }
