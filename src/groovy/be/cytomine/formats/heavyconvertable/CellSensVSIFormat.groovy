@@ -54,6 +54,11 @@ class CellSensVSIFormat extends BioFormatConvertable implements MultipleFilesFor
     }
 
     @Override
+    boolean includeRawProperties() {
+        return false
+    }
+
+    @Override
     File getRootFile(File folder) {
         return folder.listFiles().find { file ->
             file.isFile() && extensions.any { ext ->

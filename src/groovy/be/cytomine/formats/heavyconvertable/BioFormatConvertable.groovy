@@ -95,7 +95,8 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
 
         def message = [
                 path: this.file.absolutePath,
-                action: "properties"
+                action: "properties",
+                includeRawProperties: this.includeRawProperties()
         ]
 
         def response = makeRequest(message)
@@ -110,4 +111,6 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
     abstract boolean getGroup();
 
     abstract boolean getOnlyBiggestSerie();
+
+    abstract boolean includeRawProperties()
 }

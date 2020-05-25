@@ -55,5 +55,10 @@ class ZeissCZIFormat extends BioFormatConvertable {
     boolean getOnlyBiggestSerie() {
         return true
     }
+
+    @Override
+    boolean includeRawProperties() {
+        return true
+    }
 }
 
