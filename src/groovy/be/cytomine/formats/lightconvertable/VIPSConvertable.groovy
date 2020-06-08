@@ -1,5 +1,6 @@
 package be.cytomine.formats.lightconvertable
 
+import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.Format
 import be.cytomine.formats.IConvertableImageFormat
 import grails.util.Holders
@@ -43,8 +44,9 @@ abstract class VIPSConvertable extends Format implements IConvertableImageFormat
 
         success &= (ProcUtils.executeOnShell(pyramidCommand) == 0)
 
-        if (success) {
-            return [target]
+        if (!success) {
+            throw new MiddlewareException("VIPS Exception");
         }
+        return [target]
     }
 }

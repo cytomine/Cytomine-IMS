@@ -250,13 +250,14 @@ class UploadService {
 
         if(format instanceof IConvertableImageFormat){
             cytomine.editUploadedFile(uploadedFile.id, 7) // status TO_CONVERT
-            boolean errorFlag = false
+            boolean deployError = false
+            boolean conversionError = false
             String errorMsg = "";
             def files = []
             try {
                 files = format.convert() // try catch et status conversion ERROR
             } catch (Exception e) {
-                errorFlag = true
+                conversionError = true
                 errorMsg += e.getMessage()
             }
 
@@ -281,7 +282,7 @@ class UploadService {
                         newFiles << newFile
 
                     } catch(DeploymentException e){
-                        errorFlag = true
+                        deployError = true
                         errorMsg += e.getMessage()
                     }
                 }
@@ -296,14 +297,17 @@ class UploadService {
                         result.images.addAll(deployed.images)
                         result.groups.addAll(deployed.groups)
                     } catch (DeploymentException e) {
-                        errorFlag = true
+                        deployError = true
                         errorMsg += e.getMessage()
                     }
                 }
             }
 
-            if(errorFlag){
-                uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 8) // status ERROR CONVERSION
+            if(deployError){
+                uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 8) // status ERROR_DEPLOYMENT
+                throw new DeploymentException(errorMsg)
+            } else if(conversionError){
+                uploadedFile = cytomine.editUploadedFile(uploadedFile.id, 4) // status ERROR_CONVERSION
                 throw new DeploymentException(errorMsg)
             } else {
                 cytomine.editUploadedFile(uploadedFile.id, 1) // status CONVERTED
