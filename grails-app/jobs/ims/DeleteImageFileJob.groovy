@@ -40,15 +40,17 @@ class DeleteImageFileJob {
 
             File fileToDelete = new File(j.path+j.filename)
 
+            if(!fileToDelete.exists()) continue;
+
             def format
             try{
                 format = FormatIdentifier.getImageFormat(fileToDelete.absolutePath)
             } catch(FormatException e) {
-                if(fileToDelete.isFile()) log.error "Unkown format for "+fileToDelete.absolutePath
+                if(fileToDelete.isFile()) log.error "Unkown format for file "+fileToDelete.absolutePath
                 else log.info "Unkown format for "+fileToDelete.absolutePath
             }
 
-            if(fileToDelete.exists() && format) {
+            if(format) {
                 if(!(format instanceof OpenSlideMultipleFileFormat) && !(format instanceof CellSensVSIFormat)) {
                     log.info "DELETE file "+fileToDelete.absolutePath
                     fileToDelete.delete()
@@ -70,6 +72,14 @@ class DeleteImageFileJob {
                     if(fileToDelete.isFile()) fileToDelete = fileToDelete.parentFile
                     log.info "DELETE folder "+fileToDelete.absolutePath
                     fileToDelete.deleteDir()
+                }
+
+                //delete the broken symbolic links
+                fileToDelete.parentFile.listFiles().each{ f ->
+                    if(!f.exists()) {
+                        log.info "DELETE not existingfile "+f.absolutePath
+                        f.delete()
+                    }
                 }
                 if (fileToDelete.parentFile.listFiles().size() == 0){
                     log.info "DELETE folder "+fileToDelete.parentFile.absolutePath
