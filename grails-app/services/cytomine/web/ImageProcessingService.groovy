@@ -30,6 +30,7 @@ import ij.process.ImageProcessor
 import ij.process.PolygonFiller
 
 import java.awt.*
+import java.awt.geom.AffineTransform
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.text.DecimalFormat
@@ -49,6 +50,29 @@ class ImageProcessingService {
     }
 
 
+    public BufferedImage rotateImageByDegrees(BufferedImage img, float radian) {
+
+        double sin = Math.abs(Math.sin(radian)), cos = Math.abs(Math.cos(radian));
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int newWidth = (int) Math.floor(w * cos + h * sin);
+        int newHeight = (int) Math.floor(h * cos + w * sin);
+
+        BufferedImage rotated = new BufferedImage(newWidth, newHeight, img.getType());
+        Graphics2D g2d = rotated.createGraphics();
+        AffineTransform at = new AffineTransform();
+        at.translate((newWidth - w) / 2, (newHeight - h) / 2);
+
+        int x = w / 2;
+        int y = h / 2;
+
+        at.rotate(radian, x, y);
+        g2d.setTransform(at);
+        g2d.drawImage(img, null, 0, 0);
+        g2d.dispose();
+
+        return rotated;
+    }
     //deprecated
     public BufferedImage rotate90ToRight( BufferedImage inputImage ){
         int width = inputImage.getWidth();

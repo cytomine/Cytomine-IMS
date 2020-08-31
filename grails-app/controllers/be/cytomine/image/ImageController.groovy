@@ -229,6 +229,10 @@ class ImageController extends ImageUtilsController {
             bufferedImage = ImageUtils.resize(bufferedImage, maxWidth, maxHeight)
         }
 
+        double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
+        if(params.rotation)
+            bufferedImage = imageProcessingService.rotateImageByDegrees(bufferedImage, params.float("rotation"))
+
         if(params.boolean('drawScaleBar')) {
 //            if(proport1==porpert2) {
             //If the crop mage has been resized, the image may be "cut" (how to know that?).
@@ -236,7 +240,6 @@ class ImageController extends ImageUtilsController {
             //This mean that its impossible to compute the real size of the image because the size of the image change (not a problem) AND the image change (the image server cut somepart of the image).
             //I first try to compute the ratio (double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))),
             //but if the image is cut , its not possible to compute the good width size
-            double ratioWidth = (double)((double)bufferedImage.getWidth()/params.double('width'))
             Double resolution = params.double('resolution')
             Double magnification = params.double('magnification')
             bufferedImage = imageProcessingService.drawScaleBar(bufferedImage, resolution,ratioWidth, magnification)
