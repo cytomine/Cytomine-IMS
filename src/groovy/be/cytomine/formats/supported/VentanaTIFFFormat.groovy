@@ -2,6 +2,7 @@ package be.cytomine.formats.supported
 
 import be.cytomine.formats.supported.digitalpathology.OpenSlideSingleFileFormat
 import grails.util.Holders
+import utils.ProcUtils
 import utils.ServerUtils
 
 /*
@@ -44,5 +45,44 @@ class VentanaTIFFFormat extends OpenSlideSingleFileFormat {
         } else {
             return bufferedImage
         }
+    }
+
+    @Override
+    boolean detect() {
+        if(super.detect()) {
+            def filename
+            if (absoluteFilePath.lastIndexOf('.') > -1)
+                filename = absoluteFilePath.substring(0, absoluteFilePath.lastIndexOf('.')) + ".vtif"
+            else
+                filename = absoluteFilePath + ".vtif"
+
+            def renamed = new File(filename)
+            if (!renamed.exists())
+                ProcUtils.executeOnShell("ln -s ${absoluteFilePath} ${renamed.absolutePath}")
+            return renamed
+
+        }
+    }
+
+    @Override
+    String cropURL(def params, def charset = "UTF-8") {
+        String fif = params.fif
+        if (fif.lastIndexOf('.') > -1)
+            fif = fif.substring(0, fif.lastIndexOf('.')) + ".vtif"
+        else
+            fif = fif + ".vtif"
+
+        params.fif = fif
+        return super.cropURL(params, charset)
+    }
+
+    @Override public String tileURL(fif, params) {
+
+        if (fif.lastIndexOf('.') > -1)
+            fif = fif.substring(0, fif.lastIndexOf('.')) + ".vtif"
+        else
+            fif = fif + ".vtif"
+
+        return super.tileURL(fif, params)
     }
 }
