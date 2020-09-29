@@ -41,6 +41,7 @@ class PropertyUtils {
     public static final String CYTO_EXT = "cytomine.extension"
     public static final String CYTO_FORMAT = "cytomine.format"
     public static final String CYTO_CHANNEL_NAMES = "cytomine.channelNames"
+    public static final String CYTO_TILE_SIZE = "cytomine.tileSize"
 
     public static final def parseString = {
         x -> x?.toString()

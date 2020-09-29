@@ -42,6 +42,7 @@ class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
         cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "EXIF.BitsPerSample"
         cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "EXIF.SamplesPerPixel"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "EXIF.PhotometricInterpretation"
+        cytominePropertyKeys[PropertyUtils.CYTO_TILE_SIZE] = "EXIF.TileWidth"
         cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 
