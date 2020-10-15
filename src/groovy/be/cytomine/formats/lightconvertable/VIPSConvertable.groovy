@@ -27,6 +27,8 @@ import utils.ProcUtils
 @Log4j
 abstract class VIPSConvertable extends NotNativeFormat {
 
+    def vipsCompression = Holders.config.cytomine.ims.conversion.vips.compression ?: "jpeg -Q 95"
+
     @Override
     def convert() {
         String targetName = (this.file.name - ".${this.file.extension()}") + "_pyr.tif"
@@ -35,10 +37,10 @@ abstract class VIPSConvertable extends NotNativeFormat {
         return [convertToPyramidalTIFF(file, target)]
     }
 
-    static def convertToPyramidalTIFF(CytomineFile source, CytomineFile target) {
+    def convertToPyramidalTIFF(CytomineFile source, CytomineFile target) {
 
         def vipsExecutable = Holders.config.cytomine.ims.conversion.vips.executable
-        def compression = Holders.config.cytomine.ims.conversion.vips.compression ?: "jpeg -Q 95"
+        def compression = vipsCompression
         def tileSize = 256
 
         def command = """$vipsExecutable tiffsave $source.absolutePath $target.absolutePath --bigtiff --tile --tile-width $tileSize --tile-height $tileSize --pyramid --compression $compression"""
