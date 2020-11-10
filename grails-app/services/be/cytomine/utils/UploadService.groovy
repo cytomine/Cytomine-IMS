@@ -236,7 +236,7 @@ class UploadService {
         Format format
         try{
             format = FormatIdentifier.getImageFormat(currentFile.path)
-        } catch(FormatException e){
+        } catch(FormatException | IOException e){
             log.warn "Undetected format"
             log.warn e.toString()
             cytomine.editUploadedFile(uploadedFile.id, 3) // status ERROR FORMAT
