@@ -86,9 +86,12 @@ class PhilipsTIFFFormat extends OpenSlideSingleFileFormat{
             else
                 filename = absoluteFilePath + ".ptiff"
 
+            filename = filename.replace(";", "\\;")
+            filename = filename.replace("&", "\\&")
+            String originalFilePath = absoluteFilePath.replace(";", "\\;").replace("&", "\\&")
             def renamed = new File(filename)
             if (!renamed.exists())
-                ProcUtils.executeOnShell("ln -s ${absoluteFilePath} ${renamed.absolutePath}")
+                ProcUtils.executeOnShell("ln -s ${originalFilePath} ${renamed.absolutePath}")
             return renamed
 
         }
