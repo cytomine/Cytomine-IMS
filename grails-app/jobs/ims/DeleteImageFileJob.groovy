@@ -4,6 +4,7 @@ import be.cytomine.client.Cytomine
 import be.cytomine.client.collections.DeleteCommandCollection
 import be.cytomine.client.models.DeleteCommand
 import grails.converters.JSON
+import groovy.io.FileType
 import org.codehaus.groovy.grails.web.json.JSONElement
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
@@ -46,8 +47,8 @@ class DeleteImageFileJob {
             try{
                 format = FormatIdentifier.getImageFormat(fileToDelete.absolutePath)
             } catch(FormatException e) {
-                if(fileToDelete.isFile()) log.error "Unkown format for file "+fileToDelete.absolutePath
-                else log.info "Unkown format for "+fileToDelete.absolutePath
+                if(fileToDelete.isFile()) log.error "Unknown format for file "+fileToDelete.absolutePath
+                else log.info "Unknown format for "+fileToDelete.absolutePath
             }
 
             if(format) {
@@ -85,6 +86,20 @@ class DeleteImageFileJob {
                     log.info "DELETE folder "+fileToDelete.parentFile.absolutePath
                     fileToDelete.parentFile.delete()
                 }
+            } else {
+                log.info "DELETE file "+fileToDelete.absolutePath
+                fileToDelete.delete()
+                fileToDelete = fileToDelete.parentFile
+
+                fileToDelete.eachFileRecurse (FileType.FILES) { file ->
+                    try{
+                        format = FormatIdentifier.getImageFormat(file.absolutePath)
+                    } catch(FormatException e) {
+                        log.info "DELETE file "+file.absolutePath
+                        file.delete()
+                    }
+                }
+
             }
 
         }
