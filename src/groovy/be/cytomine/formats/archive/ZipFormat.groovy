@@ -1,15 +1,7 @@
 package be.cytomine.formats.archive
 
-import be.cytomine.exception.FormatException
-import be.cytomine.formats.ArchiveFormat
-import org.apache.commons.lang.RandomStringUtils
-import utils.FilesUtils
-import utils.ProcUtils
-
-import java.util.zip.ZipFile
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2020. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +16,11 @@ import java.util.zip.ZipFile
  * limitations under the License.
  */
 
+import be.cytomine.exception.FormatException
+import be.cytomine.formats.ArchiveFormat
+import utils.FilesUtils
+import utils.ProcUtils
+
 class ZipFormat extends ArchiveFormat {
 
     ZipFormat() {
@@ -31,12 +28,7 @@ class ZipFormat extends ArchiveFormat {
     }
 
     boolean detect() {
-        try{
-            new ZipFile(absoluteFilePath)
-        } catch(ZipException) {
-            return false
-        }
-        return true
+        ProcUtils.executeOnShell("unzip -t " + absoluteFilePath, false) == 0
     }
 
     String[] extract(String destPath) {

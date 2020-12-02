@@ -25,17 +25,24 @@ package utils
 class ProcUtils {
 
     static def executeOnShell(String command) {
-        return executeOnShell(command, new File("/"))
+        return executeOnShell(command, new File("/"), true)
+    }
+
+    static def executeOnShell(String command, boolean redirectStream) {
+        return executeOnShell(command, new File("/"), redirectStream)
     }
 
     static def executeOnShell(String command, File workingDir) {
+        return executeOnShell(command, workingDir, true)
+    }
+    static def executeOnShell(String command, File workingDir, boolean redirectStream) {
         println command
         def process = new ProcessBuilder(addShellPrefix(command))
                 .directory(workingDir)
-                .redirectErrorStream(true)
+                .redirectErrorStream(redirectStream)
                 .start()
 
-        process.inputStream.eachLine { println it }
+        if(redirectStream) process.inputStream.eachLine { println it }
         process.waitFor();
         int value = process.exitValue()
         println "Command return value = $value"
