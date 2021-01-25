@@ -28,6 +28,12 @@ class FileSystemService {
         return value
     }
 
+    def makeLocalDirectory(File destination) {
+        if (!new File(destination.parent).exists()) {
+            makeLocalDirectory(destination.parent)
+        }
+    }
+
     def move(String source, String destination) {
         return move(new File(source), new File(destination))
     }

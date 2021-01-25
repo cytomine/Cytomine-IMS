@@ -36,8 +36,8 @@ class PNGFormat extends CommonFormat implements ImageMagickDetector {
         cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "PNG.ImageHeight"
         cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "PNG.PixelsPerUnitX"
         cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "PNG.PixelsPerUnitY"
-        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "PNG.PixelUnits"
-        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "PNG.PixelUnits"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "PNG.PixelUnits" // Unknown or meters
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "PNG.PixelUnits" // Unknown or meters
         cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "PNG.BitDepth"
         cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "PNG.ColorType"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "PNG.ColorType"

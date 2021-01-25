@@ -16,6 +16,7 @@ package be.cytomine.image
  * limitations under the License.
  */
 
+import be.cytomine.exception.FormatException
 import be.cytomine.exception.ObjectNotFoundException
 import be.cytomine.formats.Format
 import be.cytomine.formats.FormatIdentifier
@@ -105,7 +106,16 @@ class ImageController extends ImageResponseController {
             return
         }
 
-        Format format = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType)
+        Format format
+        try {
+            format = new FormatIdentifier(new CytomineFile(fif)).identify(mimeType)
+        }
+        catch (FormatException ignored) {
+            log.info ignored
+            responseFile(file)
+            return
+        }
+
         if (format instanceof MultipleFilesFormat) {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream()

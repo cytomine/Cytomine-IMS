@@ -19,8 +19,10 @@ package be.cytomine.formats.supported.digitalpathology
 import be.cytomine.formats.supported.NativeFormat
 import grails.util.Holders
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import org.openslide.AssociatedImage
 import org.openslide.OpenSlide
+import utils.PropertyUtils
 
 import java.awt.image.BufferedImage
 
@@ -62,7 +64,7 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
     }
 
     @Override
-    BufferedImage thumb(def params) {
+    BufferedImage thumb(TypeConvertingMap params) {
         // TODO - currently does not support: inverse, contrast, gamma (is it required for a thumb ?)
         BufferedImage thumbnail = null
         if (this.file.canRead()) {
@@ -91,6 +93,9 @@ abstract class OpenSlideFormat extends NativeFormat /*implements OpenSlideDetect
         catch (Exception e) {
             throw new Exception("Openslide is unable to read ${this.file}: ${e.getMessage()}")
         }
+
+        properties << [(PropertyUtils.CYTO_X_RES_UNIT): "um"]
+        properties << [(PropertyUtils.CYTO_Y_RES_UNIT): "um"]
 
         return properties
     }

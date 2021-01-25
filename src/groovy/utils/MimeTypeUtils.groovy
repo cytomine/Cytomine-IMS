@@ -44,4 +44,5 @@ class MimeTypeUtils {
     static final public String MIMETYPE_PYRTIFF = "image/pyrtiff"
     static final public String MIMETYPE_DICOM = "application/dicom"
     static final public String MIMETYPE_MP4 = "video/mp4"
+    static final public String MIMETYPE_HDF5 = "application/x-hdf5"
 }

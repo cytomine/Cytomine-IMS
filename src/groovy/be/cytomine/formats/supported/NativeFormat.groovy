@@ -19,6 +19,7 @@ package be.cytomine.formats.supported
 import be.cytomine.formats.Format
 import grails.util.Holders
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.HttpUtils
 
 import javax.imageio.ImageIO
@@ -39,7 +40,7 @@ abstract class NativeFormat extends Format {
      *      - bits (optional, default: 8)
      * @return
      */
-    BufferedImage thumb(def params) {
+    BufferedImage thumb(TypeConvertingMap params) {
         def query = [
                 FIF: this.file.absolutePath,
                 WID: params.int("maxSize"),
@@ -76,7 +77,7 @@ abstract class NativeFormat extends Format {
      *      - jpegQuality (optional, default: 99)
      * @return
      */
-    String cropURL(def params) {
+    String cropURL(TypeConvertingMap params) {
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         double width = params.double('width')
@@ -138,7 +139,7 @@ abstract class NativeFormat extends Format {
      *      - inverse (optional, used in JTL protocol, default: false)
      * @return
      */
-    String tileURL(params) {
+    String tileURL(TypeConvertingMap params) {
         if (params.tileGroup) {
             def tg = params.int("tileGroup") ?: Integer.parseInt(params.tileGroup.toLowerCase().replace("tilegroup", ""))
             def z = params.int("z")
