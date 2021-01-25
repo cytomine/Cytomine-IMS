@@ -1,5 +1,8 @@
 package be.cytomine.processing
 
+import be.cytomine.exception.MiddlewareException
+import be.cytomine.image.ImageResponseController
+
 /*
  * Copyright (c) 2009-2018. Authors: see NOTICE file.
  *
@@ -16,9 +19,8 @@ package be.cytomine.processing
  * limitations under the License.
  */
 
-import be.cytomine.image.ImageUtilsController
 import be.cytomine.processing.image.filters.Colour_Deconvolution
-import be.cytomine.processing.merge.CytomineRGBStackMerge
+import be.cytomine.processing.merge.CytomineStackMerge
 import ij.IJ
 import ij.ImagePlus
 import ij.plugin.ContrastEnhancer
@@ -40,9 +42,10 @@ import java.awt.image.BufferedImage
  * Time: 13:44
  */
 @RestApi(name = "vision services", description = "Methods for image processing services")
-class VisionController extends ImageUtilsController {
+class VisionController extends ImageResponseController {
 
     def imageProcessingService
+    def tileService
 
     @RestApiMethod(description="Merge multiple channel (multiple image) to an image", extensions = ["png"])
     @RestApiParams(params=[
@@ -59,24 +62,23 @@ class VisionController extends ImageUtilsController {
             @RestApiParam(name="x", type="int", paramType = RestApiParamType.QUERY, description = "The X index (see zoomify format)"),
             @RestApiParam(name="y", type="int", paramType = RestApiParamType.QUERY, description = "The Y index (see zoomify format)")
     ])
-    def merge () {
+    def merge() {
 
         def paramsWithoutUrl = params.clone()
 
         def urls = extractParams("url")
-        int i = 0
-        urls = urls.collect{
-            paramsWithoutUrl.remove("url"+String.valueOf(i++))
-            return it + "&"
-        }
+        urls = urls.collect{ it + "&" }
+
         def colors = extractParams("color")
-        i=0
         colors = colors.collect{
-            paramsWithoutUrl.remove("color"+String.valueOf(i++))
             int intValue = Integer.parseInt(it,16);
             return new Color( intValue );
         }
 
+        for (int i=0;i<urls.size();i++){
+            paramsWithoutUrl.remove("url"+String.valueOf(i++))
+            paramsWithoutUrl.remove("color"+String.valueOf(i++))
+        }
         paramsWithoutUrl.remove("zoomify")
 
 
@@ -95,32 +97,36 @@ class VisionController extends ImageUtilsController {
             ImagePlus[] images = new ImagePlus[urls.size()]
 
 
-            urls.eachWithIndex { url, index ->
+            for (int i=0;i<urls.size();i++){
+                String url = urls[i]
                 log.info "load=${url+postParam}"
-                images[index] = new ImagePlus("Image$index",(java.awt.Image)ImageIO.read(new URL(url+"&"+postParam)))
+                ImagePlus im = new ImagePlus("Image$i",(java.awt.Image)ImageIO.read(new URL(url+"&"+postParam)))
+                if (im==null) throw new MiddlewareException("Unreachable url :"+url+"&"+postParam)
+                images[i] = im
             }
 
             Color[] colorsArray = colors.toArray(new Color[colors.size()])
-            ImagePlus result = CytomineRGBStackMerge.merge(images,colorsArray,false)
+            ImagePlus result = CytomineStackMerge.merge(images,colorsArray)
 
             BufferedImage resultImage = result.getBufferedImage()
-
-            responseBufferedImage(resultImage)
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
         }
     }
 
 
-    def process () {
-
+    def process() {
         if (!request.queryString) return
         def split = request.queryString.split("url=")
         Boolean cytomineAuthenticationRequired = params.boolean('cytomine_auth')
-        String imageURL =  "/images/notavailable.jpg"
+        String imageURL = "/images/notavailable.jpg"
         if (split.size() > 0) {
             imageURL = split[1]
         }
 
-        println "cytomineAuthenticationRequired : $cytomineAuthenticationRequired"
+        log.info "cytomineAuthenticationRequired : $cytomineAuthenticationRequired"
 
         /*log.info "URL " + params.url
         log.info "METHOD " + params.method
@@ -307,8 +313,8 @@ class VisionController extends ImageUtilsController {
             }
 
             if (params.brightness != null && params.contrast != null) {
-                double brightness = Double.parseDouble(params.brightness)
-                double contrast = Double.parseDouble(params.contrast)
+                double brightness = Double.parseDouble(params.brightness.replaceAll(",","."))
+                double contrast = Double.parseDouble(params.contrast.replaceAll(",","."))
                 ImagePlus ip = new ImagePlus(imageURL, bufferedImage)
                 double defaultMin = ip.getDisplayRangeMin()
                 double defaultMax = ip.getDisplayRangeMax()
@@ -330,7 +336,8 @@ class VisionController extends ImageUtilsController {
                 double slope
                 if (contrast <= mid) {
                     slope = brightness / mid
-                } else {
+                }
+                else {
                     slope = mid / (fullRange - contrast)
                 }
                 if (slope > 0.0) {
@@ -344,23 +351,28 @@ class VisionController extends ImageUtilsController {
             }
 
             /* Write response from BufferedImage */
-            responseBufferedImage(bufferedImage)
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
 
         } catch (Exception e) {
             log.error e.toString()
             BufferedImage bufferedImage = getImageFromURL("/images/notavailable.jpg")
-            responseBufferedImage(bufferedImage)
+            withFormat {
+                png { responseBufferedImagePNG(bufferedImage) }
+                jpg { responseBufferedImageJPG(bufferedImage) }
+            }
         }
     }
 
-    def tileService
 
     def ij() {
-        String tileURL = tileService.getTileUrl(params)
+        String tileURL = tileService.getTileUrlZoomify(params)
         BufferedImage tile = getImageFromURL(tileURL)
         BufferedImage newTile = null
 
-        assert(tile)
+        assert (tile)
         if (params.macro == "ec") {
             ImagePlus imp = new ImagePlus("", tile)
             //IJ.run(imp,"Enhance Contrast", "saturated=0.35");
@@ -373,13 +385,15 @@ class VisionController extends ImageUtilsController {
             IJ.run(imp,"Median...", "radius=1")
             IJ.run(imp,"Unsharp Mask...", "gaussian=2 mask=0.60")*/
             newTile = imp.getBufferedImage()
-        } else {
+        }
+        else {
             newTile = tile
         }
-        responseBufferedImage(newTile)
+        withFormat {
+            png { responseBufferedImagePNG(newTile) }
+            jpg { responseBufferedImageJPG(newTile) }
+        }
     }
-
-
 
     /**
      * Extract all args into a list.
@@ -388,12 +402,12 @@ class VisionController extends ImageUtilsController {
      */
     private def extractParams(String argStart) {
         def list = []
-        int i=0;
-        String nextUrlParams = params.get(argStart+i)
-        while(nextUrlParams!=null) {
+        int i = 0;
+        String nextUrlParams = params.get(argStart + i)
+        while (nextUrlParams != null) {
             list << nextUrlParams
             i++
-            nextUrlParams = params.get(argStart+i)
+            nextUrlParams = params.get(argStart + i)
         }
         return list
     }

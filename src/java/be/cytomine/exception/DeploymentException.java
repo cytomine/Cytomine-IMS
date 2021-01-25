@@ -16,13 +16,21 @@ package be.cytomine.exception;
  * limitations under the License.
  */
 
+import java.util.HashMap;
+
 public class DeploymentException extends CytomineException {
+
+    public HashMap info;
+
     /**
      * Message map with this exception
      *
      * @param msg  Message
      */
-    public DeploymentException(String msg) {
+    public DeploymentException(String msg, HashMap info) {
         super(msg, 500);
+        this.info = info;
     }
+
+
 }

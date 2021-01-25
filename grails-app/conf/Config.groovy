@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,44 +15,43 @@
  */
 
 
-
-// locations to search for config files that get merged into the main config;
-// config files can be ConfigSlurper scripts, Java properties files, or classes
-// in the classpath in ConfigSlurper format
-
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
-
-// if (System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
-
-grails.config.locations = ["file:${userHome}/.grails/imageserverconfig.properties"]
-
-println grails.config.locations
+/******************************************************************************
+ * EXTERNAL configuration
+ ******************************************************************************/
+grails.config.locations = [""]
+environments {
+    production {
+        grails.config.locations = ["file:${userHome}/.grails/ims-config.groovy"]
+    }
+    development {
+        // Update the file path so that it matches the generated configuration file in your bootstrap
+        grails.config.locations = ["file:${userHome}/Cytomine-ULiege/Cytomine-bootstrap/configs/ims/ims-config.groovy"]
+    }
+}
+println "External configuration file : ${grails.config.locations}"
+File configFile = new File(grails.config.locations.first().minus("file:") as String)
+println "Found configuration file ? ${configFile.exists()}"
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
 grails.mime.types = [
-        all:           '*/*',
-        atom:          'application/atom+xml',
-        css:           'text/css',
-        csv:           'text/csv',
-        form:          'application/x-www-form-urlencoded',
-        html:          ['text/html','application/xhtml+xml'],
-        js:            'text/javascript',
-        json:          ['application/json', 'text/json'],
+        all          : '*/*',
+        atom         : 'application/atom+xml',
+        css          : 'text/css',
+        csv          : 'text/csv',
+        form         : 'application/x-www-form-urlencoded',
+        html         : ['text/html', 'application/xhtml+xml'],
+        js           : 'text/javascript',
+        json         : ['application/json', 'text/json'],
         multipartForm: 'multipart/form-data',
-        rss:           'application/rss+xml',
-        text:          'text/plain',
-        xml:           ['text/xml', 'application/xml']
+        rss          : 'application/rss+xml',
+        text         : 'text/plain',
+        xml          : ['text/xml', 'application/xml'],
+        jpg          : 'image/jpeg',
+        png          : 'image/png',
+        tiff         : 'image/tiff'
 ]
-
-// URL Mapping Cache Max Size, defaults to 5000
-//grails.urlmapping.cache.maxsize = 1000
 
 // What URL patterns should be processed by the resources plugin
 grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
@@ -73,7 +72,7 @@ grails.enable.native2ascii = true
 // packages to include in Spring bean scanning
 grails.spring.bean.packages = []
 // whether to disable processing of multi part requests
-grails.web.disable.multipart=false
+grails.web.disable.multipart = false
 
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
@@ -98,7 +97,7 @@ log4j = {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
 
-    error  'org.codehaus.groovy.grails.web.servlet',        // controllers
+    error 'org.codehaus.groovy.grails.web.servlet',        // controllers
             'org.codehaus.groovy.grails.web.pages',          // GSP
             'org.codehaus.groovy.grails.web.sitemesh',       // layouts
             'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
@@ -114,67 +113,71 @@ log4j = {
     environments {
         production {
             root {
-                info 'appLog',"logfile"
+                info 'appLog', "logfile"
 //               error  'mail'
                 additivity = true
             }
         }
         development {
             root {
-                info 'appLog',"logfile", 'stdout'
+                info 'appLog', "logfile", 'stdout'
                 additivity = true
             }
         }
         test {
             root {
-                info 'appLog',"logfile", 'stdout'
+                info 'appLog', "logfile", 'stdout'
                 additivity = true
             }
         }
         perf {
             root {
-                info 'appLog',"logfile", 'stdout'
+                info 'appLog', "logfile", 'stdout'
                 additivity = true
             }
         }
     }
 }
 
-cytomine.coreURL="http://localhost-core:8080"
-cytomine.storageBufferPath="/tmp/imageserver_buffer"
-//cytomine.iipImageServer="http://localhost:8081/fcgi-bin/iipsrv.fcgi" //default path for iip image server
-//cytomine.iipJ2KImageServer="http://localhost:8082/fcgi-bin/iipsrv.fcgi"  //default path for iip image server J2K
+cytomine.ims.charset = "UTF-8"
 
-cytomine.iipImageServerBase="http://localhost-iip-base/fcgi-bin/iipsrv.fcgi"
-cytomine.Jpeg2000Enabled=false
-cytomine.iipImageServerJpeg2000="http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
-cytomine.iipImageServerCyto="http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
+cytomine.ims.server.url = "http://localhost-ims"
+cytomine.ims.server.core.url = "http://localhost-core"
+cytomine.ims.server.publicKey = ""
+cytomine.ims.server.privateKey = ""
 
-bioformat.application.enabled="true"
-bioformat.application.location="localhost"
-bioformat.application.port="4321"
+cytomine.ims.path.buffer = "/tmp/uploaded"
+cytomine.ims.path.storage = "/data/images"
 
-cytomine.imageServerPublicKey="cc161593-37fe-4487-baec-f6d46e62959f"
-cytomine.imageServerPrivateKey="cb2955c6-631b-4039-8ebf-889aefe8ea0c"
+cytomine.ims.conversion.vips.compression = "lzw"
+cytomine.ims.conversion.vips.executable = "vips"
+cytomine.ims.conversion.unzip.executable = "unzip"
+cytomine.ims.conversion.gdal.executable = "gdal_translate"
+cytomine.ims.conversion.ffmpeg.executable = "ffmpeg"
+cytomine.ims.conversion.bioformats.enabled = true
+cytomine.ims.conversion.bioformats.hostname = "bioformat"
+cytomine.ims.conversion.bioformats.port = 4321
 
-//image manipulation executable
-cytomine.vips = "/usr/local/bin/vips"
-cytomine.tiffinfo = "tiffinfo"
-cytomine.identify = "identify"
-cytomine.vipsthumbnail = "/usr/local/bin/vipsthumbnail"
+cytomine.ims.detection.tiffinfo.executable = "tiffinfo"
+cytomine.ims.detection.identify.executable = "identify"
+cytomine.ims.detection.gdal.executable = "gdalinfo"
+cytomine.ims.detection.ffprobe.executable = "ffprobe"
+cytomine.ims.metadata.exiftool.executable = "exiftool"
 
-cytomine.imageConversionAlgorithm = "lzw"
+cytomine.ims.pyramidalTiff.iip.url = "http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
+cytomine.ims.openslide.iip.url = "http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi"
+cytomine.ims.jpeg2000.iip.url = "http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
+cytomine.ims.jpeg2000.enabled = true
 
-cytomine.maxAnnotationOnImageWidth = 200000
 
-cytomine.charset = "UTF-8"
+cytomine.ims.crop.maxSize = 15000 // in pixels
+cytomine.ims.deleteJob.frequency = 600 // in seconds
 
-cytomine.maxCropSize = 15000
+cytomine.ims.hdf5.maxBurstSize = 512 // Mbytes
+cytomine.ims.hdf5.maxBlockSize = 15 // Mbytes
 
-cytomine.hdf5.scriptToFindFiles = "natives/scripts/relatedFiles.sh"
-cytomine.hdf5.convertBurstSize = 10
-cytomine.hdf5.size.maxHeigth = 256
-cytomine.hdf5.size.maxWidth = 256
-cytomine.hdf5.size.maxDepth = 256
+// Rest API Doc plugin
+grails.plugins.restapidoc.docVersion = "0.1"
+grails.plugins.restapidoc.basePath = cytomine.ims.server.url
+grails.plugins.restapidoc.grailsDomainDefaultType = "int"
 
-cytomine.deleteImageFilesFrequency = "600000"

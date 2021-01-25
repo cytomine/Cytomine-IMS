@@ -1,0 +1,49 @@
+sudo: required
+
+dist: trusty
+
+services:
+  - docker
+
+language: java
+
+jdk:
+  - oraclejdk8
+
+env:
+  global:
+    - DOCKER_USERNAME=cytomineulg
+    - secure: "aW+c1krND/RmDsvtfbBKVnHmaG0ZuP36TKiSweSfBjxir+ZZ+ThLS8o5IJ5tNyL240SvfUyB2zd4Hlnu3YiiL4dYbad/kqlkYOU426Jo8ii3dWmPEae6zaAS8AY7AzbfG/eCY3/F1/K6iw2GzekBNJplwnv5k6wAgi+WAuvlwGDuXBLtkXDrcoSNn6aHVkruNWTzbQlU3P7p0r74g9mhB4dbb1wtVMqv/igkpKeExQzTy69OtEvxQl0qN7yPiCKu2jXF7Zl4pv8zLZX/NxS00kRUpniO55+5fEF53jIyNxlbNlZ0sE20/NneOthNq3Lh+q6BWo8sTjsiEbbxLqlUjX9v4tzydStlT5kzZxiSHDbVcLsuYbjSDPElHMYUp8aLq94qLZ9lnVhlDH2rSlCtpBZfvO1OAVjl1Qpl77wDnMOgEkSaXm73l5vIXYmuRMTY8hRVqRbG/ivwURRpfGaNgbbv4lC5IpAv42kmr73k1/wU2JSb1ItS63owTC4wttv2k6Pd1m6kvvdQi73K/bedohLmyN79CprultmZVZBkaDOVkdUFiNFN7ZqXoQQ4GL9Jb+Rbmt8nd9UrnSKRKdeQUsWzKoHQ1YyjGI3eGcV+ObzIC0WvnhepzgE6U2k8GJKWhVNrp3shQzQ0KpOoWygb/uBbjfqYe/Lc86JdmdX+ZB4="
+
+before_install:
+  - ./grailsw clean
+
+install:
+  - ./grailsw refresh-dependencies
+
+script: true
+# - ./grailsw test-app ## Skip tests for now.
+
+after_success:
+  - source continuous_integration/deploy.sh
+
+deploy:
+  - provider: script
+    script: echo $VERSION && docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" && docker push cytomineuliege/ims:v$VERSION
+    skip_cleanup: true
+    on:
+      condition: $DEPLOY = true
+  - provider: releases
+    api_key:
+      secure: dPfdUgb6U+CjQRvQ3gXBJB7o+hfUrriWJMi9RosygZNRs5HP3BP84utV4sn4vBT1ypYOXR0dYQgL/Acvbxe1tFGg40E4xQjRzih1iKtnhu2/IvARf1gAP6Md5z8T90qo0RTJVYFPgCbUn7cJa0b9FNU6rwFPCemOuY2OiU+d5jb8mW1ZpjYiKWEcALYu+g82bf6pi5mSHvyGqPNUxzMMc+c3n/v1ou5KiEP5qkoNjcAu/p4gVrGjJSw0hxqAuJxf/vgguiTUxNHAzL1FM2uC7XwDtfhedfkiImxbzX6UzGMp5DsKWnQTRdn0yhK3QzHjkuTRiApWo1dabuhWVftUelob79bNw56hnX1aohyQUPM3+ycq4M1nmdwmRBKgV7F1YugfF/6/c9uiKpljjz7nGVCkbEDq/MV5Bsy6gXAbcOtNtPmOGJufLnuRmiG6U0FQA7zT2uvWwuWWnVfYlKQ/0g+TC6LqG+lTG25NvyN66DxqDVoUTqpe2Je4nEiGGDXG1waMvSVBB/jJSnYT/4LUkRQhaYjRzDGSnVaS8WDWTxXwUszEax5A/BeJPkRmc9UxCcu2uALAfvRz9rzewUtgn5JH8ZSSZfnM+uDfYW4d8C7KOrU36kSYz6j4fXEFGNp9rVQ8RlnQcB5h1bl/TqjZ2KM164uUGij/Z7Y64R6s9AQ=
+    file:
+      - IMS.war
+      - restapidoc.json
+    skip_cleanup: true
+    on:
+      condition: $DEPLOY = true
+
+notifications:
+  email: false
+  slack:
+    secure: TrdyGx56LOXEzrMxZgMhnYwpLQjIX3fL40YYujq40W66Rcis6nm2SP4i0By3fOSwwKcRwP8HXvs219sZddL3KJSZ0ormMvLHVjo9NNEbUAHqWVUBnaNJjF6ANmRFpuIKkVRTu2LQHaJhjMFyrKg8VVRAxNR1keaOsVeb4/U6gLF9LqfMciz56TtoDzfbMfB0V7l+RtUfRpeKGjDqp+lAEIzueSRItK49hP4gACGxJEMACIG+z1PZNLtVTnV6DokqnVmhUBIo9+ikLmU8g48Ark6hmj0JC5zZHK+LwZUhlMeJmPsJMydJ0ZPiOzcdPhQoLZC5looGFYPru2Igu3GTIM/hoTCDIYUCYRStr0vRF4niEEWMXKp9NJUQHkK0RwPCsuc0iwl1Jaeh9+qSEUeEW3tYyRgNwBPI4YK/XFt1/oDHufi8xU50xVTysSOxVJWbZ29OVdJ4LtWrF5rdKiFfl54sAqEnVREp8QcvRFXLMwL89cW5omi4xqmlojLm1pS/6DthlrED7dMz8qQi43shOPQbVqA+TRRUXl7jPo4DNTbI/8KfJGXg76scytZB4qUx4t6j2C9YxllHEZf7nlNyvHQzTLrcNOB6kxYFOibdrWIm1TycpbIBkb3l/1ZP0MgVFLpEu89eYcCpk29g6QkdyMU6Pb69avq4c9HUk0WhGME=

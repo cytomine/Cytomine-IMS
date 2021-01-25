@@ -1,7 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,28 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.ImageUtils
+import utils.MimeTypeUtils
+
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 22/04/14.
- */
-class LeicaSCNFormat  extends OpenSlideSingleFileFormat {
+@Log4j
+class LeicaSCNFormat extends OpenSlideFormat implements OpenSlideDetector {
 
-    public LeicaSCNFormat() {
+    String vendor = "leica"
+
+    // https://openslide.org/formats/leica/
+    // Associated labels: macro
+    LeicaSCNFormat() {
+        super()
         extensions = ["scn"]
-        vendor = "leica"
-        mimeType = "openslide/scn"
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "leica.objective"
+        mimeType = MimeTypeUtils.MIMETYPE_SCN
     }
-
 
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro") {
-            return rotate90ToRight(bufferedImage)
-        }
-        else {
-            return bufferedImage
-        }
+        return (label == "macro") ? ImageUtils.rotate90ToRight(bufferedImage) : bufferedImage
     }
 }

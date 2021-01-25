@@ -1,16 +1,16 @@
 package ims
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.collections.DeleteCommandCollection
+import be.cytomine.client.CytomineConnection
+import be.cytomine.client.collections.Collection
 import be.cytomine.client.models.DeleteCommand
-import grails.converters.JSON
+import be.cytomine.formats.tools.MultipleFilesFormat
 import groovy.io.FileType
-import org.codehaus.groovy.grails.web.json.JSONElement
 import be.cytomine.formats.FormatIdentifier
-import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.exception.FormatException
 
+import grails.converters.JSON
 
 class DeleteImageFileJob {
     static triggers = {
@@ -19,27 +19,30 @@ class DeleteImageFileJob {
     def grailsApplication
 
     def execute() {
+        log.info "Execute DeleteImageFile job"
 
-        String cytomineUrl = grailsApplication.config.cytomine.coreURL
+        String cytomineUrl = grailsApplication.config.cytomine.ims.server.core.url
+        String pubKey = grailsApplication.config.cytomine.ims.server.publicKey
+        String privKey = grailsApplication.config.cytomine.ims.server.privateKey
+        CytomineConnection imsConn = Cytomine.connection(cytomineUrl, pubKey, privKey, true)
 
-        String pubKey = grailsApplication.config.cytomine.imageServerPublicKey
-        String privKey = grailsApplication.config.cytomine.imageServerPrivateKey
-
-        Cytomine cytomine = new Cytomine((String) cytomineUrl, pubKey, privKey)
-
-        long timeMargin = Long.parseLong(grailsApplication.config.cytomine.deleteImageFilesFrequency)*2
+        long timeMargin = grailsApplication.config.cytomine.ims.deleteJob.frequency * 1000 * 2
 
         //max between frequency*2 and 48h
         timeMargin = Math.max(timeMargin, 172800000L)
 
-        DeleteCommandCollection commands = cytomine.getDeleteCommandByDomainAndAfterDate("uploadedFile", (new Date().time-timeMargin))
+        Collection<DeleteCommand> commands = new Collection<DeleteCommand>(DeleteCommand.class, 0, 0)
+        commands.addParams("domain", "uploadedFile")
+        commands.addParams("after", (new Date().time - timeMargin).toString())
+        commands = commands.fetch()
+        log.info commands
 
-        for(int i = 0; i<commands.size(); i++) {
-            DeleteCommand command = commands.list.get(i)
+        for (int i = 0; i < commands.size(); i++) {
+            DeleteCommand command = (DeleteCommand) commands.list.get(i)
 
-            JSONElement j = JSON.parse(command.get("data"));
+            def data = JSON.parse(command.get("data") as String)
 
-            File fileToDelete = new File(j.path+j.filename)
+            File fileToDelete = new File(data.path)
 
             if(!fileToDelete.exists()) continue;
 
@@ -52,7 +55,7 @@ class DeleteImageFileJob {
             }
 
             if(format) {
-                if(!(format instanceof OpenSlideMultipleFileFormat) && !(format instanceof CellSensVSIFormat)) {
+                if(!(format instanceof MultipleFilesFormat) && !(format instanceof CellSensVSIFormat)) {
                     log.info "DELETE file "+fileToDelete.absolutePath
                     fileToDelete.delete()
                 } else if(format instanceof CellSensVSIFormat) {
@@ -69,7 +72,7 @@ class DeleteImageFileJob {
                         log.info "DELETE folder "+fileToDelete.absolutePath
                         fileToDelete.delete()
                     }
-                } else if(format instanceof OpenSlideMultipleFileFormat) {
+                } else if (format instanceof MultipleFilesFormat) {
                     if(fileToDelete.isFile()) fileToDelete = fileToDelete.parentFile
                     log.info "DELETE folder "+fileToDelete.absolutePath
                     fileToDelete.deleteDir()
@@ -101,7 +104,6 @@ class DeleteImageFileJob {
                 }
 
             }
-
         }
     }
 }

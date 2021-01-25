@@ -1,7 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,20 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
-/**
- * Created by stevben on 22/04/14.
- */
-class AperioSVSFormat extends OpenSlideSingleFileFormat {
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
 
-    public AperioSVSFormat(){
+@Log4j
+class AperioSVSFormat extends OpenSlideFormat implements OpenSlideDetector {
+
+    String vendor = "aperio"
+
+    // https://openslide.org/formats/aperio/
+    // Associated labels: thumbnail, label, macro
+    AperioSVSFormat() {
+        super()
         extensions = ["svs"]
-        vendor = "aperio"
-        mimeType = "openslide/svs"
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "aperio.MPP"
-        magnificiationProperty = "aperio.AppMag"
+        mimeType = MimeTypeUtils.MIMETYPE_SVS
     }
 }

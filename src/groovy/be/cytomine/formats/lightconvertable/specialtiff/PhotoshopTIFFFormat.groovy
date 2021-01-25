@@ -1,9 +1,7 @@
 package be.cytomine.formats.lightconvertable.specialtiff
 
-import be.cytomine.formats.ITIFFFormat
-
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +16,34 @@ import be.cytomine.formats.ITIFFFormat
  * limitations under the License.
  */
 
+import be.cytomine.formats.lightconvertable.VIPSConvertable
+import be.cytomine.formats.tools.detectors.TiffInfoDetector
+import groovy.util.logging.Log4j
+import utils.MimeTypeUtils
+import utils.PropertyUtils
 
-/**
- * Created by hoyoux on 16.02.15.
- */
-class PhotoshopTIFFFormat extends ConvertableTIFFFormat implements ITIFFFormat {
+@Log4j
+class PhotoshopTIFFFormat extends VIPSConvertable implements TiffInfoDetector {
 
-    public PhotoshopTIFFFormat () {
+    def requiredKeywords = [
+            "Software: Adobe Photoshop"
+    ]
+
+    PhotoshopTIFFFormat() {
         extensions = ["tif", "tiff"]
-    }
+        mimeType = MimeTypeUtils.MIMETYPE_TIFF
 
-    public boolean detect() {
-        String tiffinfo = getTiffInfo()
-        return this.detect(tiffinfo)
-    }
-
-    boolean detect(String tiffinfo) {
-        return tiffinfo.contains("Software: Adobe Photoshop");
+        // https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
+        //TODO: https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Photoshop.html
+        cytominePropertyKeys[PropertyUtils.CYTO_WIDTH] = "EXIF.ImageWidth"
+        cytominePropertyKeys[PropertyUtils.CYTO_HEIGHT] = "EXIF.ImageHeight"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES] = "EXIF.XResolution"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES] = "EXIF.YResolution"
+        cytominePropertyKeys[PropertyUtils.CYTO_X_RES_UNIT] = "EXIF.ResolutionUnit"
+        cytominePropertyKeys[PropertyUtils.CYTO_Y_RES_UNIT] = "EXIF.ResolutionUnit"
+        cytominePropertyKeys[PropertyUtils.CYTO_BPS] = "EXIF.BitsPerSample"
+        cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "EXIF.SamplesPerPixel"
+        cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "EXIF.PhotometricInterpretation"
+        cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
     }
 }

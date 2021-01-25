@@ -1,7 +1,7 @@
 package be.cytomine.formats.supported.digitalpathology
 
 /*
- * Copyright (c) 2009-2018. Authors: see NOTICE file.
+ * Copyright (c) 2009-2019. Authors: see NOTICE file.
  *
  * Licensed under the GNU Lesser General Public License, Version 2.1 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,48 +16,49 @@ package be.cytomine.formats.supported.digitalpathology
  * limitations under the License.
  */
 
+import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.MultipleFilesFormat
+import be.cytomine.formats.tools.detectors.OpenSlideDetector
+import groovy.util.logging.Log4j
+import utils.ImageUtils
+import utils.MimeTypeUtils
+
 import java.awt.image.BufferedImage
 
-/**
- * Created by stevben on 22/04/14.
- */
-class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
+@Log4j
+class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
 
-    public MiraxMRXSFormat() {
+    String vendor = "mirax"
+
+    // https://openslide.org/formats/mirax/
+    // Associated labels: thumbnail, label, macro
+    MiraxMRXSFormat() {
+        super()
         extensions = ["mrxs"]
-        vendor = "mirax"
-        mimeType = "openslide/mrxs"
-        widthProperty = "openslide.level[0].width"
-        heightProperty = "openslide.level[0].height"
-        resolutionProperty = "openslide.mpp-x"
-        magnificiationProperty = "mirax.GENERAL.OBJECTIVE_MAGNIFICATION"
+        mimeType = MimeTypeUtils.MIMETYPE_MRXS
     }
 
     @Override
     boolean detect() {
-        File uploadedFile = new File(absoluteFilePath);
-        if(uploadedFile.isFile() && uploadedFile.name.endsWith('.mrxs')) uploadedFile = uploadedFile.parentFile
+        File mrxs = getRootFile(this.file)
 
-        File mrxs = getRootFile(uploadedFile)
-
-        if(mrxs){
-            absoluteFilePath = mrxs.absolutePath
-            return super.detect()
+        if (mrxs) {
+            this.file = new CytomineFile(mrxs.absolutePath)
         }
-        return false
+
+        return OpenSlideDetector.super.detect()
     }
 
     BufferedImage associated(String label) {
         BufferedImage bufferedImage = super.associated(label)
-        if (label == "macro"){
-            return rotate90ToRight(bufferedImage)
-        }
-        else {
-            return bufferedImage
-        }
+        return (label == "macro") ? ImageUtils.rotate90ToRight(bufferedImage) : bufferedImage
     }
 
     File getRootFile(File folder) {
-        return folder.listFiles(). find { it.name.endsWith('.mrxs')}
+        return folder.listFiles().find { file ->
+            extensions.any { ext ->
+                file.name.endsWith(".$ext")
+            }
+        }
     }
 }
