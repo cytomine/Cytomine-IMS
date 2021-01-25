@@ -21,6 +21,7 @@ import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.HttpUtils
+import utils.ImageUtils
 import utils.MimeTypeUtils
 import utils.PropertyUtils
 
@@ -92,23 +93,9 @@ class JPEG2000Format extends NativeFormat {
         if (x > 1 || y > 1)
             return null
 
-        double computedWidth = width
-        double computedHeight = height
-        if (params.maxSize) {
-            int maxSize = params.int('maxSize', 256)
-            computedWidth = maxSize //Math.min(computedWidth, maxSize)
-            computedHeight = maxSize //Math.min(computedHeight, maxSize)
-        } else if (params.zoom) {
-            int zoom = params.int('zoom', 0)
-            computedWidth *= Math.pow(2, zoom)
-            computedHeight *= Math.pow(2, zoom)
-        }
-
-        if (params.boolean("safe", true)) {
-            int maxCropSize = new Integer(Holders.config.cytomine.ims.crop.maxSize)
-            computedWidth = Math.min(computedWidth, maxCropSize)
-            computedHeight = Math.min(computedHeight, maxCropSize)
-        }
+        def computedDimensions = ImageUtils.getComputedDimensions(params)
+        def computedWidth = computedDimensions.computedWidth
+        def computedHeight = computedDimensions.computedHeight
 
         /*
         Ruven P. (author of IIP Image)

@@ -29,6 +29,7 @@ import java.awt.image.BufferedImage
 class MiraxMRXSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
 
     String vendor = "mirax"
+    String customExtension = "mrxs"
 
     // https://openslide.org/formats/mirax/
     // Associated labels: thumbnail, label, macro

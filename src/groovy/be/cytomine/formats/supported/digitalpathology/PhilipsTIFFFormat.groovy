@@ -19,10 +19,11 @@ package be.cytomine.formats.supported.digitalpathology
 import be.cytomine.formats.tools.CustomExtensionFormat
 import be.cytomine.formats.tools.detectors.OpenSlideDetector
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.MimeTypeUtils
 
 @Log4j
-class PhilipsTIFFFormat extends OpenSlideFormat implements CustomExtensionFormat, OpenSlideDetector {
+class PhilipsTIFFFormat extends OpenSlideFormat implements OpenSlideDetector {
 
     String vendor = "philips"
     String customExtension = "ptiff"

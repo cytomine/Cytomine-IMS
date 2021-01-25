@@ -26,6 +26,7 @@ import utils.MimeTypeUtils
 class HamamatsuVMSFormat extends OpenSlideFormat implements MultipleFilesFormat, OpenSlideDetector {
 
     String vendor = "hamamatsu"
+    String customExtension = "vms"
 
     // https://openslide.org/formats/hamamatsu/
     // Associated labels: macro

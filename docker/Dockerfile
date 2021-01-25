@@ -106,6 +106,8 @@ ADD ${RELEASE_PATH}/restapidoc.json /var/lib/tomcat7/webapps/restapidoc.json
 
 RUN mkdir -p /usr/share/tomcat7/.grails
 
+RUN ln -s /usr/local/bin/vips /usr/bin/vips && ln -s /usr/local/bin/identify /usr/bin/identify
+
 RUN touch /tmp/addHosts.sh
 COPY setenv.sh /usr/share/tomcat7/bin/setenv.sh
 RUN chmod +x /usr/share/tomcat7/bin/setenv.sh

@@ -73,6 +73,10 @@ class UrlMappings {
             action = [GET:"tile"]
         }
 
+        "/slice/histogram.$format" (controller: "slice") {
+            action = [GET:"histogram"]
+        }
+
         /* Profile controller */
 
         "/profile.$format" (controller: "profile") {

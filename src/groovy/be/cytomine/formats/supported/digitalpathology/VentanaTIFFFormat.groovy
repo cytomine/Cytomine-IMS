@@ -19,6 +19,7 @@ package be.cytomine.formats.supported.digitalpathology
 import be.cytomine.formats.tools.CustomExtensionFormat
 import be.cytomine.formats.tools.detectors.OpenSlideDetector
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.ImageUtils
 import utils.MimeTypeUtils
 

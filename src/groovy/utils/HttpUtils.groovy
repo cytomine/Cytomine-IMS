@@ -34,6 +34,10 @@ class HttpUtils {
 
     public static String concatenateParameters(def parameters) {
         String query = parameters.findAll{it.value != null}.collect { key, value ->
+            if (value instanceof String[]) {
+                return value.collect {"$key=$it" }.join("&")
+            }
+
             if (value instanceof String)
                 value = encode(value)
             "$key=$value"

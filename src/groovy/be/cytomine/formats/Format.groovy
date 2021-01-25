@@ -17,6 +17,7 @@ package be.cytomine.formats
  */
 
 import be.cytomine.formats.tools.CytomineFile
+import be.cytomine.formats.tools.histogram.VipsHistogramExtractor
 import be.cytomine.formats.tools.metadata.ExifToolMetadataExtractor
 import be.cytomine.units.Length
 import be.cytomine.units.MetricPrefix
@@ -134,6 +135,14 @@ abstract class Format {
         }
 
         return properties.findAll { it.value != null && !(it as String).isEmpty() }
+    }
+
+    def histogram() {
+        histogram(0)
+    }
+
+    def histogram(int band) {
+        return new VipsHistogramExtractor(this.file).histogram(band)
     }
 
     def annotations() {

@@ -21,6 +21,7 @@ import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.util.TypeConvertingMap
 import utils.HttpUtils
+import utils.ImageUtils
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -40,9 +41,11 @@ abstract class NativeFormat extends Format {
      *      - bits (optional, default: 8)
      * @return
      */
-    BufferedImage thumb(TypeConvertingMap params) {
+    BufferedImage thumb(TypeConvertingMap params, File actualFile = null) {
+        def file = actualFile ?: this.file
+
         def query = [
-                FIF: this.file.absolutePath,
+                FIF: file.absolutePath,
                 WID: params.int("maxSize"),
                 HEI: params.int("maxSize"),
                 INV: params.boolean("inverse") ?: null,
@@ -77,7 +80,9 @@ abstract class NativeFormat extends Format {
      *      - jpegQuality (optional, default: 99)
      * @return
      */
-    String cropURL(TypeConvertingMap params) {
+    String cropURL(TypeConvertingMap params, File actualFile = null) {
+        def file = actualFile ?: this.file
+
         int topLeftX = params.int('topLeftX')
         int topLeftY = params.int('topLeftY')
         double width = params.double('width')
@@ -93,28 +98,12 @@ abstract class NativeFormat extends Format {
         if (x > 1 || y > 1)
             return null
 
-        double computedWidth = width
-        double computedHeight = height
-        if (params.maxSize) {
-            int maxSize = params.int('maxSize', 256)
-            computedWidth = maxSize //Math.min(computedWidth, maxSize)
-            computedHeight = maxSize //Math.min(computedHeight, maxSize)
-        } else if (params.zoom) {
-            int zoom = params.int('zoom', 0)
-            computedWidth *= Math.pow(2, zoom)
-            computedHeight *= Math.pow(2, zoom)
-        }
-
-        if (params.boolean("safe", true)) {
-            int maxCropSize = new Integer(Holders.config.cytomine.ims.crop.maxSize)
-            computedWidth = Math.min(computedWidth, maxCropSize)
-            computedHeight = Math.min(computedHeight, maxCropSize)
-        }
+        def computedDimensions = ImageUtils.getComputedDimensions(params)
 
         def query = [
-                FIF: this.file.absolutePath,
-                WID: computedWidth,
-                HEI: computedHeight,
+                FIF: file.absolutePath,
+                WID: computedDimensions.computedWidth,
+                HEI: computedDimensions.computedHeight,
                 RGN: "$x,$y,$w,$h",
                 CNT: params.double("contrast"),
                 GAM: params.double("gamma"),
@@ -139,27 +128,30 @@ abstract class NativeFormat extends Format {
      *      - inverse (optional, used in JTL protocol, default: false)
      * @return
      */
-    String tileURL(TypeConvertingMap params) {
+    String tileURL(TypeConvertingMap params, File actualFile = null) {
+        def file = actualFile ?: this.file
+
         if (params.tileGroup) {
             def tg = params.int("tileGroup") ?: Integer.parseInt(params.tileGroup.toLowerCase().replace("tilegroup", ""))
             def z = params.int("z")
             def x = params.int("x")
             def y = params.int("y")
-            def file = HttpUtils.encode(this.file.absolutePath)
+            def filename = HttpUtils.encode(file.absolutePath)
 
-            if (file.endsWith("/"))
-                file = file.substring(0, file.length()-1)
+            if (filename.endsWith("/"))
+                filename = filename.substring(0, filename.length()-1)
 
-            return "${iipUrl}?zoomify=${file}/TileGroup${tg}/${z}-${x}-${y}.jpg"
+            return "${iipUrl}?zoomify=${filename}/TileGroup${tg}/${z}-${x}-${y}.jpg"
         }
 
         def z = params.int("z")
         def tileIndex = params.int("tileIndex")
         def query = [
-                FIF: this.file.absolutePath,
+                FIF: file.absolutePath,
                 CNT: params.double("contrast"),
                 GAM: params.double("gamma"),
                 INV: params.boolean("inverse") ?: null,
+                MINMAX: params.minmax?.split("\\|"),
                 JTL: "$z,$tileIndex"
         ]
 
