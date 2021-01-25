@@ -54,7 +54,7 @@ class GeoJPEG2000Format extends NotNativeFormat implements GdalDetector {
     @Override
     def convert() {
         String targetName = (this.file.name - ".${this.file.extension()}") + "_geo.tif"
-        CytomineFile target = new CytomineFile(this.file.parent, FilesUtils.correctFilename(targetName), this.file.c, this.file.z, this.file.t)
+        CytomineFile target = new CytomineFile(this.file.parent, FilesUtils.correctFilename(targetName), this.file.c, this.file.z, this.file.t, this.file.channelName)
 
         def gdalinfo = this.file.getGdalInfoOutput()
         def nbits = (gdalinfo.contains("Int16")) ? 16 : ((gdalinfo.contains("Int32") || gdalinfo.contains("Float32")) ? 32 : 8)

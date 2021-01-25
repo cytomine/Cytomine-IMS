@@ -57,7 +57,8 @@ abstract class Format {
             (PropertyUtils.CYTO_FPS)          : null,
             (PropertyUtils.CYTO_BPS)          : null,
             (PropertyUtils.CYTO_SPP)          : null,
-            (PropertyUtils.CYTO_COLORSPACE)   : ""
+            (PropertyUtils.CYTO_COLORSPACE)   : "",
+            (PropertyUtils.CYTO_CHANNEL_NAMES): ""
     ]
 
     protected def cytominePropertyParsers = [
@@ -76,7 +77,8 @@ abstract class Format {
             (PropertyUtils.CYTO_FPS)          : PropertyUtils.parseDouble,
             (PropertyUtils.CYTO_BPS)          : PropertyUtils.parseInt,
             (PropertyUtils.CYTO_SPP)          : PropertyUtils.parseInt,
-            (PropertyUtils.CYTO_COLORSPACE)   : PropertyUtils.parseString
+            (PropertyUtils.CYTO_COLORSPACE)   : PropertyUtils.parseString,
+            (PropertyUtils.CYTO_CHANNEL_NAMES): PropertyUtils.parseString
     ]
 
     String toString() {

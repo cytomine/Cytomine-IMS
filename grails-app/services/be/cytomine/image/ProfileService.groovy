@@ -28,6 +28,13 @@ import ch.systemsx.cisd.base.mdarray.MDByteArray
 import ch.systemsx.cisd.base.mdarray.MDIntArray
 import ch.systemsx.cisd.base.mdarray.MDShortArray
 import ch.systemsx.cisd.hdf5.*
+import com.vividsolutions.jts.geom.Coordinate
+import com.vividsolutions.jts.geom.Envelope
+import com.vividsolutions.jts.geom.Geometry
+import com.vividsolutions.jts.geom.GeometryFactory
+import com.vividsolutions.jts.geom.util.AffineTransformation
+import com.vividsolutions.jts.operation.predicate.RectangleIntersects
+import groovyx.gpars.GParsPool
 import groovyx.gpars.dataflow.DataflowQueue
 import groovyx.gpars.dataflow.operator.PoisonPill
 import groovyx.gpars.group.DefaultPGroup
@@ -41,6 +48,7 @@ import utils.MimeTypeUtils
 import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.awt.image.WritableRaster
 import java.nio.file.Paths
 
 import static ch.systemsx.cisd.hdf5.MatrixUtils.dims
@@ -430,22 +438,27 @@ class ProfileService {
     }
 
     /**
-     * Find a profile for a bbox given in a cartesian coordinate system.
+     * Find a profile for a geometry given in a cartesian coordinate system.
      *
      * @param path      The HDF5 filepath
-     * @param x         The top-left point coordinate along x-axis (horizontal, left to right)
-     * @param y         The top-left point coordinate along y-axis (vertical, bottom to top)
-     * @param width     The bbox width
-     * @param height    The bbox height
+     * @param geometry  The valid geometry in a cartesian coordinate system
      * @param bounds    A map with 'min' and 'max' limiting the returned profile
      * @return          A list of maps whose first item is point coordinate and second one a list of pixel values extracted from
      * HDF5 file for the given coordinates between the given bounds.
      */
-    def bboxProfile(String path, int x, int y, int width, int height, def bounds) {
+    def geometryProfile(String path, Geometry geometry, def bounds) {
         File f = new File(path)
         if (!f.exists()) {
             throw new FileNotFoundException(f.absolutePath + "does not exist.")
         }
+
+        Envelope env = geometry.getEnvelopeInternal()
+        int xleft = (int) Math.round(env.getMinX())
+        int xright = (int) Math.round(env.getMaxX())
+        int ytop = (int) Math.round(env.getMaxY())
+        int ybottom = (int) Math.round(env.getMinY())
+        int width = xright - xleft
+        int height = ytop - ybottom
 
         IHDF5Reader hdf5 = null
         try {
@@ -453,10 +466,10 @@ class ProfileService {
 
             try {
                 int version = hdf5.int32().read("version")
-                return bboxProfileV2(hdf5, x, y, width, height, bounds)
+                return geometryProfileV2(hdf5, xleft, ytop, width, height, geometry, bounds)
             }
             catch(HDF5SymbolTableException ignored) {
-                return bboxProfileV1(hdf5, x, y, width, height, bounds)
+                return geometryProfileV1(hdf5, xleft, ytop, width, height, geometry, bounds)
             }
         }
         finally {
@@ -464,7 +477,7 @@ class ProfileService {
         }
     }
 
-    def bboxProfileV2(IHDF5Reader hdf5, int x, int y, int width, int height, def bounds) {
+    def geometryProfileV2(IHDF5Reader hdf5, int x, int y, int width, int height, Geometry geometry, def bounds) {
         int imageWidth = hdf5.int32().read("width")
         int imageHeight = hdf5.int32().read("height")
         int bpc = hdf5.int32().read("bpc")
@@ -475,46 +488,73 @@ class ProfileService {
         int maxBound = (int) Math.min(nSlices, bounds.max)
 
         def xmin = Math.min(x, imageWidth)
-        def ymin = Math.min(y, imageHeight)
         def xmax = Math.min(xmin + width, imageWidth)
-        def ymax = Math.min(ymin + height, imageHeight)
+        def ymax = Math.min(y, imageHeight)
+        def ymin = Math.min(ymax - height, imageHeight)
+        log.debug "X: $xmin - $xmax | Y: $ymin - $ymax"
 
         // We change referential for a matrix-like system used by HDF5
-        int minRow = imageHeight - ymin
-        int maxRow = imageHeight - ymax
+        int minRow = imageHeight - ymax
+        int maxRow = imageHeight - ymin
         int minCol = xmin
         int maxCol = xmax
+        log.debug "Row: $minRow - $maxRow | Col: $minCol - $maxCol"
 
         // Find min and max block to ask in row, col dimensions
         int minRowBlock = (int) Math.floor(minRow / blockSize)
         int maxRowBlock = (int) Math.ceil(maxRow / blockSize)
         int minColBlock = (int) Math.floor(minCol / blockSize)
         int maxColBlock = (int) Math.ceil(maxCol / blockSize)
+        log.debug "RowBlock: $minRowBlock - $maxRowBlock | ColBlock: $minColBlock - $maxColBlock"
 
         def mask = getMask(bpc)
         def reader = getHDF5Reader(hdf5, bpc)
         int[] blockDimensions = [blockSize, blockSize, nSlices]
 
+        GeometryFactory gf = new GeometryFactory()
+        AffineTransformation at = new AffineTransformation(1.0, 0.0, 0.0, 0.0, -1.0, imageHeight)
+        geometry = at.transform(geometry)
+
         def results = []
         for (int bx = minRowBlock; bx < maxRowBlock; bx++) {
             for (int by = minColBlock; by < maxColBlock; by++) {
-                def array = reader?.readMDArrayBlock(HDF5_DATASET, blockDimensions, (long[]) [bx, by, 0])
-
                 // We have to find the local (min, max) in row, col dimensions w.r.t. block to get only data in the bbox
                 int blockOffsetRow = bx * blockSize
                 int blockOffsetCol = by * blockSize
-                int minLocalRow = (blockOffsetRow < minRow) ? minRow : 0
-                int maxLocalRow = (blockOffsetRow + blockSize > maxRow) ? maxRow : blockSize
-                int minLocalCol = (blockOffsetCol < minCol) ? minCol : 0
-                int maxLocalCol = (blockOffsetCol + blockSize > maxCol) ? maxCol : blockSize
+                log.debug "BlockOffsetRow: $blockOffsetRow | BlockOffsetCol: $blockOffsetCol"
 
+                // Only read the block if the geometry intersects the block
+                Geometry blockBbox = gf.toGeometry(new Envelope(blockOffsetCol, blockOffsetCol + blockSize - 1,
+                        blockOffsetRow, blockOffsetRow + blockSize - 1))
+                if (!RectangleIntersects.intersects(blockBbox, geometry)) {
+                    log.debug "Block ($bx , $by) is skipped."
+                    continue
+                }
+
+                log.debug "Reading block ($bx , $by)"
+                def array = reader?.readMDArrayBlock(HDF5_DATASET, blockDimensions, (long[]) [bx, by, 0])
+
+                int minLocalRow = (blockOffsetRow < minRow) ? (minRow % blockSize) : 0
+                int maxLocalRow = (blockOffsetRow + blockSize > maxRow) ? (maxRow % blockSize): blockSize
+                int minLocalCol = (blockOffsetCol < minCol) ? (minCol % blockSize) : 0
+                int maxLocalCol = (blockOffsetCol + blockSize > maxCol) ? (maxCol % blockSize) : blockSize
+                log.debug "LocalRow: $minLocalRow - $maxLocalRow | LocalCol: $minLocalCol - $maxLocalRow"
+
+                // Only need precise point cover check if the whole block is not within the adjusted block bbox
+                def blockWithinGeom = blockBbox.within(geometry)
                 for (int i = minLocalRow; i < maxLocalRow; i++) {
                     for (int j = minLocalCol; j < maxLocalCol; j++) {
+                        def pointX = blockOffsetCol + j
+                        def pointY = blockOffsetRow + i
+                        if (!blockWithinGeom && !geometry.covers(gf.createPoint(new Coordinate(pointX, pointY)))) {
+                            continue
+                        }
+
                         def data = []
                         for (int k = minBound; k < maxBound; k++) {
                             data << (int) (array.get(i, j, k) & mask)
                         }
-                        results << [point: [blockOffsetCol + j, imageHeight - (blockOffsetRow + i)], profile: data]
+                        results << [point: [pointX, imageHeight - pointY], profile: data]
                     }
                 }
             }
@@ -525,7 +565,7 @@ class ProfileService {
         return results
     }
 
-    def bboxProfileV1(IHDF5Reader hdf5, int x, int y, int width, int height, def bounds) {
+    def geometryProfileV1(IHDF5Reader hdf5, int x, int y, int width, int height, Geometry geometry, def bounds) {
         int[] meta = hdf5.int32().readArray("/meta")
         def blockLength = meta[0]
         def bpc = meta[1]
@@ -546,10 +586,14 @@ class ProfileService {
         def mask = getMask(bpc)
         def reader = getHDF5Reader(hdf5, bpc)
 
+        GeometryFactory gf = new GeometryFactory()
+//        AffineTransformation at = new AffineTransformation(1.0, 0.0, 0.0, 0.0, -1.0, imageHeight)
+//        geometry = at.transform(geometry)
+
         def xmin = Math.min(x, imageWidth)
         def ymin = Math.min(y, imageHeight)
-        def xmax = Math.min(xmin + width, imageWidth)
-        def ymax = Math.min(ymin + height, imageHeight)
+        def xmax = Math.min(xmin + width + 1, imageWidth)
+        def ymax = Math.min(ymin + height + 1, imageHeight)
 
         def Xmin = (int) Math.floor(xmin / blockLength)
         def Ymin = (int) Math.floor(ymin / blockLength)
@@ -559,8 +603,6 @@ class ProfileService {
         def spectrum = []
         for (def X = Xmin; X < Xmax; X++) {
             for (def Y = Ymin; Y < Ymax; Y++) {
-                def block = reader.readArray("/b${X}_${Y}")
-
                 def xStart = X * blockLength
                 def xEnd = Math.min(xStart + blockLength, imageWidth)
                 def yStart = Y * blockLength
@@ -568,13 +610,27 @@ class ProfileService {
                 def blockWidth = xEnd - xStart
                 def blockHeight = yEnd - yStart
 
+                // Only read the block if the geometry intersects the block
+                Geometry blockBbox = gf.toGeometry(new Envelope(xStart, xEnd - 1, yStart, yEnd - 1))
+                if (!RectangleIntersects.intersects(blockBbox, geometry)) {
+                    log.debug "Block ($X , $Y) is skipped."
+                    continue
+                }
+
+                def block = reader.readArray("/b${X}_${Y}")
+
                 def x1 = (int) Math.max(xmin, xStart)
                 def x2 = (int) Math.min(xmax, xEnd)
                 def y1 = (int) Math.max(ymin, yStart)
                 def y2 = (int) Math.min(ymax, yEnd)
 
+                // Only need precise point cover check if the whole block is not within the adjusted block bbox
+                def blockWithinGeom = blockBbox.within(geometry)
                 for (def i = x1; i < x2; i++) {
                     for (def j = y1; j < y2; j++) {
+                        if (!blockWithinGeom && !geometry.covers(gf.createPoint(new Coordinate(i, j)))) {
+                            continue
+                        }
                         def res = []
                         for (def k = minBound; k < maxBound; k++) {
                             def ii = i % blockWidth
@@ -588,6 +644,83 @@ class ProfileService {
         }
 
         return spectrum
+    }
+    
+    def pointProfileStats(def pointProfile, def getMin = true, def getMax = true, def getAverage = true) {
+        if (getMin) pointProfile.min = pointProfile.profile.min()
+        if (getMax) pointProfile.max = pointProfile.profile.max()
+        if (getAverage) pointProfile.average = pointProfile.profile.sum() / pointProfile.profile.size()
+        pointProfile.remove("profile")
+        return pointProfile
+    }
+
+    def geometryProfileStats(def geometryProfile, def getMin = true, def getMax = true, def getAverage = true) {
+        GParsPool.withPool {
+            geometryProfile.collectParallel { pointProfileStats(it, getMin, getMax, getAverage) }
+        }
+        return geometryProfile
+    }
+
+    def polygonProfileProjection(String fif, Geometry geometry, def bounds, def projectionMode) {
+        def profile = geometryProfile(fif, geometry, bounds)
+        def projection = geometryProfileStats(profile, (projectionMode == 'min'), (projectionMode == 'max'),
+                (projectionMode == 'average'))
+
+        Envelope envelope = geometry.getEnvelopeInternal()
+        def xleft = (int) Math.round(envelope.getMinX())
+        def ybottom = (int) Math.round(envelope.getMinY())
+        def width = (int) Math.round(envelope.getWidth())
+        def height = (int) Math.round(envelope.getHeight())
+        def bits = profileInfo(fif)?.bpc ?: 8
+        def type = (bits > 8) ? BufferedImage.TYPE_USHORT_GRAY : BufferedImage.TYPE_BYTE_GRAY
+        BufferedImage image = new BufferedImage(width, height, type)
+        WritableRaster raster = image.getRaster()
+        GParsPool.withPool {
+            projection.eachParallel {
+                def x = it.point[0] - xleft
+                def y = height - (it.point[1] - ybottom)
+                raster.setPixel(x, y, [it[projectionMode]] as int[])
+            }
+        }
+
+        image
+    }
+
+    def profileInfo(String path) {
+        File f = new File(path)
+        if (!f.exists()) {
+            throw new FileNotFoundException(f.absolutePath + "does not exist.")
+        }
+
+        def info = [:]
+        IHDF5Reader hdf5 = null
+        try {
+            hdf5 = HDF5Factory.openForReading(f)
+
+            try {
+                info.version = hdf5.int32().read("version")
+                info.imageWidth = hdf5.int32().read("width")
+                info.imageHeight = hdf5.int32().read("height")
+                info.bpc = hdf5.int32().read("bpc")
+                info.nSlices = hdf5.int32().read("nSlices")
+                info.blockSize = hdf5.int32().read("blockSize")
+            }
+            catch(HDF5SymbolTableException ignored) {
+
+                int[] meta = hdf5.int32().readArray("/meta")
+                info.version = 1
+                info.blockSize = meta[0]
+                info.bpc = meta[1]
+                info.nSlices = meta[2]
+                info.imageWidth = meta[3]
+                info.imageHeight = meta[4]
+            }
+        }
+        finally {
+            if (hdf5 != null) hdf5.close()
+        }
+
+        return info
     }
 
     private static def getHDF5Reader(IHDF5Reader hdf5, bpc) {

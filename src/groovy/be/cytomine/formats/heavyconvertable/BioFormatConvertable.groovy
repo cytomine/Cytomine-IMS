@@ -46,6 +46,7 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
         cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "Bioformats.Pixels.SamplesPerPixel"
         cytominePropertyKeys[PropertyUtils.CYTO_MAGNIFICATION] = "Bioformats.Objective.NominalMagnification"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "" //TODO
+        cytominePropertyKeys[PropertyUtils.CYTO_CHANNEL_NAMES] = "Bioformats.Channels.Name"
     }
 
     def makeRequest(def message) {
@@ -86,7 +87,7 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
         if ((files == [] || files == null) && error != null) {
             throw new ConversionException("BioFormats Exception : $error")
         }
-        return files.collect { new CytomineFile(it.path as String, it.c, it.z, it.t) }
+        return files.collect { new CytomineFile(it.path as String, it.c, it.z, it.t, it.channelName) }
     }
 
     def properties() {
@@ -94,7 +95,8 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
 
         def message = [
                 path: this.file.absolutePath,
-                action: "properties"
+                action: "properties",
+                includeRawProperties: this.includeRawProperties()
         ]
 
         def response = makeRequest(message)
@@ -109,4 +111,6 @@ abstract class BioFormatConvertable extends NotNativeFormat implements IHeavyCon
     abstract boolean getGroup();
 
     abstract boolean getOnlyBiggestSerie();
+
+    abstract boolean includeRawProperties()
 }

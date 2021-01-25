@@ -66,7 +66,8 @@ class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
 
         //pyramid or multi-page, sufficient ?
         int nbTiffDirectory = StringUtils.countOccurrencesOf(file.getTiffInfoOutput(), "TIFF Directory")
-        if (nbTiffDirectory > 1)
+        int nbTileWidth = StringUtils.countOccurrencesOf(file.getTiffInfoOutput(), "Tile Width:")
+        if (nbTiffDirectory > 1 && nbTileWidth > 1)
             return true
         else if (nbTiffDirectory == 1) { //check if very small tiff
             //get width & height from tiffinfo...

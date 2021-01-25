@@ -31,14 +31,20 @@ class CytomineFile extends File {
     def c
     def z
     def t
+    def channelName
 
     CytomineFile(String pathname) {
         this(pathname, null, null, null)
     }
 
     CytomineFile(String pathname, def c, def z, def t) {
+        this(pathname,c, z, t, null)
+    }
+
+    CytomineFile(String pathname, def c, def z, def t, def channelName) {
         super(pathname)
         setDimensions(c, z, t)
+        this.channelName = channelName
     }
 
     CytomineFile(String parent, String child) {
@@ -46,8 +52,13 @@ class CytomineFile extends File {
     }
 
     CytomineFile(String parent, String child, def c, def z, def t) {
+        this(parent, child, c, z, t, null)
+    }
+
+    CytomineFile(String parent, String child, def c, def z, def t, def channelName) {
         super(parent, child)
         setDimensions(c, z, t)
+        this.channelName = channelName
     }
 
     CytomineFile(File parent, String child) {
@@ -55,12 +66,17 @@ class CytomineFile extends File {
     }
 
     CytomineFile(File parent, String child, def c, def z, def t) {
+        this(parent, child, c, z, t, null)
+    }
+
+    CytomineFile(File parent, String child, def c, def z, def t, def channelName) {
         super(parent, child)
         setDimensions(c, z, t)
+        this.channelName = channelName
     }
 
     CytomineFile(CytomineFile file) {
-        this(file.absolutePath, file.c, file.z, file.t)
+        this(file.absolutePath, file.c, file.z, file.t, file.channelName)
     }
 
     def setDimensions(def c, def z, def t) {

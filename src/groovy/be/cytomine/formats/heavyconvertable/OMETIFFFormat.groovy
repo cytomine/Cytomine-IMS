@@ -54,4 +54,9 @@ class OMETIFFFormat extends BioFormatConvertable implements TiffInfoDetector {
     boolean getOnlyBiggestSerie() {
         return false
     }
+
+    @Override
+    boolean includeRawProperties() {
+        return false
+    }
 }
