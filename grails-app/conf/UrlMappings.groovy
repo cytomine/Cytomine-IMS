@@ -73,30 +73,35 @@ class UrlMappings {
             action = [GET:"tile"]
         }
 
-        "/slice/histogram.$format" (controller: "slice") {
-            action = [GET:"histogram"]
+        boolean hyperspectralEnabled = false
+        if(hyperspectralEnabled) {
+            "/slice/histogram.$format"(controller: "slice") {
+                action = [GET: "histogram"]
+            }
         }
 
         /* Profile controller */
 
-        "/profile.$format" (controller: "profile") {
-            action = [POST: "computeProfile", GET: "extractProfile"]
-        }
+        if(hyperspectralEnabled) {
+            "/profile.$format" (controller: "profile") {
+                action = [POST: "computeProfile", GET: "extractProfile"]
+            }
 
-        "/profile/stats.$format" (controller: "profile") {
-            action = [POST: "statsProfile", GET: "statsProfile"]
-        }
+            "/profile/stats.$format" (controller: "profile") {
+                action = [POST: "statsProfile", GET: "statsProfile"]
+            }
 
-        "/profile/min-projection.$format" (controller: "profile") {
-            action = [POST: "minProjection", GET: "minProjection"]
-        }
+            "/profile/min-projection.$format" (controller: "profile") {
+                action = [POST: "minProjection", GET: "minProjection"]
+            }
 
-        "/profile/max-projection.$format" (controller: "profile") {
-            action = [POST: "maxProjection", GET: "maxProjection"]
-        }
+            "/profile/max-projection.$format" (controller: "profile") {
+                action = [POST: "maxProjection", GET: "maxProjection"]
+            }
 
-        "/profile/average-projection.$format" (controller: "profile") {
-            action = [POST: "averageProjection", GET: "averageProjection"]
+            "/profile/average-projection.$format" (controller: "profile") {
+                action = [POST: "averageProjection", GET: "averageProjection"]
+            }
         }
 	}
 }
