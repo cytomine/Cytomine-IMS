@@ -40,5 +40,7 @@ class JPEGFormat extends CommonFormat implements ImageMagickDetector {
         cytominePropertyKeys[PropertyUtils.CYTO_SPP] = "File.ColorComponents"
         cytominePropertyKeys[PropertyUtils.CYTO_COLORSPACE] = "File.ColorSpace" //to check
         cytominePropertyParsers[PropertyUtils.CYTO_BPS] = PropertyUtils.parseIntFirstWord
+
+        vipsCompression = "jpeg -Q 85"
     }
 }
