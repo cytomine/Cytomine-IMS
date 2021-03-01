@@ -378,7 +378,9 @@ class UploadService {
     }
 
     private AbstractImage createAbstractImage(CytomineConnection userConn, UploadedFile uploadedFile, def metadata) {
-        def image = new AbstractImage(uploadedFile, uploadedFile.getStr('originalFilename')).save(userConn)
+        def image = new AbstractImage(uploadedFile, uploadedFile.getStr('originalFilename'))
+        image = image.save(userConn)
+
 
         def props = []
         metadata.each {
@@ -388,7 +390,7 @@ class UploadService {
         if (props.size() > 0) {
             log.info "Add ${props.size()} format-dependent properties to ${image}"
             log.debug properties
-            def promises = props.collect {
+            /*def promises = props.collect {
                 p -> Promises.task {
                     try {
                         p.save(userConn)
@@ -398,12 +400,34 @@ class UploadService {
                             throw e
                     }
                 }
+            }*/
+
+            int size = (props.size()/grailsApplication.config.cytomine.ims.upload.nThreadsPool)+2
+            def promises = props.collate(size)
+            log.info "promises"
+            log.info promises.size()
+            promises = promises.collect {
+                subList -> Promises.task {
+                    subList.each { Property p ->
+                        try {
+                            log.info p
+                            if(p.getStr("value").size() >= 255) log.info p.getStr("value")
+                            p.save(userConn)
+                        }
+                        catch (CytomineException e) {
+                            if (p.getStr("key").contains("cytomine."))
+                                throw e
+                        }
+                    }
+                }
             }
+            log.info "promises"
+            log.info promises.size()
             Promises.waitAll(promises)
         }
         image.extractUsefulProperties()
 
-        return image
+        return image.fetch(image.id)
     }
 
     private AbstractSlice createAbstractSlice(CytomineConnection userConn, UploadedFile uploadedFile, AbstractImage image, Format format, CytomineFile file) {
