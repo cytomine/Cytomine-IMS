@@ -1,9 +1,10 @@
 package ims
 
 import be.cytomine.client.Cytomine
-import be.cytomine.client.CytomineConnection
 import be.cytomine.client.collections.Collection
 import be.cytomine.client.models.DeleteCommand
+import be.cytomine.formats.Format
+import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.formats.tools.MultipleFilesFormat
 import groovy.io.FileType
 import be.cytomine.formats.FormatIdentifier
@@ -24,7 +25,7 @@ class DeleteImageFileJob {
         String cytomineUrl = grailsApplication.config.cytomine.ims.server.core.url
         String pubKey = grailsApplication.config.cytomine.ims.server.publicKey
         String privKey = grailsApplication.config.cytomine.ims.server.privateKey
-        CytomineConnection imsConn = Cytomine.connection(cytomineUrl, pubKey, privKey, true)
+        Cytomine.connection(cytomineUrl, pubKey, privKey, true)
 
         long timeMargin = grailsApplication.config.cytomine.ims.deleteJob.frequency * 1000 * 2
 
@@ -46,9 +47,16 @@ class DeleteImageFileJob {
 
             if(!fileToDelete.exists()) continue;
 
+            CytomineFile cFile = new CytomineFile(fileToDelete.absolutePath)
+            def identifier = new FormatIdentifier(cFile)
             def format
             try{
-                format = FormatIdentifier.getImageFormat(fileToDelete.absolutePath)
+                format = identifier.getMultipleFilesFormats().find { Format f ->
+                    f.extensions && f.extensions.contains(cFile.extension())
+                }
+
+                if(!format) format = identifier.identify()
+
             } catch(FormatException e) {
                 if(fileToDelete.isFile()) log.error "Unknown format for file "+fileToDelete.absolutePath
                 else log.info "Unknown format for "+fileToDelete.absolutePath
@@ -74,6 +82,9 @@ class DeleteImageFileJob {
                     }
                 } else if (format instanceof MultipleFilesFormat) {
                     if(fileToDelete.isFile()) fileToDelete = fileToDelete.parentFile
+                    log.info "DELETE folder "+fileToDelete.absolutePath
+                    fileToDelete.deleteDir()
+                } else if (identifier.isClassicFolder()) {
                     log.info "DELETE folder "+fileToDelete.absolutePath
                     fileToDelete.deleteDir()
                 }
