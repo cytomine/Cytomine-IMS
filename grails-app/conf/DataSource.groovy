@@ -27,7 +27,7 @@ hibernate {
 }
 // environment specific settings
 environments {
-    development {
+    /*development {
         dataSource {
             dbCreate = "update"
             url = "jdbc:h2:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
@@ -77,5 +77,5 @@ environments {
                 validationQuery="SELECT 1"
             }
         }
-    }
+    }*/
 }
