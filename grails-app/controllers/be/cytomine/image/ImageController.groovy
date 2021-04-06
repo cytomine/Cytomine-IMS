@@ -21,7 +21,6 @@ import be.cytomine.client.Cytomine
 import be.cytomine.exception.ObjectNotFoundException
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.SupportedImageFormat
-import be.cytomine.exception.InvalidRequestException
 import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.supported.digitalpathology.OpenSlideMultipleFileFormat
 import com.vividsolutions.jts.geom.Geometry
@@ -184,7 +183,7 @@ class ImageController extends ImageUtilsController {
 
         def savedWidth = params.double('width')
         def savedHeight = params.double('height')
-        if(savedHeight <= 0 || savedWidth <= 0) throw new InvalidRequestException("Width or Height cannot be null")
+        //if(savedHeight <= 0 || savedWidth <= 0) throw new InvalidRequestException("Width or Height cannot be null")
 
         SupportedImageFormat imageFormat = FormatIdentifier.getImageFormatByMimeType(URLDecoder.decode(params.fif,"UTF-8"), params.mimeType)
 
@@ -382,8 +381,8 @@ class ImageController extends ImageUtilsController {
 
         if (params.safe) {
             //if safe mode, skip annotation too large
-            if ((params.int('width') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth) ||
-                    (params.int('height') > grailsApplication.config.cytomine.maxAnnotationOnImageWidth)){
+            if ((params.int('width') > Integer.parseInt(grailsApplication.config.cytomine.maxAnnotationOnImageWidth)) ||
+                    (params.int('height') > Integer.parseInt(grailsApplication.config.cytomine.maxAnnotationOnImageWidth))){
                 throw new MiddlewareException("Too big annotation!");
             }
         }
