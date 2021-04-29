@@ -173,7 +173,7 @@ cytomine.ims.jpeg2000.iip.url = "http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcg
 cytomine.ims.jpeg2000.enabled = true
 
 
-cytomine.ims.crop.maxSize = 15000 // in pixels
+cytomine.ims.crop.maxSize = 12000 // in pixels
 cytomine.ims.deleteJob.frequency = 600 // in seconds
 
 cytomine.ims.hdf5.maxBurstSize = 512 // Mbytes
