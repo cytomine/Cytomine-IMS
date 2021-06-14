@@ -95,11 +95,13 @@ class StorageController {
             log.info "sync="+isSync
 
             String filename = (String) params['files[].name']
+            String displayedName = ((String) params['name']) ?: filename
             def filePath = (String) params['files[].path']
 
             log.info "idStorage=$idStorage"
             log.info "projects=$projects"
             log.info "filename=$filename"
+            log.info "displayedName=$displayedName"
             log.info "filePath=$filePath"
             long timestamp = new Date().getTime()
 
@@ -107,7 +109,7 @@ class StorageController {
             try {
                 responseContent.status = 200;
                 responseContent.name = filename
-                def uploadResult = uploadService.upload(cytomine, filename, idStorage, filePath, projects, currentUserId, properties, timestamp, isSync)
+                def uploadResult = uploadService.upload(cytomine, filename, displayedName, idStorage, filePath, projects, currentUserId, properties, timestamp, isSync)
 
                 responseContent.uploadFile = uploadResult.uploadedFile
                 responseContent.images = uploadResult.images

@@ -58,7 +58,7 @@ class UploadService {
      * @param isSync : boolean. true if we wait the end of deployment before returning an HTTP response
      * @return A map with the original uploadedFile and all the AbstractImages generated
      */
-    def upload(Cytomine cytomine, String filename, Long idStorage, String filePath, def projects, long currentUserId, def properties, long timestamp, boolean isSync){
+    def upload(Cytomine cytomine, String filename, String displayedName, Long idStorage, String filePath, def projects, long currentUserId, def properties, long timestamp, boolean isSync){
 
         if(!filePath) throw new FileNotFoundException("Got an invalid file. Disk might be full.")
         def tmpUploadedFilePath = new File(filePath)
@@ -81,7 +81,7 @@ class UploadService {
 
         // no parent
         def uploadedFile = cytomine.addUploadedFile(
-                filename,
+                displayedName,
                 destPath,
                 storage.getStr("basePath"),
                 size,
