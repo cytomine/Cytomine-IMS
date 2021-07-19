@@ -11,16 +11,16 @@ node {
     sh 'mkdir -p ./ci'
 
     stage 'Compute version name'
-    sh 'scriptsCI/ciBuildVersion.sh ${BRANCH_NAME}'
+    sh 'scripts/ciBuildVersion.sh ${BRANCH_NAME}'
 
     stage 'Download and cache dependencies'
-    sh 'scriptsCI/ciDownloadDependencies.sh'
+    sh 'scripts/ciDownloadDependencies.sh'
 
     stage 'Build war'
-    sh 'scriptsCI/ciBuildWar.sh'
+    sh 'scripts/ciBuildWar.sh'
 
     stage 'Publish war'
-    sh 'scriptsCI/ciPublishWar.sh'
+    sh 'scripts/ciPublishWar.sh'
 
     stage 'Build docker image'
     withCredentials(
@@ -29,7 +29,7 @@ node {
         ]
         ) {
             docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIAL') {
-                sh 'scriptsCI/ciBuildDockerImage.sh'
+                sh 'scripts/ciBuildDockerImage.sh'
             }
         }
 }
