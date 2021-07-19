@@ -95,8 +95,6 @@ RUN rm -r /var/lib/tomcat7/webapps/*
 ARG IMS_URL
 
 RUN cd /var/lib/tomcat7/webapps/ && wget $IMS_URL -O ROOT.war
-ADD IMS.war /var/lib/tomcat7/webapps/ROOT.war
-
 RUN mkdir -p /usr/share/tomcat7/.grails
 RUN ln -s /usr/local/bin/vips /usr/bin/vips && ln -s /usr/local/bin/identify /usr/bin/identify
 RUN touch /tmp/addHosts.sh
