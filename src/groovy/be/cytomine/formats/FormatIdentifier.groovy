@@ -32,6 +32,7 @@ import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.formats.supported.PyramidalTIFFFormat
 import be.cytomine.formats.supported.digitalpathology.*
+import be.cytomine.formats.supported.proprietary.ISyntaxFormat
 import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.formats.tools.MultipleFilesFormat
 import groovy.util.logging.Log4j
@@ -72,6 +73,7 @@ class FormatIdentifier {
                 new CZITIFFFormat(), // detector: tiffinfo
                 new OMETIFFFormat(), // detector: tiffinfo
                 new GeoTIFFFormat(), // detector: tiffinfo
+                new ISyntaxFormat(), // detector: extension
 
                 // Slow detections that must come before others
                 new HamamatsuNDPIFormat(), // detector: openslide
@@ -175,7 +177,8 @@ class FormatIdentifier {
                 new SakuraSVSlideFormat(),
                 new PhilipsTIFFFormat(),
                 new VentanaBIFFormat(),
-                new VentanaTIFFFormat()
+                new VentanaTIFFFormat(),
+                new ISyntaxFormat()
         ]
     }
 
