@@ -69,7 +69,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib/openslide-java
 # imagemagick 6.8.9-10 (fix problem with DICOM conversion by vips)
 ARG IMAGE_MAGICK_VERSION=6.8.9-10
 RUN cd /tmp && \
-    wget https://www.imagemagick.org/download/releases/ImageMagick-${IMAGE_MAGICK_VERSION}.tar.xz && \
+    wget https://www.imagemagick.org/download/releases/ImageMagick-${IMAGE_MAGICK_VERSION}.tar.xz --no-check-certificate && \
     tar xf ImageMagick-${IMAGE_MAGICK_VERSION}.tar.xz && \
     cd ImageMagick-${IMAGE_MAGICK_VERSION} && \
     ./configure && \
@@ -94,7 +94,7 @@ RUN rm -r /var/lib/tomcat7/webapps/*
 
 ARG IMS_URL
 
-RUN cd /var/lib/tomcat7/webapps/ && wget $IMS_URL -O ROOT.war
+RUN cd /var/lib/tomcat7/webapps/ && wget $IMS_URL  --no-check-certificate  -O ROOT.war
 RUN mkdir -p /usr/share/tomcat7/.grails
 RUN ln -s /usr/local/bin/vips /usr/bin/vips && ln -s /usr/local/bin/identify /usr/bin/identify
 RUN touch /tmp/addHosts.sh
