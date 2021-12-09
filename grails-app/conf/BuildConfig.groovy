@@ -66,6 +66,7 @@ grails.project.dependency.resolution = {
         compile 'com.vividsolutions:jts:1.13'
         compile 'net.imagej:ij:1.51h'
         compile 'com.github.jai-imageio:jai-imageio-core:1.4.0'
+        compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
     }
 
     plugins {

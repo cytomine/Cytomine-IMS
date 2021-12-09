@@ -35,7 +35,10 @@ import be.cytomine.formats.supported.digitalpathology.*
 import be.cytomine.formats.supported.proprietary.ISyntaxFormat
 import be.cytomine.formats.tools.CytomineFile
 import be.cytomine.formats.tools.MultipleFilesFormat
+import grails.util.Holders
 import groovy.util.logging.Log4j
+
+import java.nio.file.Paths
 
 @Log4j
 class FormatIdentifier {
@@ -51,7 +54,7 @@ class FormatIdentifier {
     def setFile(file) {
         this.file = file
 
-        if (!this.file.exists())
+        if (!this.file.exists() && !Paths.get(Holders.config.cytomine.ims.pims.pathPrefix, this.file.toString()).toFile().exists())
             throw new FileNotFoundException("File not found.")
 
         this.formats.each {
@@ -62,6 +65,7 @@ class FormatIdentifier {
     def initializeFormats() {
         this.formats = [
                 // Fast detections
+                new ISyntaxFormat(), // detector: extension
                 new ZipFormat(), // detector: extension
                 new JPEGFormat(), // detector: image magick
                 new PGMFormat(), // detector: image magick
@@ -73,7 +77,6 @@ class FormatIdentifier {
                 new CZITIFFFormat(), // detector: tiffinfo
                 new OMETIFFFormat(), // detector: tiffinfo
                 new GeoTIFFFormat(), // detector: tiffinfo
-                new ISyntaxFormat(), // detector: extension
 
                 // Slow detections that must come before others
                 new HamamatsuNDPIFormat(), // detector: openslide
@@ -136,6 +139,10 @@ class FormatIdentifier {
 
         Format detected = formatsToTest.find {
             it.mimeType == mimeType
+        }
+        //hack
+        if (file.extension().equals("isyntax")) {
+            return new ISyntaxFormat()
         }
 
         if (!detected)

@@ -172,6 +172,9 @@ cytomine.ims.openslide.iip.url = "http://localhost-iip-cyto/fcgi-bin/iipsrv.fcgi
 cytomine.ims.jpeg2000.iip.url = "http://localhost-iip-jp2000/fcgi-bin/iipsrv.fcgi"
 cytomine.ims.jpeg2000.enabled = true
 
+cytomine.ims.pims.url="http://localhost:5000"
+cytomine.ims.pims.enabled=true
+cytomine.ims.pims.pathPrefix="/home/lrollus/data/pims/"
 
 cytomine.ims.crop.maxSize = 12000 // in pixels
 cytomine.ims.deleteJob.frequency = 600 // in seconds

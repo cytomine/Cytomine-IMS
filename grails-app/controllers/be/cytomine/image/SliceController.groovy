@@ -20,6 +20,7 @@ import be.cytomine.exception.MiddlewareException
 import be.cytomine.formats.FormatIdentifier
 import be.cytomine.formats.supported.JPEG2000Format
 import be.cytomine.formats.supported.NativeFormat
+import be.cytomine.formats.supported.proprietary.ISyntaxFormat
 import be.cytomine.formats.tools.CytomineFile
 import com.vividsolutions.jts.geom.Geometry
 import com.vividsolutions.jts.io.WKTReader
@@ -184,18 +185,26 @@ class SliceController extends ImageResponseController {
         params.height = height
         params.topLeftX = topLeftX
         params.topLeftY = topLeftY
-        String cropURL = imageFormat.cropURL(params)
-        log.info cropURL
-        int i = 0
-        BufferedImage bufferedImage = ImageIO.read(new URL(cropURL))
-        while (bufferedImage == null && i < 3) {
+        BufferedImage bufferedImage
+        if (!imageFormat instanceof ISyntaxFormat) {
+            String cropURL = imageFormat.cropURL(params)
+            log.info cropURL
+            int i = 0
             bufferedImage = ImageIO.read(new URL(cropURL))
-            i++
+            while (bufferedImage == null && i < 3) {
+                bufferedImage = ImageIO.read(new URL(cropURL))
+                i++
+            }
+            if (!bufferedImage) {
+                throw new MiddlewareException("Not a valid image: ${cropURL}")
+            }
+        } else {
+            bufferedImage = ((ISyntaxFormat)imageFormat).cropImage(params)
+            if (!bufferedImage) {
+                throw new MiddlewareException("Cannot read crop with Isyntax, null image")
+            }
         }
 
-        if (!bufferedImage) {
-            throw new MiddlewareException("Not a valid image: ${cropURL}")
-        }
 
         if(imageFormat instanceof JPEG2000Format) {
             /*

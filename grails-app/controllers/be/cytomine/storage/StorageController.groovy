@@ -19,6 +19,7 @@ package be.cytomine.storage
 import be.cytomine.client.Cytomine
 import be.cytomine.client.CytomineConnection
 import be.cytomine.client.CytomineException
+import be.cytomine.client.HttpClient
 import be.cytomine.client.collections.Collection
 import be.cytomine.client.models.Project
 import be.cytomine.client.models.Storage
@@ -27,11 +28,18 @@ import be.cytomine.exception.AuthenticationException
 import be.cytomine.exception.DeploymentException
 import grails.converters.JSON
 import grails.util.Holders
+import org.apache.http.HttpEntity
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.ContentProducer
+import org.apache.http.entity.EntityTemplate
+import org.apache.http.entity.mime.MultipartEntity
+import org.apache.http.entity.mime.content.StringBody
 import org.restapidoc.annotation.RestApi
 import org.restapidoc.annotation.RestApiMethod
 import org.restapidoc.annotation.RestApiParam
 import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
+import utils.FilesUtils
 
 @RestApi(name = "upload services", description = "Methods for uploading images")
 class StorageController {
@@ -108,37 +116,49 @@ class StorageController {
             log.info "---> Filename: $filename"
             log.info "---> Filepath: $filePath"
 
-            def responseContent = [:]
-            try {
+
+            if (FilesUtils.getExtensionFromFilename(filename).toLowerCase().equals("isyntax")) {
+                def temporaryFile = new File(filePath)
+                def responseContent = [:]
                 responseContent.status = 200;
-                responseContent.name = filename
-                def uploadResult = uploadService.upload(userConnection, storage as Storage, filename, filePath, isSync, projects, properties)
+                uploadToPims(filePath, filename, temporaryFile.size(), userConnection, storage.getLong("id"))
+                render responseContent as JSON
+            } else {
+                def responseContent = [:]
+                try {
+                    responseContent.status = 200;
+                    responseContent.name = filename
+                    def uploadResult = uploadService.upload(userConnection, storage as Storage, filename, filePath, isSync, projects, properties)
 
-                responseContent.uploadedFile = uploadResult.uploadedFile.getAttr()
+                    responseContent.uploadedFile = uploadResult.uploadedFile.getAttr()
 
-                def images = []
-                uploadResult.images.each { image ->
-                    def slices = uploadResult.slices.find {it.getLong('image') == image.getId()}
-                    def instances = uploadResult.instances.find { it.getLong('baseImage') == image.getId()}
-                    images << [
-                            image: image.getAttr(),
-                            slices: slices.collect {it.getAttr()},
-                            imageInstances: instances.collect {it.getAttr()}
-                    ]
+                    def images = []
+                    uploadResult.images.each { image ->
+                        def slices = uploadResult.slices.find {it.getLong('image') == image.getId()}
+                        def instances = uploadResult.instances.find { it.getLong('baseImage') == image.getId()}
+                        images << [
+                                image: image.getAttr(),
+                                slices: slices.collect {it.getAttr()},
+                                imageInstances: instances.collect {it.getAttr()}
+                        ]
+                    }
+                    responseContent.images = images
+
+
+                } catch(DeploymentException e){
+                    response.status = 500;
+                    responseContent.status = 500;
+                    responseContent.error = e.getMessage()
+                    responseContent.files = [[name:filename, size:0, error:responseContent.error]]
                 }
-                responseContent.images = images
 
+                responseContent = [responseContent]
 
-            } catch(DeploymentException e){
-                response.status = 500;
-                responseContent.status = 500;
-                responseContent.error = e.getMessage()
-                responseContent.files = [[name:filename, size:0, error:responseContent.error]]
+                render responseContent as JSON
             }
 
-            responseContent = [responseContent]
 
-            render responseContent as JSON
+
         }
         catch (CytomineException e) {
             log.error(e.toString())
@@ -153,6 +173,34 @@ class StorageController {
             response.status = 400
             render e.getCause().toString()
         }
+    }
+
+    private void uploadToPims(String path, String filename, Long size, CytomineConnection connection, Long storage) {
+        if (!Holders.config.cytomine.ims.pims.enabled) {
+            throw new Exception("PIMS is disabled")
+        }
+
+        String url = Holders.config.cytomine.ims.pims.url
+        HttpClient client = null;
+
+        MultipartEntity entity = new MultipartEntity();
+        entity.addPart("files[].path", new StringBody(path));
+        entity.addPart("files[].name", new StringBody(filename));
+        entity.addPart("files[].size", new StringBody(size.toString()));
+
+        client = new HttpClient(
+                connection.getPublicKey(),
+                connection.getPrivateKey(),
+                url
+        );
+        String urlPath = "/upload?storage=$storage&core=${connection.getHost()}";
+        client.authorize("POST", urlPath, entity.getContentType().getValue(), "application/json,*/*");
+        client.connect(url + urlPath);
+        int code = client.post(entity);
+        log.debug("code=" + code);
+        String response = client.getResponseData();
+        log.debug("response=" + response);
+        client.disconnect();
     }
 
     @RestApiMethod(description="Method for getting used and free space of the image storage")
