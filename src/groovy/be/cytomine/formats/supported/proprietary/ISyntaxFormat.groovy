@@ -139,7 +139,7 @@ class ISyntaxFormat extends NativeFormat implements CustomExtensionFormat {
         Integer zoom = params.int("z");
         String tileIndex = params.int("tileIndex")
 
-        return HttpUtils.makeUrl(iipUrl + "/image/" + filepath + "/tile/zoom/" + zoom + "/ti/" + tileIndex + ".jpg", [:])
+        return HttpUtils.makeUrl(iipUrl + "/image/" + filepath + "/normalized-tile/zoom/" + zoom + "/ti/" + tileIndex + ".jpg", [:])
     }
 
     BufferedImage cropImage(TypeConvertingMap params, File actualFile = null) {
@@ -279,8 +279,6 @@ class ISyntaxFormat extends NativeFormat implements CustomExtensionFormat {
 //                CVT: params.format
         ]
         String filepath = removePimsPathPrefix(params.fif);
-        Integer zoom = params.int("z");
-        String tileIndex = params.int("tileIndex")
 
         // http://localhost:5000/image/{filepath}/thumb{extension}
 
