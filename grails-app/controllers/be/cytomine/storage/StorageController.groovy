@@ -41,6 +41,9 @@ import org.restapidoc.annotation.RestApiParams
 import org.restapidoc.pojo.RestApiParamType
 import utils.FilesUtils
 
+import java.nio.file.Path
+import java.nio.file.Paths
+
 @RestApi(name = "upload services", description = "Methods for uploading images")
 class StorageController {
 
@@ -119,9 +122,23 @@ class StorageController {
 
             if (FilesUtils.getExtensionFromFilename(filename).toLowerCase().equals("isyntax")) {
                 def temporaryFile = new File(filePath)
+                Path source = Paths.get(filePath);
+                String tmpFile = new Random().nextInt().toString() + new Date().getTime()
+//                Path newdir = Paths.get(Holders.config.cytomine.ims.pims.bufferedPath,tmpDir);
+//                if (!newdir.toFile().mkdirs()) {
+//                    log.error("Cannot create tmp dir " + new File(tmpDir).getAbsolutePath())
+//                    throw new IOException("Cannot create tmp dir " + new File(tmpDir).getAbsolutePath())
+//                }
+
+                Path newFile = Paths.get(Holders.config.cytomine.ims.pims.bufferedPath, tmpFile+"."+FilesUtils.getExtensionFromFilename(filename).toLowerCase());
+                log.info "Rename file from ${source.toFile().toString()} to ${newFile.toFile().toString()}"
+                if (!source.toFile().renameTo(newFile.toFile())) {
+                    log.error("Cannot move file to pims pending path")
+                }
+
                 def responseContent = [:]
                 responseContent.status = 200;
-                uploadToPims(filePath, filename, temporaryFile.size(), userConnection, storage.getLong("id"))
+                uploadToPims(newFile.toFile().getAbsolutePath(), filename, temporaryFile.size(), userConnection, storage.getLong("id"))
                 render responseContent as JSON
             } else {
                 def responseContent = [:]
