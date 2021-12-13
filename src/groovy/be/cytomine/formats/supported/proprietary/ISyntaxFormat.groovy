@@ -19,6 +19,10 @@ package be.cytomine.formats.supported.proprietary
 import be.cytomine.exception.FormatException
 import be.cytomine.formats.supported.NativeFormat
 import be.cytomine.formats.tools.CustomExtensionFormat
+import com.vividsolutions.jts.geom.Coordinate
+import com.vividsolutions.jts.geom.CoordinateFilter
+import com.vividsolutions.jts.geom.Geometry
+import com.vividsolutions.jts.io.WKTReader
 import grails.converters.deep.JSON
 import grails.util.Holders
 import groovy.json.JsonBuilder
@@ -145,16 +149,24 @@ class ISyntaxFormat extends NativeFormat implements CustomExtensionFormat {
     BufferedImage cropImage(TypeConvertingMap params, File actualFile = null) {
         //TODO: same as for tileURL "si fichier visualisation.ISYNTAX existe pas, je le crée"
 
+        // fix each Y because cytomine starts from bottom to top while pims needs top to bottom)
+        InvertCoordinateFilter invertCoordinateFilter = new InvertCoordinateFilter(params.int('imageHeight'))
+        Geometry geometry = new WKTReader().read(params.location)
+        geometry.apply(invertCoordinateFilter)
+
+
         def parameters = [
                 length: params.int('maxSize', 256),
                 context_factor: params.double('increaseArea'),
                 gammas: 1,
-                annotations: [geometry: params.location],
+                annotations: [geometry: geometry.toText()],
                 //channels: params.int('c'),
                 //z_slices: params.int('z'),
                 //timepoints: params.int('t'),
                 colormaps: (params.colormap) ? (List) params.colormap.split(',') : null
         ]
+
+        println parameters
 
         http://localhost:5000/image/{filepath}/annotation/crop{extension}
 
@@ -342,5 +354,17 @@ class ISyntaxFormat extends NativeFormat implements CustomExtensionFormat {
 
     private def String removePimsPathPrefix(String path) {
         return path.replaceAll(Holders.config.cytomine.ims.pims.pathPrefix, "")
+    }
+}
+class InvertCoordinateFilter implements CoordinateFilter {
+
+    int imageHeight
+
+    InvertCoordinateFilter(int imageHeight) {
+        this.imageHeight = imageHeight
+    }
+
+    public void filter(Coordinate coord) {
+        coord.y = imageHeight - coord.y;
     }
 }

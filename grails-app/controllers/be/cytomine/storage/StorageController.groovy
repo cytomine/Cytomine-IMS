@@ -123,7 +123,7 @@ class StorageController {
             if (FilesUtils.getExtensionFromFilename(filename).toLowerCase().equals("isyntax")) {
                 def temporaryFile = new File(filePath)
                 Path source = Paths.get(filePath);
-                String tmpFile = new Random().nextInt().toString() + new Date().getTime()
+                String tmpFile = Math.abs(new Random().nextInt()).toString() + new Date().getTime()
 //                Path newdir = Paths.get(Holders.config.cytomine.ims.pims.bufferedPath,tmpDir);
 //                if (!newdir.toFile().mkdirs()) {
 //                    log.error("Cannot create tmp dir " + new File(tmpDir).getAbsolutePath())
