@@ -26,6 +26,7 @@ import com.vividsolutions.jts.io.WKTReader
 import grails.converters.deep.JSON
 import grails.util.Holders
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 import org.apache.http.HttpEntity
 import org.apache.http.HttpResponse
@@ -299,40 +300,12 @@ class ISyntaxFormat extends NativeFormat implements CustomExtensionFormat {
     }
 
     def properties() {
-        def properties = [:]
-        //TODO call PIMS url.
-
-
         HttpClient httpclient = new DefaultHttpClient();
-
-        HttpGet httpGet = new HttpGet("${iipUrl}/image/${file.path}/info/image");
-
-        HttpResponse httpResponse = httpclient.execute(httpGet);
-        InputStream instream = httpResponse.getEntity().getContent()
-
-
-
-        //TODO get text, convert to JSON then fill the properties
-
-
-        /*if (!this.file.canRead()) {
-            throw new FileNotFoundException("Unable to read ${this.file}")
-        }
-
-        try {
-            OpenSlide openSlide = new OpenSlide(this.file)
-            openSlide.getProperties().each {
-                properties << [(it.key): it.value]
-            }
-            openSlide.close()
-        }
-        catch (Exception e) {
-            throw new Exception("Openslide is unable to read ${this.file}: ${e.getMessage()}")
-        }
-
-        properties << [(PropertyUtils.CYTO_X_RES_UNIT): "um"]
-        properties << [(PropertyUtils.CYTO_Y_RES_UNIT): "um"]*/
-
+        String url = "${iipUrl}/image/${file.path}/info/image"
+        println url
+        String response = new URL(url).text;
+        def jsonSlurper = new JsonSlurper()
+        def properties = jsonSlurper.parseText(response)
         return properties
     }
 
