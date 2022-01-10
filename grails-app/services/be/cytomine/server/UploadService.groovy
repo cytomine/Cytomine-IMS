@@ -303,7 +303,7 @@ class UploadService {
 
         if (format instanceof NativeFormat) {
             uploadedFile.changeStatus(UploadedFile.Status.DEPLOYING)
-            log.info uploadedFile.get("status")
+            log.info("uploadedFile (status) : "+uploadedFile.toString()+" "+uploadedFile.get("status"))
 
             if (format instanceof MultipleFilesFormat) {
                 File root = format.getRootFile(currentFile)

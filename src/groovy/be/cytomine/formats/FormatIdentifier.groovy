@@ -128,7 +128,7 @@ class FormatIdentifier {
         }
 
         if (!detected)
-            throw new FormatException("Format not found.")
+            throw new FormatException("Format not found for $file.")
 
         log.info("Detected format for $file is $detected")
         return detected
@@ -146,7 +146,7 @@ class FormatIdentifier {
         }
 
         if (!detected)
-            throw new FormatException("Format not found.")
+            throw new FormatException("Format not found for $file.")
 
         log.info("Detected format for $file is $detected")
         return detected
