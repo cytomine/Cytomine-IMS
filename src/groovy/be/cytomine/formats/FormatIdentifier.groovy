@@ -22,6 +22,7 @@ import be.cytomine.formats.archive.ZipFormat
 import be.cytomine.formats.heavyconvertable.CellSensVSIFormat
 import be.cytomine.formats.heavyconvertable.DotSlideFormat
 import be.cytomine.formats.heavyconvertable.OMETIFFFormat
+import be.cytomine.formats.heavyconvertable.PerkinElmerVectraQPTIFF
 import be.cytomine.formats.heavyconvertable.ZeissCZIFormat
 import be.cytomine.formats.heavyconvertable.video.MP4Format
 import be.cytomine.formats.lightconvertable.*
@@ -73,11 +74,13 @@ class FormatIdentifier {
                 new OMETIFFFormat(), // detector: tiffinfo
                 new GeoTIFFFormat(), // detector: tiffinfo
 
+
                 // Slow detections that must come before others
                 new HamamatsuNDPIFormat(), // detector: openslide
                 new VentanaTIFFFormat(), // detector: openslide
                 new PhilipsTIFFFormat(), // detector: openslide
                 new GeoJPEG2000Format(), // detector: extension + gdal
+                new PerkinElmerVectraQPTIFF(),
 
                 // Fast detections that must go last (large detection criteria)
                 new JPEG2000Format(), // Accept any JPEG2000
@@ -96,6 +99,7 @@ class FormatIdentifier {
                 new DotSlideFormat(), // detector: extension
                 new ZeissCZIFormat(), // detector: custom
                 new MP4Format(), // detector: ffprobe
+
         ]
     }
 

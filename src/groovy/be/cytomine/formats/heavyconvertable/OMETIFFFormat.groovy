@@ -44,6 +44,15 @@ class OMETIFFFormat extends BioFormatConvertable implements TiffInfoDetector {
                 && !tiffinfo.contains("Tile Width")) {
             return true
         }
+        //If the header of image have ome it is a ome-tiff
+        if(tiffinfo.contains("<OME"))
+        {
+            return true
+        }
+        else
+        {
+            return false
+        }
     }
 
     boolean getGroup() {

@@ -54,7 +54,8 @@ class PyramidalTIFFFormat extends NativeFormat implements TiffInfoDetector {
             "Leica",
             "PHILIPS",
 //            "OME-XML",
-            "Software: Adobe Photoshop"
+            "Software: Adobe Photoshop",
+            "Software: OME"
     ]
 
     boolean detect() {

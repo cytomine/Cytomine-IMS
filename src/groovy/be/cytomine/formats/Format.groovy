@@ -36,6 +36,8 @@ abstract class Format {
      */
     public CytomineFile file = null
 
+    public  String [] ARCHIVECOMPRESS_FORMAT= {"bz2";"gz"}
+
     /**
      * The format mime type
      */
@@ -171,5 +173,31 @@ abstract class Format {
             return null
 
         return null
+    }
+
+    boolean CheckExtension (String name, String[] ExtensionList)
+    {
+        boolean check=false
+
+        String minusName= name.toLowerCase()
+        for(int i=0;i<ExtensionList.length && check==false;i++)
+        {
+            String comp="." + ExtensionList[i]
+            if(minusName.endsWith(comp))
+            {
+                check=true;
+            }
+            else
+            {
+                for(int j=0;j<ARCHIVECOMPRESS_FORMAT.length;j++)
+                {
+                    if(minusName.endsWith(comp + "." + ARCHIVECOMPRESS_FORMAT[j]))
+                    {
+                        check=true
+                    }
+                }
+            }
+        }
+        return check
     }
 }

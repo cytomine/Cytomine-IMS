@@ -28,7 +28,6 @@ trait TiffInfoDetector extends Detector {
         requiredKeywords = this.hasProperty("requiredKeywords")?.getProperty(this) ?: []
         forbiddenKeywords = this.hasProperty("forbiddenKeywords")?.getProperty(this) ?: []
         possibleKeywords = this.hasProperty("possibleKeywords")?.getProperty(this) ?: []
-
         def output = this.file.getTiffInfoOutput()
 
         /**
