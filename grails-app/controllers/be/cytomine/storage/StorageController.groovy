@@ -210,7 +210,7 @@ class StorageController {
                 connection.getPrivateKey(),
                 url
         );
-        String urlPath = "/upload?storage=$storage&core=${connection.getHost()}";
+        String urlPath = "/upload?storage=$storage&core=${connection.getHost()}&sync=true";
         client.authorize("POST", urlPath, entity.getContentType().getValue(), "application/json,*/*");
         client.connect(url + urlPath);
         int code = client.post(entity);
