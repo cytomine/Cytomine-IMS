@@ -17,6 +17,9 @@ package be.cytomine.formats.supported.digitalpathology
  */
 
 import java.awt.image.BufferedImage
+import utils.FilesUtils
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * Created by stevben on 22/04/14.
@@ -38,6 +41,13 @@ class MiraxMRXSFormat extends OpenSlideMultipleFileFormat {
         File uploadedFile = new File(absoluteFilePath);
         if(uploadedFile.isFile() && uploadedFile.name.endsWith('.mrxs')) uploadedFile = uploadedFile.parentFile
 
+        uploadedFile.listFiles().each {
+            if (!it.name.equals(FilesUtils.correctFileName(it.name))) {
+                String newPath = it.toPath().getParent().toString()
+                newPath += File.separator + FilesUtils.correctFileName(it.name)
+                Files.move(it.toPath(), Paths.get(newPath))
+            }
+        }
         File mrxs = getRootFile(uploadedFile)
 
         if(mrxs){

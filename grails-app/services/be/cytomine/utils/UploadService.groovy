@@ -172,13 +172,13 @@ class UploadService {
     // WARNING ! This function is recursive. Be careful !
     private def deploy(Cytomine cytomine, File currentFile, UploadedFile uploadedFile, UploadedFile uploadedFileParent){
 
-        log.info "deploy $currentFile"
         if(!currentFile.name.equals(FilesUtils.correctFileName(currentFile.name))){
             String newPath = currentFile.toPath().getParent().toString()
             newPath += File.separator + FilesUtils.correctFileName(currentFile.name)
             Files.move(currentFile.toPath(), Paths.get(newPath))
             currentFile = new File(newPath)
         }
+        log.info "deploy $currentFile"
 
         def result = [:]
         result.images = []
@@ -188,6 +188,14 @@ class UploadService {
             boolean errorFlag = false
             String errorMsg = "";
             currentFile.listFiles().each {
+                if(!it.name.equals(FilesUtils.correctFileName(it.name))){
+                    String newPath = it.toPath().getParent().toString()
+                    newPath += File.separator + FilesUtils.correctFileName(it.name)
+                    Files.move(it.toPath(), Paths.get(newPath))
+                    it = new File(newPath)
+                }
+
+
                 if(!it.name.equals("__MACOSX")){
                     try{
                         //a simple folder will not create an UploadedFile object
